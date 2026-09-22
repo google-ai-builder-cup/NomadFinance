@@ -1,0 +1,7 @@
+# Default: any team member reviews
+* @Aditya083103 @Devam45 @pranjal-username
+
+# Sensitive files require explicit review
+/backend/app/core/security.py @Aditya083103 @Devam45 @pranjal-username
+/infra/ @Aditya083103 @Devam45 @pranjal-username
+/.github/workflows/ @Aditya083103 @Devam45 @pranjal-username
