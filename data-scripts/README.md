@@ -1,18 +1,25 @@
 # NomadFinance — Data Scripts
 
-Scripts for loading external data sources into Firestore.
+One-off Python scripts for loading external data into Firestore.
 
-## Data Sources
-•⁠  ⁠World Bank Remittance Prices Worldwide (RPW)
-•⁠  ⁠ILO NATLEX labor laws
-•⁠  ⁠Frankfurter API exchange rates
+## Sources
+•⁠  ⁠*World Bank RPW* — quarterly Excel; provider fees per corridor
+•⁠  ⁠*ILO NATLEX* — manually curated per host country; loaded as JSON
+•⁠  ⁠*ILOSTAT REST API* — statistical verification of labor law values
+•⁠  ⁠*Frankfurter API* — historical FX rate backfill for trend charts
+
+## Host Countries (6, JAPAC)
+Singapore (SG), South Korea (KR), Malaysia (MY), Japan (JP), Hong Kong (HK), Australia (AU)
 
 ## Structure
-TBD — scripts will be added as we build.
+•⁠  ⁠⁠ src/loaders/ ⁠ — Parse + write to Firestore
+•⁠  ⁠⁠ src/validators/ ⁠ — Schema checks before write
+•⁠  ⁠⁠ data/source/ ⁠ — Bootstrap data (large files gitignored)
+•⁠  ⁠⁠ data/seed/ ⁠ — Real demo assets loaded ONCE for demo purposes
 
-## Setup
-Setup instructions coming soon.
-
----
-Part of the NomadFinance project for Google Cloud AI Builder Cup 2026.
-
+## Usage
+⁠ bash
+./scripts/load_bootstrap.sh    # Load WB + ILO to Firestore
+./scripts/seed_demo.sh          # Seed demo users, contracts, radar reports
+./scripts/refresh_data.sh       # Manual refresh (usually run by Cloud Scheduler)
+ ⁠
