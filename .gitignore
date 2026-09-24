@@ -1,5 +1,5 @@
 # Python
-_pycache_/
+__pycache__/
 *.py[cod]
 *.so
 *.egg-info/
