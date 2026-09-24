@@ -23,7 +23,11 @@ React 18 PWA served via Firebase Hosting.
 ## Local Dev
 1. Copy .env.example to .env.local
 2. pnpm install
-3. pnpm dev
+3. pnpm dev — serves at http://127.0.0.1:5173
+
+Checks before every push: `pnpm lint`, `pnpm build`, `pnpm format:check`.
+
+Bootstrap details (pinned versions and why, Tailwind/shadcn/ui setup, troubleshooting): [`docs/runbooks/NF-P1-007-frontend-bootstrap.md`](../docs/runbooks/NF-P1-007-frontend-bootstrap.md).
 
 ## Deploy
 Automatic on merge to main via GitHub Actions.
