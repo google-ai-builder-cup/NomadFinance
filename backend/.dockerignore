@@ -1,0 +1,17 @@
+# Keep secrets and local artifacts out of the build context.
+.env
+.env.*
+.venv/
+venv/
+**/__pycache__/
+**/*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+scripts/
+Dockerfile
+.dockerignore
+README.md

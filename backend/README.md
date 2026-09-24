@@ -25,12 +25,21 @@ Requires Python 3.11.9. Run everything from `backend/`.
    - bash: `python3.11 -m venv .venv && source .venv/bin/activate`
    - then: `pip install -r requirements-dev.txt`
 2. Copy `.env.example` to `.env.local` (`APP_ENV` is required; the app refuses to start without it)
-3. Run Firebase Emulator (see `/docs/runbooks/local-dev-setup.md`)
+3. Run Firebase Emulator (see [`docs/runbooks/NF-P1-001-local-dev-setup.md`](../docs/runbooks/NF-P1-001-local-dev-setup.md))
 4. Start the API: `./scripts/run_local.sh` (bash) or `uvicorn app.main:app --reload --port 8080`
 5. Check `http://127.0.0.1:8080/health` and Swagger at `http://127.0.0.1:8080/docs`
 
 Checks before every push: `pytest`, `ruff check .`, `black --check .`, `mypy app tests`.
-Full setup, check commands and troubleshooting: [`docs/runbooks/local-dev-setup.md`](../docs/runbooks/local-dev-setup.md).
+Full setup, check commands and troubleshooting: [`docs/runbooks/NF-P1-001-local-dev-setup.md`](../docs/runbooks/NF-P1-001-local-dev-setup.md).
+
+## Docker
+Production image: multi-stage `python:3.11.9-slim-bookworm`, gunicorn with uvicorn workers, non-root user, listens on `$PORT` (default 8080).
+
+1. Build: `docker build -t nomadfinance-backend:local .` (or `./scripts/build_docker.sh`)
+2. Run: `docker run --rm -p 8080:8080 -e APP_ENV=local nomadfinance-backend:local`
+3. Check `http://127.0.0.1:8080/health`
+
+Full build/run flow and troubleshooting: [`docs/runbooks/NF-P1-002-backend-docker.md`](../docs/runbooks/NF-P1-002-backend-docker.md).
 
 ## Deploy
 Automatic on merge to main via GitHub Actions.

@@ -1,5 +1,6 @@
 fastapi==0.141.1
 uvicorn[standard]==0.53.0
 gunicorn==26.2.0
+uvicorn-worker==0.4.0
 pydantic==2.13.5
 pydantic-settings==2.15.0
