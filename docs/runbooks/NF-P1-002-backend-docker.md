@@ -54,7 +54,7 @@ docker build -t nomadfinance-backend:local .
 ./scripts/build_docker.sh
 ```
 
-Check the image exists and its size (expected about 286 MB):
+Check the image exists and its size (about 395 MB as of NF-P1-004; it grows as dependencies are added):
 
 ```bash
 docker image ls nomadfinance-backend:local
@@ -65,14 +65,10 @@ docker image ls nomadfinance-backend:local
 Foreground (logs in the terminal, stop with `Ctrl+C`):
 
 ```bash
-docker run --rm -p 8080:8080 -e APP_ENV=local nomadfinance-backend:local
-```
-
-Same thing, but reading your local settings file:
-
-```bash
 docker run --rm -p 8080:8080 --env-file .env.local nomadfinance-backend:local
 ```
+
+`--env-file .env.local` passes every required setting (`APP_ENV`, and since NF-P1-004 also `GEMINI_API_KEY`). Passing only `-e APP_ENV=local` is no longer enough: the container exits with `gemini_api_key Field required`.
 
 ### 3. Check `/health` and Swagger
 
@@ -131,7 +127,7 @@ Expected: logs contain `app_env Field required`, then `exit code: 3`
 ### 7. Check the Cloud Run `PORT` override
 
 ```bash
-docker run --rm -p 9090:9090 -e PORT=9090 -e APP_ENV=local nomadfinance-backend:local
+docker run --rm -p 9090:9090 --env-file .env.local -e PORT=9090 nomadfinance-backend:local
 ```
 
 Expected log line: `Listening at: http://0.0.0.0:9090`. In a second terminal, `/health` on port 9090 returns 200:
@@ -153,7 +149,7 @@ Stop with `Ctrl+C`.
 Start in the background:
 
 ```bash
-docker run -d --name nf-test -p 8080:8080 -e APP_ENV=local nomadfinance-backend:local
+docker run -d --name nf-test -p 8080:8080 --env-file .env.local nomadfinance-backend:local
 ```
 
 Stop it (sends SIGTERM):
@@ -228,6 +224,7 @@ Rebuild after any code change. The image is a snapshot, so it will not pick up e
 | Variable | Default in image | Set by | Notes |
 |---|---|---|---|
 | `APP_ENV` | none (required) | `docker run -e` / Cloud Run | `local`, `staging` or `prod`. NF-P1-003 must set `APP_ENV=prod` on the Cloud Run service. |
+| `GEMINI_API_KEY` | none (required, since NF-P1-004) | `--env-file .env.local` / Cloud Run secret | Never baked into the image. Cloud Run mounts Secret Manager `gemini-api-key`. |
 | `PORT` | `8080` | Cloud Run | gunicorn bind port |
 | `WEB_CONCURRENCY` | `1` | Cloud Run (optional) | gunicorn workers; roughly 1 per vCPU |
 | `APP_VERSION`, `LOG_LEVEL` | app defaults | optional | see `app/config.py` |
@@ -272,7 +269,7 @@ Only `docs/design-doc/` should remain untracked.
 | Symptom | Fix |
 |---|---|
 | `failed to connect to the docker API ... dockerDesktopLinuxEngine` | Docker Desktop is not running. Start it and wait until `docker info` works (can take 1–2 minutes). |
-| Container exits with `app_env Field required` | Pass `-e APP_ENV=local` or `--env-file .env.local`. |
+| Container exits with `app_env Field required` or `gemini_api_key Field required` | Pass `--env-file .env.local`, and make sure `.env.local` has both `APP_ENV` and `GEMINI_API_KEY` (see NF-P1-004). |
 | `Bind for 0.0.0.0:8080 failed: port is already allocated` | Something (often `uvicorn --reload` or an old `nf-test` container) already uses 8080. Stop it, run `docker rm -f nf-test`, or map another port: `-p 8081:8080`. |
 | `Conflict. The container name "/nf-test" is already in use` | A previous test container still exists: `docker rm -f nf-test`. |
 | Code changes not showing up | The image is a snapshot. Rebuild with `docker build` after every change. |

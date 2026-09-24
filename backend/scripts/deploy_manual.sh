@@ -23,6 +23,7 @@ gcloud run deploy "${SERVICE}" \
   --image "${IMAGE}" \
   --service-account "${RUNTIME_SA}" \
   --set-env-vars "APP_ENV=prod" \
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest" \
   --allow-unauthenticated \
   --cpu 1 \
   --memory 512Mi \

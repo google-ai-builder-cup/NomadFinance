@@ -130,6 +130,7 @@ gcloud run deploy nomadfinance-api `
   --image $IMAGE `
   --service-account nomadfinance-backend@nomadfinance-prod.iam.gserviceaccount.com `
   --set-env-vars "APP_ENV=prod" `
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest" `
   --allow-unauthenticated `
   --cpu 1 --memory 512Mi `
   --min-instances 0 --max-instances 2
@@ -140,6 +141,7 @@ What the script's settings mean:
 | Flag | Why |
 |---|---|
 | `--set-env-vars APP_ENV=prod` | The image has no default for `APP_ENV` and exits without it (see NF-P1-002). |
+| `--set-secrets GEMINI_API_KEY=gemini-api-key:latest` | Added in NF-P1-004. Mounts the Secret Manager key as an env var; the app exits without it. Needs the one-time IAM grant in `NF-P1-004-gemini-client.md`. |
 | `--allow-unauthenticated` | Grants `roles/run.invoker` to `allUsers`. Needed for a public URL. Fine for `/health`; real endpoints check Firebase tokens in the app (NF-P1-005). |
 | `--min-instances 0` | Scale to zero when idle, so no idle cost. The first request after idle is a cold start of a few seconds. |
 | `--max-instances 2` | Hard cost cap. |

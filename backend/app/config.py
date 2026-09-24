@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolved from this file so settings load the same way whether the app starts from
@@ -35,6 +36,16 @@ class Settings(BaseSettings):
     # FIRESTORE_EMULATOR_HOST / FIREBASE_AUTH_EMULATOR_HOST (see
     # docs/runbooks/NF-P1-001-local-dev-setup.md).
     firebase_project_id: str = "nomadfinance-prod"
+
+    # Local: backend/.env.local. Prod: Secret Manager `gemini-api-key`, mounted by Cloud Run.
+    gemini_api_key: SecretStr
+    # One model per tier so each tier draws on its own per-model quota. Rationale and
+    # history in docs/decisions/ADR-002-multi-model-gemini-strategy.md.
+    gemini_model_reasoning: str = "gemini-3.5-flash"
+    gemini_model_extraction: str = "gemini-3.5-flash-lite"
+    gemini_model_classification: str = "gemini-3.1-flash-lite"
+    gemini_timeout_seconds: float = Field(default=30.0, gt=0)
+    gemini_max_attempts: int = Field(default=3, ge=1)
 
 
 @lru_cache
