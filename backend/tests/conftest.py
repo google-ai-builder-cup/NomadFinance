@@ -8,7 +8,9 @@ import pytest
 # Must be set before app.main is imported: the module builds the app, and settings
 # fail fast without APP_ENV.
 os.environ.setdefault("APP_ENV", "local")
-os.environ.setdefault("GEMINI_API_KEY", "test-key")
+# Live tests read the real key from .env.local; an env var would shadow it.
+if os.environ.get("RUN_LIVE_GEMINI") != "1":
+    os.environ.setdefault("GEMINI_API_KEY", "test-key")
 
 from fastapi.testclient import TestClient  # noqa: E402
 

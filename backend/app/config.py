@@ -47,6 +47,10 @@ class Settings(BaseSettings):
     gemini_timeout_seconds: float = Field(default=30.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
+    # Uploads are sent to Gemini inline, which caps a whole request at about 20 MB.
+    # 10 MB covers multi-page phone scans and leaves room for the prompt.
+    upload_max_bytes: int = Field(default=10 * 1024 * 1024, gt=0)
+
 
 @lru_cache
 def get_settings() -> Settings:

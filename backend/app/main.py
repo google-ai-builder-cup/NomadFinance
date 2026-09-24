@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.api.v1.router import api_router
 from app.config import get_settings
+from app.core.errors import register_exception_handlers
 from app.schemas.common import HealthResponse
 
 
@@ -27,6 +28,7 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(api_router, prefix="/api/v1")
+    register_exception_handlers(app)
     return app
 
 

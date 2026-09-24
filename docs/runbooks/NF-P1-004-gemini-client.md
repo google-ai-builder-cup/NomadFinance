@@ -80,7 +80,7 @@ Rules:
 - Always pass a Pydantic `response_model`. There is no free-text method on purpose.
 - Pick a tier, never a model ID.
 - Use a dotted `operation` name, `<pillar>.<step>` (e.g. `radar.validate`), so token logs can be grouped per pipeline step.
-- Catch `GeminiError` (or a specific subclass) at the endpoint layer and turn it into an HTTP error. Never let SDK exceptions or tracebacks reach the client. Suggested mapping, to be wired in NF-P1-006: `GeminiRateLimitError` → 429 or 503, `GeminiTimeoutError` → 504, `GeminiUnavailableError` → 503, `GeminiResponseError` → 502, `GeminiRequestError` → 500 (it is our bug).
+- Catch `GeminiError` (or a specific subclass) at the endpoint layer and turn it into an HTTP error. Never let SDK exceptions or tracebacks reach the client. This is wired app-wide since NF-P1-006 (`app/core/errors.py`): `GeminiRateLimitError` and `GeminiUnavailableError` → 503 with `Retry-After: 30`, `GeminiTimeoutError` → 504, `GeminiResponseError` → 502, `GeminiRequestError` → 500 (it is our bug). Endpoints can simply let `GeminiError` propagate.
 - Leave `temperature` unset unless there is a reason. Gemini 3 models are tuned for their default.
 
 ## All commands, in order
