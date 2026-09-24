@@ -1,0 +1,90 @@
+flowchart TB
+    User([Migrant Worker - Any Language, Any Device])
+
+    subgraph FE[FRONTEND - Firebase Hosting - React PWA]
+        Landing[Landing Page + Language Selector]
+        Auth[Firebase Auth - Google + Phone OTP]
+        Home[Dashboard - 4 Feature Cards]
+    end
+
+    User --> Landing
+    Landing --> Auth
+    Auth --> Home
+
+    Home --> P1[Remittance X-Ray]
+    Home --> P2[Contract Shield]
+    Home --> P3[Exploitation Radar]
+    Home --> P4[Financial Identity]
+
+    subgraph BE[BACKEND - Cloud Run - FastAPI]
+        API[REST API Gateway - Firebase Auth Verify]
+        Router{Route to Service}
+    end
+
+    P1 --> API
+    P2 --> API
+    P3 --> API
+    P4 --> API
+    API --> Router
+
+    Router --> RX[Remittance Engine]
+    Router --> CS[Contract Analysis Pipeline]
+    Router --> RD[Radar Aggregation]
+    Router --> FI[Financial Profile Builder]
+
+    subgraph AI[GEMINI AI LAYER]
+        G1[Gemini 1.5 Flash - Vision + Extraction]
+        G2[Gemini 2.5 Flash - Legal Reasoning + Synthesis]
+        G3[Gemini Flash-Lite - Translation + Classification]
+        G4[text-embedding-004 - Vector Embeddings]
+    end
+
+    RX --> G3
+    CS --> G1
+    CS --> G2
+    RD --> G3
+    RD --> G4
+    FI --> G1
+    FI --> G2
+
+    subgraph DB[FIRESTORE - Data Layer]
+        FS1[(users + contracts + transfers)]
+        FS2[(labor_laws - 6 countries)]
+        FS3[(corridors - World Bank)]
+        FS4[(rates_cache + rates_history)]
+        FS5[(radar_reports + radar_entities)]
+        FS6[(financial_profile)]
+    end
+
+    RX --> FS3
+    RX --> FS4
+    CS --> FS1
+    CS --> FS2
+    RD --> FS5
+    FI --> FS1
+    FI --> FS6
+
+    CS --> CST[(Cloud Storage - PDFs + Reports)]
+
+    subgraph EXT[EXTERNAL DATA SOURCES]
+        WB[World Bank RPW - Quarterly Excel]
+        ILO[ILO NATLEX - Labor Laws]
+        FRA[Frankfurter API - Live FX]
+    end
+
+    CRON[Cloud Scheduler - Every 2 Hours]
+    CRON --> FRA
+    FRA --> FS4
+
+    WB -.One-time load.-> FS3
+    ILO -.Manual curation.-> FS2
+
+    classDef userStyle fill:#4285F4,stroke:#1a73e8,color:#fff
+    classDef aiStyle fill:#EA4335,stroke:#c5221f,color:#fff
+    classDef dbStyle fill:#34A853,stroke:#188038,color:#fff
+    classDef extStyle fill:#FBBC04,stroke:#f9ab00,color:#000
+
+    class User userStyle
+    class G1,G2,G3,G4 aiStyle
+    class FS1,FS2,FS3,FS4,FS5,FS6,CST dbStyle
+    class WB,ILO,FRA extStyle

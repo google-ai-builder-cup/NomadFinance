@@ -1,0 +1,21 @@
+flowchart TB
+    U([Migrant Worker])
+
+    U --> P1[Remittance X-Ray]
+    U --> P2[Contract Shield]
+    U --> P3[Exploitation Radar]
+    U --> P4[Financial Identity]
+
+    P1 -.Every transfer logged.-> P4
+    P2 -.Employer flags feed radar.-> P3
+    P3 -.Verified bad actors shown.-> P1
+    P3 -.Verified bad agencies shown.-> P2
+    P2 -.Verified employment adds.-> P4
+
+    P4 --> OUT([Portable Financial Identity])
+    OUT --> MFI[MFI or Bank in Home Country]
+
+    classDef pillar fill:#4285F4,stroke:#1a73e8,color:#fff
+    classDef output fill:#34A853,stroke:#188038,color:#fff
+    class P1,P2,P3,P4 pillar
+    class OUT output

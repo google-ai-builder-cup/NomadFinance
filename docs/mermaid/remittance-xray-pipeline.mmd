@@ -1,0 +1,39 @@
+flowchart LR
+    U([Worker])
+
+    U -->|1 - Select Corridor + Amount| API[Cloud Run API]
+
+    API -->|Step 1| S1[Verify Auth - Firebase]
+    S1 -->|Step 2| S2[Fetch Provider Fees - Firestore corridors]
+    S2 -->|Step 3| S3[Fetch Live FX Rate - Firestore rates_cache]
+    S3 -->|Step 4| S4[Fetch Historical Rates - rates_history]
+
+    S4 -->|Step 5| S5[Calculate True Total Cost per Provider]
+    S5 -->|Step 6| S6[Rank by Recipient Receives Most]
+    S6 -->|Step 7| S7[Detect Rate Trends - Best Day to Send]
+    S7 -->|Step 8| S8[Compute Historical Savings vs Choice]
+    S8 -->|Step 9| S9[Generate Recommendation - Gemini Flash-Lite]
+    S9 -->|Step 10| S10[Translate to User Language - Gemini Flash-Lite]
+
+    S10 --> R[Comparison Table + Trend Chart + Savings Insight]
+    R --> U
+
+    U -.Log Transfer.-> H[(Firestore - users transfers)]
+    H -.Feeds.-> FI[Financial Identity Builder]
+
+    subgraph CRON[Background Cron - Every 2 Hours]
+        CS[Cloud Scheduler]
+        CS -->|Trigger| RF[refresh_rates endpoint]
+        RF -->|Fetch| FR[Frankfurter API]
+        FR -->|On failure| ER[ExchangeRate-API]
+        FR -->|Write current| RC[(rates_cache)]
+        FR -->|Append point| RH[(rates_history)]
+        ER -->|Write current| RC
+    end
+
+    classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
+    classDef data fill:#34A853,stroke:#188038,color:#fff
+    classDef ext fill:#FBBC04,stroke:#f9ab00,color:#000
+    class S9,S10 gemini
+    class S2,S3,S4,H,RC,RH data
+    class FR,ER ext
