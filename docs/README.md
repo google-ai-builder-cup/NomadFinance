@@ -13,7 +13,7 @@
 
 ## Key Files
 •⁠  ⁠⁠ CONTRIBUTING.md ⁠ — Dev workflow + PR standards
-•⁠  ⁠⁠ CLAUDE_PROMPT_TEMPLATE.md ⁠ — Shared AI prompt template
+•⁠  ⁠⁠ CLAUDE.md ⁠ — Shared AI prompt template
 •⁠  ⁠⁠ SECURITY.md ⁠ — Security reporting
 
 Start with ⁠ design-doc/NomadFinance_Design_Document.docx ⁠.
