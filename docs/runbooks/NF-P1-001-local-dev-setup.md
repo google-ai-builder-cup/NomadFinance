@@ -98,4 +98,9 @@ Without activating the venv, prefix each tool with the venv path:
 | `ModuleNotFoundError: No module named 'app'` | Run commands from `backend/`, not the repo root. |
 | pytest warning about `httpx2` | Known deprecation notice from Starlette's test client. Harmless for now. |
 
-Firebase Emulator setup gets added here with NF-P1-005.
+## 6. Firebase Emulator (Firestore + Auth)
+
+Firebase Admin integration (`app/core/security.py`, `app/repositories/base.py`) talks to
+real Firestore/Auth in prod via the Cloud Run service account, and to the Firebase Emulator
+Suite locally so nothing touches live data. Setup, env vars and how to verify the round trip:
+[`docs/runbooks/NF-P1-005-firebase-admin-integration.md`](./NF-P1-005-firebase-admin-integration.md).

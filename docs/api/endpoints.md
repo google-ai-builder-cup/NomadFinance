@@ -4,6 +4,20 @@ Base URL: the Cloud Run service URL (local: `http://127.0.0.1:8080`).
 
 All endpoints live under `/api/v1/` except `/health`. Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json`.
 
+## Authentication
+
+Protected endpoints require a Firebase Auth ID token as a bearer token:
+
+```
+Authorization: Bearer <firebase-id-token>
+```
+
+Add `user: AuthenticatedUser = Depends(get_current_user)` (`app/dependencies.py`) to any
+endpoint that isn't public. It verifies the token via the Firebase Admin SDK
+(`app/core/security.py`) and returns the caller's `uid`/`email`/etc.; a missing, invalid,
+expired or revoked token gets a `401`. Endpoints that skip this dependency are public and
+must say so explicitly in their own doc section below.
+
 | Method | Path | Auth | Rate limit | Owner task |
 |---|---|---|---|---|
 | GET | `/health` | Public | None | NF-P1-001 |
