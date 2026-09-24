@@ -18,9 +18,19 @@ FastAPI service on Cloud Run.
 - `app/utils/` — Shared helpers
 
 ## Local Dev
-1. Copy `.env.example` to `.env.local`
-2. Run Firebase Emulator (see `/docs/runbooks/local-dev-setup.md`)
-3. `./scripts/run_local.sh`
+Requires Python 3.11.9. Run everything from `backend/`.
+
+1. Create a virtualenv and install dependencies:
+   - PowerShell: `py -3.11 -m venv .venv; .\.venv\Scripts\Activate.ps1`
+   - bash: `python3.11 -m venv .venv && source .venv/bin/activate`
+   - then: `pip install -r requirements-dev.txt`
+2. Copy `.env.example` to `.env.local` (`APP_ENV` is required; the app refuses to start without it)
+3. Run Firebase Emulator (see `/docs/runbooks/local-dev-setup.md`)
+4. Start the API: `./scripts/run_local.sh` (bash) or `uvicorn app.main:app --reload --port 8080`
+5. Check `http://127.0.0.1:8080/health` and Swagger at `http://127.0.0.1:8080/docs`
+
+Checks before every push: `pytest`, `ruff check .`, `black --check .`, `mypy app tests`.
+Full setup, check commands and troubleshooting: [`docs/runbooks/local-dev-setup.md`](../docs/runbooks/local-dev-setup.md).
 
 ## Deploy
 Automatic on merge to main via GitHub Actions.
