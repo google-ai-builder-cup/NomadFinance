@@ -41,6 +41,16 @@ Production image: multi-stage `python:3.11.9-slim-bookworm`, gunicorn with uvico
 
 Full build/run flow and troubleshooting: [`docs/runbooks/NF-P1-002-backend-docker.md`](../docs/runbooks/NF-P1-002-backend-docker.md).
 
+## Firebase
+
+Firebase Admin SDK (`app/core/security.py`, `app/repositories/base.py`) provides Firestore
+access and Firebase Auth ID-token verification (`Depends(get_current_user)`
+in `app/dependencies.py`). Prod uses Application Default Credentials via the
+`nomadfinance-backend` Cloud Run service account; local dev points at the Firebase Emulator
+Suite via `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST`.
+
+Full setup, verified commands and troubleshooting: [`docs/runbooks/NF-P1-005-firebase-admin-integration.md`](../docs/runbooks/NF-P1-005-firebase-admin-integration.md).
+
 ## Deploy
 Cloud Run service `nomadfinance-api` in `nomadfinance-prod`, region `asia-south1`, image in Artifact Registry repo `nomadfinance`.
 

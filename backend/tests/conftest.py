@@ -18,3 +18,9 @@ from app.main import create_app  # noqa: E402
 def client() -> Iterator[TestClient]:
     with TestClient(create_app()) as test_client:
         yield test_client
+
+
+@pytest.fixture
+def anyio_backend() -> str:
+    """Run `@pytest.mark.anyio` async tests on asyncio only (no trio in this project)."""
+    return "asyncio"

@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
+    # Not a secret — just tells the Firebase Admin SDK which project to talk to.
+    # Prod uses nomadfinance-prod via the Cloud Run service account (ADC). For local
+    # dev against the Firebase Emulator Suite, override to any project id and set
+    # FIRESTORE_EMULATOR_HOST / FIREBASE_AUTH_EMULATOR_HOST (see
+    # docs/runbooks/NF-P1-001-local-dev-setup.md).
+    firebase_project_id: str = "nomadfinance-prod"
+
 
 @lru_cache
 def get_settings() -> Settings:
