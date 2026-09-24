@@ -1,0 +1,28 @@
+[project]
+name = "nomadfinance-backend"
+version = "0.1.0"
+requires-python = ">=3.11,<3.12"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "app.services.*"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
