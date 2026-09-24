@@ -42,4 +42,8 @@ Production image: multi-stage `python:3.11.9-slim-bookworm`, gunicorn with uvico
 Full build/run flow and troubleshooting: [`docs/runbooks/NF-P1-002-backend-docker.md`](../docs/runbooks/NF-P1-002-backend-docker.md).
 
 ## Deploy
-Automatic on merge to main via GitHub Actions.
+Cloud Run service `nomadfinance-api` in `nomadfinance-prod`, region `asia-south1`, image in Artifact Registry repo `nomadfinance`.
+
+Manual deploy (until GitHub Actions lands in NF-P1-020): log in with `gcloud auth login`, then from `backend/` run `bash scripts/deploy_manual.sh`. It builds a `linux/amd64` image (Cloud Run rejects the arm64 image Apple Silicon builds by default), pushes it and deploys with `APP_ENV=prod`. Check the printed URL with `curl -s <url>/health`.
+
+Full first-deploy steps, redeploy, rollback and troubleshooting: [`docs/runbooks/NF-P1-003-cloud-run-first-deploy.md`](../docs/runbooks/NF-P1-003-cloud-run-first-deploy.md).
