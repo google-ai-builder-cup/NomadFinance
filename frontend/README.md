@@ -30,4 +30,8 @@ Checks before every push: `pnpm lint`, `pnpm build`, `pnpm format:check`.
 Bootstrap details (pinned versions and why, Tailwind/shadcn/ui setup, troubleshooting): [`docs/runbooks/NF-P1-007-frontend-bootstrap.md`](../docs/runbooks/NF-P1-007-frontend-bootstrap.md).
 
 ## Deploy
-Automatic on merge to main via GitHub Actions.
+Manual deploy (until GitHub Actions lands in NF-P1-020): from `frontend/`, `pnpm build` then `firebase deploy --only hosting --project nomadfinance-prod`.
+
+Live URL: https://nomadfinance-prod.web.app
+
+Full setup, verified commands and troubleshooting: [`docs/runbooks/NF-P1-008-firebase-hosting-deploy.md`](../docs/runbooks/NF-P1-008-firebase-hosting-deploy.md).
