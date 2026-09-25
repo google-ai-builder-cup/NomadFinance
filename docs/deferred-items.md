@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-09-25, after NF-P1-019.
+Last updated: 2026-09-25, after NF-P1-022 (language fix).
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -35,13 +35,16 @@ Last updated: 2026-09-25, after NF-P1-019.
 | D-08 | NF-P1-004 | Reasoning tier (`gemini-3.5-flash`) takes 13–23 s on short prompts because of thinking. Long contracts may hit the 30 s timeout. Consider a thinking budget for that tier or a larger `GEMINI_TIMEOUT_SECONDS`. | NF-P2-004 (clause comparison, Devam) | Open |
 | D-09 | NF-P1-004 | `gemini-3.8-flash` was the first choice for reasoning but returned 503 on the free tier. Retry it with the smoke test; switch with `GEMINI_MODEL_REASONING=gemini-3.8-flash` if it works. | Any time; recheck before NF-P2-004 | Open |
 | D-10 | NF-P1-006 | Frontend must show translated error messages by **HTTP status code**; the API's `detail` text is English only (see `docs/api/endpoints.md`, Error format). | NF-P2-009 (upload UI, Aditya) and every frontend task that calls the API | Open |
-| D-22 | NF-P1-009 | Replace the `t()` stand-in (`src/lib/i18n.ts`, `src/hooks/useI18n.ts`) with react-i18next; translate the `auth.*`, `common.*`, `dashboard.*` keys into hi, tl, id, ne, bn; set `auth.languageCode` to the chosen language so SMS and reCAPTCHA follow it. Call sites already use i18next-style keys and `{{param}}`. | NF-P1-011 (i18n, Aditya) | Open |
+| D-22 | NF-P1-009 | Replace the `t()` stand-in (`src/lib/i18n.ts`, `src/hooks/useI18n.ts`) with react-i18next; translate the `auth.*`, `common.*`, `dashboard.*` keys into hi, tl, id, ne, bn; set `auth.languageCode` to the chosen language so SMS and reCAPTCHA follow it. Call sites already use i18next-style keys and `{{param}}`. | NF-P1-011 (i18n, Aditya) | Done (react-i18next in NF-P1-011; `auth.languageCode` follows the UI language since NF-P1-022, `LanguageSync`) |
 | D-23 | NF-P1-009 | The frontend build needs the 4 `VITE_FIREBASE_*` vars (and `VITE_USE_FIREBASE_EMULATOR` unset or `false`). CI must inject them, or the deployed app is a blank page. | NF-P1-020 (GitHub Actions, Pranjal) | Open |
 | D-24 | NF-P1-009 | `frontend/firebase.json` now has `emulators.auth` + `ui` only. NF-P1-005's `firebase emulators:start --only firestore,auth` still needs a `firestore` emulator entry (and rules). | NF-P1-014 (Firestore rules, Devam) | Done (NF-P1-014: `firestore` 8085 and `storage` 9199 emulators added; NF-P1-005 round trip passed) |
 | D-25 | NF-P1-009 | API client that sends `Authorization: Bearer ${await getIdToken()}` (`getIdToken()` is ready in `authService.ts`). | NF-P2-009 (first frontend call to the API) | Open |
-| D-26 | NF-P1-009 | `src/pages/Dashboard.tsx` is a placeholder ("signed in as…", sign out) behind `ProtectedRoute`; `src/App.tsx` is still the bootstrap page at `/`. Put new signed-in pages under the `ProtectedRoute` element in `router.tsx`. | NF-P1-010 (app shell, Pranjal); `/` → NF-P1-021 (landing) | Open |
+| D-26 | NF-P1-009 | `src/pages/Dashboard.tsx` is a placeholder ("signed in as…", sign out) behind `ProtectedRoute`; `src/App.tsx` is still the bootstrap page at `/`. Put new signed-in pages under the `ProtectedRoute` element in `router.tsx`. | NF-P1-010 (app shell, Pranjal); `/` → NF-P1-021 (landing) | Done (NF-P1-010 real dashboard and app shell; `/` redirects to `/dashboard` until NF-P1-021) |
 | D-35 | NF-P1-019 | Show "Rates by Exchange Rate API" with a link wherever a rate with `provider: exchangerate_api` is shown (their open-access terms). | NF-P2-019 (comparison table), NF-P2-020 (trend chart) | Open |
 | D-36 | NF-P1-019 | Backfill daily history (`data-scripts/src/loaders/frankfurter_backfill.py`, `source: "backfill"`, point id `YYYY-MM-DDT00`) so trend and savings features have data on day one; today history starts 2026-09-25T13. | Unassigned; before NF-P2-015 / NF-P2-020 / NF-P2-022 | Open |
+| D-39 | NF-P1-022 | `<html lang>` stays `en` when the UI switches language, so screen readers read Hindi, Nepali or Bengali text with an English voice. Set `document.documentElement.lang` on i18next's `languageChanged` event (in `src/lib/i18n.ts`). | NF-P1-011 owner (Aditya) | Done (NF-P1-022: `LanguageSync` sets `<html lang>` on every language change) |
+| D-40 | NF-P1-022 | The header language selector changes only the UI language; `users/{uid}.preferred_language` (set in onboarding) is not updated, and a later sign-in on another device doesn't restore it. Decide one source of truth and sync them. | NF-P1-023 (profile page, Pranjal) | Done (NF-P1-022: signed in, the header selector saves `preferred_language` and `LanguageSync` applies the profile's language; signed out, a device language). NF-P1-023's profile page should reuse `useUpdatePreferredLanguage()`. |
+| D-41 | NF-P1-022 | The hi, tl, id, ne and bn texts for `onboarding.*` were written without a native speaker. Have someone fluent check them (especially Nepali and Bengali). | Unassigned; before the public demo | Open |
 
 ## 3. Code fixes not yet assigned to a task
 

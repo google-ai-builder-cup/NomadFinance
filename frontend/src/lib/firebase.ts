@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
 type FirebaseEnvKey =
   | "VITE_FIREBASE_API_KEY"
@@ -24,6 +25,7 @@ const firebaseApp = initializeApp({
 });
 
 export const auth = getAuth(firebaseApp);
+export const db = getFirestore(firebaseApp);
 
 // The emulator gives fake Google accounts and prints SMS codes instead of sending them,
 // so sign-in can be tested without billing or real phones (see the NF-P1-009 runbook).
@@ -31,5 +33,11 @@ if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === "true") {
   connectAuthEmulator(
     auth,
     import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_URL ?? "http://127.0.0.1:9099"
+  );
+  // Port 8085, not Firestore's default 8080, which the backend uses (frontend/firebase.json).
+  connectFirestoreEmulator(
+    db,
+    "127.0.0.1",
+    Number(import.meta.env.VITE_FIRESTORE_EMULATOR_PORT ?? 8085)
   );
 }

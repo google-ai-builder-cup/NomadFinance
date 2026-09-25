@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "retry": "Try again"
   },
   "auth": {
     "signIn": {
@@ -92,5 +93,42 @@
     "title": "Page not found",
     "description": "This page doesn't exist or has moved.",
     "backToDashboard": "Go to home"
+  },
+  "onboarding": {
+    "title": "Let's set up NomadFinance for you",
+    "progress": "Step {{current}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "saving": "Saving…",
+    "steps": {
+      "language": {
+        "question": "Which language do you prefer?",
+        "hint": "You can change it later."
+      },
+      "hostCountry": {
+        "question": "Which country do you work in now?",
+        "hint": "We use it to check your contract against the labor law there."
+      },
+      "homeCountry": {
+        "question": "Which country do you send money home to?",
+        "hint": "We use it to compare what sending money costs."
+      },
+      "jobType": {
+        "question": "What kind of work do you do?",
+        "hint": "It helps us check the rules that apply to your job."
+      }
+    },
+    "jobTypes": {
+      "domestic_worker": "Domestic worker",
+      "manufacturing_worker": "Factory worker",
+      "care_worker": "Care worker",
+      "plantation_worker": "Plantation or farm worker",
+      "construction_worker": "Construction worker",
+      "working_holiday": "Working holiday",
+      "other": "Other"
+    },
+    "saveError": "We couldn't save your answers. Check your connection and try again.",
+    "loadError": "We couldn't load your profile. Check your connection and try again."
   }
 }

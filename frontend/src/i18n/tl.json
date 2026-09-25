@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "Naglo-load…"
+    "loading": "Naglo-load…",
+    "retry": "Subukan ulit"
   },
   "auth": {
     "signIn": {
@@ -92,5 +93,42 @@
     "title": "Hindi nahanap ang page",
     "description": "Wala o inalis na ang page na ito.",
     "backToDashboard": "Pumunta sa home"
+  },
+  "onboarding": {
+    "title": "Ihanda natin ang NomadFinance para sa iyo",
+    "progress": "Hakbang {{current}} sa {{total}}",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "finish": "Tapusin",
+    "saving": "Sine-save…",
+    "steps": {
+      "language": {
+        "question": "Anong wika ang gusto mo?",
+        "hint": "Mapapalitan mo ito mamaya."
+      },
+      "hostCountry": {
+        "question": "Saang bansa ka nagtatrabaho ngayon?",
+        "hint": "Ginagamit namin ito para suriin ang kontrata mo ayon sa batas-paggawa roon."
+      },
+      "homeCountry": {
+        "question": "Saang bansa ka nagpapadala ng pera pauwi?",
+        "hint": "Ginagamit namin ito para ikumpara ang gastos sa pagpapadala ng pera."
+      },
+      "jobType": {
+        "question": "Anong uri ng trabaho mo?",
+        "hint": "Makakatulong ito para suriin ang mga patakarang para sa trabaho mo."
+      }
+    },
+    "jobTypes": {
+      "domestic_worker": "Kasambahay",
+      "manufacturing_worker": "Manggagawa sa pabrika",
+      "care_worker": "Caregiver",
+      "plantation_worker": "Manggagawa sa plantasyon o bukid",
+      "construction_worker": "Manggagawa sa konstruksiyon",
+      "working_holiday": "Working holiday",
+      "other": "Iba pa"
+    },
+    "saveError": "Hindi namin na-save ang mga sagot mo. Tingnan ang koneksyon mo at subukan ulit.",
+    "loadError": "Hindi namin ma-load ang profile mo. Tingnan ang koneksyon mo at subukan ulit."
   }
 }

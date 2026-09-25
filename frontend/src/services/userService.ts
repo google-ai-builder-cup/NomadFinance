@@ -1,0 +1,45 @@
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+
+import { db } from "@/lib/firebase";
+import type { LanguageCode } from "@/types/enums";
+import type { OnboardingAnswers, UserProfile } from "@/types/user";
+
+function profileRef(uid: string) {
+  return doc(db, "users", uid);
+}
+
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const snapshot = await getDoc(profileRef(uid));
+  return snapshot.exists() ? (snapshot.data() as UserProfile) : null;
+}
+
+export function isOnboarded(profile: UserProfile | null | undefined): boolean {
+  return profile?.onboarding_completed_at !== undefined;
+}
+
+/**
+ * Save the onboarding answers. The Firestore rules (NF-P1-014) only accept
+ * serverTimestamp() for the timestamps and schema_version 1 on create, and on update
+ * they refuse any change to created_at or schema_version, hence two write shapes.
+ */
+export async function completeOnboarding(
+  uid: string,
+  answers: OnboardingAnswers,
+  profileExists: boolean
+): Promise<void> {
+  const fields = {
+    ...answers,
+    onboarding_completed_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  };
+  if (profileExists) {
+    await updateDoc(profileRef(uid), fields);
+  } else {
+    await setDoc(profileRef(uid), { ...fields, created_at: serverTimestamp(), schema_version: 1 });
+  }
+}
+
+/** Signed-in language changes are saved to the profile, the single source of truth. */
+export async function updatePreferredLanguage(uid: string, language: LanguageCode): Promise<void> {
+  await updateDoc(profileRef(uid), { preferred_language: language, updated_at: serverTimestamp() });
+}

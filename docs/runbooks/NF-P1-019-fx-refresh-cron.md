@@ -165,7 +165,7 @@ curl -s -X POST -d "{}" -H "Content-Type: application/json" -w " [%{http_code}]\
 | Scheduler job | Created, `ENABLED`, `0 */2 * * *` UTC, OIDC as `nomadfinance-scheduler`, body `{}`, 2 retries |
 | Forced run 13:29 UTC | Cloud Run `200` from `Google-Cloud-Scheduler`; Scheduler `AttemptFinished 200` |
 | Production Firestore after the run | 6 `rates_cache` documents (provider `frankfurter`, `rate_date` 2026-09-24, attempts, corridors, `schema_version` 1); history point `2026-09-25T13` |
-| First automatic run (14:00 UTC) | see below |
+| First automatic run, 14:00 UTC (nobody triggered it) | Scheduler `AttemptFinished 200`; Cloud Run `200` from `Google-Cloud-Scheduler`; new history point `2026-09-25T14`; next run 16:00 UTC |
 
 ## Troubleshooting
 

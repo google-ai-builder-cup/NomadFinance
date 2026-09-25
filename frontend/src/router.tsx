@@ -1,11 +1,13 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import ProtectedRoute from "@/components/common/ProtectedRoute";
+import RequireOnboarding from "@/components/common/RequireOnboarding";
 import AppShell from "@/components/layout/AppShell";
 import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import ComingSoon from "@/pages/ComingSoon";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
+import Onboarding from "@/pages/Onboarding";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
@@ -21,9 +23,16 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
+      { path: "/onboarding", element: <Onboarding /> },
       {
-        element: <AppShell />,
-        children: [{ path: "/dashboard", element: <Dashboard /> }, ...pillarRoutes],
+        // Every app page needs a finished profile (NF-P1-022).
+        element: <RequireOnboarding />,
+        children: [
+          {
+            element: <AppShell />,
+            children: [{ path: "/dashboard", element: <Dashboard /> }, ...pillarRoutes],
+          },
+        ],
       },
     ],
   },

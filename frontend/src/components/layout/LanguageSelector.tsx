@@ -1,15 +1,29 @@
 import { Languages } from "lucide-react";
 import type { ChangeEvent } from "react";
 
+import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
+import { useUpdatePreferredLanguage, useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
-import { SUPPORTED_LANGUAGES } from "@/lib/languages";
+import { setDeviceLanguage, SUPPORTED_LANGUAGES } from "@/lib/languages";
+import { isLanguageCode } from "@/types/enums";
 
 export default function LanguageSelector() {
   const { t } = useI18n();
+  const { user } = useAuth();
+  const profile = useUserProfile();
+  const savePreferredLanguage = useUpdatePreferredLanguage();
 
   function handleChange(event: ChangeEvent<HTMLSelectElement>) {
-    void i18n.changeLanguage(event.target.value);
+    const code = event.target.value;
+    void i18n.changeLanguage(code);
+    // Signed in: the profile is the source of truth (every device follows it).
+    // Signed out: remember it on this device only (see LanguageSync).
+    if (user !== null && profile.data && isLanguageCode(code)) {
+      savePreferredLanguage.mutate(code);
+    } else {
+      setDeviceLanguage(code);
+    }
   }
 
   return (
