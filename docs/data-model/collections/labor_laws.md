@@ -175,10 +175,12 @@ A category that a country does not regulate is still written, with `coverage` se
 
 ## Loading (NF-P1-018)
 
-1. Validate each country's JSON with `LaborLawFile` from `data-scripts/src/validators/labor_law.py`: 15 categories, all fields present, at least one variant and one reference per rule, no placeholder text. Skip a file that is still `{}`.
-2. Write the rules with `set` on `labor_laws/{country}/rules/{category}`.
-3. Compute the country's `content_hash`. If it differs from the one in `_meta/current`, write `_meta/current` with `version` increased by 1 and the new hash. If it is the same, leave the version alone. This keeps the loader safe to re-run without invalidating every cached report.
-4. Write the `labor_laws/{country}` header.
+The loader is `data-scripts/src/loaders/ilo_natlex.py` (`python -m src.loaders.ilo_natlex`).
+
+1. Validate each country's JSON with `LaborLawFile` from `data-scripts/src/validators/labor_law.py`: 15 categories, all fields present, at least one variant and one reference per rule, no placeholder text. Skip a file that is still `{}`. If any file fails, stop before writing anything.
+2. Compute the country's `content_hash`: the SHA-256 of the canonical JSON (sorted keys, no extra whitespace) of the validated `country` and `rules`. It is not the hash of the file bytes, so line endings, JSON layout, `reviewed_by` and the file-level `notes` never change it; any change to a rule (including its `last_verified_on`) does.
+3. Read `_meta/current`. Missing: `version` is 1. Same hash: keep the version and do not rewrite `_meta`. Different hash: `version` is the stored value plus 1, with the new hash. This keeps the loader safe to re-run without invalidating every cached report. Putting an edited rule back does not restore the old version number; it counts as another change.
+4. In **one batch per country**, write the 15 rules (`set` on `labor_laws/{country}/rules/{category}`), the `labor_laws/{country}` header, and `_meta/current` when the version changed. One batch means a crash cannot leave a country with new rules and an old version. The version is read just before the batch, so do not run two loaders at the same time.
 
 ## Access and tasks
 

@@ -68,4 +68,18 @@ python -m src.validators.labor_law
 python -m src.validators.labor_law --template SG --output data/source/labor-laws/SG.json
 ```
 
-Japan and Hong Kong are done; SG, AU, KR and MY are still empty `{}` stubs. Curator guide: [`data/source/labor-laws/README.md`](data/source/labor-laws/README.md). Full steps, results and limits: [`docs/runbooks/NF-P1-017-labor-law-curation.md`](../docs/runbooks/NF-P1-017-labor-law-curation.md).
+All six countries are curated as drafts (review and NATLEX record numbers still open). Curator guide: [`data/source/labor-laws/README.md`](data/source/labor-laws/README.md). Full steps, results and limits: [`docs/runbooks/NF-P1-017-labor-law-curation.md`](../docs/runbooks/NF-P1-017-labor-law-curation.md).
+
+## Labor-law loader (NF-P1-018)
+Loads the six curated files into Firestore: `labor_laws/{country}` (header), `labor_laws/{country}/rules/{category}` (15 rules) and `labor_laws/{country}/_meta/current` (version). Every file is validated first with the checker's model; if any file fails, nothing is written. `_meta.version` goes up only when a country's rules change (it is what stored contract reports are cached against), so running the loader again is safe.
+
+Same identity requirements as the corridor loader (`gcloud auth application-default login`, or `FIRESTORE_EMULATOR_HOST` pointed at an emulator; project `nomadfinance-prod` unless `FIREBASE_PROJECT_ID` says otherwise).
+
+```bash
+python -m src.loaders.ilo_natlex --dry-run   # validate only, no Firestore access
+python -m src.loaders.ilo_natlex             # write all curated countries
+```
+
+Options: `--only SG JP` (some countries), `--input-dir`, `--collection` (default `labor_laws`), `--require-all` (fail while any file is still `{}`). Each country is written in one batch, so it is never half-loaded. `scripts/load_bootstrap.sh` calls this after the corridor loader.
+
+Full steps and troubleshooting: [`docs/runbooks/NF-P1-018-labor-law-load.md`](../docs/runbooks/NF-P1-018-labor-law-load.md).
