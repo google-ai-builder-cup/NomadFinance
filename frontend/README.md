@@ -41,6 +41,12 @@ Google and phone (SMS code) sign-in, `useAuth()`, and `ProtectedRoute` for signe
 
 Full flow, commands and troubleshooting: [`docs/runbooks/NF-P1-009-frontend-firebase-auth.md`](../docs/runbooks/NF-P1-009-frontend-firebase-auth.md).
 
+## App shell and navigation
+
+Every signed-in page renders inside `AppShell` (header, footer, and a left sidebar on tablet and desktop or a bottom tab bar on phones). `/dashboard` shows the four pillar cards; `/remittance`, `/contract`, `/radar` and `/identity` show a "coming soon" page until their own tasks replace the route element in `src/router.tsx`. The nav items live in one list, `src/components/layout/navItems.ts`, so adding a pillar page means editing that list and the router only.
+
+Full structure, how to test it, and how later tasks plug in: [`docs/runbooks/NF-P1-010-frontend-app-shell.md`](../docs/runbooks/NF-P1-010-frontend-app-shell.md).
+
 ## Deploy
 
 Manual deploy (until GitHub Actions lands in NF-P1-020): from `frontend/`, `pnpm build` then `firebase deploy --only hosting --project nomadfinance-prod`. `.env.local` must hold the real Firebase web config before `pnpm build`, or the deployed app shows a blank page.
