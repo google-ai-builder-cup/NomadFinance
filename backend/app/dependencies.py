@@ -7,6 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.config import Settings, get_settings
+from app.core.logging import bind_user
 from app.core.security import (
     InvalidTokenError,
     TokenVerificationUnavailableError,
@@ -48,6 +49,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
 
+    bind_user(claims["uid"])
     return AuthenticatedUser(
         uid=claims["uid"],
         email=claims.get("email"),
