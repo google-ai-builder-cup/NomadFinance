@@ -1,4 +1,4 @@
-# NF-P1-017 — Labor-Law Curation (Japan, Hong Kong, Singapore and Australia drafted; format shared)
+# NF-P1-017 — Labor-Law Curation (all six countries drafted; format shared)
 
 ## Summary
 
@@ -9,12 +9,12 @@ Contract Shield checks an uploaded contract against the labor law of the worker'
 | Person | Countries | Branch | Status |
 |---|---|---|---|
 | Pranjal | JP, HK | `feature/data-ilo-jp-hk` | Merged as a draft (PR 23), waiting for a second person's review |
-| Devam | SG, AU | `feature/data-ilo-sg-au` | **Drafted** on Devam's branch, waiting for Devam's own review (`reviewed_by` is empty) |
-| Aditya | KR, MY | `feature/data-ilo-kr-my` | Not started (files are empty `{}` stubs) |
+| Devam | SG, AU | `feature/data-ilo-sg-au` | Merged as a draft (PR 24), waiting for Devam's own review (`reviewed_by` is empty) |
+| Aditya | KR, MY | `feature/data-ilo-kr-my` | **Drafted** on Aditya's branch, waiting for Aditya's own review (`reviewed_by` is empty) |
 
-This runbook covers three things: the shared format and checker that all three of you use, the guide for curators, and the results for the four finished countries with the limits to know about before relying on them.
+This runbook covers three things: the shared format and checker that all three of you use, the guide for curators, and the results for all six countries with the limits to know about before relying on them.
 
-**Korea stays a host country.** Only the KR→NP money corridor was replaced (by AU→IN). Aditya's KR curation stands. The host countries, job types and categories in the code, the frontend and the docs were cross-checked and agree (see "Cross-checks").
+**Korea stays a host country.** Only the KR→NP money corridor was replaced (by AU→IN). The KR file is the host-country curation, not the old corridor. The host countries, job types and categories in the code, the frontend and the docs were cross-checked and agree (see "Cross-checks").
 
 ## What changed from the first plan
 
@@ -33,7 +33,8 @@ Other new fields: `confidence` (`high`, `medium`, `low`), `penalty` and `enforce
 | `data-scripts/tests/test_labor_law.py` | 23 tests, including checks that the categories match the docs and the job types match the frontend |
 | `data-scripts/src/config.py` | New constant `LABOR_LAWS_DIR` |
 | `data-scripts/data/source/labor-laws/JP.json`, `HK.json` | The curated files (were empty `{}` stubs), merged earlier |
-| `data-scripts/data/source/labor-laws/SG.json`, `AU.json` | Devam's two countries, drafted on `feature/data-ilo-sg-au` |
+| `data-scripts/data/source/labor-laws/SG.json`, `AU.json` | Devam's two countries, merged earlier |
+| `data-scripts/data/source/labor-laws/KR.json`, `MY.json` | Aditya's two countries, drafted on `feature/data-ilo-kr-my` |
 | `data-scripts/data/source/labor-laws/README.md` | The curator guide for all three of you |
 | `docs/data-model/collections/labor_laws.md`, `versioning.md` | Updated for `coverage` and `variants` |
 | `data-scripts/README.md` | Short section pointing here |
@@ -86,14 +87,14 @@ Expected today:
 OK   AU.json: 15 rules, 22 variants, 41 references | coverage {...} | confidence {...}
 OK   HK.json: 15 rules, 26 variants, 41 references | coverage {...} | confidence {...}
 OK   JP.json: 15 rules, 20 variants, 31 references | coverage {...} | confidence {...}
-SKIP KR.json: not curated yet
-SKIP MY.json: not curated yet
+OK   KR.json: 15 rules, 21 variants, 34 references | coverage {...} | confidence {...}
+OK   MY.json: 15 rules, 19 variants, 23 references | coverage {...} | confidence {...}
 OK   SG.json: 15 rules, 29 variants, 42 references | coverage {...} | confidence {...}
 ```
 
-On a checkout without the SG and AU branch, AU.json and SG.json show `SKIP` instead. Add `--require-all` to make every stub count as a failure. That is the check for "task complete".
+A country whose file is still `{}` shows `SKIP`. Add `--require-all` to make every stub count as a failure. That is the check for "task complete", and it passes with all six files.
 
-### 3. Start your own country (Devam and Aditya)
+### 3. Start a new country (only needed if a file is ever reset)
 
 ```bash
 python -m src.validators.labor_law --template SG --output data/source/labor-laws/SG.json
@@ -110,7 +111,7 @@ black --check .
 mypy src tests
 ```
 
-Expected on the SG and AU branch: `44 passed, 2 skipped` (the two skips are the KR and MY stubs), `All checks passed!`, `... would be left unchanged.`, `Success: no issues found`. On a checkout without SG and AU, or without the frontend enums, more tests skip.
+Expected with all six files: `46 passed` (no skips), `All checks passed!`, `... would be left unchanged.`, `Success: no issues found`. On a checkout where a country is still a stub, or without the frontend enums, some tests skip.
 
 ### 5. Read a country as a reviewer
 
@@ -309,6 +310,98 @@ Key facts to spot-check first:
 - India is a listed passport for the subclass 462 visa (through a ballot) on the Home Affairs page. Whether workers in the AU→IN and AU→PH corridors hold these visas was not researched.
 - Not curated: penalty amounts in penalty units, the Migration Act text, state labour-hire licensing and tenancy laws.
 
+## South Korea (KR.json)
+
+Drafted on 2026-09-25 (listed as `Pranjal (drafted for Aditya)`; Aditya should review and take over `curated_by`). Every article was read in the **Korean original** on the National Law Information Center (law.go.kr) at the version in force; the English in the file is a paraphrase. The English translation of the Labor Standards Act on the Legislation Research Institute site is from 2012-13 and out of date, so it was not used. Worker groups: `all` and `manufacturing_worker` (foreign workers hired under the Employment Permit System, E-9 visa).
+
+| # | Category | Coverage | Confidence | Worker groups |
+|---|---|---|---|---|
+| 1 | `minimum_wage` | regulated | high | all |
+| 2 | `working_hours` | regulated | high | all |
+| 3 | `overtime_pay` | regulated | high | all |
+| 4 | `rest_days_and_holidays` | regulated | high | all |
+| 5 | `annual_leave` | regulated | high | all |
+| 6 | `sick_leave` | not_regulated | medium | all |
+| 7 | `salary_payment` | regulated | high | all |
+| 8 | `salary_deductions` | regulated | high | all |
+| 9 | `termination_notice` | regulated | high | all, manufacturing_worker |
+| 10 | `early_termination` | regulated | high | all, manufacturing_worker |
+| 11 | `recruitment_fees` | regulated | high | all, manufacturing_worker |
+| 12 | `passport_retention` | regulated | high | all |
+| 13 | `accommodation` | regulated | medium | all, manufacturing_worker |
+| 14 | `insurance_and_injury` | regulated | medium | all, manufacturing_worker |
+| 15 | `social_security` | regulated | medium | all, manufacturing_worker |
+
+Key facts to spot-check first:
+
+| Point | Value | Where |
+|---|---|---|
+| Minimum wage | KRW 10,320/hour in 2026; KRW 10,700/hour from 1 January 2027 | Minimum Wage Act Arts. 6, 10; Korea.net (15 July 2026) |
+| Hours | 40 h/week and 8 h/day; up to 12 extra hours a week by agreement (52 max) | Labor Standards Act (LSA) Arts. 50, 53 |
+| Premium pay | Overtime, night (10 p.m. to 6 a.m.) and holiday work: at least +50%; holiday work over 8 h: +100% | LSA Art. 56 |
+| Annual leave | 15 days at 80% attendance; +1 day per 2 years after 3 years, max 25 | LSA Art. 60 |
+| Dismissal | Just cause; 30 days' notice or 30 days' pay; written reasons | LSA Arts. 23, 26, 27 |
+| Wages | Full, in cash, monthly; final pay within 14 days; late interest up to 40% a year | LSA Arts. 36, 37, 43 |
+| Passport | Taking a foreigner's passport or ID card as security is banned; up to 3 years or KRW 30 million | Immigration Control Act Arts. 33-3, 94(19) |
+| Dormitory | Must meet LSA Art. 100 standards; information given before the contract | Foreign Workers Act Art. 22-2 |
+| E-9 fees | Only the employer may be charged; no intervention by private parties | Foreign Workers Act Arts. 8(6), 27 |
+| Departure insurance | Employer pays monthly; paid out within 14 days of departure | Foreign Workers Act Art. 13 |
+
+**Limits of the Korea draft**
+
+- **Enforcement Decrees and Rules were not read.** They set many numbers: dormitory floor area, the holidays list, which businesses need wage-arrears insurance, the small-business exceptions (fewer than 5 workers). The file says where each matters.
+- **`sick_leave` is `not_regulated` with `medium` confidence.** No general paid sick leave was found in the Labor Standards Act as read. Work injuries are covered by insurance.
+- **`accommodation`, `insurance_and_injury` and `social_security` are `medium`** because the decrees behind them were not read. Pension coverage also depends on the worker's home country giving Korean nationals equivalent coverage; that list was not checked.
+- **Home-country costs** (agent fees, medical checks and training before departure) are outside these Korean rules and were not researched.
+- **`passport_retention`:** the Act bans taking the passport "as security" for a contract or debt. Whether "safekeeping" with the worker's agreement is treated the same was not researched.
+- The 2027 minimum wage was read from a government news portal (Korea.net), not the Ministry's notice.
+
+## Malaysia (MY.json)
+
+Drafted on 2026-09-25 (listed as `Pranjal (drafted for Aditya)`). Statutes were read from the official PDFs of the Attorney General's Chambers and the Department of Labour Peninsular Malaysia; social security from the PERKESO and EPF pages. The copies are marked "updated text" and are not authentic, so confirm against the Gazette. Worker groups: `all` and `plantation_worker`.
+
+| # | Category | Coverage | Confidence | Worker groups |
+|---|---|---|---|---|
+| 1 | `minimum_wage` | regulated | high | all, plantation_worker |
+| 2 | `working_hours` | regulated | high | all |
+| 3 | `overtime_pay` | regulated | high | all |
+| 4 | `rest_days_and_holidays` | regulated | high | all |
+| 5 | `annual_leave` | regulated | high | all |
+| 6 | `sick_leave` | regulated | high | all |
+| 7 | `salary_payment` | regulated | high | all |
+| 8 | `salary_deductions` | regulated | high | all, plantation_worker |
+| 9 | `termination_notice` | regulated | high | all |
+| 10 | `early_termination` | partly_regulated | medium | all |
+| 11 | `recruitment_fees` | regulated | medium | all |
+| 12 | `passport_retention` | regulated | medium | all |
+| 13 | `accommodation` | regulated | medium | all, plantation_worker |
+| 14 | `insurance_and_injury` | regulated | medium | all, plantation_worker |
+| 15 | `social_security` | regulated | medium | all |
+
+Key facts to spot-check first:
+
+| Point | Value | Where |
+|---|---|---|
+| Minimum wage | RM1,700/month (RM8.72/hour); all employers since 1 August 2025; piece-rate and tonnage workers still RM1,700 | Minimum Wages Order 2024 (P.U. (A) 376) paras. 3, 5 |
+| Hours | 8 h/day, 45 h/week (since 1 January 2023), break after 5 hours | Employment Act (EA) s. 60A |
+| Overtime | 1.5x; rest-day work at higher rates; public-holiday work +2 days' wages and 3x overtime | EA ss. 60, 60A(3), 60D(3) |
+| Leave | Annual 8/12/16 days; sick 14/18/22 days, 60 if hospitalised; 11 paid holidays | EA ss. 60D, 60E, 60F |
+| Wages | Within 7 days of the wage period; into a bank account | EA ss. 19, 25 |
+| Notice | 4/6/8 weeks if the contract is silent | EA s. 12 |
+| Agency fee | Placement fee at most one month's basic wages for a non-citizen; not chargeable if the employer pays | Private Employment Agencies Act ss. 14, 14b |
+| Passport | Holding another person's passport is an offence: RM10,000 or 5 years | Passports Act s. 12(1)(f) |
+| Plantation housing | Free water and electricity; no rent for estate housing | Housing Act 1990 ss. 6, 13 |
+| Social security | EPF 2% employer + 2% employee from October 2025; PERKESO injury and invalidity cover | KWSP and PERKESO pages |
+
+**Limits of the Malaysia draft**
+
+- **The Employment Act and the Housing Act apply to Peninsular Malaysia and Labuan only.** Sabah and Sarawak have their own Labour Ordinances, which were not curated. Much plantation work is done there, so treat MY.json as incomplete for those states. The Minimum Wages Order applies across Malaysia.
+- **Regulations under the Employment Act were not read** (overtime hour limits, termination and lay-off benefits), nor the Employees' Social Security Act and Employees Provident Fund Act texts. Social security rules come from PERKESO and EPF pages, so `insurance_and_injury` and `social_security` are `medium`.
+- **`recruitment_fees` is `medium`.** The agency fee cap covers licensed agencies in Malaysia. Fees charged in the worker's home country, and any government "employer pays" policy, were not confirmed.
+- **`passport_retention` is `medium`.** The Passports Act reprint is dated 2006 and "lawful authority" is not defined in the text read.
+- **`early_termination`** is the one `partly_regulated` rule: no provision on repatriation costs or levy refunds was found in the Act; those sit in immigration rules that were not read.
+- No newer Minimum Wages Order or Employment Act amendment was found, but the official Gazette portal was not searched.
+
 ## Cross-checks done (2026-09-25)
 
 | Check | Result |
@@ -321,7 +414,9 @@ Key facts to spot-check first:
 | `HK.json` sections | Read in the e-Legislation viewer and in the government pages cited |
 | `SG.json` sections | Employment Act, Employment of Foreign Manpower Act, Work Passes Regulations (Fourth Schedule), Employment Agencies Rules, Work Injury Compensation Act and CPF Act read on Singapore Statutes Online; MOM claims checked against the saved MOM pages |
 | `AU.json` sections | Fair Work Act ss. 62, 87, 90, 96, 102, 114, 116, 116B, 117, 123, 285 to 294, 323 to 327A, 382 to 384, 536 and Criminal Code ss. 270.7, 271.1, 271.2 read on the Federal Register of Legislation; guidance pages read on fairwork.gov.au, ato.gov.au and immi.homeaffairs.gov.au |
-| Checker vs both files | OK. It also rejects a missing category, an unknown worker group, a TODO left in, and a file whose country does not match its name |
+| `KR.json` articles | Labor Standards Act, Minimum Wage Act, Act on Foreign Workers' Employment, Immigration Control Act, Employment Security Act, Industrial Accident Compensation Insurance Act, National Pension Act and National Health Insurance Act read in Korean on law.go.kr; 2027 minimum wage from Korea.net |
+| `MY.json` sections | Employment Act (updated text as at 1 January 2023; the 1 August 2023 reprint shows the same last amendment), Minimum Wages Order 2024, wages council, private employment agencies, housing, passports and anti-trafficking Acts read from official PDFs; PERKESO and EPF pages read for social security |
+| Checker vs all six files | OK. It also rejects a missing category, an unknown worker group, a TODO left in, and a file whose country does not match its name |
 
 ## Sources used
 
@@ -333,7 +428,13 @@ Singapore: Employment Act 1968, Employment of Foreign Manpower Act 1990, Employm
 
 Australia: Fair Work Act 2009 and Criminal Code Act 1995 on legislation.gov.au; Fair Work Ombudsman pages (minimum wages, award and agreement free wages and conditions, casual employees, visa holders and migrants, workers compensation, the Horticulture Showcase deductions page); ATO pages (super guarantee, DASP, working holiday maker tax rates); Home Affairs pages (subclass 462, 6 month work limitation, visa conditions); Safe Work Australia (migrant and multicultural workers).
 
-**NATLEX** (natlex.ilo.org) sits behind a bot check and could not be opened by the curator, so every `natlex_isn` is empty. Someone with a browser should add the record numbers for JP, HK, SG and AU. **ILOSTAT and NORMLEX** also block scripts, so `ilostat_check` is `null` everywhere.
+South Korea: Labor Standards Act, Minimum Wage Act, Act on Foreign Workers' Employment, etc., Immigration Control Act, Employment Security Act, Industrial Accident Compensation Insurance Act, National Pension Act and National Health Insurance Act (Korean texts on law.go.kr); Korea.net for the 2027 minimum wage.
+
+Malaysia: Employment Act 1955 (Act 265), Minimum Wages Order 2024 (P.U. (A) 376), National Wages Consultative Council Act 2011 (Act 732), Private Employment Agencies Act 1981 (Act 246), Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990 (Act 446), Passports Act 1966 (Act 150) and the Anti-Trafficking in Persons and Anti-Smuggling of Migrants Act 2007 (Act 670), as PDFs from lom.agc.gov.my, jtksm.mohr.gov.my and gajiminimum.mohr.gov.my; the PERKESO foreign-worker page and the EPF page on non-Malaysian citizen employees.
+
+**How the Malaysian PDFs were read.** They were fetched into memory and their text extracted with `pdftotext` in a scratch folder outside the repository. The fetch tool also saved the PDF binaries in its own tool-results folder (outside the repo); nothing was added to the repository. Anyone repeating the check can download the same PDFs from the links in `references`.
+
+**NATLEX** (natlex.ilo.org) sits behind a bot check and could not be opened by the curator, so every `natlex_isn` is empty. Someone with a browser should add the record numbers for JP, HK, SG, AU, KR and MY. **ILOSTAT and NORMLEX** also block scripts, so `ilostat_check` is `null` everywhere.
 
 ## Definition of Done
 
@@ -346,26 +447,26 @@ Data ingestion script (the checker is the script here; the loader is NF-P1-018):
 
 Documentation:
 - [x] Markdown, consistent headings and code blocks, no AI attribution
-- [ ] Reviewed by at least one other teammate (JP, HK, SG and AU especially)
+- [ ] Reviewed by at least one other teammate (every file is still a draft with `reviewed_by` empty)
 - [ ] Committed
 
 Task complete for all six countries:
 - [x] JP.json and HK.json curated and valid (merged)
-- [x] SG.json and AU.json curated and valid (this branch, waiting for Devam's review)
-- [ ] KR.json and MY.json (Aditya)
-- [ ] NATLEX record numbers added to JP.json, HK.json, SG.json and AU.json
+- [x] SG.json and AU.json curated and valid (merged, waiting for Devam's review)
+- [x] KR.json and MY.json curated and valid (this branch, waiting for Aditya's review)
+- [ ] NATLEX record numbers added to all six files
 
 ## Commit
 
-Branch: `feature/data-ilo-sg-au`. No shared files were changed. Only these files change on this branch:
+Branch: `feature/data-ilo-kr-my`. No shared files were changed. Only these files change on this branch:
 
 ```bash
-git add data-scripts/data/source/labor-laws/SG.json data-scripts/data/source/labor-laws/AU.json \
+git add data-scripts/data/source/labor-laws/KR.json data-scripts/data/source/labor-laws/MY.json \
   docs/runbooks/NF-P1-017-labor-law-curation.md
-git commit -m "feat(data): curate Singapore and Australia labor laws" -m "Refs: NF-P1-017"
+git commit -m "feat(data): curate South Korea and Malaysia labor laws" -m "Refs: NF-P1-017"
 ```
 
-Aditya uses his own branch and commits only KR.json and MY.json. Before pushing, run `git status` and confirm nothing else is listed.
+Before pushing, run `git status` and confirm nothing else is listed.
 
 ## Troubleshooting
 
@@ -385,7 +486,7 @@ Aditya uses his own branch and commits only KR.json and MY.json. Before pushing,
 
 ## Not covered here
 
-- KR and MY content (Aditya)
+- Review and sign-off of each country by a second person
 - The Firestore loader and the `_meta` version bump: NF-P1-018
 - Retrieval and clause comparison: NF-P2-003, NF-P2-004
 - Complaint templates and authority details: NF-P2-006

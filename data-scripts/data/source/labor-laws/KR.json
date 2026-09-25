@@ -1,1 +1,832 @@
-{}
+{
+  "country": "KR",
+  "name": "South Korea",
+  "curated_by": [
+    "Pranjal (drafted for Aditya)"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "All articles were read in the Korean original on the National Law Information Center (law.go.kr) on the verification date, at the versions in force: Labor Standards Act (effective 20 August 2026), Minimum Wage Act (2020 text), Act on Foreign Workers' Employment (1 October 2025), Immigration Control Act (23 January 2026), Employment Security Act (24 July 2024), Industrial Accident Compensation Insurance Act (1 July 2026), National Pension Act (17 June 2026), National Health Insurance Act (2 January 2026). The English text is the curator's paraphrase of the Korean. The English translation of the Labor Standards Act on the Legislation Research Institute site (elaw.klri.re.kr) is from 2012-13 and out of date, so it was not used. NATLEX could not be opened (bot check), so natlex_isn is empty. Worker groups: workers in general ('all') and foreign manufacturing workers hired under the Employment Permit System, E-9 visa ('manufacturing_worker'). Not curated: the Enforcement Decrees and Rules (which set many numbers), the Employment Insurance Act, the Wage Claim Guarantee Act, and the government-to-government arrangements with sending countries.",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "regulated",
+      "title": "Minimum wage",
+      "summary": "Every worker in a business with employees, including foreign workers, must be paid at least the minimum wage. It is KRW 10,320 an hour in 2026 and rises to KRW 10,700 an hour on 1 January 2027.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Act applies to every business or workplace that uses workers, except one that uses only living-together relatives, household workers and seafarers (Minimum Wage Act, Art. 3).",
+            "An employer must pay at least the minimum wage, must not lower earlier pay because of it, and any contract term below it is void and replaced by the minimum (Art. 6(1)-(3)).",
+            "The minimum wage announced by the Minister takes effect on 1 January of the next year unless set otherwise (Art. 10).",
+            "The hourly minimum wage is KRW 10,320 for 2026 and KRW 10,700 from 1 January 2027 (Minimum Wage Commission decision of 14 July 2026, reported by Korea.net).",
+            "Only regular monthly pay counts towards it. Bonuses and meal, housing and transport benefits count only in part: payments in kind never count, and cash benefits count only above 7% of the monthly minimum wage amount (Art. 6(4)).",
+            "Foreign workers must not be unfairly treated because of nationality (Labor Standards Act, Art. 6; Act on Foreign Workers' Employment, Art. 22)."
+          ],
+          "limits": {
+            "hourly_minimum_wage_2026": {
+              "value": 10320,
+              "unit": "KRW",
+              "period": "hour",
+              "note": "In force for 2026."
+            },
+            "hourly_minimum_wage_2027": {
+              "value": 10700,
+              "unit": "KRW",
+              "period": "hour",
+              "note": "From 1 January 2027."
+            },
+            "monthly_equivalent_2027": {
+              "value": 2236300,
+              "unit": "KRW",
+              "period": "month",
+              "note": "Based on a 40-hour week and 209 hours a month, per Korea.net."
+            }
+          },
+          "penalty": "Up to 3 years' imprisonment or a fine of up to KRW 20 million, or both, for paying less than the minimum wage (Minimum Wage Act, Art. 28(1)).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Minimum Wage Act (최저임금법)",
+          "section": "Arts. 3, 5, 6, 10 and 28",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%B5%9C%EC%A0%80%EC%9E%84%EA%B8%88%EB%B2%95"
+        },
+        {
+          "law": "Korea.net: Hourly minimum wage in 2027 to rise 3.7% to KRW 10,700 (15 July 2026)",
+          "section": "Article text",
+          "url": "https://www.korea.net/NewsFocus/policies/view?articleId=295961",
+          "year": 2026
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Art. 6",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Art. 22",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The minimum wage is revised every year; the 2026 figure is the one in force on the verification date. Trainees on probation for the first 3 months of a contract of at least a year and piece-rate workers may be set a different amount by decree (Art. 5(2)-(3)); the decree was not read. The 2027 rate was read from a government news portal, not the Ministry's notice.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "regulated",
+      "title": "Working hours",
+      "summary": "Normal working hours may not exceed 8 hours a day and 40 hours a week. By agreement, up to 12 extra hours a week may be worked, so the weekly maximum is 52 hours. Workers must get breaks during the day.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Working time, excluding breaks, may not exceed 40 hours a week or 8 hours a day; time waiting under the employer's direction counts as working time (Labor Standards Act, Art. 50).",
+            "By agreement, working time may be extended by up to 12 hours a week (Art. 53(1)), so a worker may not work more than 52 hours a week under the ordinary rules.",
+            "With a written agreement with the workers' representative, hours may be averaged over up to 3 months, but not more than 52 hours in a week or 12 hours in a day (Art. 51(2)); longer averaging periods are covered by Art. 51-2.",
+            "The employer must give a break of at least 30 minutes for 4 hours of work and at least 1 hour for 8 hours, in the middle of the working day, which the worker may use freely (Art. 54).",
+            "The Act applies to businesses that usually employ 5 or more workers; smaller businesses are covered only in part as decreed (Art. 11).",
+            "The hours, break and holiday rules do not apply to agriculture, forestry, livestock and fishing work, or to supervisory or intermittent work approved by the Minister (Art. 63); factory work is not among these listed exclusions, though the decree can add jobs."
+          ],
+          "limits": {
+            "weekly_hours_limit": {
+              "value": 40,
+              "unit": "hours",
+              "period": "week",
+              "note": "Normal working hours."
+            },
+            "daily_hours_limit": {
+              "value": 8,
+              "unit": "hours",
+              "period": "day",
+              "note": "Normal working hours."
+            },
+            "maximum_extension": {
+              "value": 12,
+              "unit": "hours",
+              "period": "week",
+              "note": "By agreement; total 52 hours a week."
+            },
+            "break_per_4_hours": {
+              "value": 30,
+              "unit": "minutes",
+              "period": "once"
+            },
+            "break_per_8_hours": {
+              "value": 1,
+              "unit": "hours",
+              "period": "once"
+            }
+          },
+          "penalty": "Up to 2 years' imprisonment or a fine of up to KRW 20 million for breaking the hour limits or the break rule (Labor Standards Act, Art. 110(1)).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 11, 50, 51, 53, 54 and 63",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Art. 110",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The decree that applies parts of the Act to businesses with fewer than 5 workers was not read; a small workshop may not be bound by every rule here. A temporary extra 8 hours for small businesses (Art. 53(3)) was valid only until 31 December 2022 and is left out.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "regulated",
+      "title": "Overtime, night and holiday pay",
+      "summary": "Overtime, night work (10 p.m. to 6 a.m.) and holiday work must each be paid at least 50% more than the ordinary wage. Holiday work beyond 8 hours must be paid 100% more.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Overtime, meaning time worked beyond the normal hours as extended under Arts. 53, 59 and 69, must be paid an extra 50% or more of the ordinary hourly wage (Labor Standards Act, Art. 56(1)).",
+            "Work on a holiday must be paid an extra 50% of the ordinary wage for up to 8 hours and an extra 100% beyond 8 hours (Art. 56(2)).",
+            "Night work between 10 p.m. and 6 a.m. must be paid an extra 50% or more (Art. 56(3)).",
+            "Overtime is limited to 12 hours a week by agreement (Art. 53(1))."
+          ],
+          "limits": {
+            "overtime_premium": {
+              "value": 50,
+              "unit": "percent",
+              "note": "Of the ordinary wage, on top of the normal pay."
+            },
+            "night_work_premium": {
+              "value": 50,
+              "unit": "percent",
+              "note": "10 p.m. to 6 a.m."
+            },
+            "holiday_work_premium_first_8_hours": {
+              "value": 50,
+              "unit": "percent"
+            },
+            "holiday_work_premium_after_8_hours": {
+              "value": 100,
+              "unit": "percent"
+            }
+          },
+          "penalty": "Up to 3 years' imprisonment or a fine of up to KRW 30 million; the employer cannot be prosecuted against the worker's express wishes unless already on the arrears list (Labor Standards Act, Art. 109).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 53, 56 and 109",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Businesses with fewer than 5 workers may be exempt from these premiums by decree; the decree was not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "regulated",
+      "title": "Rest days, breaks and public holidays",
+      "summary": "Workers must get at least one paid rest day a week on average and the public holidays listed by decree with pay. They must also get breaks during the working day.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The employer must guarantee at least one paid weekly holiday on average (Labor Standards Act, Art. 55(1)).",
+            "The employer must also give the holidays set by decree as paid holidays; with a written agreement with the workers' representative, a specific working day may replace one (Art. 55(2)). This has applied to all businesses with 5 or more workers since 1 January 2022.",
+            "The employer must give breaks of 30 minutes per 4 hours and 1 hour per 8 hours (Art. 54)."
+          ],
+          "limits": {
+            "weekly_paid_holiday": {
+              "value": 1,
+              "unit": "days",
+              "period": "week",
+              "note": "On average."
+            }
+          },
+          "penalty": "Up to 2 years' imprisonment or a fine of up to KRW 20 million (Labor Standards Act, Art. 110).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 54 and 55",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Art. 110",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The list of holidays set by decree (Enforcement Decree) was not read. Holiday pay for workers in businesses with fewer than 5 workers depends on that decree.",
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "regulated",
+      "title": "Paid annual leave",
+      "summary": "A worker who attends at least 80% of a year gets 15 days of paid leave. Workers with under a year of service get one day for each full month, and leave grows by one day every 2 years after 3 years, up to 25 days.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The employer must give 15 days of paid leave to a worker who attended at least 80% of the year (Labor Standards Act, Art. 60(1)).",
+            "A worker with less than a year of service, or with attendance under 80%, gets one day of paid leave for each full month of perfect attendance (Art. 60(2)).",
+            "After 3 years of continuous service, one extra day is added for every 2 years beyond the first year, with a total maximum of 25 days (Art. 60(4)).",
+            "The employer must give the leave when the worker asks, paying the ordinary or average wage, and may change the time only if it would seriously disrupt the business (Art. 60(5)).",
+            "Leave lapses if not used within one year, unless the employer was at fault (Art. 60(7))."
+          ],
+          "limits": {
+            "annual_leave_full_attendance": {
+              "value": 15,
+              "unit": "days",
+              "period": "year",
+              "note": "For at least 80% attendance."
+            },
+            "annual_leave_maximum": {
+              "value": 25,
+              "unit": "days",
+              "period": "year"
+            }
+          },
+          "penalty": "Up to 2 years' imprisonment or a fine of up to KRW 20 million (Labor Standards Act, Art. 110).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Art. 60",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Art. 110",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Leave for businesses with fewer than 5 workers is set by decree, which was not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "not_regulated",
+      "title": "Sick leave and pay during illness",
+      "summary": "The sources read give no general right to paid sick leave for illness that is not work-related. For work injuries the employer must cover treatment, and industrial accident insurance pays benefits. A worker recovering from a work injury cannot be dismissed.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No provision giving a general right to paid sick leave was found in the Labor Standards Act as read.",
+            "A worker hurt or made ill at work must be given the needed treatment at the employer's cost, and paid 60% of average wage while under treatment (Labor Standards Act, Arts. 78 and 79); in practice industrial accident insurance pays these (Industrial Accident Compensation Insurance Act, Arts. 36 and 40).",
+            "An employer may not dismiss a worker during work-injury recovery leave and for 30 days afterwards (Art. 23(2)).",
+            "If the employer causes a business suspension, the worker must be paid at least 70% of average wage (Art. 46)."
+          ],
+          "limits": {
+            "work_injury_pay_rate": {
+              "value": 60,
+              "unit": "percent",
+              "note": "Of average wage while under treatment."
+            },
+            "suspension_allowance": {
+              "value": 70,
+              "unit": "percent",
+              "note": "Of average wage, employer-caused suspension."
+            }
+          },
+          "penalty": "Dismissal during recovery: up to 5 years' imprisonment or a fine of up to KRW 50 million (Art. 107); failing to pay suspension allowance: up to 3 years or KRW 30 million (Art. 109).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 23, 46, 78 and 79",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Industrial Accident Compensation Insurance Act (산업재해보상보험법)",
+          "section": "Arts. 36 and 40",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%82%B0%EC%97%85%EC%9E%AC%ED%95%B4%EB%B3%B4%EC%83%81%EB%B3%B4%ED%97%98%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "'Not regulated' means no such provision was found in the Labor Standards Act and related statutes read; the Enforcement Decree and any sick-pay allowance under health insurance were not checked. Injuries that heal within 3 days are not paid by industrial accident insurance (Art. 40(3)).",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "When and how wages are paid",
+      "summary": "Wages must be paid in cash, directly to the worker, in full, at least once a month on a fixed day. When a worker leaves, everything owed must be paid within 14 days, and late pay earns interest.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Wages must be paid in currency, directly to the worker, in full (Labor Standards Act, Art. 43(1)).",
+            "Wages must be paid at least once a month on a fixed date (Art. 43(2)).",
+            "The employer must give a wage statement each time wages are paid, showing the components, how they were calculated and any deductions (Art. 48(2)).",
+            "When a worker dies or leaves, all wages and other money due must be paid within 14 days, unless the parties agree to extend it for special reasons (Art. 36).",
+            "Late wages bear interest of up to 40% a year, at a rate set by decree (Art. 37)."
+          ],
+          "limits": {
+            "final_payment_deadline": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After the worker leaves."
+            },
+            "late_interest_cap": {
+              "value": 40,
+              "unit": "percent",
+              "period": "year"
+            }
+          },
+          "penalty": "Up to 3 years' imprisonment or a fine of up to KRW 30 million; the employer cannot be prosecuted against the worker's express wishes unless already on the arrears list (Labor Standards Act, Art. 109).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 36, 37, 43, 48 and 109",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The Ministry may publish the names of employers with repeated wage arrears (Art. 43-2). Foreign workers in some sectors must have wage-arrears guarantee insurance arranged by the employer (see insurance_and_injury).",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "regulated",
+      "title": "Deductions from wages",
+      "summary": "Wages must be paid in full, so deductions are allowed only where a law or collective agreement permits. Employers may not set penalty amounts for breaking a contract, offset advances against wages, or force savings.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Wages must be paid in full; part may be deducted only where a law or a collective agreement expressly allows it (Labor Standards Act, Art. 43(1)).",
+            "The employer may not make a contract fixing a penalty or damages for failing to perform the work contract (Art. 20).",
+            "The employer may not offset wages against an advance or any loan made on condition of working (Art. 21).",
+            "The employer may not require compulsory savings or hold the worker's savings except as the worker chooses, in the worker's own name, with documents returned on request (Art. 22).",
+            "The wage statement must show every deduction (Art. 48(2))."
+          ],
+          "limits": {},
+          "penalty": "Deducting wages unlawfully: up to 3 years' imprisonment or KRW 30 million (Art. 109). Penalty clauses, offsetting advances or reporting savings breaches: a fine of up to KRW 5 million (Art. 114). Forced savings contract: up to 2 years or KRW 20 million (Art. 110).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 20, 21, 22, 43, 48, 109, 110 and 114",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Deductions for dormitory meals or rent for foreign workers depend on the Enforcement Decree and Ministry rules, which were not read; check that any such deduction is set out in the contract and the collective agreement.",
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "regulated",
+      "title": "Notice and reasons for dismissal",
+      "summary": "An employer needs a just cause to dismiss, must give 30 days' notice or 30 days' pay, and must give the reasons in writing. Foreign workers whose employment ends for reasons that are not their fault can apply to move to a new workplace.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer may not dismiss, suspend, transfer or otherwise punish a worker without just cause (Labor Standards Act, Art. 23(1)).",
+            "To dismiss a worker, the employer must give at least 30 days' notice or pay at least 30 days of ordinary wages instead (Art. 26). There is no notice duty if the worker has worked less than 3 months, if a disaster makes continuing impossible, or if the worker deliberately caused serious damage as defined by Ministry rule.",
+            "The employer must tell the worker the reasons and the date of dismissal in writing, or the dismissal has no effect (Art. 27); a notice under Art. 26 that states both counts."
+          ],
+          "limits": {
+            "dismissal_notice": {
+              "value": 30,
+              "unit": "days",
+              "period": "once",
+              "note": "Or 30 days of ordinary wages."
+            }
+          },
+          "penalty": "Dismissal without required notice: up to 2 years' imprisonment or KRW 20 million (Art. 110).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "An employer may not dismiss, suspend, transfer or otherwise punish a worker without just cause (Labor Standards Act, Art. 23(1)).",
+            "To dismiss a worker, the employer must give at least 30 days' notice or pay at least 30 days of ordinary wages instead (Art. 26). There is no notice duty if the worker has worked less than 3 months, if a disaster makes continuing impossible, or if the worker deliberately caused serious damage as defined by Ministry rule.",
+            "The employer must tell the worker the reasons and the date of dismissal in writing, or the dismissal has no effect (Art. 27); a notice under Art. 26 that states both counts.",
+            "A foreign worker may apply to change workplaces if the employer wants to end or not renew the contract for a justifiable reason, or if the worker cannot reasonably continue because of a suspension, closure, cancellation of the employer's permit, an unlawful dormitory, breach of working conditions or unfair treatment (Act on Foreign Workers' Employment, Art. 25(1)).",
+            "The worker must leave Korea if no new workplace permit is obtained within 3 months of applying, or if no application is made within 1 month after the contract ends; the periods are counted from when a work injury, illness or pregnancy no longer prevents it (Art. 25(3)).",
+            "Changes are limited to 3 during the permitted work period and 2 during an extension, but changes caused by the employer or a shutdown do not count (Art. 25(4)).",
+            "Obstructing a worker's workplace change is an offence (Art. 29(4))."
+          ],
+          "limits": {
+            "dismissal_notice": {
+              "value": 30,
+              "unit": "days",
+              "period": "once",
+              "note": "Or 30 days of ordinary wages."
+            },
+            "workplace_change_limit": {
+              "value": 3,
+              "unit": "changes",
+              "period": "once",
+              "note": "During the permitted period; 2 in an extension."
+            }
+          },
+          "penalty": "Dismissal without required notice: up to 2 years' imprisonment or KRW 20 million (Art. 110). Obstructing a workplace change: up to 1 year or KRW 10 million (Foreign Workers Act, Art. 29).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 23, 26 and 27",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Arts. 25 and 29",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The length of the permitted work period (Foreign Workers Act, Art. 18) and the Enforcement Decree reasons for changing workplaces were not read. Manufacturing workers here means foreign workers hired under the Employment Permit System (E-9 visa).",
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "regulated",
+      "title": "Costs and penalties when a contract ends early",
+      "summary": "An employer cannot charge a worker a penalty for leaving early, and must pay everything owed within 14 days. For foreign workers, the employer must pay into a departure guarantee insurance for severance, and must arrange the worker's return.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The employer may not make a contract that fixes a penalty or damages for failing to perform the work contract, and may not offset advances against wages (Labor Standards Act, Arts. 20 and 21).",
+            "When a worker leaves, all wages and money owed must be paid within 14 days, with late interest (Arts. 36 and 37)."
+          ],
+          "limits": {
+            "final_payment_deadline": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After leaving."
+            }
+          },
+          "penalty": "A fine of up to KRW 5 million (Labor Standards Act, Art. 114). Unpaid wages: Up to 3 years' imprisonment or a fine of up to KRW 30 million; the employer cannot be prosecuted against the worker's express wishes unless already on the arrears list (Labor Standards Act, Art. 109).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "The employer may not make a contract that fixes a penalty or damages for failing to perform the work contract, and may not offset advances against wages (Labor Standards Act, Arts. 20 and 21).",
+            "When a worker leaves, all wages and money owed must be paid within 14 days, with late interest (Arts. 36 and 37).",
+            "The employer must enrol the worker in departure guarantee insurance or trust and pay the premium monthly; this is treated as the severance pay scheme (Act on Foreign Workers' Employment, Art. 13(1)-(2)).",
+            "The insurer must pay out within 14 days of the worker's departure, or within 14 days of the application if it follows a change of status, death or a later claim (Art. 13(3)); the claim expires 3 years after it arises (Art. 13(4)).",
+            "The worker must enrol in return-cost insurance or trust for the cost of going home (Art. 15).",
+            "The employer must take the measures needed for the worker's return (Art. 16)."
+          ],
+          "limits": {
+            "departure_insurance_payout": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After departure."
+            },
+            "claim_expiry": {
+              "value": 3,
+              "unit": "years",
+              "period": "once"
+            }
+          },
+          "penalty": "Not enrolling in departure guarantee insurance: a fine of up to KRW 5 million (Foreign Workers Act, Art. 30). Not arranging the return: up to 1 year's imprisonment or KRW 10 million (Art. 29(2)).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 20, 21, 36 and 37",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Arts. 13, 15, 16, 29 and 30",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Art. 16 (employer's return measures) and Art. 18 (contract period) were not read in full. The monthly premium amount is set by decree.",
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "regulated",
+      "title": "Fees charged for getting a job",
+      "summary": "Hiring foreign workers under the permit system goes through the government; agents may charge the employer, not the worker, and taking money from a job applicant is a crime. Private agencies may only charge fees set by the Minister.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "A paid job agency may take only the fees set and announced by the Minister (Employment Security Act, Art. 19(3)).",
+            "Anyone recruiting workers must not take money or other benefit from an applicant in connection with the recruitment, in any name; a licensed paid agency placing people for an employer is the only exception, and it charges the employer (Art. 32).",
+            "No one may profit from another's employment as an intermediary except as the law allows (Labor Standards Act, Art. 9)."
+          ],
+          "limits": {},
+          "penalty": "Taking money from an applicant: up to 5 years' imprisonment or KRW 50 million (Employment Security Act, Art. 47); intermediary exploitation: up to 5 years or KRW 50 million (Labor Standards Act, Art. 107).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "No one who is not the employment service may intervene in selecting, placing or hiring a foreign worker under the permit system (Act on Foreign Workers' Employment, Art. 8(6)).",
+            "No one other than the designated contract or hiring agents may take any money for arranging the contract or hiring, and agents may only charge the employer, not the worker (Art. 27(1)-(4)).",
+            "Fees for arranging a contract or hiring may be taken only from the employer (Act on Foreign Workers' Employment, Art. 27(1) and (3)); taking amounts beyond the permitted fees is an offence (Art. 32(1)(10)).",
+            "Under the Employment Security Act, a person recruiting workers must not take money from an applicant (Art. 32), and a paid agency may charge only the Minister's fees (Art. 19(3)).",
+            "Foreign job seekers are registered on the government roster and matched by the employment service (Art. 7-8)."
+          ],
+          "limits": {},
+          "penalty": "Intervening in hiring, or taking money: up to 1 year's imprisonment or KRW 10 million (Foreign Workers Act, Art. 29(1), (5)). Taking money beyond permitted fees: a fine of up to KRW 5 million (Art. 32).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Security Act (직업안정법)",
+          "section": "Arts. 19, 32 and 47",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%A7%81%EC%97%85%EC%95%88%EC%A0%95%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Arts. 7, 8, 27, 29 and 32",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 9 and 107",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "These rules cover recruiting inside Korea. Costs charged by agents or officials in the worker's home country before departure (medical checks, training, agent fees) are governed by that country's law and the government-to-government agreement; they were not researched.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "regulated",
+      "title": "Employer keeping a passport or ID card",
+      "summary": "No one may take a foreigner's passport or alien registration card as security for a job contract or a debt, or force or help another to do so. It is a crime punishable by up to 3 years in prison.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No one may take a foreigner's passport or alien registration card as security for a work contract or the performance of a debt, or force or arrange for it to be provided (Immigration Control Act, Art. 33-3(1)).",
+            "An employer may not force a worker to work against their free will by violence, threat, confinement or other unfair restraint of freedom (Labor Standards Act, Art. 7)."
+          ],
+          "limits": {},
+          "penalty": "Up to 3 years' imprisonment or a fine of up to KRW 30 million (Immigration Control Act, Arts. 33-3 and 94(19)); forced labour: up to 5 years or KRW 50 million (Labor Standards Act, Art. 107).",
+          "enforced_by": "Ministry of Justice (Immigration Service); Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Immigration Control Act (출입국관리법)",
+          "section": "Arts. 33-3 and 94",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%B6%9C%EC%9E%85%EA%B5%AD%EA%B4%80%EB%A6%AC%EB%B2%95"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 7 and 107",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "A worker whose passport is held should report it to the Immigration Service or the Ministry of Employment and Labor. The Act's wording covers taking a passport 'as security'; whether keeping it for 'safekeeping' with the worker's agreement is treated the same was not researched.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "regulated",
+      "title": "Housing for the worker",
+      "summary": "An employer that provides a dormitory to a foreign worker must meet legal standards, tell the worker about it before the contract is signed, and keep it safe. A worker may move to another workplace if the dormitory breaks these rules.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer that houses workers in a dormitory must draw up dormitory rules, with the agreement of a majority of the residents' representative (Labor Standards Act, Art. 99), and meet the decreed standards for structure and facilities, location, living environment, floor area and safe, comfortable housing (Art. 100).",
+            "Meals and housing provided in kind do not count towards the minimum wage; cash meal or housing allowances count only above 7% of the monthly minimum wage (Minimum Wage Act, Art. 6(4))."
+          ],
+          "limits": {},
+          "penalty": "A fine of up to KRW 5 million for breaching the dormitory standards (Labor Standards Act, Art. 114(1)).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "An employer that provides a dormitory to a foreign worker must meet the dormitory standards of Labor Standards Act Art. 100 and protect health and safety (Act on Foreign Workers' Employment, Art. 22-2(1)).",
+            "The employer must give the worker, when the contract is signed, information on the dormitory's structure and facilities, location, living environment, floor area and other matters, and again if they change (Art. 22-2(2)).",
+            "An employer that houses workers in a dormitory must draw up dormitory rules, with the agreement of a majority of the residents' representative (Labor Standards Act, Art. 99), and meet the decreed standards for structure and facilities, location, living environment, floor area and safe, comfortable housing (Art. 100).",
+            "Meals and housing provided in kind do not count towards the minimum wage; cash meal or housing allowances count only above 7% of the monthly minimum wage (Minimum Wage Act, Art. 6(4)).",
+            "Providing a dormitory in breach of Art. 22-2 is one ground on which the worker may apply to change workplaces without it counting against the change limit (Act on Foreign Workers' Employment, Art. 25(1)(2) and (4))."
+          ],
+          "limits": {},
+          "penalty": "A fine of up to KRW 5 million for breaching the dormitory standards (Labor Standards Act, Arts. 100 and 114(1)).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Arts. 22-2 and 25",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 99, 100 and 114",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Minimum Wage Act (최저임금법)",
+          "section": "Art. 6(4)",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%B5%9C%EC%A0%80%EC%9E%84%EA%B8%88%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The decree that sets the numeric dormitory standards (Labor Standards Act Enforcement Decree) and the Ministry's rules on charging workers for dormitory costs were not read, so no floor-area or rent limit is stated here. Employers with a dormitory are not required by the Acts read to provide one.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "regulated",
+      "title": "Work injury compensation and insurance",
+      "summary": "Work injury insurance covers workers, including foreign workers. Foreign workers on the permit system also have departure guarantee insurance, and in certain sectors employers must buy wage-arrears insurance and workers must buy injury insurance.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Industrial Accident Compensation Insurance Act applies to every business that uses workers, except those excluded by decree (Art. 6); 'worker' has the Labor Standards Act meaning (Art. 5).",
+            "Benefits include medical care, temporary-incapacity, disability, caregiver, survivors' benefits, funeral costs and vocational rehabilitation (Art. 36); injuries that heal within 3 days are not covered by the medical care benefit (Art. 40(3)).",
+            "Regardless of insurance, the employer is liable to pay treatment costs and 60% of average wage to a worker hurt or made ill at work (Labor Standards Act, Arts. 78 and 79).",
+            "A foreign worker with a registered address in Korea who works at a covered workplace becomes a workplace member of national health insurance (National Health Insurance Act, Art. 109(2))."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "The Industrial Accident Compensation Insurance Act applies to every business that uses workers, except those excluded by decree (Art. 6); 'worker' has the Labor Standards Act meaning (Art. 5).",
+            "Benefits include medical care, temporary-incapacity, disability, caregiver, survivors' benefits, funeral costs and vocational rehabilitation (Art. 36); injuries that heal within 3 days are not covered by the medical care benefit (Art. 40(3)).",
+            "Regardless of insurance, the employer is liable to pay treatment costs and 60% of average wage to a worker hurt or made ill at work (Labor Standards Act, Arts. 78 and 79).",
+            "A foreign worker with a registered address in Korea who works at a covered workplace becomes a workplace member of national health insurance (National Health Insurance Act, Art. 109(2)).",
+            "The employer must enrol the worker in departure guarantee insurance (Act on Foreign Workers' Employment, Art. 13).",
+            "In businesses set by decree, the employer must buy wage-arrears guarantee insurance for foreign workers, and in industries set by decree the worker must buy injury insurance for illness and death (Art. 23(1)-(2))."
+          ],
+          "limits": {},
+          "penalty": "Not enrolling in departure guarantee insurance, wage-arrears guarantee or injury insurance: a fine of up to KRW 5 million (Foreign Workers Act, Art. 30).",
+          "enforced_by": "Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Industrial Accident Compensation Insurance Act (산업재해보상보험법)",
+          "section": "Arts. 5, 6, 36 and 40",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%82%B0%EC%97%85%EC%9E%AC%ED%95%B4%EB%B3%B4%EC%83%81%EB%B3%B4%ED%97%98%EB%B2%95"
+        },
+        {
+          "law": "Labor Standards Act (근로기준법)",
+          "section": "Arts. 78 and 79",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B7%BC%EB%A1%9C%EA%B8%B0%EC%A4%80%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Arts. 13 and 23",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        },
+        {
+          "law": "National Health Insurance Act (국민건강보험법)",
+          "section": "Art. 109",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B5%AD%EB%AF%BC%EA%B1%B4%EA%B0%95%EB%B3%B4%ED%97%98%EB%B2%95"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Enforcement Decree lists the businesses excluded from industrial accident insurance and the businesses that must buy wage-arrears and injury insurance; neither was read. The penalty articles of the Industrial Accident Compensation Insurance Act were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "regulated",
+      "title": "Pension and social security",
+      "summary": "Foreign workers at covered workplaces generally join national pension and health insurance. Foreign workers hired under the permit system can claim a lump-sum refund of pension contributions on leaving, and their employer pays into a departure guarantee insurance that acts as severance pay.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Foreigners who work in a workplace covered by the National Pension Act generally become workplace members, except those excluded by decree, and unless their home country's law does not give Korean nationals equivalent pension coverage (National Pension Act, Art. 126(1)).",
+            "A foreign worker with a registered address becomes a workplace member of national health insurance (National Health Insurance Act, Art. 109(2))."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "National Pension Service; National Health Insurance Service"
+        },
+        {
+          "applies_to": [
+            "manufacturing_worker"
+          ],
+          "requirements": [
+            "Foreigners who work in a workplace covered by the National Pension Act generally become workplace members, except those excluded by decree, and unless their home country's law does not give Korean nationals equivalent pension coverage (National Pension Act, Art. 126(1)).",
+            "A foreign worker who is a member of the National Pension can receive a lump-sum refund on leaving if they worked in a covered workplace under the Act on Foreign Workers' Employment (National Pension Act, Art. 126(4)(2)).",
+            "A foreign worker with a registered address becomes a workplace member of national health insurance (National Health Insurance Act, Art. 109(2)).",
+            "The employer's departure guarantee insurance is treated as the severance pay scheme and pays out within 14 days of the worker's departure (Act on Foreign Workers' Employment, Art. 13)."
+          ],
+          "limits": {
+            "departure_insurance_payout": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After departure."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "National Pension Service; National Health Insurance Service; Ministry of Employment and Labor (labor inspectors)"
+        }
+      ],
+      "references": [
+        {
+          "law": "National Pension Act (국민연금법)",
+          "section": "Art. 126",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B5%AD%EB%AF%BC%EC%97%B0%EA%B8%88%EB%B2%95"
+        },
+        {
+          "law": "National Health Insurance Act (국민건강보험법)",
+          "section": "Art. 109",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EA%B5%AD%EB%AF%BC%EA%B1%B4%EA%B0%95%EB%B3%B4%ED%97%98%EB%B2%95"
+        },
+        {
+          "law": "Act on Foreign Workers' Employment, etc. (외국인근로자의 고용 등에 관한 법률)",
+          "section": "Art. 13",
+          "url": "https://www.law.go.kr/%EB%B2%95%EB%A0%B9/%EC%99%B8%EA%B5%AD%EC%9D%B8%EA%B7%BC%EB%A1%9C%EC%9E%90%EC%9D%98%EA%B3%A0%EC%9A%A9%EB%93%B1%EC%97%90%EA%B4%80%ED%95%9C%EB%B2%95%EB%A5%A0"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Contribution rates, the decree list of foreigners excluded from the pension, which countries give Korean nationals equivalent coverage, and unemployment insurance for foreign workers were not read. A worker from a country without equivalent coverage may be excluded from the pension; check the worker's nationality.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}

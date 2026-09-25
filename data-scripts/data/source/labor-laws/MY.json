@@ -1,1 +1,825 @@
-{}
+{
+  "country": "MY",
+  "name": "Malaysia",
+  "curated_by": [
+    "Pranjal (drafted for Aditya)"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "Statutes were read from the official PDFs on the Attorney General's Chambers and the Department of Labour Peninsular Malaysia sites: Employment Act 1955 (updated text as at 1 January 2023; the 1 August 2023 reprint shows the same latest amendment, Act A1651), Minimum Wages Order 2024 (P.U. (A) 376), National Wages Consultative Council Act 2011, Private Employment Agencies Act 1981, Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990, Passports Act 1966 and Anti-Trafficking in Persons and Anti-Smuggling of Migrants Act 2007. Social security is from the official PERKESO and EPF pages. The copies are marked 'updated text' and not authentic; confirm against the Gazette. NATLEX could not be opened (bot check), so natlex_isn is empty. Worker groups: employees in general ('all') and plantation workers ('plantation_worker'). The Employment Act and the Housing Act apply to Peninsular Malaysia and Labuan only; Sabah and Sarawak have their own Labour Ordinances, which were not curated, and much plantation work is done there. The Minimum Wages Order applies across Malaysia. Not curated: regulations under the Employment Act (overtime limits, termination and lay-off benefits), the Employees' Social Security Act and Employees Provident Fund Act texts, immigration rules on foreign worker levy and repatriation, and the Sabah and Sarawak Labour Ordinances.",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "regulated",
+      "title": "Minimum wage",
+      "summary": "The minimum wage is RM1,700 a month (RM8.72 an hour) for all employees except domestic servants, since 1 August 2025 for all employers. Workers paid by tonnage or task must still earn at least RM1,700 a month.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Minimum Wages Order 2024 sets the minimum monthly wage at RM1,700, which is RM8.72 an hour, or RM65.38 a day for a 6-day week, RM78.46 for a 5-day week and RM98.08 for a 4-day week (Minimum Wages Order, para. 3(1) and 5(1)).",
+            "It applied from 1 February 2025 to employers with 5 or more employees and to employers doing professional activities, and from 1 August 2025 to all employers (Order, paras. 1, 3(3), 4 and 5).",
+            "An employee paid only by piece, tonnage, task, trip or commission must still be paid a monthly wage of at least RM1,700 (Order, paras. 3(2) and 5(2)).",
+            "The Order excludes only domestic servants; it is made under the Act for all of Malaysia and refers to the Sabah and Sarawak Labour Ordinances (Order, para. 2).",
+            "The Employment Act treats a foreign employee, meaning a non-citizen, as an employee, and the Order excludes no one because of nationality (Employment Act, s. 2(1); Order, para. 2)."
+          ],
+          "limits": {
+            "monthly_minimum_wage": {
+              "value": 1700,
+              "unit": "MYR",
+              "period": "month",
+              "note": "From 1 August 2025 for all employers."
+            },
+            "hourly_minimum_wage": {
+              "value": 8.72,
+              "unit": "MYR",
+              "period": "hour"
+            }
+          },
+          "penalty": "A fine of up to RM10,000 for each employee, and the court may order the employer to pay the difference (National Wages Consultative Council Act 2011, ss. 43 and 44).",
+          "enforced_by": "Department of Labour (Peninsular Malaysia, Sabah, Sarawak)"
+        },
+        {
+          "applies_to": [
+            "plantation_worker"
+          ],
+          "requirements": [
+            "The Minimum Wages Order 2024 sets the minimum monthly wage at RM1,700, which is RM8.72 an hour, or RM65.38 a day for a 6-day week, RM78.46 for a 5-day week and RM98.08 for a 4-day week (Minimum Wages Order, para. 3(1) and 5(1)).",
+            "It applied from 1 February 2025 to employers with 5 or more employees and to employers doing professional activities, and from 1 August 2025 to all employers (Order, paras. 1, 3(3), 4 and 5).",
+            "An employee paid only by piece, tonnage, task, trip or commission must still be paid a monthly wage of at least RM1,700 (Order, paras. 3(2) and 5(2)).",
+            "The Order excludes only domestic servants; it is made under the Act for all of Malaysia and refers to the Sabah and Sarawak Labour Ordinances (Order, para. 2).",
+            "Most plantation harvesting and estate work is paid by tonnage or task, and the RM1,700 monthly floor still applies to it (Order, paras. 3(2) and 5(2))."
+          ],
+          "limits": {
+            "monthly_minimum_wage": {
+              "value": 1700,
+              "unit": "MYR",
+              "period": "month",
+              "note": "From 1 August 2025 for all employers."
+            },
+            "hourly_minimum_wage": {
+              "value": 8.72,
+              "unit": "MYR",
+              "period": "hour"
+            }
+          },
+          "penalty": "A fine of up to RM10,000 for each employee, and the court may order the employer to pay the difference (National Wages Consultative Council Act 2011, ss. 43 and 44).",
+          "enforced_by": "Department of Labour (Peninsular Malaysia, Sabah, Sarawak)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Minimum Wages Order 2024 (P.U. (A) 376/2024)",
+          "section": "Paras. 1 to 5",
+          "url": "https://gajiminimum.mohr.gov.my/wp-content/uploads/PUA%20376.pdf",
+          "year": 2024
+        },
+        {
+          "law": "National Wages Consultative Council Act 2011 (Act 732), reprint as at 1 August 2015",
+          "section": "ss. 43 and 44",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-03/3.%20National%20Wages%20Consultative%20Council%20Act%202011.pdf",
+          "year": 2011
+        },
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "s. 2(1)",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The Order was read in full. Malaysia reviews the minimum wage about every two years; no newer order was found in the searches made, but the official Gazette portal was not searched. The Act text read is the 2015 reprint and was not checked for later amendments.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "regulated",
+      "title": "Working hours",
+      "summary": "An employee may not be required to work more than 8 hours a day, 5 hours in a row without a 30-minute break, or 45 hours a week. The Act covers manual workers whatever their wage.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employee may not be required to work more than 5 consecutive hours without a break of at least 30 minutes, more than 8 hours in one day, a spread-over of more than 10 hours in one day, or more than 45 hours in one week (Employment Act, s. 60A(1)).",
+            "Continuous work may run for 8 consecutive hours if it includes at least 45 minutes of meal time, and hours may be redistributed by contract up to 9 hours a day and 45 a week (s. 60A(1) provisos).",
+            "Shift workers may work more than 8 hours a day or 45 hours a week if the average over 3 weeks does not exceed 45, and not more than 12 hours in any day (s. 60C).",
+            "An employee may be required to work longer or on a rest day only in emergencies and similar cases (s. 60A(2)); the Director General may permit longer hours for special business reasons (s. 60A(1A)).",
+            "Overtime may not exceed the limit set by regulations (s. 60A(4)).",
+            "The rules cover an employee earning up to RM4,000 a month, and a person doing manual labour, and certain other work, whatever the wage (First Schedule)."
+          ],
+          "limits": {
+            "daily_hours_limit": {
+              "value": 8,
+              "unit": "hours",
+              "period": "day"
+            },
+            "weekly_hours_limit": {
+              "value": 45,
+              "unit": "hours",
+              "period": "week",
+              "note": "Since 1 January 2023; was 48."
+            },
+            "longest_stretch_without_break": {
+              "value": 5,
+              "unit": "hours",
+              "period": "once",
+              "note": "Break of at least 30 minutes."
+            },
+            "spread_over_limit": {
+              "value": 10,
+              "unit": "hours",
+              "period": "day"
+            }
+          },
+          "penalty": "A fine of up to RM50,000 for an offence with no specific penalty (Employment Act, s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 60A and 60C; First Schedule",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The Employment Act applies to Peninsular Malaysia and Labuan only (s. 1(2)). Sabah and Sarawak, where much plantation work is done, have their own Labour Ordinances, which were not curated. The overtime hour limit is set by regulations that were not read. The 45-hour limit came into force on 1 January 2023.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "regulated",
+      "title": "Overtime pay",
+      "summary": "Overtime is paid at least 1.5 times the hourly rate. Work on a rest day is paid at higher daily rates and at least twice the hourly rate beyond normal hours. Work on a paid public holiday earns two extra days' wages, and overtime that day at least 3 times the hourly rate.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Overtime, meaning work beyond normal daily hours, must be paid at not less than 1.5 times the hourly rate (Employment Act, s. 60A(3)).",
+            "An employee on a daily or hourly rate who works on a rest day is paid one day's wages for up to half the normal hours, two days' wages for more than half, and at least twice the hourly rate beyond normal hours; an employee on a monthly or weekly rate is paid half a day's wages, then one day's wages, then at least twice the hourly rate beyond normal hours (s. 60(3)).",
+            "A piece-rate employee who works on a rest day is paid twice the ordinary rate per piece (s. 60(3)(d)).",
+            "An employee required to work on a paid public holiday is paid, in addition to holiday pay, two days' wages at the ordinary rate, and overtime on that day at not less than 3 times the hourly rate (s. 60D(3)).",
+            "Rest-day, public-holiday and overtime wages must be paid by the end of the next wage period (s. 19(2))."
+          ],
+          "limits": {
+            "overtime_rate_minimum": {
+              "value": 1.5,
+              "unit": "times",
+              "note": "Multiple of the hourly rate."
+            },
+            "rest_day_overtime_rate": {
+              "value": 2,
+              "unit": "times",
+              "note": "Beyond normal hours on a rest day."
+            },
+            "public_holiday_overtime_rate": {
+              "value": 3,
+              "unit": "times",
+              "note": "Overtime on a paid public holiday."
+            }
+          },
+          "penalty": "Failing to pay overtime or rest-day wages is an offence, and the court orders the wages paid (Employment Act, s. 100).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 19, 60, 60A, 60D and 100",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Employees earning over RM4,000 a month who do not do manual labour are excluded from some of these rate rules (First Schedule, para. 1A). The overtime hour cap in regulations was not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "regulated",
+      "title": "Rest days, breaks and public holidays",
+      "summary": "Every employee must get one whole rest day a week and 11 paid public holidays a year, 5 of them fixed by law. Breaks of at least 30 minutes are needed after 5 hours of work.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Every employee must be allowed a rest day of one whole day in each week; for shift work, any continuous 30 hours counts (Employment Act, s. 59(1) and (1A)).",
+            "No employee may be compelled to work on a rest day except in continuous shift work or in the emergencies in s. 60A(2) (s. 60(1)).",
+            "Every employee is entitled to a paid holiday on 11 gazetted public holidays a year, 5 of which are National Day, the Agong's birthday, the ruler's birthday (or Federal Territory Day), Workers' Day and Malaysia Day, and to any day declared a public holiday under the Holidays Act 1951; if a holiday falls on a rest day or another holiday, the next working day is a paid holiday (s. 60D(1)).",
+            "The employer must display, before each year, the other 6 holidays chosen (s. 60D(1A)); an employee who is absent without consent or reasonable excuse on the day before or after a holiday loses the holiday pay (s. 60D(2)).",
+            "No more than 5 consecutive hours may be worked without a break of at least 30 minutes (s. 60A(1)(a))."
+          ],
+          "limits": {
+            "rest_days": {
+              "value": 1,
+              "unit": "days",
+              "period": "week"
+            },
+            "paid_public_holidays": {
+              "value": 11,
+              "unit": "days",
+              "period": "year",
+              "note": "Gazetted, 5 of them fixed by law."
+            }
+          },
+          "penalty": "Failing to pay for rest-day work or public-holiday pay is an offence (Employment Act, s. 100).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 59, 60, 60A, 60D and 100",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Peninsular Malaysia and Labuan only; Sabah and Sarawak were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "regulated",
+      "title": "Paid annual leave",
+      "summary": "After each 12 months of service an employee gets 8 days of paid annual leave (12 days after 2 years, 16 days after 5 years). The leave must be taken within 12 months.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employee is entitled to paid annual leave of 8 days for every 12 months of continuous service with the same employer if employed for less than 2 years, 12 days for 2 years to under 5, and 16 days for 5 years or more; part-years are pro-rated, rounding a half day or more up to a day (Employment Act, s. 60E(1)).",
+            "An employee who is absent without permission or excuse for more than 10% of working days in the qualifying year loses the entitlement (s. 60E(1)).",
+            "Annual leave is in addition to rest days and paid holidays (s. 60E(1A)).",
+            "The employer must grant the leave and the employee must take it within 12 months after each 12 months of service, or lose it, unless the employee agrees in writing, at the employer's request, not to take it and is paid instead (s. 60E(2)).",
+            "Before the contract ends, the employee may take the leave due for the previous year and the leave accrued in the year of termination (s. 60E(2A)).",
+            "The employer must pay the ordinary rate of pay for each day of annual leave (s. 60E(3))."
+          ],
+          "limits": {
+            "leave_under_2_years": {
+              "value": 8,
+              "unit": "days",
+              "period": "year"
+            },
+            "leave_2_to_5_years": {
+              "value": 12,
+              "unit": "days",
+              "period": "year"
+            },
+            "leave_5_years_or_more": {
+              "value": 16,
+              "unit": "days",
+              "period": "year"
+            }
+          },
+          "penalty": "Failing to grant annual leave is an offence (Employment Act, s. 100).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 60E and 100",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Peninsular Malaysia and Labuan only.",
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "regulated",
+      "title": "Sick leave",
+      "summary": "After examination at the employer's cost, an employee gets 14 days of paid sick leave a year (18 after 2 years, 22 after 5 years), or 60 days if hospitalised.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "After examination at the employer's expense by a registered doctor, an employee is entitled to paid sick leave of 14 days a calendar year if employed for less than 2 years, 18 days for 2 to under 5 years, 22 days for 5 years or more, or 60 days a year if hospitalisation is needed (Employment Act, s. 60F(1)).",
+            "An employee certified as needing hospitalisation but not hospitalised is treated as hospitalised (s. 60F(1) proviso), and a dental surgeon may certify sick leave within the same total (s. 60F(1A)).",
+            "An employee must inform the employer within 48 hours of starting certified sick leave, or the absence counts as absence without permission (s. 60F(2)).",
+            "The employer pays the ordinary rate of pay for each day of sick leave (s. 60F(3))."
+          ],
+          "limits": {
+            "sick_days_under_2_years": {
+              "value": 14,
+              "unit": "days",
+              "period": "year"
+            },
+            "sick_days_2_to_5_years": {
+              "value": 18,
+              "unit": "days",
+              "period": "year"
+            },
+            "sick_days_5_years_or_more": {
+              "value": 22,
+              "unit": "days",
+              "period": "year"
+            },
+            "sick_days_if_hospitalised": {
+              "value": 60,
+              "unit": "days",
+              "period": "year"
+            }
+          },
+          "penalty": "Failing to grant or pay sick leave is an offence (Employment Act, s. 100).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 60F and 100",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Peninsular Malaysia and Labuan only. Foreign workers are also covered for work injury and invalidity by PERKESO (see insurance_and_injury).",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "When and how wages are paid",
+      "summary": "Wages must be paid within 7 days after the wage period, which can be at most one month, into the worker's bank account. When a job ends, all wages are due on the last day.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "A contract must specify a wage period of no more than one month (Employment Act, s. 18).",
+            "The employer must pay wages, less lawful deductions, not later than the 7th day after the last day of the wage period (s. 19(1)); wages for rest-day work, public holidays and overtime not later than the last day of the next wage period (s. 19(2)).",
+            "The whole wage, less lawful deductions, must actually be paid into an account in the employee's name or a joint account with a financial institution (s. 25(1)).",
+            "When a contract ends by notice, wages owed must be paid not later than the last day of the contract (s. 20); on termination without notice, wages and any indemnity must be paid on the day of termination (s. 21)."
+          ],
+          "limits": {
+            "payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the last day of the wage period."
+            },
+            "maximum_wage_period": {
+              "value": 1,
+              "unit": "month",
+              "period": "once"
+            }
+          },
+          "penalty": "Paying late or making unlawful deductions is an offence (Employment Act, ss. 91 and 92; general penalty up to RM50,000 under s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 18, 19, 20, 21, 25, 91 and 92",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Peninsular Malaysia and Labuan only.",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "regulated",
+      "title": "Deductions from wages",
+      "summary": "An employer may make only the deductions the Employment Act lists. Some need the worker's written request, and rent, food and similar charges also need the Director General's permission.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No deduction may be made from an employee's wages except as the Act allows (Employment Act, s. 24(1)).",
+            "Employers may deduct overpayments made by mistake in the previous 3 months, the indemnity an employee owes for leaving without notice, repayment of advances (interest-free), and deductions authorised by other law (s. 24(2)).",
+            "With the employee's written request only: dues to a registered union or co-operative, and payment for shares in the employer's business (s. 24(3)).",
+            "With the employee's written request and the Director General's written permission: contributions to a provident, welfare or insurance scheme, advances with interest, payments to a third party, goods of the employer's business, and rent and the cost of accommodation, services, food and meals provided at the employee's request or under the contract; the Director General allows accommodation, services and food only if it benefits the employee (s. 24(4)-(5)).",
+            "An employer may not advance more than a month's earlier wages, except for the purposes listed in s. 22."
+          ],
+          "limits": {},
+          "penalty": "Making deductions other than those the Act authorises is an offence (Employment Act, s. 91(c); general penalty up to RM50,000 under s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        },
+        {
+          "applies_to": [
+            "plantation_worker"
+          ],
+          "requirements": [
+            "No deduction may be made from an employee's wages except as the Act allows (Employment Act, s. 24(1)).",
+            "Employers may deduct overpayments made by mistake in the previous 3 months, the indemnity an employee owes for leaving without notice, repayment of advances (interest-free), and deductions authorised by other law (s. 24(2)).",
+            "With the employee's written request only: dues to a registered union or co-operative, and payment for shares in the employer's business (s. 24(3)).",
+            "With the employee's written request and the Director General's written permission: contributions to a provident, welfare or insurance scheme, advances with interest, payments to a third party, goods of the employer's business, and rent and the cost of accommodation, services, food and meals provided at the employee's request or under the contract; the Director General allows accommodation, services and food only if it benefits the employee (s. 24(4)-(5)).",
+            "An employer may not advance more than a month's earlier wages, except for the purposes listed in s. 22.",
+            "For housing provided at an estate under the housing Act, the employee cannot be required to pay any rent or charge for that housing, the nursery, community hall, recreation or land allotted (Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990, s. 13)."
+          ],
+          "limits": {},
+          "penalty": "Making deductions other than those the Act authorises is an offence (Employment Act, s. 91(c); general penalty up to RM50,000 under s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 22, 24, 91 and 99A",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        },
+        {
+          "law": "Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990 (Act 446), reprint as at 1 February 2021",
+          "section": "s. 13",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-03/2.%20Employees%20Minimum%20Standards%20of%20Housing,%20Accomodations%20and%20emenities%20Act%201990.pdf",
+          "year": 1990
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "No provision in the Act read allows an employer to deduct a foreign worker's levy, recruitment or travel costs; these are not on the lists in s. 24. How the levy is allocated between employer and worker is set by immigration rules that were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "regulated",
+      "title": "Notice to end a job",
+      "summary": "Either side may give notice. If the contract is silent, notice is 4 weeks (under 2 years of service), 6 weeks (2 to under 5 years) or 8 weeks (5 years or more). An employer must tell the Labour Department when a foreign worker's job ends.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Either party may give notice to end the contract; its length must be the same for both and set in writing in the contract or, if it is not, at least 4 weeks for under 2 years of service, 6 weeks for 2 to under 5 years, and 8 weeks for 5 years or more (Employment Act, s. 12(1)-(2)). The notice must be written (s. 12(4)).",
+            "Either party may end the contract without notice by paying the other the wages that would have accrued during the notice (s. 13(1)), or without notice on the other's wilful breach (s. 13(2)).",
+            "An employer may dismiss for misconduct only after due inquiry (s. 14(1)).",
+            "If a foreign employee's service ends by dismissal, expiry of the work pass, repatriation or deportation, the employer must tell the Director General within 30 days; if the employee quits or absconds, within 14 days (s. 60KA).",
+            "An employer may not end a local employee's job in order to employ a foreign one, and in a redundancy must first end the jobs of foreign employees doing similar work (ss. 60M and 60N)."
+          ],
+          "limits": {
+            "notice_under_2_years": {
+              "value": 4,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_2_to_5_years": {
+              "value": 6,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_5_years_or_more": {
+              "value": 8,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "report_termination_of_foreign_employee": {
+              "value": 30,
+              "unit": "days",
+              "period": "once",
+              "note": "14 days if the worker quits or absconds."
+            }
+          },
+          "penalty": "A fine of up to RM50,000 for an offence with no specific penalty (Employment Act, s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 12, 13, 14, 60KA, 60M and 60N",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Termination and lay-off benefits are set by regulations that were not read. Peninsular Malaysia and Labuan only.",
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "partly_regulated",
+      "title": "Costs and penalties when a contract ends early",
+      "summary": "Either side may end the contract without notice by paying the wages that would have accrued during the notice period. An employer may deduct that indemnity from wages. Who pays the cost of sending a foreign worker home was not found in the Act read.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "A party may end the contract without notice by paying an indemnity equal to the wages for the notice period or its unexpired part (Employment Act, s. 13(1)).",
+            "The employer may deduct the indemnity an employee owes for leaving without notice from wages (s. 24(2)(b)).",
+            "When the employer ends a contract without notice, it must pay the wages earned, and any indemnity, by the day of termination (s. 21(1)).",
+            "The employer must tell the Director General when a foreign employee's service ends, or when the employee leaves or absconds (s. 60KA)."
+          ],
+          "limits": {},
+          "penalty": "A fine of up to RM50,000 for an offence with no specific penalty (Employment Act, s. 99A).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "ss. 13, 21, 24 and 60KA",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No provision on repatriation costs, levy refunds or security bonds for foreign workers was found in the Act; these are governed by immigration rules that were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "regulated",
+      "title": "Fees charged by employment agencies",
+      "summary": "A licensed agency may charge a foreign worker a placement fee of at most one month's basic wages, and if the employer pays it, the worker cannot be charged. Overcharging is an offence. Recruiting without a licence is a crime.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No private employment agency may charge a job seeker or non-citizen employee any fee other than, or more than, the fees in the First Schedule, and it must give a receipt for each fee (Private Employment Agencies Act, s. 14(1)).",
+            "The placement fee for a non-citizen employee employed in Malaysia is at most one month of basic wages (First Schedule, para. (2)(b)(iii)); for a job seeker employed in Malaysia, at most 25% of the first month's basic wages.",
+            "The employer may pay the placement fee; if it does, the agency may not demand one from the job seeker or non-citizen employee (s. 14b(2)-(3)).",
+            "The agency may charge a registration fee of up to RM30 for jobs in Malaysia and RM50 for jobs outside Malaysia (First Schedule, para. (2)(a)).",
+            "Carrying on any recruiting activity requires a licence (s. 7); a licence to place non-citizen employees within Malaysia is Licence C (Second Schedule).",
+            "No employer may deduct recruitment costs from wages because they are not among the deductions in the Employment Act (s. 24)."
+          ],
+          "limits": {
+            "placement_fee_non_citizen": {
+              "value": 1,
+              "unit": "months",
+              "period": "once",
+              "note": "Of basic wages; may be paid by the employer."
+            },
+            "registration_fee_in_malaysia": {
+              "value": 30,
+              "unit": "MYR",
+              "period": "once",
+              "note": "At most."
+            }
+          },
+          "penalty": "Charging more than the scheduled fee, or deceiving job seekers: a fine of up to RM50,000, imprisonment of up to 1 year, or both (Private Employment Agencies Act, s. 28). Recruiting without a licence: a fine of up to RM200,000, up to 3 years, or both (s. 7).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Private Employment Agencies Act 1981 (Act 246), reprint as at 1 October 2018",
+          "section": "ss. 7, 14, 14b, 28; First and Second Schedules",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-03/7.%20Private%20Employment%20Agencies%20Act%201981.pdf",
+          "year": 1981
+        },
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "s. 24",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Act applies to licensed agencies in Malaysia. Fees charged by agents in the worker's home country are outside these rules and were not researched. Any government 'employer pays' policy for foreign worker recruitment costs was not confirmed from an official text. The Act read is the 2018 reprint.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "regulated",
+      "title": "Employer keeping a passport",
+      "summary": "It is an offence to hold another person's passport without lawful authority; the Passports Act's definition includes passports issued by a foreign government. Forcing an employee to work and preventing them leaving the work area is a separate offence.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Anyone who, without lawful authority, has in their possession a passport issued for the use of some other person commits an offence (Passports Act 1966, s. 12(1)(f)). 'Passport' includes a valid passport issued to a person by the government of which they are a citizen (s. 2).",
+            "An employer who threatens, deceives or forces an employee to do work and prevents the employee from leaving the place where it is done commits an offence (Employment Act, s. 90B)."
+          ],
+          "limits": {},
+          "penalty": "Holding another's passport: a fine of up to RM10,000, up to 5 years' imprisonment, or both (Passports Act, s. 12(1)). Forced labour: a fine of up to RM100,000, up to 2 years, or both (Employment Act, s. 90B).",
+          "enforced_by": "Immigration Department; Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Passports Act 1966 (Act 150), reprint incorporating amendments to 1 January 2006",
+          "section": "ss. 2 and 12",
+          "url": "https://lom.agc.gov.my/ilims/upload/portal/akta/LOM/EN/Act%20150.pdf",
+          "year": 1966
+        },
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "s. 90B",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Passports Act text read is a reprint to 1 January 2006 and may have been amended since. 'Lawful authority' is not defined in the text read, so whether keeping a passport 'for safekeeping' with the worker's consent is an offence was not analysed. The Anti-Trafficking Act text read (2014 reprint) was searched for passport provisions and none was found.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "regulated",
+      "title": "Housing for the worker",
+      "summary": "Employers who house workers must meet minimum standards. On a plantation estate, the employer must provide free water and electricity and cannot charge rent for the housing. Elsewhere, accommodation needs a certificate and may be charged for with permission.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "For employees not working in an estate, no accommodation may be provided unless it has a Certificate for Accommodation from the Director General (Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990, s. 24d).",
+            "Accommodation must meet the minimum standards and amenities set by regulations (ss. 24f and 24i); a building unfit for human habitation may not be used (s. 24h).",
+            "The employer may collect rent for that accommodation by deduction from wages, subject to conditions (s. 24g); the Employment Act also requires the Director General's permission for such a deduction (s. 24(4)(e))."
+          ],
+          "limits": {},
+          "penalty": "A fine of up to RM50,000 for housing without a certificate or in an unfit building; for other breaches a fine of up to RM50,000 and RM1,000 a day while it continues (Housing Act, ss. 24d, 24h and 33).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        },
+        {
+          "applies_to": [
+            "plantation_worker"
+          ],
+          "requirements": [
+            "An employer of employees on an estate (agricultural land over 20 hectares) may not house an employee in a building that does not comply with the Act or its regulations (Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990, ss. 3 and 5).",
+            "Where an employer provides housing at the place of employment, it must provide free and adequate piped water and adequate electricity and keep the buildings in good repair (s. 6).",
+            "The employee cannot be required to pay any rent or charge for the housing, nursery, community hall, recreation facilities, sanitation or land provided under Part II (s. 13).",
+            "The employer must provide employees on an estate, and their dependants living there, medical attendance, care and treatment (s. 16); the estate hospital provisions refer to an Act since repealed, so check the current rules.",
+            "Part II does not apply to a workplace inside a city council, municipal council or Federal Territory area unless the Minister orders it (s. 2)."
+          ],
+          "limits": {
+            "estate_size_threshold": {
+              "value": 20,
+              "unit": "hectares",
+              "period": "once",
+              "note": "An estate is agricultural land exceeding 20 hectares."
+            }
+          },
+          "penalty": "A fine of up to RM50,000 and a further fine of up to RM1,000 a day while the offence continues (Housing Act, s. 33).",
+          "enforced_by": "Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990 (Act 446), reprint as at 1 February 2021",
+          "section": "ss. 2, 3, 5, 6, 13, 16, 24d, 24f to 24i and 33",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-03/2.%20Employees%20Minimum%20Standards%20of%20Housing,%20Accomodations%20and%20emenities%20Act%201990.pdf",
+          "year": 1990
+        },
+        {
+          "law": "Employment Act 1955 (Act 265), updated text as at 1 January 2023",
+          "section": "s. 24(4)-(5)",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-11/Akta%20Kerja%201955%20(Akta%20265)_0.pdf",
+          "year": 1955
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The numeric standards for housing are set by regulations that were not read. The Act applies to Peninsular Malaysia and Labuan only (s. 1(2)). 'Estate' also covers a mine or other place the Minister declares. Housing in the reprint read is as at 1 February 2021.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "regulated",
+      "title": "Work injury and invalidity insurance",
+      "summary": "Employers must register foreign workers with PERKESO. Since 2019 they are covered for work injury; since July 2024 for invalidity; and since June 2026 for accidents outside work.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Foreign workers with a valid passport and work pass are protected under the Employment Injury Scheme (since 1 January 2019), the Invalidity Scheme (since 1 July 2024) and the Non-Employment Injury Scheme (since 1 June 2026) (PERKESO).",
+            "Employers must register foreign workers and pay the contributions in full: the employer pays 1.25% for employment injury and 0.5% for invalidity, a total of 1.75%; the worker pays 0.5% for invalidity and 0.75% for the non-employment injury scheme in its first two years, a total of 1.25% (PERKESO).",
+            "Benefits include medical care, temporary and permanent disablement benefits, constant-attendance allowance, rehabilitation, dependants' benefit, funeral benefit, invalidity pension and a funeral repatriation cost (PERKESO)."
+          ],
+          "limits": {
+            "employer_contribution": {
+              "value": 1.75,
+              "unit": "percent",
+              "period": "month",
+              "note": "1.25% employment injury + 0.5% invalidity."
+            },
+            "worker_contribution": {
+              "value": 1.25,
+              "unit": "percent",
+              "period": "month",
+              "note": "0.5% invalidity + 0.75% non-employment injury, phase 1."
+            }
+          },
+          "penalty": "Failing to register or pay contributions: a fine of up to RM10,000, up to 2 years' imprisonment, or both (Employees' Social Security Act 1969, per PERKESO).",
+          "enforced_by": "Social Security Organisation (PERKESO)"
+        },
+        {
+          "applies_to": [
+            "plantation_worker"
+          ],
+          "requirements": [
+            "Foreign workers with a valid passport and work pass are protected under the Employment Injury Scheme (since 1 January 2019), the Invalidity Scheme (since 1 July 2024) and the Non-Employment Injury Scheme (since 1 June 2026) (PERKESO).",
+            "Employers must register foreign workers and pay the contributions in full: the employer pays 1.75% and the worker 1.25% (phase 1) (PERKESO).",
+            "An employer of employees on an estate must also provide medical attendance, care and treatment for them and their dependants living on the estate (Housing Act, s. 16)."
+          ],
+          "limits": {
+            "employer_contribution": {
+              "value": 1.75,
+              "unit": "percent",
+              "period": "month"
+            },
+            "worker_contribution": {
+              "value": 1.25,
+              "unit": "percent",
+              "period": "month",
+              "note": "Phase 1."
+            }
+          },
+          "penalty": "Failing to register or pay contributions: a fine of up to RM10,000, up to 2 years' imprisonment, or both (Employees' Social Security Act 1969, per PERKESO).",
+          "enforced_by": "Social Security Organisation (PERKESO); Department of Labour Peninsular Malaysia (JTKSM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "PERKESO: Foreign Workers (LINDUNG PEKERJA)",
+          "section": "Schemes, eligibility and contributions",
+          "url": "https://www.perkeso.gov.my/en/our-services/protection/foreign-worker.html"
+        },
+        {
+          "law": "Employees' Minimum Standards of Housing, Accommodations and Amenities Act 1990 (Act 446), reprint as at 1 February 2021",
+          "section": "s. 16",
+          "url": "https://jtksm.mohr.gov.my/sites/default/files/2023-03/2.%20Employees%20Minimum%20Standards%20of%20Housing,%20Accomodations%20and%20emenities%20Act%201990.pdf",
+          "year": 1990
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Read from PERKESO's page, which summarises the Employees' Social Security Act 1969; the Act's text was not read. The contribution rates and the phased Non-Employment Injury rate (0.75% in years 1-2, 1.00% in years 3-5, 1.25% from year 6, from 1 June 2026) are revised by PERKESO. Domestic workers are also covered under the scheme, per PERKESO.",
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "regulated",
+      "title": "Pension and social security",
+      "summary": "Since October 2025, employers must pay 2% into the Employees Provident Fund (EPF) for non-citizen employees with a valid passport and work pass, and the employee pays 2%. Domestic workers are excluded. PERKESO covers work injury and invalidity.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employers must register non-Malaysian citizen employees with a valid passport and work pass, other than domestic workers, with the EPF and contribute for them from wages for October 2025 (EPF).",
+            "The employer share is 2% and the employee share is 2%; the employer may deduct the employee's share from wages, and must pay both by the 15th of the following month (EPF).",
+            "Employers must also register foreign workers with PERKESO for work injury and invalidity cover (see insurance_and_injury)."
+          ],
+          "limits": {
+            "employer_epf_contribution": {
+              "value": 2,
+              "unit": "percent",
+              "period": "month"
+            },
+            "employee_epf_contribution": {
+              "value": 2,
+              "unit": "percent",
+              "period": "month"
+            },
+            "epf_payment_deadline": {
+              "value": 15,
+              "unit": "days",
+              "period": "month",
+              "note": "Of the month after the wages month."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Employees Provident Fund (KWSP); Social Security Organisation (PERKESO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "EPF (KWSP): Contribution for non-Malaysian citizen employees",
+          "section": "Who is liable; contribution rate",
+          "url": "https://www.kwsp.gov.my/en/employer/responsibilities/non-malaysian-citizen-employees"
+        },
+        {
+          "law": "PERKESO: Foreign Workers (LINDUNG PEKERJA)",
+          "section": "Schemes, eligibility and contributions",
+          "url": "https://www.perkeso.gov.my/en/our-services/protection/foreign-worker.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Read from the EPF and PERKESO official pages, not from the Employees Provident Fund Act text. Withdrawal rules for foreign members and the treatment of members leaving Malaysia were not read. The EPF rate may be revised.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}
