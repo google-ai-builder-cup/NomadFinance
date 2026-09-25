@@ -20,7 +20,8 @@
       "verifying": "Sinusuri…",
       "changeNumber": "Palitan ang numero",
       "resendCode": "Magpadala ng bagong code",
-      "signingIn": "Nagsa-sign in…"
+      "signingIn": "Nagsa-sign in…",
+      "googleUnavailableStandalone": "Hindi available ang Google sign-in sa naka-install na app. Buksan ang nomadfinance-prod.web.app sa Safari, o mag-sign in gamit ang iyong numero ng mobile sa ibaba."
     },
     "signOut": "Mag-sign out",
     "error": {

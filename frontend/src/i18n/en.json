@@ -20,7 +20,8 @@
       "verifying": "Checking…",
       "changeNumber": "Change number",
       "resendCode": "Send a new code",
-      "signingIn": "Signing in…"
+      "signingIn": "Signing in…",
+      "googleUnavailableStandalone": "Google sign-in isn't available in the installed app. Open nomadfinance-prod.web.app in Safari, or sign in with your phone number below."
     },
     "signOut": "Sign out",
     "error": {

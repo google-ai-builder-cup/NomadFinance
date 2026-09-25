@@ -20,7 +20,8 @@
       "verifying": "जाँच हो रही है…",
       "changeNumber": "नंबर बदलें",
       "resendCode": "नया कोड भेजें",
-      "signingIn": "साइन इन हो रहा है…"
+      "signingIn": "साइन इन हो रहा है…",
+      "googleUnavailableStandalone": "इंस्टॉल किए गए ऐप में Google साइन-इन उपलब्ध नहीं है। Safari में nomadfinance-prod.web.app खोलें, या नीचे अपने मोबाइल नंबर से साइन इन करें।"
     },
     "signOut": "साइन आउट",
     "error": {

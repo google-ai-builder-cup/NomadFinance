@@ -17,6 +17,7 @@ import {
   signInWithGoogle,
 } from "@/services/authService";
 import { PHONE_DIAL_CODES } from "@/utils/constants";
+import { isIosStandalonePwa } from "@/utils/platform";
 import { toE164 } from "@/utils/validators";
 
 type BusyAction = "google" | "sendCode" | "verify";
@@ -30,6 +31,8 @@ export default function SignIn() {
   const { t } = useI18n();
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
+
+  const googleUnavailable = isIosStandalonePwa();
 
   const [dialCode, setDialCode] = useState(PHONE_DIAL_CODES[0].dialCode);
   const [localNumber, setLocalNumber] = useState("");
@@ -139,16 +142,22 @@ export default function SignIn() {
         <p className="text-sm text-muted-foreground">{t("auth.signIn.subtitle")}</p>
       </header>
 
-      <Button
-        variant="outline"
-        size="lg"
-        className="h-11 w-full"
-        disabled={busy !== null}
-        onClick={() => void run("google", signInWithGoogle)}
-      >
-        {busy === "google" && spinner}
-        {busy === "google" ? t("auth.signIn.signingIn") : t("auth.signIn.google")}
-      </Button>
+      {googleUnavailable ? (
+        <p className="rounded-md border border-input bg-muted/50 p-3 text-center text-sm text-muted-foreground">
+          {t("auth.signIn.googleUnavailableStandalone")}
+        </p>
+      ) : (
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-11 w-full"
+          disabled={busy !== null}
+          onClick={() => void run("google", signInWithGoogle)}
+        >
+          {busy === "google" && spinner}
+          {busy === "google" ? t("auth.signIn.signingIn") : t("auth.signIn.google")}
+        </Button>
+      )}
 
       <div className="flex items-center gap-3 text-xs uppercase text-muted-foreground">
         <span className="h-px flex-1 bg-border" aria-hidden="true" />

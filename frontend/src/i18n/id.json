@@ -20,7 +20,8 @@
       "verifying": "Memeriksa…",
       "changeNumber": "Ganti nomor",
       "resendCode": "Kirim kode baru",
-      "signingIn": "Sedang masuk…"
+      "signingIn": "Sedang masuk…",
+      "googleUnavailableStandalone": "Masuk dengan Google tidak tersedia di aplikasi yang terinstal. Buka nomadfinance-prod.web.app di Safari, atau masuk dengan nomor ponsel Anda di bawah."
     },
     "signOut": "Keluar",
     "error": {
