@@ -1,6 +1,7 @@
 {
   "common": {
-    "loading": "Memuat…"
+    "loading": "Memuat…",
+    "retry": "Coba lagi"
   },
   "auth": {
     "signIn": {
@@ -92,5 +93,42 @@
     "title": "Halaman tidak ditemukan",
     "description": "Halaman ini tidak ada atau sudah dipindahkan.",
     "backToDashboard": "Ke beranda"
+  },
+  "onboarding": {
+    "title": "Mari siapkan NomadFinance untuk Anda",
+    "progress": "Langkah {{current}} dari {{total}}",
+    "back": "Kembali",
+    "next": "Lanjut",
+    "finish": "Selesai",
+    "saving": "Menyimpan…",
+    "steps": {
+      "language": {
+        "question": "Bahasa apa yang Anda pilih?",
+        "hint": "Anda bisa mengubahnya nanti."
+      },
+      "hostCountry": {
+        "question": "Di negara mana Anda bekerja sekarang?",
+        "hint": "Kami memakainya untuk memeriksa kontrak Anda dengan hukum ketenagakerjaan di sana."
+      },
+      "homeCountry": {
+        "question": "Ke negara mana Anda mengirim uang?",
+        "hint": "Kami memakainya untuk membandingkan biaya kirim uang."
+      },
+      "jobType": {
+        "question": "Apa jenis pekerjaan Anda?",
+        "hint": "Ini membantu kami memeriksa aturan yang berlaku untuk pekerjaan Anda."
+      }
+    },
+    "jobTypes": {
+      "domestic_worker": "Pekerja rumah tangga",
+      "manufacturing_worker": "Pekerja pabrik",
+      "care_worker": "Perawat atau pengasuh",
+      "plantation_worker": "Pekerja perkebunan atau pertanian",
+      "construction_worker": "Pekerja konstruksi",
+      "working_holiday": "Working holiday",
+      "other": "Lainnya"
+    },
+    "saveError": "Jawaban Anda gagal disimpan. Periksa koneksi Anda lalu coba lagi.",
+    "loadError": "Profil Anda gagal dimuat. Periksa koneksi Anda lalu coba lagi."
   }
 }

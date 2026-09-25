@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { registerSW } from "virtual:pwa-register";
 
+import LanguageSync from "@/components/common/LanguageSync";
 import AuthProvider from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import { router } from "@/router";
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <LanguageSync />
         <RouterProvider router={router} future={{ v7_startTransition: true }} />
       </AuthProvider>
     </QueryClientProvider>

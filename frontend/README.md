@@ -41,6 +41,12 @@ Google and phone (SMS code) sign-in, `useAuth()`, and `ProtectedRoute` for signe
 
 Full flow, commands and troubleshooting: [`docs/runbooks/NF-P1-009-frontend-firebase-auth.md`](../docs/runbooks/NF-P1-009-frontend-firebase-auth.md).
 
+## Onboarding
+
+After the first sign-in, `RequireOnboarding` sends users to `/onboarding` until `users/{uid}` has `onboarding_completed_at`. Four questions (language, host country, home country, job type) are saved straight to Firestore; `firestore.rules` validates them. The allowed values live in `src/types/enums.ts` and must match the rules.
+
+Details and how to test: [`docs/runbooks/NF-P1-022-user-onboarding.md`](../docs/runbooks/NF-P1-022-user-onboarding.md).
+
 ## App shell and navigation
 
 Every signed-in page renders inside `AppShell` (header, footer, and a left sidebar on tablet and desktop or a bottom tab bar on phones). `/dashboard` shows the four pillar cards; `/remittance`, `/contract`, `/radar` and `/identity` show a "coming soon" page until their own tasks replace the route element in `src/router.tsx`. The nav items live in one list, `src/components/layout/navItems.ts`, so adding a pillar page means editing that list and the router only.

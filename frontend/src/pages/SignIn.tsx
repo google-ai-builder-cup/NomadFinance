@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LanguageSelector from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
@@ -137,6 +138,11 @@ export default function SignIn() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 px-4 py-10">
+      {/* Signed out, so this only changes the device language (English by default). */}
+      <div className="flex justify-end">
+        <LanguageSelector />
+      </div>
+
       <header className="space-y-2 text-center">
         <h1 className="text-2xl font-bold tracking-tight">{t("auth.signIn.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("auth.signIn.subtitle")}</p>
