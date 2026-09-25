@@ -129,8 +129,8 @@ gcloud run deploy nomadfinance-api `
   --region asia-south1 `
   --image $IMAGE `
   --service-account nomadfinance-backend@nomadfinance-prod.iam.gserviceaccount.com `
-  --set-env-vars "APP_ENV=prod" `
-  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest" `
+  --set-env-vars "APP_ENV=prod,CRON_SERVICE_ACCOUNT=nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com,CRON_AUDIENCE=https://nomadfinance-api-azewstzfaa-el.a.run.app" `
+  --set-secrets "GEMINI_API_KEY=gemini-api-key:latest,CURRENCYFREAKS_API_KEY=currencyfreaks-api-key:latest" `
   --allow-unauthenticated `
   --cpu 1 --memory 512Mi `
   --min-instances 0 --max-instances 2
@@ -141,7 +141,9 @@ What the script's settings mean:
 | Flag | Why |
 |---|---|
 | `--set-env-vars APP_ENV=prod` | The image has no default for `APP_ENV` and exits without it (see NF-P1-002). |
+| `CRON_SERVICE_ACCOUNT`, `CRON_AUDIENCE` (in `--set-env-vars`) | Added in NF-P1-019. Required when `APP_ENV=prod` (the app exits without them): the only Google identity and audience allowed to call `/api/v1/internal/*` (Cloud Scheduler). `deploy_manual.sh` fills them in. |
 | `--set-secrets GEMINI_API_KEY=gemini-api-key:latest` | Added in NF-P1-004. Mounts the Secret Manager key as an env var; the app exits without it. Needs the one-time IAM grant in `NF-P1-004-gemini-client.md`. |
+| `CURRENCYFREAKS_API_KEY=currencyfreaks-api-key:latest` (in `--set-secrets`) | Added in NF-P1-019, optional (ADR-006). `deploy_manual.sh` adds it, and `WISE_API_TOKEN=wise-api-token`, only when the secret exists; drop it from the PowerShell command if the secret doesn't. |
 | `--allow-unauthenticated` | Grants `roles/run.invoker` to `allUsers`. Needed for a public URL. Fine for `/health`; real endpoints check Firebase tokens in the app (NF-P1-005). |
 | `--min-instances 0` | Scale to zero when idle, so no idle cost. The first request after idle is a cold start of a few seconds. |
 | `--max-instances 2` | Hard cost cap. |

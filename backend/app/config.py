@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolved from this file so settings load the same way whether the app starts from
@@ -50,6 +50,25 @@ class Settings(BaseSettings):
     # Uploads are sent to Gemini inline, which caps a whole request at about 20 MB.
     # 10 MB covers multi-page phone scans and leaves room for the prompt.
     upload_max_bytes: int = Field(default=10 * 1024 * 1024, gt=0)
+
+    # Cloud Scheduler signs its calls to /api/v1/internal/* with a Google OIDC token for this
+    # service account and audience. Required outside local dev (checked below).
+    cron_service_account: str | None = None
+    cron_audience: str | None = None
+
+    # FX failover chain (ADR-006). Frankfurter and ExchangeRate-API need no key; the two
+    # keyed providers are skipped while their key is unset.
+    fx_timeout_seconds: float = Field(default=10.0, gt=0)
+    currencyfreaks_api_key: SecretStr | None = None
+    wise_api_token: SecretStr | None = None
+
+    @model_validator(mode="after")
+    def _require_cron_auth_when_deployed(self) -> Settings:
+        if self.app_env != "local" and not (self.cron_service_account and self.cron_audience):
+            raise ValueError(
+                "CRON_SERVICE_ACCOUNT and CRON_AUDIENCE are required when APP_ENV is not local"
+            )
+        return self
 
 
 @lru_cache

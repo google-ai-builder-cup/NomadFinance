@@ -1,9 +1,16 @@
 from __future__ import annotations
 
 from fastapi import Depends, HTTPException, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.core.security import InvalidTokenError, verify_id_token
+from app.config import Settings, get_settings
+from app.core.security import (
+    InvalidTokenError,
+    TokenVerificationUnavailableError,
+    verify_google_oidc_token,
+    verify_id_token,
+)
 from app.schemas.user import AuthenticatedUser
 
 # auto_error=False so a missing token becomes our own 401 instead of FastAPI's default.
@@ -43,3 +50,46 @@ async def get_current_user(
         name=claims.get("name"),
         picture=claims.get("picture"),
     )
+
+
+async def require_cloud_scheduler(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),  # noqa: B008
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> str:
+    """Allow only Cloud Scheduler's signed calls to /api/v1/internal/* and return its email.
+
+    The Cloud Run service is public (user endpoints check Firebase tokens themselves),
+    so this check is the only gate in front of the internal endpoints.
+    """
+    if not (settings.cron_service_account and settings.cron_audience):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Internal endpoints are not configured",
+        )
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing bearer token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        claims = await run_in_threadpool(
+            verify_google_oidc_token, credentials.credentials, settings.cron_audience
+        )
+    except InvalidTokenError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+            headers={"WWW-Authenticate": "Bearer"},
+        ) from exc
+    except TokenVerificationUnavailableError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
+        ) from exc
+
+    if (
+        claims.get("email") != settings.cron_service_account
+        or claims.get("email_verified") is not True
+    ):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Caller is not allowed")
+    return settings.cron_service_account
