@@ -1,0 +1,29 @@
+# Cloud Scheduler job: refresh the six corridor FX rates (NF-P1-019).
+#
+# Create (once):   gcloud scheduler jobs create http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml
+# Apply a change:  gcloud scheduler jobs update http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml
+# Run now:         gcloud scheduler jobs run refresh-rates --project nomadfinance-prod --location asia-south1
+#
+# To change how often it runs, edit --schedule only (cron syntax, UTC), then "Apply a change".
+#   every 2 hours: "0 */2 * * *"     every hour: "0 * * * *"     every 6 hours: "0 */6 * * *"
+# Both keyless providers publish new rates once a day, so the interval only sets how quickly a
+# new daily rate shows up. rates_history point ids are per UTC hour, so any interval works.
+
+--project: nomadfinance-prod
+--location: asia-south1
+--schedule: "0 */2 * * *"
+--time-zone: Etc/UTC
+--description: "Refresh FX rates into rates_cache and rates_history (NF-P1-019)"
+--uri: https://nomadfinance-api-azewstzfaa-el.a.run.app/api/v1/internal/refresh-rates
+--http-method: POST
+# Google's front end rejects a POST without Content-Length (411); an empty JSON body avoids it.
+--message-body: "{}"
+--headers: Content-Type=application/json
+# The endpoint accepts only an OIDC token for this service account and audience; they must
+# match CRON_SERVICE_ACCOUNT and CRON_AUDIENCE on the Cloud Run service (deploy_manual.sh).
+--oidc-service-account-email: nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com
+--oidc-token-audience: https://nomadfinance-api-azewstzfaa-el.a.run.app
+# The worst case (every provider timing out) is about 40 s; retries catch a 503 partial refresh.
+--attempt-deadline: 180s
+--max-retry-attempts: 2
+--min-backoff: 300s

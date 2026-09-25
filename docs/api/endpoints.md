@@ -22,6 +22,7 @@ must say so explicitly in their own doc section below.
 |---|---|---|---|---|
 | GET | `/health` | Public | None | NF-P1-001 |
 | POST | `/api/v1/contracts/extract` | Firebase ID token | Not yet (NF-P1-027) | NF-P1-006 |
+| POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 
 ## Error format
 
@@ -111,3 +112,14 @@ curl -s -H "Authorization: Bearer $TOKEN" -F "file=@tests/fixtures/contracts/sam
 | 422 | `No readable document found. ...` | Gemini found no document text (selfie, landscape, blank page) |
 | 422 | FastAPI validation list | No `file` field in the form |
 | 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
+
+---
+
+## `POST /api/v1/internal/refresh-rates` (internal)
+
+Called only by the Cloud Scheduler job `refresh-rates` (every 2 hours). Hidden from the OpenAPI docs. Details: `docs/runbooks/NF-P1-019-fx-refresh-cron.md`.
+
+- **Auth:** `Authorization: Bearer <Google-signed OIDC token>` for `CRON_SERVICE_ACCOUNT` with audience `CRON_AUDIENCE`. Firebase user tokens are rejected.
+- **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
+- **Response `200`:** `RefreshRatesResponse` (`app/schemas/remittance.py`): `history_point` (e.g. `2026-09-25T13`), `refreshed` (pair, rate, provider, rate_date), `failed` (pair, provider attempts), `completed_at`.
+- **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured **or** some pairs failed on every provider (body is the same `RefreshRatesResponse`; succeeded pairs are saved).
