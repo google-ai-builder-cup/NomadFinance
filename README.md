@@ -28,7 +28,7 @@ Four interconnected pillars protect migrant workers across the financial vulnera
 ## JAPAC Scope
 
 - **Host Countries (6):** Singapore, South Korea, Malaysia, Japan, Hong Kong, Australia
-- **Corridors (6):** SG→PH, SG→IN, KR→NP, MY→ID, JP→PH, AU→PH
+- **Corridors (6):** SG→PH, SG→IN, AU→IN, MY→ID, JP→PH, AU→PH
 - **Languages (6):** English, Hindi, Tagalog, Bahasa Indonesia, Nepali, Bengali
 
 ## Repo Structure
