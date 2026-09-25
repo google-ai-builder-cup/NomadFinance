@@ -3,6 +3,28 @@
     "loading": "Naglo-load…",
     "retry": "Subukan ulit"
   },
+  "landing": {
+    "brand": "NomadFinance",
+    "hero": {
+      "eyebrow": "Ginawa para sa mga migrant worker sa buong Asia-Pacific",
+      "title": "Ang sahod mo. Ang kontrata mo. Ang pera pauwi. Protektado.",
+      "subtitle": "Suriin ang iyong kontrata laban sa lokal na batas paggawa, tingnan ang tunay na halaga ng pagpapadala ng pera pauwi, at alamin ang iyong mga karapatan — lahat sa iyong sariling wika.",
+      "cta": "Magsimula"
+    },
+    "story": {
+      "heading": "Kilalanin si Priya",
+      "body": "Umalis si Priya sa India para magtrabaho bilang domestic worker sa Singapore. Binigyan siya ng ahensya ng kontrata sa Ingles — isang wikang natututuhan pa lang niya — at pinili na rin nila kung aling serbisyo ang gagamitin niya sa pagpapadala ng pera. Wala siyang paraan para malaman kung patas ang dalawa. Binabasa ng NomadFinance ang kontrata niya sa Hindi, sinusuri ito laban sa batas paggawa ng Singapore, at ipinapakita kung magkano talaga ang sinisingil ng bawat provider para magpadala ng pera sa kanyang pamilya — para sa kanya ang desisyon, hindi sa ahensya niya."
+    },
+    "pillars": {
+      "heading": "Apat na paraan ng pagtulong ng NomadFinance sa iyo",
+      "cta": "Mag-sign in para subukan"
+    },
+    "finalCta": {
+      "heading": "Handa ka na bang suriin ang sa iyo?",
+      "subtitle": "Mag-sign in at tingnan kung nasaan ka — dalawang minuto lang ito.",
+      "button": "Mag-sign in"
+    }
+  },
   "auth": {
     "signIn": {
       "title": "Mag-sign in sa NomadFinance",
