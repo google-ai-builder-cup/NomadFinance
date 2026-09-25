@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from app.api.v1.router import api_router
 from app.config import get_settings
 from app.core.errors import register_exception_handlers
+from app.core.logging import configure_logging
+from app.core.middleware import RequestLoggingMiddleware
 from app.schemas.common import HealthResponse
 
 
@@ -15,6 +17,7 @@ def create_app() -> FastAPI:
     instead of surfacing on the first request.
     """
     settings = get_settings()
+    configure_logging(settings)
 
     app = FastAPI(title=settings.app_name, version=settings.app_version)
 
@@ -29,6 +32,9 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router, prefix="/api/v1")
     register_exception_handlers(app)
+    # Added last so it is the outermost layer: it also times and logs whatever other
+    # middleware answers or rejects a request.
+    app.add_middleware(RequestLoggingMiddleware)
     return app
 
 
