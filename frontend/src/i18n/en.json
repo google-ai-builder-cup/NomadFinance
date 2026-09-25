@@ -1,1 +1,44 @@
-{}
+{
+  "common": {
+    "loading": "Loading…"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in to NomadFinance",
+      "subtitle": "Protect your pay, your contract and the money you send home.",
+      "google": "Continue with Google",
+      "or": "or",
+      "phoneLabel": "Mobile number",
+      "countryCodeLabel": "Country code",
+      "phonePlaceholder": "8123 4567",
+      "phoneHint": "We'll send a 6-digit code by SMS.",
+      "sendCode": "Send code",
+      "sendingCode": "Sending…",
+      "codeLabel": "6-digit code",
+      "codeSentTo": "Code sent to {{phone}}",
+      "verify": "Verify and sign in",
+      "verifying": "Checking…",
+      "changeNumber": "Change number",
+      "resendCode": "Send a new code",
+      "signingIn": "Signing in…"
+    },
+    "signOut": "Sign out",
+    "error": {
+      "invalidPhone": "That mobile number doesn't look right. Check the country code and number.",
+      "invalidCode": "That code is wrong. Check the SMS and try again.",
+      "codeExpired": "That code has expired. Send a new one.",
+      "tooManyRequests": "Too many attempts. Please wait a few minutes and try again.",
+      "network": "No internet connection. Check your connection and try again.",
+      "securityCheck": "The security check didn't pass. Refresh the page and try again.",
+      "unavailable": "This sign-in method isn't available right now. Try another one.",
+      "accountExists": "This email already uses a different sign-in method. Use that one instead.",
+      "generic": "Sign-in didn't work. Please try again."
+    }
+  },
+  "dashboard": {
+    "placeholder": {
+      "title": "You're signed in",
+      "signedInAs": "Signed in as {{name}}"
+    }
+  }
+}
