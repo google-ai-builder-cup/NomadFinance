@@ -93,6 +93,7 @@ The example is a shortened copy of the real document, so `provider_count` does n
 
 ## Loading and refreshing (NF-P1-016)
 
+- Loader: `data-scripts/src/loaders/corridors.py` (`python -m src.loaders.corridors`), backed by `data-scripts/src/firestore_client.py` (Firebase Admin SDK, Application Default Credentials).
 - Write each corridor with a plain `set` on `corridors/{corridor_id}`. The id is fixed, so running the loader again replaces the document and never duplicates it.
 - Check each document against the Pydantic models in `data-scripts/src/validators/corridor.py` before writing.
 - When the World Bank publishes a newer quarter, re-run the parser, then the loader. `period` changes and old data is replaced. There is no history of past quarters in Firestore.
