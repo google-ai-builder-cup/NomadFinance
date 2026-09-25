@@ -35,9 +35,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precaches the built app shell (HTML/JS/CSS) for offline load; no
-        // per-route API caching yet, that's a later pillar-by-pillar decision.
-        globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest}"],
+        globPatterns: ["*/.{js,css,html,svg,png,ico,webmanifest}"],
+        navigateFallbackDenylist: [/^\/__\//],
       },
     }),
   ],
