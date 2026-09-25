@@ -55,9 +55,15 @@ Full structure, how to test it, and how later tasks plug in: [`docs/runbooks/NF-
 
 ## PWA
 
-`vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time (`pnpm build`, not `pnpm dev` — the service worker only registers against a built app). Every signed-in page shows a dismissible "Install NomadFinance" banner once the browser fires `beforeinstallprompt` (Chrome/Edge/Android only; iOS never fires it). Icons and manifest colors are placeholders pending NF-P1-024's real branding.
+`vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time (`pnpm build`, not `pnpm dev` — the service worker only registers against a built app). Every signed-in page shows a dismissible "Install NomadFinance" banner once the browser fires `beforeinstallprompt` (Chrome/Edge/Android only; iOS never fires it). Icons and manifest colors are real branding as of NF-P1-024.
 
 Full setup, how to verify installability, and how later tasks (real icons, update-available toast) plug in: [`docs/runbooks/NF-P1-012-frontend-pwa.md`](../docs/runbooks/NF-P1-012-frontend-pwa.md).
+
+## Brand assets
+
+Color palette lives in `src/styles/tokens.css` as shadcn-style CSS variables (`--primary`, etc.) — every component already themes off these, so a palette change here needs no component edits. Logo sources are `public/brand/logo-full.svg` (lockup, for docs/pitch deck) and `public/brand/logo-mark.svg` (icon, source for every favicon/app icon). Every raster file — `favicon.ico`, `apple-touch-icon.png`, `public/icons/*`, `public/splash/*` — is generated from those two SVGs by `scripts/generate-brand-assets.sh`; re-run it after editing either source (needs `rsvg-convert`, see the script's header comment).
+
+Full palette (hex values for the pitch deck), rationale, and the generation pipeline: [`docs/runbooks/NF-P1-024-brand-assets.md`](../docs/runbooks/NF-P1-024-brand-assets.md).
 
 ## Deploy
 

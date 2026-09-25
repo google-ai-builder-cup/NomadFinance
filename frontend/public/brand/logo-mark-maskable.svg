@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Full-bleed background: Android crops this to a circle/squircle, so nothing outside the
+       inner ~80% safe zone below is guaranteed to survive. -->
+  <rect width="64" height="64" fill="#0B5D71" />
+  <g transform="translate(32 32) scale(0.78) translate(-32 -32)">
+    <path
+      d="M20 46 L20 18 L44 46 L44 18"
+      fill="none"
+      stroke="#FFFFFF"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <circle cx="44" cy="18" r="5" fill="#F59E0B" />
+  </g>
+</svg>

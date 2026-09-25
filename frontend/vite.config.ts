@@ -14,7 +14,6 @@ export default defineConfig({
       injectRegister: false,
       includeAssets: ["favicon.ico", "favicon.svg", "apple-touch-icon.png"],
       manifest: {
-        // TODO(Aditya): swap name/colors/icons for real branding from NF-P1-024
         name: "NomadFinance",
         short_name: "NomadFinance",
         description: "Financial protection for migrant workers.",
@@ -22,7 +21,8 @@ export default defineConfig({
         scope: "/",
         display: "standalone",
         background_color: "#ffffff",
-        theme_color: "#0f172a",
+        // Brand primary "Nomad Teal" (NF-P1-024) — see docs/runbooks/NF-P1-024-brand-assets.md
+        theme_color: "#0B5D71",
         icons: [
           { src: "/icons/pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "/icons/pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
