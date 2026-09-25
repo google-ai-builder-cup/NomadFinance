@@ -40,6 +40,7 @@ export function useCompleteOnboarding() {
   });
 }
 
+/** Change the saved preferred_language. For the profile page (NF-P1-023), not the header. */
 export function useUpdatePreferredLanguage() {
   const { user } = useAuth();
   const queryClient = useQueryClient();

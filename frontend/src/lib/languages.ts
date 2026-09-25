@@ -41,3 +41,33 @@ export function setDeviceLanguage(code: string): void {
     // Not remembered on this device; the choice still applies until reload.
   }
 }
+
+// A signed-in user's quick switch from the header, for this browser tab only: kept across
+// reloads, cleared on sign-out (LanguageSync). It never changes preferred_language, which
+// also drives reports, notifications and SMS and is set only in onboarding and the profile page.
+const SESSION_LANGUAGE_KEY = "nomadfinance.sessionLanguage";
+
+export function getSessionLanguage(): string | null {
+  try {
+    const stored = sessionStorage.getItem(SESSION_LANGUAGE_KEY);
+    return SUPPORTED_LANGUAGES.some((language) => language.code === stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setSessionLanguage(code: string): void {
+  try {
+    sessionStorage.setItem(SESSION_LANGUAGE_KEY, code);
+  } catch {
+    // Not kept across reloads; the switch still applies until then.
+  }
+}
+
+export function clearSessionLanguage(): void {
+  try {
+    sessionStorage.removeItem(SESSION_LANGUAGE_KEY);
+  } catch {
+    // Nothing stored.
+  }
+}

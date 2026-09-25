@@ -35,14 +35,14 @@ Header
   └─ <LanguageSelector />
        ├─ reads i18n.resolvedLanguage for the current <select> value
        └─ onChange → i18n.changeLanguage(code); signed out → saved as the device
-          language, signed in → saved to users/{uid}.preferred_language (NF-P1-022)
+          language, signed in → quick switch for the tab session (NF-P1-022)
 ```
 
 ## Design choices worth knowing
 
 - **Native `<select>`, not a shadcn/Radix dropdown.** No dropdown/select primitive existed in `components/ui/` yet, and adding `@radix-ui/react-select` would have been an extra shared-file dependency for a control this simple. A native select is fully keyboard-accessible for free.
 - **`useI18n()` kept its exact shape.** NF-P1-010 wrote it as `{ t }` on purpose so this task could swap the implementation without touching any consumer — confirmed by grepping all 10 call sites before and after; none changed.
-- **Changed in NF-P1-022:** the detector no longer caches automatically and no longer reads the browser language. Signed out, the UI uses the device language from `localStorage["nomadfinance.deviceLanguage"]` (English by default, set only by the selector on the sign-in page). Signed in, `LanguageSync` applies the profile's `preferred_language`, and the header selector saves to the profile. The old key `nomadfinance.language` is ignored, because it had cached the signed-in user's language onto the sign-in page.
+- **Changed in NF-P1-022:** the detector no longer caches automatically and no longer reads the browser language. Signed out, the UI uses the device language from `localStorage["nomadfinance.deviceLanguage"]` (English by default, set only by the selector on the sign-in page). Signed in, `LanguageSync` applies the profile's `preferred_language`; the header selector is a session-only quick switch (`sessionStorage`) and never changes the profile. The old key `nomadfinance.language` is ignored, because it had cached the signed-in user's language onto the sign-in page.
 - **Translations are best-effort, not reviewed by a native speaker.** None of the team are native speakers of Hindi, Tagalog, Indonesian, Nepali or Bengali beyond a conversational level; worth a review pass before the demo.
 
 ## How later tasks plug in

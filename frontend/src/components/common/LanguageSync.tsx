@@ -4,14 +4,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUserProfile } from "@/hooks/useUser";
 import { auth } from "@/lib/firebase";
 import i18n from "@/lib/i18n";
-import { DEFAULT_LANGUAGE, getDeviceLanguage } from "@/lib/languages";
+import {
+  clearSessionLanguage,
+  DEFAULT_LANGUAGE,
+  getDeviceLanguage,
+  getSessionLanguage,
+} from "@/lib/languages";
 
 /**
  * Decides which language the UI uses. Mounted once, next to the router.
  *
  * Signed out: the device language (English unless chosen on the sign-in page).
- * Signed in: the profile's preferred_language. Until onboarding saves one, the current
- * language is left alone so onboarding's own language step isn't overridden.
+ * Signed in: a quick switch made in the header this session, else the profile's
+ * preferred_language. Until onboarding saves one, the current language is left alone so
+ * onboarding's own language step isn't overridden. Signing out ends the quick switch.
  */
 export default function LanguageSync() {
   const { user, loading } = useAuth();
@@ -23,9 +29,10 @@ export default function LanguageSync() {
       return;
     }
     if (user === null) {
+      clearSessionLanguage();
       void i18n.changeLanguage(getDeviceLanguage());
     } else if (profileLanguage !== undefined) {
-      void i18n.changeLanguage(profileLanguage);
+      void i18n.changeLanguage(getSessionLanguage() ?? profileLanguage);
     }
   }, [loading, user, profileLanguage]);
 
