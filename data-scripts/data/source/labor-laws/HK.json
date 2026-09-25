@@ -1,1 +1,898 @@
-{}
+{
+  "country": "HK",
+  "name": "Hong Kong",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "Law texts come from the Hong Kong e-Legislation database. Rates such as the statutory minimum wage and the foreign domestic helper Minimum Allowable Wage change every year; the figures here are those in force on the verification date. NATLEX records could not be opened by the curator (the site shows a bot check), so natlex_isn is empty; add it when browsing NATLEX in a normal browser. Worker groups covered: all workers, and domestic workers (foreign domestic helpers on the Standard Employment Contract ID 407).",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "regulated",
+      "title": "Minimum wage",
+      "summary": "Most employees must be paid at least HK$43.1 for every hour worked (from 1 May 2026). Live-in domestic workers, including foreign domestic helpers, are not covered by that rate. Foreign domestic helpers have a Minimum Allowable Wage of HK$5,100 a month for contracts signed on or after 30 September 2025, plus free food or a food allowance of at least HK$1,236 a month.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employees must be paid at least the statutory minimum wage for the hours worked; from 1 May 2026 the rate is HK$43.1 per hour (Minimum Wage Ordinance, ss. 8 and 9 and Schedule 3).",
+            "If wages fall short, the contract is taken to provide for the difference (s. 10).",
+            "Hours worked for the minimum wage include time at a place of employment as agreed or directed by the employer (government explanation of the Ordinance, LCQ5)."
+          ],
+          "limits": {
+            "statutory_minimum_wage": {
+              "value": 43.1,
+              "unit": "HKD",
+              "period": "hour",
+              "note": "In force from 1 May 2026."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The statutory minimum wage does not apply to a domestic worker who lives in the employer's household free of charge (Minimum Wage Ordinance, s. 7(3)).",
+            "A foreign domestic helper's wage under the Standard Employment Contract may not be less than the Minimum Allowable Wage announced by the Government and in force when the contract is made: HK$5,100 a month for contracts signed on or after 30 September 2025.",
+            "The employer must provide food free of charge, or may instead pay a food allowance of at least HK$1,236 a month."
+          ],
+          "limits": {
+            "minimum_allowable_wage": {
+              "value": 5100,
+              "unit": "HKD",
+              "period": "month",
+              "note": "Contracts signed on or after 30 September 2025."
+            },
+            "food_allowance_minimum": {
+              "value": 1236,
+              "unit": "HKD",
+              "period": "month",
+              "note": "If food is not provided."
+            }
+          },
+          "penalty": "An employer who underpays wages commits an offence: fine of up to HK$350,000 and imprisonment for 3 years (Immigration Department notes to the contract).",
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Minimum Wage Ordinance (Cap. 608)",
+          "section": "ss. 7(3), 8, 9, 10 and Schedule 3",
+          "url": "https://www.elegislation.gov.hk/hk/cap608"
+        },
+        {
+          "law": "Press release: New Statutory Minimum Wage rate of $43.1 per hour takes effect today",
+          "section": "1 May 2026",
+          "url": "https://www.info.gov.hk/gia/general/202605/01/P2026043000261.htm",
+          "year": 2026
+        },
+        {
+          "law": "Press release: Increase in Minimum Allowable Wage and no change in food allowance for foreign domestic helpers",
+          "section": "29 September 2025",
+          "url": "https://www.info.gov.hk/gia/general/202509/29/P2025092900318.htm",
+          "year": 2025
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 5 and explanatory notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        },
+        {
+          "law": "Government reply to Legislative Council question LCQ5 (invisible overtime)",
+          "section": "8 May 2024",
+          "url": "https://www.info.gov.hk/gia/general/202405/08/P2024050800234.htm",
+          "year": 2024
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The Minimum Allowable Wage is reviewed every September; the latest announcement found was on 29 September 2025. Check for a 2026 announcement before judging a new helper contract.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "not_regulated",
+      "title": "Working hours",
+      "summary": "Hong Kong law does not set a maximum number of working hours. Working hours are agreed in the employment contract, within the rules on rest days, holidays and minimum wage.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Employment Ordinance and the Minimum Wage Ordinance do not set standard or maximum working hours; employers and employees agree working hours in the contract as long as they do not break those two Ordinances (government reply LCQ5).",
+            "Every employee under a continuous contract must still get at least one rest day in every 7 days (Employment Ordinance, s. 17); see the rest days rule.",
+            "Hours worked, including time at a place of employment as directed by the employer, count toward the statutory minimum wage (Minimum Wage Ordinance)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        }
+      ],
+      "references": [
+        {
+          "law": "Government reply to Legislative Council question LCQ5 (invisible overtime)",
+          "section": "8 May 2024",
+          "url": "https://www.info.gov.hk/gia/general/202405/08/P2024050800234.htm",
+          "year": 2024
+        },
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "s. 17",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Minimum Wage Ordinance (Cap. 608)",
+          "section": "ss. 8 and 9",
+          "url": "https://www.elegislation.gov.hk/hk/cap608"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "'Not regulated' means no statutory limit was found in the sources reviewed. The government has published a policy study on standard working hours, but no law setting standard hours was found.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "not_regulated",
+      "title": "Overtime pay",
+      "summary": "Hong Kong law does not require a special rate for overtime. Overtime pay depends on what the employment contract says. All hours worked still count toward the minimum wage.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Employment Ordinance and the Minimum Wage Ordinance do not prescribe an overtime pay rate; the compensation arrangements for overtime are agreed between employer and employee (government reply LCQ5).",
+            "All hours worked count for the statutory minimum wage, so unpaid extra hours can bring pay below the minimum wage (Minimum Wage Ordinance; LCQ5)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        }
+      ],
+      "references": [
+        {
+          "law": "Government reply to Legislative Council question LCQ5 (invisible overtime)",
+          "section": "8 May 2024",
+          "url": "https://www.info.gov.hk/gia/general/202405/08/P2024050800234.htm",
+          "year": 2024
+        },
+        {
+          "law": "Minimum Wage Ordinance (Cap. 608)",
+          "section": "ss. 8 and 9",
+          "url": "https://www.elegislation.gov.hk/hk/cap608"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "'Not regulated' means no statutory overtime rate was found in the sources reviewed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "regulated",
+      "title": "Rest days and statutory holidays",
+      "summary": "Every worker gets at least one rest day (24 hours in a row) in every 7 days. Workers also get statutory holidays, paid after 3 months of continuous work: 15 in 2026, rising to 17 by 2030.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "At least 1 rest day in every period of 7 days, in addition to any statutory holiday (Employment Ordinance, s. 17).",
+            "The employer must tell each employee their rest days before each month starts, unless the rest days are regular (s. 18).",
+            "Statutory holidays are listed in s. 39. The number rises in stages from 12: the Buddha's Birthday (2022), the first weekday after Christmas Day (2024), Easter Monday (2026), Good Friday (2028) and the day after Good Friday (2030), reaching 17."
+          ],
+          "limits": {
+            "rest_days": {
+              "value": 1,
+              "unit": "days",
+              "period": "week",
+              "note": "In every period of 7 days."
+            },
+            "statutory_holidays_in_2026": {
+              "value": 15,
+              "unit": "days",
+              "period": "year",
+              "note": "Rising to 17 by 2030."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "A foreign domestic helper has the same rest days and statutory holidays. A rest day is a continuous period of at least 24 hours (Immigration Department notes, Clause 6).",
+            "Holiday pay is due if the helper has worked continuously for the employer for the 3 months before the holiday."
+          ],
+          "limits": {
+            "rest_day_length": {
+              "value": 24,
+              "unit": "hours",
+              "period": "once",
+              "note": "Continuous."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 17, 18, 39",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Press release: Progressive increase of statutory holidays from this year",
+          "section": "31 December 2021",
+          "url": "https://www.info.gov.hk/gia/general/202201/01/P2021123100488.htm",
+          "year": 2021
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 6 and explanatory notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "regulated",
+      "title": "Paid annual leave",
+      "summary": "After 12 months of continuous work a worker gets 7 days of paid annual leave, rising by one day a year to 14 days from the 9th year. If a job ends after 3 months but before 12 months, leave is paid pro rata.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Paid annual leave for employees with at least 12 months' continuous service: 7 days for 1 to 3 years, then 8, 9, 10, 11, 12 and 13 days for each further year of service, and 14 days from the 9th year (Employment Ordinance, s. 41AA and its Table).",
+            "The employer must give at least 14 days' written notice of the dates of annual leave, unless a shorter time is agreed (s. 41AA(4))."
+          ],
+          "limits": {
+            "annual_leave_after_1_year": {
+              "value": 7,
+              "unit": "days",
+              "period": "year"
+            },
+            "annual_leave_maximum": {
+              "value": 14,
+              "unit": "days",
+              "period": "year",
+              "note": "From the 9th year of service."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "If the contract ends after 3 months or more but less than 12 months of service, a helper is paid pro rata in lieu of annual leave, except after summary dismissal (Immigration Department notes to the contract)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "s. 41AA and Table",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Explanatory notes, paid annual leave",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "regulated",
+      "title": "Sickness allowance",
+      "summary": "After one month of continuous work, a worker earns paid sick days: 2 for each month in the first year and 4 for each month after that, up to 120 days. Sickness allowance is four-fifths of average daily wages and is paid when sick leave lasts at least 4 consecutive days.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "After one month of continuous employment, paid sickness days accrue at 2 per completed month in the first 12 months and 4 per month after that, up to a maximum of 120 days (Employment Ordinance, s. 33(1)-(2)).",
+            "The daily sickness allowance is four-fifths of the average daily wages earned over the previous 12 months (s. 35(2)).",
+            "No allowance is paid if the sick leave is shorter than 4 consecutive days (Immigration Department notes on the Employment Ordinance)."
+          ],
+          "limits": {
+            "sick_days_per_month_first_year": {
+              "value": 2,
+              "unit": "days",
+              "period": "month"
+            },
+            "sick_days_per_month_after_first_year": {
+              "value": 4,
+              "unit": "days",
+              "period": "month"
+            },
+            "maximum_accumulated_sick_days": {
+              "value": 120,
+              "unit": "days",
+              "period": "once"
+            },
+            "sickness_allowance_rate": {
+              "value": 80,
+              "unit": "percent",
+              "note": "Four-fifths of average daily wages."
+            },
+            "minimum_sick_leave_length": {
+              "value": 4,
+              "unit": "days",
+              "period": "once",
+              "note": "Consecutive days."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 33 and 35",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Explanatory notes, sickness allowance",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "When and how wages are paid",
+      "summary": "Wages are paid monthly unless the contract says otherwise, and must be paid within 7 days after the end of the wage period. When a job ends, everything owed must be paid within 7 days. Late or missing pay is a criminal offence.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Unless the contrary is proved, the wage period is 1 month (Employment Ordinance, s. 22).",
+            "Wages must be paid as soon as practicable and no later than 7 days after the wage period ends (s. 23).",
+            "When the contract ends, all sums due must be paid as soon as practicable and no later than 7 days after termination (ss. 24 and 25)."
+          ],
+          "limits": {
+            "default_wage_period": {
+              "value": 1,
+              "unit": "month",
+              "period": "once"
+            },
+            "payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the wage period or after termination."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "A helper's wages are paid in cash or, with the helper's consent, by cheque or into the helper's bank account (Standard Employment Contract, Clause 5(a))."
+          ],
+          "limits": {},
+          "penalty": "An employer who fails to pay the wages due under the contract is liable to criminal prosecution; underpaying wages carries a fine of up to HK$350,000 and imprisonment for 3 years (Immigration Department notes to the contract).",
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 22, 23, 24, 25 and 63C",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 5 and explanatory notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "regulated",
+      "title": "Deductions from wages",
+      "summary": "An employer may only deduct from wages what the Employment Ordinance allows, such as for absence, damage or loss (capped), repaying advances or loans, or meals and accommodation. Total deductions cannot exceed half of the wages in a pay period without the Labour Commissioner's approval. Unlawful deductions are an offence.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No deduction may be made from wages except as the Employment Ordinance permits (s. 32(1)).",
+            "Permitted deductions include: absence from work; damage or loss of the employer's goods directly caused by the employee's neglect or default (at most the value of the loss or HK$300 in any one case, and at most one quarter of the wage period's wages); recovering advances or overpayments (at most one quarter of the wages); a loan the employee agreed to in writing; meals supplied at the employee's request (up to cost); and accommodation provided by the employer (s. 32(2)).",
+            "Without the Commissioner for Labour's written approval, total deductions in a wage period, not counting absence, may not exceed one half of the wages payable (s. 32(3))."
+          ],
+          "limits": {
+            "maximum_total_deductions": {
+              "value": 50,
+              "unit": "percent",
+              "note": "Of the wages payable for the period, excluding absence."
+            },
+            "damage_or_loss_deduction_cap": {
+              "value": 300,
+              "unit": "HKD",
+              "period": "once",
+              "note": "Per case, or the loss if lower."
+            },
+            "advance_recovery_cap": {
+              "value": 25,
+              "unit": "percent",
+              "note": "Of the wages for the period."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "No deduction may be made from a helper's wages other than as the Employment Ordinance permits (Immigration Department notes to the contract).",
+            "The contract makes food (or a food allowance) and suitable accommodation the employer's responsibility, so any clause that charges the helper for them should be checked with the Labour Department."
+          ],
+          "limits": {},
+          "penalty": "Unlawfully deducting wages: fine of up to HK$100,000 and imprisonment for 1 year (Immigration Department notes to the contract).",
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "s. 32",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Explanatory notes, deduction from wages",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "regulated",
+      "title": "Notice to end a contract",
+      "summary": "Either side can end a contract by giving the notice the contract sets, which cannot be less than 7 days, or by paying wages instead. A foreign domestic helper's standard contract needs one month's written notice or one month's wages, and the helper is normally allowed to stay only until two weeks after the contract ends.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Either party may end a contract by notice. The notice cannot be shorter than 7 days for a continuous contract, or than 1 month where a month-to-month contract says nothing about notice (Employment Ordinance, s. 6(2)).",
+            "Notice can be replaced by paying wages for the notice period (s. 7)."
+          ],
+          "limits": {
+            "minimum_notice": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "Continuous contract with an agreed period."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Under Clause 10 of the Standard Employment Contract, employer or helper may end the contract early with one month's written notice or one month's wages instead.",
+            "Both employer and helper must tell the Director of Immigration within 7 days of the date of termination (form ID 407E or a letter).",
+            "A helper is normally admitted for two years or until two weeks after the contract ends, whichever is earlier (Immigration Department notes)."
+          ],
+          "limits": {
+            "notice_period": {
+              "value": 1,
+              "unit": "month",
+              "period": "once"
+            },
+            "immigration_notification": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the termination date."
+            },
+            "stay_after_termination": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "Normal permitted stay."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 6 and 7",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Foreign Domestic Helpers FAQ, Labour Department",
+          "section": "Q8 (terminating the contract)",
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "regulated",
+      "title": "Payments and rights when a contract ends early",
+      "summary": "When a contract ends early, the worker is owed all wages and other sums within 7 days. A domestic helper's return passage and travelling and food allowances are the employer's cost. A helper can leave without notice if she fears violence or is ill-treated, and an employer can dismiss without notice for serious misconduct.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "All sums due, including pay in lieu of notice and any long service payment, must be paid within 7 days after termination (Employment Ordinance, s. 25).",
+            "Severance payment and long service payment may be due to employees with enough service (ss. 31B to 31O and 31R to 31ZE)."
+          ],
+          "limits": {
+            "payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After termination."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "At the end of the two-year contract the helper returns to her place of origin at the employer's expense (Standard Employment Contract; Immigration Department notes).",
+            "Termination payments to a helper usually include outstanding wages, pay for untaken annual leave, severance or long service payment where due, and other sums under the contract such as return passage and food and travelling allowances (Labour Department FAQ).",
+            "A helper may end the contract without notice if she reasonably fears physical danger from violence or disease not contemplated by the contract, or is ill-treated (Clause 11).",
+            "An employer may end the contract without notice or payment in lieu if the helper wilfully disobeys a lawful and reasonable order, misconducts herself, is guilty of fraud or dishonesty, or is habitually neglectful of her duties (Clause 11)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 25, 31B to 31O, 31R to 31ZE",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clauses 7 and 11, explanatory notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        },
+        {
+          "law": "Foreign Domestic Helpers FAQ, Labour Department",
+          "section": "Q8",
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "regulated",
+      "title": "Fees charged by employment agencies",
+      "summary": "Employment agencies in Hong Kong must be licensed and may charge a job seeker at most 10% of the first month's wages, and only after the worker has been placed and has received that wage. Charging anything else is banned. For foreign domestic helpers the employer must reimburse certain fees.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employment agency must hold a licence or certificate of exemption (Employment Ordinance, s. 51).",
+            "A licensed agency must not receive any payment from a job seeker in connection with getting them a job, other than the prescribed commission (s. 57(1)(a)).",
+            "The maximum commission from a job seeker is 10% of the first month's wages received after being placed (Employment Agency Regulations, Second Schedule, Part II)."
+          ],
+          "limits": {
+            "maximum_commission": {
+              "value": 10,
+              "unit": "percent",
+              "note": "Of the first month's wages, after placement."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "A helper should pay the commission only after receiving her first month's wages, should pay the agency no other fees, and should not borrow money to pay agency or training fees (Labour Department FAQ Q24 and Employment Agencies Portal).",
+            "The Standard Employment Contract requires the employer to reimburse the fees and expenses listed in Clause 8 that the helper incurred."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 51 and 57",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        },
+        {
+          "law": "Employment Agency Regulations (Cap. 57A)",
+          "section": "Reg. 10 and Second Schedule Part II",
+          "url": "https://www.elegislation.gov.hk/hk/cap57A"
+        },
+        {
+          "law": "Foreign Domestic Helpers FAQ, Labour Department",
+          "section": "Q24",
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html"
+        },
+        {
+          "law": "Employment Agencies Portal, foreign domestic helpers, Labour Department",
+          "section": "Protect yourself",
+          "url": "https://www.eaa.labour.gov.hk/en/helpers.html"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 8",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "A prosecution of an agency must be brought within 12 months after the offence (Employment Agencies Portal). These limits apply to Hong Kong agencies; fees charged abroad fall under the home country's law.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "unclear",
+      "title": "Employer holding a passport or identity documents",
+      "summary": "Hong Kong authorities say nobody, including an employer or agency, can force a helper to hand over a passport or other identity documents. The sources reviewed did not name a specific law that makes holding them an offence, so this is unclear and workers should report it.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Labour Department's Employment Agencies Portal states that no one, including an employer or agency, can compel a helper to surrender personal identification documents such as an identity card or passport.",
+            "The sources reviewed do not cite a specific statute or offence for this; workers are told to report the matter to the authorities."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department; Police for offences of a criminal nature"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Agencies Portal, foreign domestic helpers, Labour Department",
+          "section": "Protect yourself",
+          "url": "https://www.eaa.labour.gov.hk/en/helpers.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "low",
+      "notes": "This entry rests on official guidance, not on a statute. A lawyer or the Labour Department should confirm whether an offence applies before a contract is judged on this point.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "partly_regulated",
+      "title": "Housing for the worker",
+      "summary": "Foreign domestic helpers must live in the employer's home, and the employer must provide suitable accommodation with reasonable privacy. No general housing standard was found for other employees.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No general standard for employer-provided housing was found for other employees; the Employment Ordinance lets an employer deduct for accommodation it provides (s. 32(2)(d))."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Under Clause 3 of the Standard Employment Contract the helper must work and live in the employer's residence stated in the contract, and the employer must provide suitable accommodation with reasonable privacy.",
+            "The Labour Department gives these examples of unsuitable arrangements: making a helper sleep on a makeshift bed in a corridor with little privacy, or share a room with an adult or teenager of the opposite sex."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour Department; Immigration Department (conditions of stay)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Foreign Domestic Helpers FAQ, Labour Department",
+          "section": "Q3 (Clause 3)",
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 3 and explanatory notes",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        },
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "s. 32(2)(d)",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The lack of a general housing standard for other employees is based on the sources reviewed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "regulated",
+      "title": "Work injury compensation and insurance",
+      "summary": "Employers must be insured against injury to employees at work. If a worker is hurt in an accident at work, the employer must pay compensation; for temporary incapacity it is four-fifths of the lost earnings. Employers of foreign domestic helpers must also provide free medical treatment during the contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must pay compensation for personal injury caused by an accident arising out of and in the course of employment (Employees' Compensation Ordinance, s. 5).",
+            "No employer may employ an employee unless an insurance policy covering the employer's liability is in force, for at least the amount in the Fourth Schedule (s. 40).",
+            "For temporary incapacity, compensation is periodical payments of four-fifths of the difference between the employee's monthly earnings at the time of the accident and their earnings or earning capacity during the incapacity (s. 10(1))."
+          ],
+          "limits": {
+            "temporary_incapacity_rate": {
+              "value": 80,
+              "unit": "percent",
+              "note": "Four-fifths of the lost earnings."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour Department"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must report a work accident to the Commissioner for Labour within 14 days, or 7 days if it is fatal (Labour Department FAQ).",
+            "Clause 9 of the Standard Employment Contract requires free medical treatment while the helper is employed in Hong Kong, including consultation, hospital maintenance and emergency dental treatment."
+          ],
+          "limits": {
+            "accident_report_deadline": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "7 days for fatal accidents."
+            }
+          },
+          "penalty": "Employing without the required insurance is an offence: maximum fine of HK$100,000 and imprisonment for 2 years (Labour Department FAQ).",
+          "enforced_by": "Labour Department"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employees' Compensation Ordinance (Cap. 282)",
+          "section": "ss. 5, 10 and 40",
+          "url": "https://www.elegislation.gov.hk/hk/cap282"
+        },
+        {
+          "law": "Foreign Domestic Helpers FAQ, Labour Department",
+          "section": "Work injury and free medical treatment answers",
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html"
+        },
+        {
+          "law": "Standard Employment Contract (ID 407) and explanatory notes, Immigration Department",
+          "section": "Clause 9",
+          "url": "https://www.immd.gov.hk/eng/forms/forms/fdhcontractterms.html"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "partly_regulated",
+      "title": "Retirement savings (MPF) and severance",
+      "summary": "Most employees aged 18 to 64 must join the Mandatory Provident Fund (MPF), a retirement savings scheme. Domestic employees, including foreign domestic helpers, are exempt from MPF. Severance and long service payments may be due when a job ends.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employees aged 18 to 64 must join an MPF scheme unless they are exempt persons (MPF Authority).",
+            "Exempt persons include people under 18 or over 65, domestic employees, and others such as civil servants (MPF Authority).",
+            "Severance or long service payments may be due to employees with enough service (Employment Ordinance, ss. 31B to 31ZE)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Mandatory Provident Fund Schemes Authority"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic employees are exempt persons and are not required to join an MPF scheme (MPF Authority)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Mandatory Provident Fund Schemes Authority"
+        }
+      ],
+      "references": [
+        {
+          "law": "Mandatory Provident Fund Authority: MPF coverage",
+          "section": "Exempt persons",
+          "url": "https://www.mpfa.org.hk/en/mpf-system/mpf-coverage"
+        },
+        {
+          "law": "Employment Ordinance (Cap. 57)",
+          "section": "ss. 31B to 31ZE",
+          "url": "https://www.elegislation.gov.hk/hk/cap57"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "MPF contribution rates and income limits were not curated.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}

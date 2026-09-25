@@ -30,6 +30,7 @@ The version number that decides whether a stored contract report is still valid.
 | `category_ids` | array of string | yes | The category ids loaded, in the order below |
 | `content_hash` | string | yes | SHA-256 of the country's source JSON. The loader compares it to decide whether to bump `version`. |
 | `curated_by` | array of string | yes | Who curated the rules |
+| `reviewed_by` | array of string | no | Who checked the curation; empty until a second person has reviewed |
 | `last_verified_on` | string (date) | yes | When the numbers were last checked against the sources |
 | `notes` | string | no | Free text for curators |
 | `schema_version` | number | yes | `1` |
@@ -50,39 +51,103 @@ The version number that decides whether a stored contract report is still valid.
 
 ## `labor_laws/{country}/rules/{category}`
 
-One curated legal rule. The document id is the category id, so each country has exactly one rule per category and re-running the loader overwrites it.
+One curated legal rule. The document id is the category id, so each country has exactly one rule per category and re-running the loader overwrites it. The document is the rule from the curated JSON file (see "Curation files" below) plus `country`, `category` and `schema_version`.
+
+Different worker groups can fall under different law. A live-in domestic worker is outside the minimum wage of most countries, for example, and a technical intern has protections a general employee does not. So a rule holds one or more **variants**, one per worker group.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `country` | string | yes | ISO-2 |
 | `category` | string | yes | One of the 15 ids below, same as the document id |
+| `coverage` | string | yes | `regulated`, `partly_regulated`, `not_regulated` or `unclear`. This tells "the law sets no rule" apart from "we have not looked". |
 | `title` | string | yes | Short English title |
-| `summary` | string | yes | The rule in plain English, as a worker would need to understand it |
-| `applies_to` | array of string | no | Job types the rule covers, when it does not cover everyone (for example `["domestic_worker"]`). Absent means all workers. |
-| `requirements` | array of string | yes | The specific obligations, one per item. This is what the clause comparison (NF-P2-004) checks a contract against. |
-| `limits` | map | no | Numbers a clause can be compared with. Each key maps to `{ "value": number, "unit": string }`. |
-| `references` | array of map | yes | Sources: `{ "name": "...", "section": "...", "url": "..." }`. At least one. |
-| `ilostat_check` | map or null | no | `{ "indicator": "...", "value": number, "checked_on": "YYYY-MM-DD" }` when ILOSTAT confirms a number, otherwise `null` |
-| `notes` | string | no | Exceptions and caveats |
+| `summary` | string | yes | The rule in plain English for a worker, 20 to 800 characters |
+| `variants` | array of map | yes, at least 1 | The rule per worker group, see below |
+| `references` | array of map | yes, at least 1 | Where the rule comes from, see below |
+| `ilostat_check` | map or null | no | `{ "indicator": "...", "value": number, "checked_on": "YYYY-MM-DD" }` when ILOSTAT confirms a number |
+| `confidence` | string | yes | `high`, `medium` or `low`. `unclear` coverage must be `low`. |
+| `notes` | string | no | Exceptions, caveats and things not checked |
 | `last_verified_on` | string (date) | yes | |
 | `schema_version` | number | yes | `1` |
 
-**Example** — `labor_laws/SG/rules/working_hours`. **This shows the shape only. The values are placeholders and are not curated law.**
+**Variant** (each entry of `variants`):
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `applies_to` | array of string | yes | `["all"]`, or one or more job types from [users](users.md). A job-type variant **overrides** the `all` variant for that worker. A job type may appear in only one variant, and `all` cannot be combined with job types in one variant. |
+| `requirements` | array of string | yes | The obligations, one per item, each naming the article. This is what the clause comparison (NF-P2-004) checks a contract against. |
+| `limits` | map | no | Numbers a clause can be compared with. Each key maps to `{ "value": number, "unit": string, "period": string, "note": string }`; `period` is `hour`, `day`, `week`, `month`, `year` or `once`, and `period` and `note` are optional. |
+| `penalty` | string or null | no | What happens to an employer who breaks the rule |
+| `enforced_by` | string or null | no | The authority that enforces it, useful for the complaint step |
+
+**Reference** (each entry of `references`): `law` (name and number), `section` (articles), `url` (an `https` link to the official text), and optionally `year`, `in_force_since` (date) and `natlex_isn` (the NATLEX record number).
+
+**Example** — `labor_laws/JP/rules/working_hours` (real curated data for Japan)
 
 ```json
 {
-  "country": "SG",
+  "country": "JP",
   "category": "working_hours",
-  "title": "Working hours",
-  "summary": "Example text: how many hours a worker can be required to work.",
-  "requirements": ["Example requirement: a limit on regular weekly hours."],
-  "limits": { "max_regular_hours_per_week": { "value": 40, "unit": "hours" } },
-  "references": [{ "name": "Example Act", "section": "Example section", "url": "https://example.org/act" }],
+  "coverage": "regulated",
+  "title": "Working hours and breaks",
+  "summary": "Workers may not be made to work more than 8 hours a day or 40 hours a week, not counting breaks. Longer hours are only lawful under a written agreement with the workers' representative that is filed with the labor office.",
+  "variants": [
+    {
+      "applies_to": [
+        "all"
+      ],
+      "requirements": [
+        "No more than 40 hours per week and 8 hours per day, excluding break periods (Labor Standards Act, Art. 32).",
+        "Breaks: at least 45 minutes if working hours exceed 6 hours, and at least 1 hour if they exceed 8 hours; workers may use breaks freely (Art. 34).",
+        "Working beyond these limits is lawful only under a written agreement with the majority union or worker representative, filed with the authority (Art. 36(1))."
+      ],
+      "limits": {
+        "weekly_hours_limit": {
+          "value": 40,
+          "unit": "hours",
+          "period": "week"
+        },
+        "daily_hours_limit": {
+          "value": 8,
+          "unit": "hours",
+          "period": "day"
+        },
+        "break_when_over_6_hours": {
+          "value": 45,
+          "unit": "minutes",
+          "period": "day"
+        },
+        "break_when_over_8_hours": {
+          "value": 60,
+          "unit": "minutes",
+          "period": "day"
+        }
+      },
+      "penalty": null,
+      "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+    }
+  ],
+  "references": [
+    {
+      "law": "Labor Standards Act (Act No. 49 of 1947)",
+      "section": "Arts. 32, 34, 36(1) and 116(2)",
+      "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+      "year": 1947
+    }
+  ],
   "ilostat_check": null,
-  "last_verified_on": "2026-09-27",
+  "confidence": "high",
+  "notes": "The Act does not apply to domestic workers employed directly by a household (Art. 116(2)); a helper employed by a company is covered. Exceptions for managers and some variable-hours systems (Arts. 32-2 to 32-5, 41) were not curated in detail.",
+  "last_verified_on": "2026-09-25",
   "schema_version": 1
 }
 ```
+
+## Curation files
+
+Each person curates two countries into `data-scripts/data/source/labor-laws/<CC>.json` (`JP.json`, `HK.json`, and so on). The file holds the top-level fields `country`, `name`, `curated_by`, `reviewed_by`, `last_verified_on`, `notes` and `rules` (an object with the 15 category ids as keys). The rule under each key has the fields above without `country`, `category` and `schema_version`, which the loader adds.
+
+`python -m src.validators.labor_law` checks every file (run it from `data-scripts/`). `--template CC` prints a starting skeleton. The step-by-step guide for curators is `data-scripts/data/source/labor-laws/README.md` and the runbook is `docs/runbooks/NF-P1-017-labor-law-curation.md`.
 
 ## The 15 categories [P]
 
@@ -106,11 +171,11 @@ These are the document ids under `rules`. They were chosen from the design doc's
 | 14 | `insurance_and_injury` | Mandatory medical insurance and work-injury compensation |
 | 15 | `social_security` | Pension or provident fund and other contributions (CPF, EPF, NPS, ...) |
 
-A category that a country does not regulate is still written, with `requirements` saying so (for example "No statutory minimum wage") and a reference. This keeps the count at 15 and lets the comparison step tell "no rule" apart from "not curated".
+A category that a country does not regulate is still written, with `coverage` set to `not_regulated` (or `partly_regulated` or `unclear`), `requirements` saying what was and was not found, and a reference to the source that was checked. This keeps the count at 15 and lets the comparison step tell "no rule" apart from "not curated".
 
 ## Loading (NF-P1-018)
 
-1. Validate each country's JSON: 15 categories, all fields present, at least one reference per rule.
+1. Validate each country's JSON with `LaborLawFile` from `data-scripts/src/validators/labor_law.py`: 15 categories, all fields present, at least one variant and one reference per rule, no placeholder text. Skip a file that is still `{}`.
 2. Write the rules with `set` on `labor_laws/{country}/rules/{category}`.
 3. Compute the country's `content_hash`. If it differs from the one in `_meta/current`, write `_meta/current` with `version` increased by 1 and the new hash. If it is the same, leave the version alone. This keeps the loader safe to re-run without invalidating every cached report.
 4. Write the `labor_laws/{country}` header.

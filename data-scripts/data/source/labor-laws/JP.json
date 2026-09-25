@@ -1,1 +1,817 @@
-{}
+{
+  "country": "JP",
+  "name": "Japan",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "English law texts come from the Japanese Law Translation database of the Ministry of Justice. The translations are not official: only the Japanese text is legally binding, and a translation may lag behind amendments. NATLEX records could not be opened by the curator (the site shows a bot check), so natlex_isn is empty; add it when browsing NATLEX in a normal browser. Worker groups covered: all workers, and care workers (technical intern trainees). Foreign domestic workers employed directly by a household are outside the Labor Standards Act (Art. 116(2)).",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "regulated",
+      "title": "Minimum wage",
+      "summary": "Every employer must pay at least the hourly minimum wage set for the prefecture where the worker works. The amount differs by prefecture and is raised every year, usually from October. Foreign workers are covered on the same basis as Japanese workers.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Pay at least the regional minimum wage of the prefecture where the work is done; it is set per hour (Minimum Wage Act, Arts. 3 and 9).",
+            "A contract that pays less is void for the shortfall and is treated as paying the minimum wage (Art. 4(2)).",
+            "Labor laws apply regardless of the worker's nationality (MHLW guidelines for employers of foreign workers)."
+          ],
+          "limits": {
+            "national_weighted_average_fy2025": {
+              "value": 1121,
+              "unit": "JPY",
+              "period": "hour",
+              "note": "Weighted average of the prefectural rates for FY2025."
+            },
+            "tokyo_fy2025": {
+              "value": 1226,
+              "unit": "JPY",
+              "period": "hour",
+              "note": "In force from 3 October 2025."
+            },
+            "lowest_prefecture_fy2025": {
+              "value": 1023,
+              "unit": "JPY",
+              "period": "hour",
+              "note": "Kochi, Miyazaki and Okinawa."
+            }
+          },
+          "penalty": "Paying below the regional minimum wage: fine of up to 500,000 yen (Minimum Wage Act, Art. 40).",
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        },
+        {
+          "applies_to": [
+            "care_worker"
+          ],
+          "requirements": [
+            "Technical intern trainees, including nursing-care trainees, must be paid at least as much as Japanese workers doing similar work; this is a condition for approval of the training plan (Technical Intern Training Act, Art. 9, item (ix)).",
+            "The regional minimum wage still applies as a floor."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": null
+        }
+      ],
+      "references": [
+        {
+          "law": "Minimum Wage Act (Act No. 137 of 1959)",
+          "section": "Arts. 3, 4, 9 and 40",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3937/en",
+          "year": 1959
+        },
+        {
+          "law": "MHLW list of regional minimum wages, FY2025 (Reiwa 7)",
+          "section": "National list table",
+          "url": "https://www.mhlw.go.jp/content/11200000/001571192.pdf",
+          "year": 2025
+        },
+        {
+          "law": "Guidelines for Employers to Improve the Management of Employment of Foreign Workers (MHLW notice)",
+          "section": "Basic principle (laws apply regardless of nationality)",
+          "url": "https://www.japaneselawtranslation.go.jp/notices/view/128"
+        },
+        {
+          "law": "Act on Proper Technical Intern Training and Protection of Technical Intern Trainees (Act No. 89 of 2016)",
+          "section": "Art. 9, item (ix)",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3612/en",
+          "year": 2016
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Rates change every year. The FY2025 figures above are in force; effective dates run from 1 October 2025 to 31 March 2026 depending on the prefecture. For FY2026 the Central Minimum Wages Council recommended a national average of 1,176 yen on 28 July 2026 and news reports say prefectures average about 1,177 yen, taking effect by prefecture from about October 2026. Check the current MHLW table before judging a contract. Care workers on programs other than technical intern training (specified skilled worker, EPA) were not checked.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "regulated",
+      "title": "Working hours and breaks",
+      "summary": "Workers may not be made to work more than 8 hours a day or 40 hours a week, not counting breaks. Longer hours are only lawful under a written agreement with the workers' representative that is filed with the labor office.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No more than 40 hours per week and 8 hours per day, excluding break periods (Labor Standards Act, Art. 32).",
+            "Breaks: at least 45 minutes if working hours exceed 6 hours, and at least 1 hour if they exceed 8 hours; workers may use breaks freely (Art. 34).",
+            "Working beyond these limits is lawful only under a written agreement with the majority union or worker representative, filed with the authority (Art. 36(1))."
+          ],
+          "limits": {
+            "weekly_hours_limit": {
+              "value": 40,
+              "unit": "hours",
+              "period": "week"
+            },
+            "daily_hours_limit": {
+              "value": 8,
+              "unit": "hours",
+              "period": "day"
+            },
+            "break_when_over_6_hours": {
+              "value": 45,
+              "unit": "minutes",
+              "period": "day"
+            },
+            "break_when_over_8_hours": {
+              "value": 60,
+              "unit": "minutes",
+              "period": "day"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 32, 34, 36(1) and 116(2)",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The Act does not apply to domestic workers employed directly by a household (Art. 116(2)); a helper employed by a company is covered. Exceptions for managers and some variable-hours systems (Arts. 32-2 to 32-5, 41) were not curated in detail.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "regulated",
+      "title": "Overtime and night pay",
+      "summary": "Overtime and work on rest days must be paid at a higher rate, at least 25% more, and at least 50% more for overtime beyond 60 hours in a month. Work between 10 p.m. and 5 a.m. also earns at least 25% extra. Normal overtime is capped at 45 hours a month and 360 hours a year.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Overtime and work on days off must be paid at a premium rate set by Cabinet Order, which cannot be below 25% above the normal hourly wage (Labor Standards Act, Art. 37(1)).",
+            "Overtime beyond 60 hours in one month must be paid at least 50% above the normal wage (Art. 37(1) proviso).",
+            "Work between 10 p.m. and 5 a.m. must be paid at least 25% above the normal wage (Art. 37(4)).",
+            "Under an overtime agreement the limit is 45 hours per month and 360 hours per year (Art. 36(4)); in special circumstances it is under 100 hours per month and under 720 hours per year, and the 45-hour figure may be exceeded in at most 6 months a year (Art. 36(5))."
+          ],
+          "limits": {
+            "overtime_premium_minimum": {
+              "value": 25,
+              "unit": "percent",
+              "note": "Statutory floor; the Cabinet Order sets the rate between 25% and 50%."
+            },
+            "overtime_premium_over_60_hours_a_month": {
+              "value": 50,
+              "unit": "percent"
+            },
+            "night_work_premium_minimum": {
+              "value": 25,
+              "unit": "percent",
+              "note": "For work from 10 p.m. to 5 a.m."
+            },
+            "overtime_cap_standard": {
+              "value": 45,
+              "unit": "hours",
+              "period": "month"
+            },
+            "overtime_cap_standard_yearly": {
+              "value": 360,
+              "unit": "hours",
+              "period": "year"
+            },
+            "overtime_cap_special_yearly": {
+              "value": 720,
+              "unit": "hours",
+              "period": "year",
+              "note": "Special circumstances only."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 36 and 37",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The exact premium set by Cabinet Order (25% for overtime, higher for days off) was not read; only the statutory floor above is confirmed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "partly_regulated",
+      "title": "Days off and public holidays",
+      "summary": "Workers must get at least one day off a week, or 4 days off in every 4 weeks. Japanese law does not make national public holidays paid days off, so holidays depend on the work rules or the contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "At least one day off per week, or at least 4 days off over any four-week period (Labor Standards Act, Art. 35).",
+            "The Act contains no right to paid public holidays; whether public holidays are days off, and whether they are paid, is set by the contract or work rules.",
+            "Work on a required day off needs the overtime agreement and premium pay (Arts. 36 and 37)."
+          ],
+          "limits": {
+            "minimum_days_off": {
+              "value": 1,
+              "unit": "days",
+              "period": "week"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 35, 36 and 37",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The statement about public holidays comes from finding no such provision in the English translation of the Act.",
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "regulated",
+      "title": "Paid annual leave",
+      "summary": "After 6 months with the same employer, and at least 80% attendance, a worker gets 10 days of paid leave. The entitlement grows each year to 20 days after 6 and a half years. Employers must make sure workers take at least 5 days a year.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "10 working days of paid leave after 6 months of continuous employment with at least 80% attendance (Labor Standards Act, Art. 39(1)).",
+            "More days as service grows: 11 after 1.5 years, 12 after 2.5, 14 after 3.5, 16 after 4.5, 18 after 5.5, and 20 from 6.5 years (Art. 39(2)).",
+            "The employer must give five days of the leave each year, at a time it sets, to workers entitled to 10 days or more (Art. 39(7)).",
+            "Part-time workers with fewer working days get leave in proportion (Art. 39(3))."
+          ],
+          "limits": {
+            "first_grant": {
+              "value": 10,
+              "unit": "days",
+              "period": "once",
+              "note": "After 6 months of continuous employment."
+            },
+            "maximum_entitlement": {
+              "value": 20,
+              "unit": "days",
+              "period": "year",
+              "note": "From 6.5 years of service."
+            },
+            "days_employer_must_grant": {
+              "value": 5,
+              "unit": "days",
+              "period": "year"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Art. 39",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "partly_regulated",
+      "title": "Sick leave and sickness pay",
+      "summary": "Japanese law does not give a right to paid sick leave. Workers covered by health insurance can claim a sickness allowance of about two-thirds of their pay from the fourth day they cannot work. Injury or illness caused by work is different: the employer must pay medical costs and 60% of wages.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No provision of the Labor Standards Act requires paid sick leave; workers often use paid annual leave or an employer's own sick-leave rules.",
+            "Health insurance pays an injury and sickness allowance when the insured person cannot work because of medical treatment, starting after three days have passed, at two-thirds of the daily standard remuneration (Health Insurance Act, Art. 99).",
+            "For injury or illness caused by the job, the employer must pay for medical treatment and 60% of average wages for days off work (Labor Standards Act, Arts. 75 and 76)."
+          ],
+          "limits": {
+            "sickness_allowance_rate": {
+              "value": 66.7,
+              "unit": "percent",
+              "note": "Two-thirds of the daily standard remuneration."
+            },
+            "waiting_days": {
+              "value": 3,
+              "unit": "days",
+              "period": "once"
+            },
+            "work_injury_absence_pay": {
+              "value": 60,
+              "unit": "percent",
+              "note": "Of average wages."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Health insurance society or the national health insurance association; labour standards inspection offices for work injuries"
+        }
+      ],
+      "references": [
+        {
+          "law": "Health Insurance Act",
+          "section": "Art. 99",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3266/en"
+        },
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 75 and 76",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The absence of paid sick leave is based on finding no such provision in the English translation of the Labor Standards Act. Eligibility for the allowance (for example the length of coverage needed) was not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "How and when wages are paid",
+      "summary": "Wages must be paid in full, in cash or by an approved method, directly to the worker, at least once a month on a fixed date. When a worker leaves, unpaid wages must be paid within 7 days of the request.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Wages must be paid in full, in currency, directly to the worker, at least once a month on a fixed date (Labor Standards Act, Art. 24(1)-(2)); payment other than in currency, such as bank transfer, is allowed where a law, a collective agreement or a ministerial order provides for it.",
+            "When a worker resigns or dies, wages and any money or goods the worker is entitled to must be paid or returned within 7 days of the request (Art. 23).",
+            "The employer must make wages, working hours and other working conditions explicit when hiring (Art. 15(1)).",
+            "MHLW guidelines add that if a foreign worker leaves Japan within 7 days of asking for payment, the employer should pay before the worker's departure."
+          ],
+          "limits": {
+            "maximum_pay_interval": {
+              "value": 1,
+              "unit": "month",
+              "period": "once",
+              "note": "Wages paid at least once a month."
+            },
+            "final_payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the worker's request."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 15, 23 and 24",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Guidelines for Employers to Improve the Management of Employment of Foreign Workers (MHLW notice)",
+          "section": "Item 7 (Return of money and goods)",
+          "url": "https://www.japaneselawtranslation.go.jp/notices/view/128"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "regulated",
+      "title": "Deductions from wages",
+      "summary": "An employer may not take money out of wages unless a law allows it or a written agreement with the workers' representative permits it. Employers also may not offset wages against advances, force workers to save, or fix penalties for breaking the contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Deductions are allowed only where a law provides for them (for example tax and social insurance) or a written agreement with the majority union or worker representative permits them (Labor Standards Act, Art. 24(1)).",
+            "No offsetting of wages against advances or against loans tied to the worker's labor (Art. 17).",
+            "No compulsory savings tied to the labor contract (Art. 18(1)).",
+            "No contract that sets a monetary penalty for breach of the labor contract or fixes damages in advance (Art. 16)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        },
+        {
+          "applies_to": [
+            "care_worker"
+          ],
+          "requirements": [
+            "Technical intern supervisors and employers may not make trainees sign penalty or damages contracts, or savings contracts, or take control of a trainee's savings (Technical Intern Training Act, Art. 47)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": null
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 16, 17, 18 and 24(1)",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Act on Proper Technical Intern Training and Protection of Technical Intern Trainees (Act No. 89 of 2016)",
+          "section": "Art. 47",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3612/en",
+          "year": 2016
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Rent or meal charges taken from wages also need the written agreement in Art. 24(1).",
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "regulated",
+      "title": "Notice before dismissal",
+      "summary": "An employer must give 30 days' notice before dismissing a worker, or pay 30 days of average wages instead. A dismissal without a reasonable reason is invalid. Dismissal is also banned while a worker is off for a work injury or childbirth, and for 30 days after.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "At least 30 days' advance notice of dismissal, or at least 30 days' average wages instead; the notice can be shortened by paying the average wage for each day shortened (Labor Standards Act, Art. 20(1)-(2)).",
+            "No notice is needed if a natural disaster makes the business impossible to continue or the dismissal is for reasons attributable to the worker, in both cases with the authority's approval (Arts. 20(1) proviso, 20(3) and 19(2)).",
+            "A dismissal that lacks objectively reasonable grounds and is not appropriate in general societal terms is an abuse of rights and is invalid (Labor Contracts Act, Art. 16).",
+            "No dismissal during absence for a work injury or illness or for 30 days afterwards, nor during maternity leave and 30 days afterwards, unless the employer pays discontinuation compensation or the business cannot continue (Labor Standards Act, Art. 19)."
+          ],
+          "limits": {
+            "minimum_notice": {
+              "value": 30,
+              "unit": "days",
+              "period": "once"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 19 and 20",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Labor Contracts Act (Act No. 128 of 2007)",
+          "section": "Art. 16",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3744/en",
+          "year": 2007
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Notice a worker must give when resigning was not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "partly_regulated",
+      "title": "Penalties and travel costs when a contract ends early",
+      "summary": "Employers cannot make workers pay a penalty for quitting or breaking the contract. If the job conditions turn out different from those promised at hiring, the worker can cancel the contract immediately, and the employer must pay the travel home if the worker returns within 14 days.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No contract may set a penalty or fixed damages for breach of the labor contract (Labor Standards Act, Art. 16).",
+            "If the working conditions stated at hiring differ from the facts, the worker may cancel the contract immediately (Art. 15(2)).",
+            "If a worker who moved residence for the job returns home within 14 days of the cancellation, the employer must bear the necessary travel expenses (Art. 15(3))."
+          ],
+          "limits": {
+            "travel_cost_claim_window": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After cancelling under Art. 15(2)."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        },
+        {
+          "applies_to": [
+            "care_worker"
+          ],
+          "requirements": [
+            "Persons running technical intern training may not contract for penalties or predetermined damages for non-performance of the training contract (Technical Intern Training Act, Art. 47(1))."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": null
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 15 and 16",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Act on Proper Technical Intern Training and Protection of Technical Intern Trainees (Act No. 89 of 2016)",
+          "section": "Art. 47(1)",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3612/en",
+          "year": 2016
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No general statute requiring employers to pay repatriation costs at the end of an early-ended contract was found in the sources reviewed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "regulated",
+      "title": "Fees charged to job seekers",
+      "summary": "Licensed job-placement agencies may not charge job seekers fees, except in narrow cases set by ministerial order, and profiting from arranging someone's employment without legal permission is banned. In the technical intern program the supervising organisation cannot take fees from the trainee.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Profiting, as a business, from intervening in another person's employment is prohibited unless the law permits it (Labor Standards Act, Art. 6).",
+            "A licensed fee-charging placement provider must not collect fees from a job seeker, except in cases prescribed by MHLW order where it is in the job seeker's interest (Employment Security Act, Art. 32-3(2)).",
+            "Employers of foreign workers should make clear in advance who pays travel costs to and from Japan, other expenses, and the housing arrangements (MHLW guidelines)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Public employment security offices and labour standards inspection offices"
+        },
+        {
+          "applies_to": [
+            "care_worker"
+          ],
+          "requirements": [
+            "Supervising organisations in the technical intern program may not receive fees for their supervision from the trainee or the implementing organisation; they may only collect appropriate, pre-announced supervision costs from the implementing organisation (Technical Intern Training Act, Art. 28)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": null
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Art. 6",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Employment Security Act (Act No. 141 of 1947)",
+          "section": "Art. 32-3",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/4013/en",
+          "year": 1947
+        },
+        {
+          "law": "Act on Proper Technical Intern Training and Protection of Technical Intern Trainees (Act No. 89 of 2016)",
+          "section": "Art. 28",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3612/en",
+          "year": 2016
+        },
+        {
+          "law": "Guidelines for Employers to Improve the Management of Employment of Foreign Workers (MHLW notice)",
+          "section": "Recruitment section",
+          "url": "https://www.japaneselawtranslation.go.jp/notices/view/128"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Fees charged abroad by sending agencies fall under the sending country's law and the program ordinances, which were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "partly_regulated",
+      "title": "Employer holding a passport or residence card",
+      "summary": "Employers and supervisors in the technical intern program are banned by law from keeping a trainee's passport or residence card, with up to 6 months in prison or a 300,000 yen fine. For other foreign workers the labor ministry's guidelines say employers should not keep them, but the guidelines are not a criminal law.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employers should not keep foreign workers' passports, residence cards or similar documents (MHLW guidelines, item 7). This is guidance, not a statute."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Ministry of Health, Labour and Welfare (guidance)"
+        },
+        {
+          "applies_to": [
+            "care_worker"
+          ],
+          "requirements": [
+            "Persons conducting technical intern training, training supervisors and their officers or employees must not retain a trainee's passport or residence card (Technical Intern Training Act, Art. 48(1)).",
+            "They must not improperly restrict the trainee's freedom to go out or otherwise unfairly restrict their personal life (Art. 48(2))."
+          ],
+          "limits": {},
+          "penalty": "Keeping the passport or residence card against the trainee's wishes: up to 6 months' imprisonment or a fine of up to 300,000 yen (Technical Intern Training Act, Art. 111).",
+          "enforced_by": "Ministry of Justice and Ministry of Health, Labour and Welfare (technical intern program)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Act on Proper Technical Intern Training and Protection of Technical Intern Trainees (Act No. 89 of 2016)",
+          "section": "Arts. 48 and 111",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3612/en",
+          "year": 2016
+        },
+        {
+          "law": "Guidelines for Employers to Improve the Management of Employment of Foreign Workers (MHLW notice)",
+          "section": "Item 7 (Return of money and goods)",
+          "url": "https://www.japaneselawtranslation.go.jp/notices/view/128"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Care workers who are not technical intern trainees (specified skilled worker, EPA) are covered by the guidelines only in the sources reviewed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "partly_regulated",
+      "title": "Company housing",
+      "summary": "Japan has no general rule that employers must provide housing. If a company puts workers in company housing (a dormitory), it must not interfere with their private life, must file house rules, and must keep the housing healthy and safe. Charging rent from wages needs a written agreement.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employers must not infringe the freedom of private life of workers living in communal housing attached to the business (Labor Standards Act, Art. 94(1)).",
+            "Employers must draw up house rules, obtain the consent of the residents' representative on the main items, and file them with the authority (Art. 95).",
+            "Communal housing must have the measures needed for ventilation, lighting, heating, damp-proofing, cleanliness, evacuation, maximum occupancy and sleeping facilities, and for the workers' health and moral order (Art. 96).",
+            "Employers who board foreign workers in dormitories should follow these rules (MHLW guidelines, item 8).",
+            "Deducting rent or meal costs from wages needs the written agreement described in Art. 24(1)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 94, 95, 96 and 24(1)",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        },
+        {
+          "law": "Guidelines for Employers to Improve the Management of Employment of Foreign Workers (MHLW notice)",
+          "section": "Item 8 (Dormitories)",
+          "url": "https://www.japaneselawtranslation.go.jp/notices/view/128"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Housing standards for technical intern trainees are set in ministerial ordinances that were not curated. The absence of a general duty to provide housing is based on the sources reviewed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "regulated",
+      "title": "Work injury insurance and compensation",
+      "summary": "Workers' accident insurance covers every business that hires workers. If a worker is hurt or falls ill because of work, the employer must cover medical treatment and lost pay, and must pay the family compensation if the worker dies.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Industrial accident compensation insurance covers businesses that hire workers, apart from a few state-run businesses (Industrial Accident Compensation Insurance Act, Art. 3).",
+            "The employer must pay for medical treatment of a work injury or illness (Labor Standards Act, Art. 75) and pay 60% of average wages for days the worker cannot work (Art. 76).",
+            "If a worker dies from work, the employer must pay the bereaved family 1,000 days of average wages (Art. 79) and 60 days of average wages for funeral costs (Art. 80)."
+          ],
+          "limits": {
+            "absence_compensation": {
+              "value": 60,
+              "unit": "percent",
+              "note": "Of average wages, while unable to work."
+            },
+            "death_compensation": {
+              "value": 1000,
+              "unit": "days",
+              "period": "once",
+              "note": "Days of average wages."
+            },
+            "funeral_expenses": {
+              "value": 60,
+              "unit": "days",
+              "period": "once",
+              "note": "Days of average wages."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Industrial Accident Compensation Insurance Act (Act No. 50 of 1947)",
+          "section": "Art. 3",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3879/en",
+          "year": 1947
+        },
+        {
+          "law": "Labor Standards Act (Act No. 49 of 1947)",
+          "section": "Arts. 75, 76, 79 and 80",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en",
+          "year": 1947
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The insurance and the employer's own liability under the Labor Standards Act interact (benefits paid by the insurance count toward the employer's liability); that detail was not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "regulated",
+      "title": "Pension, health and employment insurance",
+      "summary": "Employees of covered workplaces must be enrolled in employees' pension insurance and health insurance, and the employer and worker each pay half of the premiums. Employment insurance covers businesses that hire workers. Foreign workers who leave Japan can usually claim a lump-sum pension withdrawal payment.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employees of workplaces covered by the Employees' Pension Insurance Act must be insured; covered workplaces include those in the listed industries with five or more regularly employed people (Employees' Pension Insurance Act, Art. 6(1)(i)).",
+            "The pension premium rate is 18.3% of standard remuneration, and the insured person and the employer each bear half (Arts. 81 and 82).",
+            "Health insurance premiums are also shared equally by the insured person and the employer (Health Insurance Act, Art. 161).",
+            "Employment insurance applies to every undertaking in which workers are employed (Employment Insurance Act, Art. 5(1)).",
+            "Foreign nationals who leave Japan can claim a lump-sum withdrawal payment (Employees' Pension Insurance Act, Supplementary Provisions, Art. 29-2)."
+          ],
+          "limits": {
+            "pension_premium_rate_total": {
+              "value": 18.3,
+              "unit": "percent",
+              "note": "Of standard remuneration."
+            },
+            "pension_premium_employee_share": {
+              "value": 9.15,
+              "unit": "percent",
+              "note": "Half of the total rate."
+            },
+            "lump_sum_withdrawal_cap": {
+              "value": 60,
+              "unit": "months",
+              "period": "once",
+              "note": "Months of contributions counted; see notes."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Japan Pension Service and health insurance societies"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employees' Pension Insurance Act (Act No. 115 of 1954)",
+          "section": "Arts. 6, 81, 82 and Suppl. Provisions Art. 29-2",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3554/en",
+          "year": 1954
+        },
+        {
+          "law": "Health Insurance Act",
+          "section": "Art. 161",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3266/en"
+        },
+        {
+          "law": "Employment Insurance Act (Act No. 116 of 1974)",
+          "section": "Art. 5",
+          "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3877/en",
+          "year": 1974
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The 60-month cap on the lump-sum withdrawal payment comes from secondary sources. A pension reform law of June 2025 raises it to 96 months from a date to be set by Cabinet order, which had not been fixed as of mid-2026. Check the Japan Pension Service before relying on this. Health insurance premium rates vary by insurer and were not curated.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}

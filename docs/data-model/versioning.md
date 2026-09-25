@@ -46,7 +46,7 @@ Every user-owned document and every AI-written document has `schema_version`, a 
 | Reader | Must handle |
 |---|---|
 | Comparison engine | `payout_currency` other than the destination currency; `total_cost_pct` below zero |
-| Contract report UI | `complaint: null`; `applies_to` absent; `law_reference: null` |
+| Contract report UI | `complaint: null`; `law_reference: null`; a rule with no variant for the worker's job type (use the `all` variant); `coverage` of `not_regulated` or `unclear` (show "no rule found", not "safe") |
 | Radar UI | `community_rating: null` |
 | Financial Identity | Entries without `category`; a profile that does not exist yet |
 
