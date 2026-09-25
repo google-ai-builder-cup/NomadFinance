@@ -1,0 +1,109 @@
+rules_version = '2';
+
+// Browser access to Firestore (NF-P1-014). The backend uses the Admin SDK, which skips
+// these rules, so anything the browser doesn't need stays denied by default.
+// Access matrix and field specs: docs/data-model/firestore-schema.md and collections/.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // ---------- users/{uid} ----------
+
+    function profileFields() {
+      return [
+        'home_country',
+        'host_country',
+        'job_type',
+        'preferred_language',
+        'onboarding_completed_at',
+        'notification_prefs',
+        'fcm_tokens'
+      ];
+    }
+
+    function validNotificationPrefs(prefs) {
+      return prefs is map
+        && prefs.keys().hasOnly(['radar_alerts', 'radar_corridors', 'reminders'])
+        && (!('radar_alerts' in prefs) || prefs.radar_alerts is bool)
+        && (!('reminders' in prefs) || prefs.reminders is bool)
+        && (!('radar_corridors' in prefs)
+            || (prefs.radar_corridors is list && prefs.radar_corridors.size() <= 6));
+    }
+
+    // The browser writes this document directly, so the rules are the only validation.
+    function validProfile(data) {
+      return (!('home_country' in data) || data.home_country in ['PH', 'IN', 'ID', 'NP', 'BD'])
+        && (!('host_country' in data) || data.host_country in ['SG', 'KR', 'MY', 'JP', 'HK', 'AU'])
+        && (!('job_type' in data) || data.job_type in [
+              'domestic_worker', 'manufacturing_worker', 'care_worker', 'plantation_worker',
+              'construction_worker', 'working_holiday', 'other'])
+        && (!('preferred_language' in data)
+            || data.preferred_language in ['en', 'hi', 'tl', 'id', 'ne', 'bn'])
+        && (!('onboarding_completed_at' in data) || data.onboarding_completed_at is timestamp)
+        && (!('notification_prefs' in data) || validNotificationPrefs(data.notification_prefs))
+        && (!('fcm_tokens' in data)
+            || (data.fcm_tokens is list && data.fcm_tokens.size() <= 5));
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+
+      // created_at/updated_at must be serverTimestamp() and schema_version 1, so the
+      // client can't backdate or forge them.
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(
+             profileFields().concat(['created_at', 'updated_at', 'schema_version']))
+        && request.resource.data.keys().hasAll(['created_at', 'updated_at', 'schema_version'])
+        && request.resource.data.created_at == request.time
+        && request.resource.data.updated_at == request.time
+        && request.resource.data.schema_version == 1
+        && validProfile(request.resource.data);
+
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(profileFields().concat(['updated_at']))
+        && request.resource.data.updated_at == request.time
+        && validProfile(request.resource.data);
+
+      // No client delete: deleting an account must also remove subcollections, Storage
+      // files and the Auth user, which only the backend can do (NF-P1-023).
+
+      match /notifications/{notificationId} {
+        allow read: if isOwner(uid);
+        allow update: if isOwner(uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'read_at'])
+          && request.resource.data.read is bool
+          && (!('read_at' in request.resource.data) || request.resource.data.read_at is timestamp);
+      }
+
+      // Written only by the backend (values validated and categorised there).
+      match /{collection}/{docId} {
+        allow read: if isOwner(uid)
+          && collection in ['contracts', 'transfers', 'income', 'bills', 'savings', 'financial_profile'];
+      }
+
+      match /contracts/{contractId}/reports/{language} {
+        allow read: if isOwner(uid);
+      }
+    }
+
+    // ---------- Shared reference data (written by data scripts, crons and the backend) ----------
+
+    match /{collection}/{path=**} {
+      allow read: if signedIn()
+        && collection in [
+             'corridors', 'rates_cache', 'rates_history', 'labor_laws', 'complaint_templates',
+             'radar_entities', 'radar_alerts'];
+    }
+
+    // radar_reports and report_embeddings match nothing above, so they are denied: the
+    // backend serves reports through the API and hides reporter_hash.
+  }
+}

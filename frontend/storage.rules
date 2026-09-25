@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Browser access to Cloud Storage (NF-P1-014). The backend uses the Admin SDK and skips
+// these rules. Paths: docs/data-model/firestore-schema.md, "Cloud Storage paths".
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // A user can read their own uploaded contracts, bill photos and exported PDFs.
+    // No browser writes yet: the task that adds direct uploads adds a create rule here,
+    // with size and content-type limits. Everything else, including radar-evidence/,
+    // is denied.
+    match /{folder}/{uid}/{allPaths=**} {
+      allow read: if request.auth != null
+        && request.auth.uid == uid
+        && folder in ['contracts', 'bills', 'exports'];
+    }
+  }
+}
