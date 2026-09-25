@@ -14,7 +14,7 @@ Status: NF-P1-013 **[P]**, built on the DoD line "Version metadata bumped if cac
 Only `labor_laws` has one, because it is the only reference data that stored results depend on.
 
 - `labor_laws/{country}/_meta/current.version` is a whole number that starts at 1.
-- The loader (NF-P1-018) hashes the country's source JSON. If the hash differs from `_meta/current.content_hash`, it writes the rules and sets `version` to the old value plus 1. If the hash is the same, it changes nothing, so re-running the loader is safe.
+- The loader (NF-P1-018) hashes the country's validated `rules` in canonical form (not the file bytes, so formatting and reviewer names do not count). If the hash differs from `_meta/current.content_hash`, it writes the rules and sets `version` to the old value plus 1. If the hash is the same, the version and `_meta` are left alone, so re-running the loader is safe.
 - A contract report records the `law_version` it was made with. When the current version is higher, the stored report is out of date and is remade on the next request (see the cache rule in [contracts](collections/contracts.md)).
 - The version is per country. Changing the Singapore rules does not invalidate Japanese reports.
 
