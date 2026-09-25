@@ -152,6 +152,7 @@ The prompt file ships inside the image (`app/prompts/contract/extract.v1.yaml`).
 | PDF transcription | Exact, `page_count` 2, blank line between pages |
 | Real uvicorn, no token / bad token | 401 / 401 |
 | Docker | Builds (395 MB), `/health` 200, route in OpenAPI, prompt file present, no token 401 |
+| Real Firebase ID token (added 2026-09-25, NF-P1-009) | Phone sign-in on the frontend against the Auth Emulator; that token → backend with `FIREBASE_AUTH_EMULATOR_HOST` set → 200 with the Malay photo; tampered token → 401. See `NF-P1-009-frontend-firebase-auth.md` step 4. |
 
 Live output for the photo:
 

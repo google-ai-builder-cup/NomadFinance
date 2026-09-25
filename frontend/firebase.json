@@ -14,5 +14,10 @@
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
       }
     ]
+  },
+  "emulators": {
+    "auth": { "host": "127.0.0.1", "port": 9099 },
+    "ui": { "enabled": true, "host": "127.0.0.1", "port": 4000 },
+    "singleProjectMode": true
   }
 }
