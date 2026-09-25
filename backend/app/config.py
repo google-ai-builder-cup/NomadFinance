@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     gemini_timeout_seconds: float = Field(default=30.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
+    # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted
+    # with the account. Local dev with the Storage emulator can override it.
+    firebase_storage_bucket: str = "nomadfinance-prod.firebasestorage.app"
+    # Deleting an account cannot be undone, so it needs a sign-in this recent (seconds).
+    account_deletion_max_login_age_seconds: int = Field(default=300, gt=0)
+
     # Uploads are sent to Gemini inline, which caps a whole request at about 20 MB.
     # 10 MB covers multi-page phone scans and leaves room for the prompt.
     upload_max_bytes: int = Field(default=10 * 1024 * 1024, gt=0)

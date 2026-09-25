@@ -174,6 +174,50 @@ describe("users/{uid}: read, update, delete", () => {
   });
 });
 
+describe("users/{uid}: profile page edits (NF-P1-023)", () => {
+  beforeEach(async () => {
+    await seed("users/alice", SAVED_PROFILE);
+  });
+
+  it("lets the owner change all four details in one save", async () => {
+    await assertSucceeds(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        preferred_language: "hi",
+        host_country: "KR",
+        home_country: "NP",
+        job_type: "manufacturing_worker",
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+
+  it("lets the owner save a complete notification map", async () => {
+    await assertSucceeds(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        notification_prefs: {
+          radar_alerts: true,
+          reminders: false,
+          radar_corridors: ["SG-IN", "AU-IN", "SG-PH", "MY-ID", "JP-PH", "AU-PH"],
+        },
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+
+  it.each([
+    ["more than six corridors", { radar_corridors: ["1", "2", "3", "4", "5", "6", "7"] }],
+    ["an unknown preference", { marketing: true }],
+    ["a non-boolean reminder flag", { reminders: "yes" }],
+  ])("rejects a notification map with %s", async (_label, prefs) => {
+    await assertFails(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        notification_prefs: { radar_alerts: true, ...prefs },
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+});
+
 describe("users/{uid}/notifications", () => {
   const path = "users/alice/notifications/n1";
 

@@ -47,5 +47,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    // The backend is a different origin, so in development the browser talks to Vite and
+    // Vite forwards /api to it (no CORS needed). A deployed site uses VITE_API_BASE_URL.
+    proxy: {
+      "/api": { target: "http://127.0.0.1:8080", changeOrigin: true },
+    },
   },
 });

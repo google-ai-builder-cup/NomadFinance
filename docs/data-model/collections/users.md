@@ -46,7 +46,7 @@ The `job_type` list follows the demo contract files in `data-scripts/data/seed/c
 
 **Access:** owner reads; owner writes the profile fields only. The `uid` in the path must equal the caller's auth uid.
 
-**Account deletion (NF-P1-023).** Firestore does not delete subcollections with their parent. Deleting an account must, in this order:
+**Account deletion (NF-P1-023, `DELETE /api/v1/users/me`).** Firestore does not delete subcollections with their parent. The backend (`app/services/auth_service.py`) does these, in this order, and only for a caller who signed in within the last 5 minutes:
 1. Recursively delete `users/{uid}` (all subcollections). The Admin SDK has `recursive_delete` for this.
 2. Delete the user's files under `contracts/{uid}/`, `bills/{uid}/` and `exports/{uid}/` in Cloud Storage.
 3. Delete the Firebase Auth user last.

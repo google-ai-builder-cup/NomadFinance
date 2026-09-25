@@ -1,8 +1,7 @@
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
-import type { LanguageCode } from "@/types/enums";
-import type { OnboardingAnswers, UserProfile } from "@/types/user";
+import type { OnboardingAnswers, ProfileChanges, UserProfile } from "@/types/user";
 
 function profileRef(uid: string) {
   return doc(db, "users", uid);
@@ -39,7 +38,10 @@ export async function completeOnboarding(
   }
 }
 
-/** Signed-in language changes are saved to the profile, the single source of truth. */
-export async function updatePreferredLanguage(uid: string, language: LanguageCode): Promise<void> {
-  await updateDoc(profileRef(uid), { preferred_language: language, updated_at: serverTimestamp() });
+/**
+ * Save edits from the profile page straight to `users/{uid}`. The rules accept only the
+ * profile fields plus a server `updated_at`, so anything else is refused, not stored.
+ */
+export async function updateProfile(uid: string, changes: ProfileChanges): Promise<void> {
+  await updateDoc(profileRef(uid), { ...changes, updated_at: serverTimestamp() });
 }

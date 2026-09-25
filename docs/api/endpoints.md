@@ -23,6 +23,7 @@ must say so explicitly in their own doc section below.
 | GET | `/health` | Public | None | NF-P1-001 |
 | POST | `/api/v1/contracts/extract` | Firebase ID token | Not yet (NF-P1-027) | NF-P1-006 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
+| DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | Not yet (NF-P1-027) | NF-P1-023 |
 
 ## Error format
 
@@ -123,3 +124,33 @@ Called only by the Cloud Scheduler job `refresh-rates` (every 2 hours). Hidden f
 - **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
 - **Response `200`:** `RefreshRatesResponse` (`app/schemas/remittance.py`): `history_point` (e.g. `2026-09-25T13`), `refreshed` (pair, rate, provider, rate_date), `failed` (pair, provider attempts), `completed_at`.
 - **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured **or** some pairs failed on every provider (body is the same `RefreshRatesResponse`; succeeded pairs are saved).
+
+---
+
+## `DELETE /api/v1/users/me`
+
+Deletes the caller's account and everything stored about them (NF-P1-023). It cannot be undone.
+
+- **Auth:** Firebase ID token (`get_current_user`). The account is always the token's own: there is no user id in the path or body, so nobody can name another user.
+- **Fresh sign-in required:** the token's `auth_time` must be no more than `ACCOUNT_DELETION_MAX_LOGIN_AGE_SECONDS` old (default 300). Refreshing a token does not change `auth_time`; only signing in again does. The frontend asks the person to sign in again (Google popup, or an SMS code) and retries.
+- **Request:** no body.
+- **What it deletes, in this order** (`app/services/auth_service.py`):
+  1. `users/{uid}` and every subcollection (Firestore `recursive_delete`).
+  2. The user's files in Cloud Storage under `contracts/{uid}/`, `bills/{uid}/` and `exports/{uid}/`.
+  3. The Firebase Auth user, last, so a person whose data step failed can still sign in and retry.
+- **Kept on purpose:** `radar_reports` the user filed (they hold a salted hash, never the uid) and the `radar-evidence/` Storage folder.
+- **Idempotent:** every step can run again, so calling it after a failure finishes the job.
+
+| Status | When | `detail` |
+|---|---|---|
+| `204` | Everything was deleted | none (empty body) |
+| `401` | Missing, invalid, expired or revoked token | see Authentication |
+| `403` | The sign-in is older than the limit | `recent_login_required` (the frontend picks its "sign in again" screen by this exact string) |
+| `503` | A backing service failed part-way | `We couldn't finish deleting the account. Please try again.` |
+
+Production needs two roles for the backend's service account, or step 2 and 3 fail with `503`: `roles/firebaseauth.admin` and `roles/storage.objectUser` on the bucket (`infra/iam/grant-account-deletion-roles.sh`). A browser also needs CORS to call it (NF-P1-027).
+
+```bash
+# local, with the emulators running and a token for the signed-in user
+curl -s -X DELETE http://127.0.0.1:8080/api/v1/users/me -H "Authorization: Bearer $ID_TOKEN" -w "%{http_code}\n"
+```
