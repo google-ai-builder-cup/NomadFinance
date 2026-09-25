@@ -36,9 +36,53 @@
     }
   },
   "dashboard": {
-    "placeholder": {
-      "title": "You're signed in",
-      "signedInAs": "Signed in as {{name}}"
+    "greeting": "Welcome, {{name}}",
+    "greetingGeneric": "Welcome to NomadFinance",
+    "subtitle": "Choose what you want to check today.",
+    "pillarsHeading": "Your tools"
+  },
+  "nav": {
+    "primary": "Main navigation",
+    "dashboard": "Home",
+    "remittance": "Remittance",
+    "contract": "Contracts",
+    "radar": "Radar",
+    "identity": "Identity"
+  },
+  "layout": {
+    "skipToContent": "Skip to main content",
+    "footer": {
+      "tagline": "Financial protection for migrant workers.",
+      "rights": "© {{year}} NomadFinance"
     }
+  },
+  "pillars": {
+    "open": "Open",
+    "remittance": {
+      "name": "Remittance X-Ray",
+      "description": "See the real cost of sending money home: fees and exchange-rate markups, provider by provider."
+    },
+    "contract": {
+      "name": "Contract Shield",
+      "description": "Upload your contract in any language and get a plain-language check against local labor law."
+    },
+    "radar": {
+      "name": "Exploitation Radar",
+      "description": "See and report agents, employers and money transfer operators that cheat workers."
+    },
+    "identity": {
+      "name": "Financial Identity",
+      "description": "Build a portable record of your income and savings that banks back home can use."
+    }
+  },
+  "comingSoon": {
+    "title": "Coming soon",
+    "description": "We're still building this part of NomadFinance. Check back soon.",
+    "backToDashboard": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This page doesn't exist or has moved.",
+    "backToDashboard": "Go to home"
   }
 }

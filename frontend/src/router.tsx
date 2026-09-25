@@ -1,23 +1,31 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
-import App from "@/App";
 import ProtectedRoute from "@/components/common/ProtectedRoute";
+import AppShell from "@/components/layout/AppShell";
+import { PILLAR_ITEMS } from "@/components/layout/navItems";
+import ComingSoon from "@/pages/ComingSoon";
 import Dashboard from "@/pages/Dashboard";
+import NotFound from "@/pages/NotFound";
 import SignIn from "@/pages/SignIn";
 
-// Minimal tree for sign-in (NF-P1-009). The app shell, landing page and pillar pages
-// are added by NF-P1-010 and later tasks; new signed-in pages go under ProtectedRoute.
+// Each pillar route shows ComingSoon until its own task swaps in the real page element.
+const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({
+  path: pillar.to,
+  element: <ComingSoon pillar={pillar} />,
+}));
+
 export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/sign-in",
-    element: <SignIn />,
-  },
+  // TODO(Aditya): replace this redirect with the landing page NF-P1-021
+  { path: "/", element: <Navigate to="/dashboard" replace /> },
+  { path: "/sign-in", element: <SignIn /> },
   {
     element: <ProtectedRoute />,
-    children: [{ path: "/dashboard", element: <Dashboard /> }],
+    children: [
+      {
+        element: <AppShell />,
+        children: [{ path: "/dashboard", element: <Dashboard /> }, ...pillarRoutes],
+      },
+    ],
   },
+  { path: "*", element: <NotFound /> },
 ]);

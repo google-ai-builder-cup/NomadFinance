@@ -14,7 +14,7 @@ Users sign in on `/sign-in` with **Google** or with their **mobile number and a 
 | `frontend/src/components/common/ProtectedRoute.tsx` | Guard for signed-in pages (layout route with `<Outlet />`) |
 | `frontend/src/components/common/LoadingSpinner.tsx` | Accessible spinner (`role="status"`), inline or full screen |
 | `frontend/src/pages/SignIn.tsx` | Google button, phone number step, code step, resend, change number, error messages |
-| `frontend/src/pages/Dashboard.tsx` | **Placeholder** ("signed in as …", sign out) so the guard can be tested; NF-P1-010 replaces it |
+| `frontend/src/pages/Dashboard.tsx` | Was a placeholder ("signed in as …", sign out) so the guard could be tested; NF-P1-010 replaced it with the real dashboard (see `NF-P1-010-frontend-app-shell.md`) |
 | `frontend/src/router.tsx`, `src/main.tsx` | `/sign-in`, protected `/dashboard`; `AuthProvider` around the router |
 | `frontend/src/utils/constants.ts` | `PHONE_DIAL_CODES` (SG, MY, HK, JP, KR, AU, PH, IN, ID, NP, BD) |
 | `frontend/src/utils/validators.ts` | `toE164(dialCode, localNumber)` |
@@ -42,7 +42,7 @@ main.tsx
             └─ <ProtectedRoute>
                  ├─ loading      → full-screen spinner (no flash through /sign-in on reload)
                  ├─ no user      → <Navigate to="/sign-in" state={{ from }}>
-                 └─ signed in    → <Outlet/> → /dashboard (placeholder)
+                 └─ signed in    → <Outlet/> → the app shell and /dashboard (NF-P1-010)
 
 Backend calls (later tasks): Authorization: Bearer ${await getIdToken()}
 ```
