@@ -1,4 +1,4 @@
-# NF-P1-017 — Labor-Law Curation (Japan and Hong Kong done, format shared)
+# NF-P1-017 — Labor-Law Curation (Japan, Hong Kong, Singapore and Australia drafted; format shared)
 
 ## Summary
 
@@ -8,11 +8,11 @@ Contract Shield checks an uploaded contract against the labor law of the worker'
 
 | Person | Countries | Branch | Status |
 |---|---|---|---|
-| Pranjal | JP, HK | `feature/data-ilo-jp-hk` | **Done as a draft**, waiting for a second person's review |
-| Devam | SG, AU | `feature/data-ilo-sg-au` | Not started (files are empty `{}` stubs) |
+| Pranjal | JP, HK | `feature/data-ilo-jp-hk` | Merged as a draft (PR 23), waiting for a second person's review |
+| Devam | SG, AU | `feature/data-ilo-sg-au` | **Drafted** on Devam's branch, waiting for Devam's own review (`reviewed_by` is empty) |
 | Aditya | KR, MY | `feature/data-ilo-kr-my` | Not started (files are empty `{}` stubs) |
 
-This runbook covers three things: the shared format and checker that all three of you use, the guide for curators, and the Japan and Hong Kong results with the limits to know about before relying on them.
+This runbook covers three things: the shared format and checker that all three of you use, the guide for curators, and the results for the four finished countries with the limits to know about before relying on them.
 
 **Korea stays a host country.** Only the KR→NP money corridor was replaced (by AU→IN). Aditya's KR curation stands. The host countries, job types and categories in the code, the frontend and the docs were cross-checked and agree (see "Cross-checks").
 
@@ -32,7 +32,8 @@ Other new fields: `confidence` (`high`, `medium`, `low`), `penalty` and `enforce
 | `data-scripts/src/validators/labor_law.py` | Pydantic models for the curated file (`LaborLawFile`), the checker (`python -m src.validators.labor_law`) and the template generator. NF-P1-018 reuses it. |
 | `data-scripts/tests/test_labor_law.py` | 23 tests, including checks that the categories match the docs and the job types match the frontend |
 | `data-scripts/src/config.py` | New constant `LABOR_LAWS_DIR` |
-| `data-scripts/data/source/labor-laws/JP.json`, `HK.json` | The curated files (were empty `{}` stubs) |
+| `data-scripts/data/source/labor-laws/JP.json`, `HK.json` | The curated files (were empty `{}` stubs), merged earlier |
+| `data-scripts/data/source/labor-laws/SG.json`, `AU.json` | Devam's two countries, drafted on `feature/data-ilo-sg-au` |
 | `data-scripts/data/source/labor-laws/README.md` | The curator guide for all three of you |
 | `docs/data-model/collections/labor_laws.md`, `versioning.md` | Updated for `coverage` and `variants` |
 | `data-scripts/README.md` | Short section pointing here |
@@ -82,15 +83,15 @@ python -m src.validators.labor_law
 Expected today:
 
 ```
-SKIP AU.json: not curated yet
+OK   AU.json: 15 rules, 22 variants, 41 references | coverage {...} | confidence {...}
 OK   HK.json: 15 rules, 26 variants, 41 references | coverage {...} | confidence {...}
 OK   JP.json: 15 rules, 20 variants, 31 references | coverage {...} | confidence {...}
 SKIP KR.json: not curated yet
 SKIP MY.json: not curated yet
-SKIP SG.json: not curated yet
+OK   SG.json: 15 rules, 29 variants, 42 references | coverage {...} | confidence {...}
 ```
 
-Add `--require-all` to make the four stubs count as failures. That is the check for "task complete".
+On a checkout without the SG and AU branch, AU.json and SG.json show `SKIP` instead. Add `--require-all` to make every stub count as a failure. That is the check for "task complete".
 
 ### 3. Start your own country (Devam and Aditya)
 
@@ -109,7 +110,7 @@ black --check .
 mypy src tests
 ```
 
-Expected: `41 passed, 5 skipped` (four skips are countries not curated yet, one is a frontend cross-check that skips on an older checkout), `All checks passed!`, `... would be left unchanged.`, `Success: no issues found`.
+Expected on the SG and AU branch: `44 passed, 2 skipped` (the two skips are the KR and MY stubs), `All checks passed!`, `... would be left unchanged.`, `Success: no issues found`. On a checkout without SG and AU, or without the frontend enums, more tests skip.
 
 ### 5. Read a country as a reviewer
 
@@ -218,6 +219,96 @@ Key facts to spot-check first:
 - **The Minimum Allowable Wage is reviewed every September.** The latest announcement found is 29 September 2025. Check for a 2026 announcement.
 - Some Immigration Department explanatory notes were last revised in 2019; the rates in them are superseded by the press releases cited in the file.
 
+## Singapore (SG.json)
+
+Drafted on 2026-09-25 (listed as `Pranjal (drafted for Devam)`; Devam should review and take over `curated_by`). Statutes were read on Singapore Statutes Online; guidance comes from the Ministry of Manpower (MOM). Worker groups: `all` (Employment Act employees, and Work Permit holders through Part III of the Fourth Schedule) and `domestic_worker`.
+
+| # | Category | Coverage | Confidence | Worker groups |
+|---|---|---|---|---|
+| 1 | `minimum_wage` | partly_regulated | medium | all, domestic_worker |
+| 2 | `working_hours` | partly_regulated | medium | all, domestic_worker |
+| 3 | `overtime_pay` | partly_regulated | high | all, domestic_worker |
+| 4 | `rest_days_and_holidays` | regulated | high | all, domestic_worker |
+| 5 | `annual_leave` | partly_regulated | medium | all, domestic_worker |
+| 6 | `sick_leave` | partly_regulated | medium | all, domestic_worker |
+| 7 | `salary_payment` | regulated | high | all, domestic_worker |
+| 8 | `salary_deductions` | partly_regulated | medium | all, domestic_worker |
+| 9 | `termination_notice` | partly_regulated | medium | all, domestic_worker |
+| 10 | `early_termination` | regulated | high | all, domestic_worker |
+| 11 | `recruitment_fees` | regulated | high | all, domestic_worker |
+| 12 | `passport_retention` | partly_regulated | medium | all, domestic_worker |
+| 13 | `accommodation` | regulated | high | all, domestic_worker |
+| 14 | `insurance_and_injury` | partly_regulated | high | all, domestic_worker |
+| 15 | `social_security` | not_regulated | low | all |
+
+Key facts to spot-check first:
+
+| Point | Value | Where |
+|---|---|---|
+| Domestic workers are outside the Employment Act | Definition of "employee" excludes them; MOM confirms | Employment Act s. 2(1) |
+| Hours and overtime | 8 h/day, 44 h/week, overtime at 1.5x, cap 72 h/month; only Part 4 employees | Employment Act ss. 35, 37, 38 |
+| Salary deductions | 50% cap; one quarter for damage, accommodation and instalments; advances over at most 12 months | Employment Act ss. 27, 29 to 32 |
+| No paying for the job | Fine up to S$30,000 or 2 years or both | Employment of Foreign Manpower Act s. 22A |
+| Agency fee cap | One month's salary per year of contract or pass, at most 2 months; refund of at least 50% if the job ends within 6 months | Employment Agencies Rules 2011 rr. 12, 13 |
+| Domestic worker rest day | One per 7 days; at least one rest day a month cannot be paid out | Work Passes Regulations, 4th Schedule Part I paras. 12 to 14 |
+| Domestic worker insurance | Medical insurance; personal accident cover of at least S$60,000 | 4th Schedule Part II paras. 4, 4A |
+| Passport | Rules name the work permit and visit pass only | 4th Schedule Part I para. 16; Part III para. 7 |
+
+**Limits of the Singapore draft**
+
+- **Verification found and fixed errors before this was saved.** A first pass had a wrong section for the deduction limits and a wrong description of rest-day pay; the whole file was re-checked against the statute text and rewritten. Devam's review should still pick at least 5 rules.
+- **`social_security` is `not_regulated` with `low` confidence.** MOM says CPF applies to citizens and permanent residents; the CPF Act text read here does not itself exclude foreign workers, so any exclusion is probably in regulations that were not read. Confirm before showing it to a worker.
+- **`passport_retention`:** the rules name the work permit and visit pass, not the passport. Other laws were not checked.
+- **Domestic workers have no statutory annual leave, notice or list of permitted deductions** in the sources read; these are findings from those sources, so they are `medium`.
+- **Criminal offence vs financial penalty.** Breaking a plain condition is an offence (s. 22(1)); breaking a regulatory condition (Part II for domestic workers) leads to a financial penalty of up to S$10,000 (s. 25(2)). The file states which applies.
+- Not curated: Part IV of the Fourth Schedule, the Foreign Employee Dormitories Act 2015, the Employment Claims Act 2016, the Penal Code, PWM wage levels. S Pass and Employment Pass holders are not covered.
+
+## Australia (AU.json)
+
+Drafted on 2026-09-25 (listed as `Pranjal (drafted for Devam)`). The Fair Work Act 2009 (compilation of 7 July 2026) and the Criminal Code Act 1995 (compilation of 30 June 2026) were read on the Federal Register of Legislation; guidance comes from the Fair Work Ombudsman (FWO), the Australian Taxation Office (ATO), Home Affairs and Safe Work Australia. AustLII blocks automated access and was not used. Worker groups: `all` and `working_holiday` (visa subclass 417 or 462).
+
+| # | Category | Coverage | Confidence | Worker groups |
+|---|---|---|---|---|
+| 1 | `minimum_wage` | regulated | high | all |
+| 2 | `working_hours` | partly_regulated | high | all, working_holiday |
+| 3 | `overtime_pay` | partly_regulated | medium | all |
+| 4 | `rest_days_and_holidays` | partly_regulated | medium | all |
+| 5 | `annual_leave` | partly_regulated | high | all, working_holiday |
+| 6 | `sick_leave` | partly_regulated | high | all, working_holiday |
+| 7 | `salary_payment` | regulated | high | all |
+| 8 | `salary_deductions` | regulated | high | all, working_holiday |
+| 9 | `termination_notice` | partly_regulated | high | all, working_holiday |
+| 10 | `early_termination` | partly_regulated | medium | all |
+| 11 | `recruitment_fees` | partly_regulated | medium | all |
+| 12 | `passport_retention` | partly_regulated | medium | all |
+| 13 | `accommodation` | partly_regulated | medium | all |
+| 14 | `insurance_and_injury` | partly_regulated | medium | all, working_holiday |
+| 15 | `social_security` | regulated | high | all, working_holiday |
+
+Key facts to spot-check first:
+
+| Point | Value | Where |
+|---|---|---|
+| National Minimum Wage | A$26.44/hour, A$1,004.90/week from 1 July 2026; casual A$33.05/hour (25% loading) | FWO Minimum wages; Award and agreement free page; Fair Work Act ss. 285, 293, 294 |
+| Hours | 38 hours a week unless additional hours are reasonable | Fair Work Act s. 62 |
+| Annual leave / personal leave | 4 weeks / 10 days a year; not for casuals; untaken annual leave paid out at the end | Fair Work Act ss. 87, 90, 96 |
+| Pay | In full, in money, at least monthly; pay slip within one working day; deliberate underpayment is a crime (up to 10 years) | Fair Work Act ss. 323, 327A, 536 |
+| Deductions | Only with written authorisation mainly for the employee's benefit, or law, award, agreement; unreasonable payments to the employer banned | Fair Work Act ss. 324 to 326 |
+| Notice | 1 to 4 weeks (+1 if over 45 with 2 years); not for casual or fixed-term employees | Fair Work Act ss. 117, 123 |
+| Working holiday | 6 months per employer (condition 8547) with exemptions since 1 January 2024 | Home Affairs 6 month work limitation page |
+| Super | 12%, paid on each payday from 1 July 2026; DASP tax 65% for working holiday makers | Fair Work Act s. 116B; ATO pages |
+
+**Limits of the Australia draft**
+
+- **Modern awards were not curated.** Most real pay rates, overtime, breaks and rest periods come from awards (for example Hospitality or Horticulture). The file says so; the FWO Pay and Conditions Tool gives the award rate for a job.
+- **Casual vs permanent matters.** Many working holiday makers are casual, so annual leave, paid sick leave and notice usually do not apply to them. Whether a worker is casual is decided by the real nature of the job (s. 15A), not the contract label.
+- **Rates change every 1 July.** The minimum wage figures are those the FWO published for 1 July 2026. The ATO page showed only the 2025-26 working holiday maker tax rates when checked.
+- **Exemptions to the 6-month rule apply "until the Government makes further decisions"** (Home Affairs). Subclass 417 conditions were read only through the shared condition 8547 page.
+- **`insurance_and_injury` is `medium`.** Workers' compensation is state law and those statutes were not read; whether visa holders are covered in each state was not confirmed from an official source.
+- **`passport_retention`:** no offence for holding a passport was found; deceiving someone about confiscating documents is an offence (Criminal Code ss. 270.7, 271.2). Other laws were not checked.
+- India is a listed passport for the subclass 462 visa (through a ballot) on the Home Affairs page. Whether workers in the AU→IN and AU→PH corridors hold these visas was not researched.
+- Not curated: penalty amounts in penalty units, the Migration Act text, state labour-hire licensing and tenancy laws.
+
 ## Cross-checks done (2026-09-25)
 
 | Check | Result |
@@ -228,6 +319,8 @@ Key facts to spot-check first:
 | KR→NP in any live corridor list | None. Korea remains a host country. |
 | `JP.json` article citations | 39 checked against the law text by program: 0 problems |
 | `HK.json` sections | Read in the e-Legislation viewer and in the government pages cited |
+| `SG.json` sections | Employment Act, Employment of Foreign Manpower Act, Work Passes Regulations (Fourth Schedule), Employment Agencies Rules, Work Injury Compensation Act and CPF Act read on Singapore Statutes Online; MOM claims checked against the saved MOM pages |
+| `AU.json` sections | Fair Work Act ss. 62, 87, 90, 96, 102, 114, 116, 116B, 117, 123, 285 to 294, 323 to 327A, 382 to 384, 536 and Criminal Code ss. 270.7, 271.1, 271.2 read on the Federal Register of Legislation; guidance pages read on fairwork.gov.au, ato.gov.au and immi.homeaffairs.gov.au |
 | Checker vs both files | OK. It also rejects a missing category, an unknown worker group, a TODO left in, and a file whose country does not match its name |
 
 ## Sources used
@@ -236,7 +329,11 @@ Japan: Labor Standards Act (japaneselawtranslation.go.jp law 3567), Minimum Wage
 
 Hong Kong: Employment Ordinance (Cap. 57), Minimum Wage Ordinance (Cap. 608), Employees' Compensation Ordinance (Cap. 282) and Employment Agency Regulations (Cap. 57A) on elegislation.gov.hk; the Standard Employment Contract notes (immd.gov.hk); the Foreign Domestic Helpers FAQ (fdh.labour.gov.hk); the Employment Agencies Portal (eaa.labour.gov.hk); press releases of 1 May 2026, 29 September 2025 and 31 December 2021; the reply to LCQ5 of 8 May 2024; the MPF Authority coverage page.
 
-**NATLEX** (natlex.ilo.org) sits behind a bot check and could not be opened by the curator, so every `natlex_isn` is empty. Someone with a browser should add the record numbers for JP and HK. **ILOSTAT and NORMLEX** also block scripts, so `ilostat_check` is `null` everywhere.
+Singapore: Employment Act 1968, Employment of Foreign Manpower Act 1990, Employment of Foreign Manpower (Work Passes) Regulations 2012, Employment Agencies Rules 2011, Work Injury Compensation Act 2019 and Central Provident Fund Act 1953 on sso.agc.gov.sg; MOM pages on the migrant domestic worker employer's guide, salary deductions, the Progressive Wage Model and CPF contributions.
+
+Australia: Fair Work Act 2009 and Criminal Code Act 1995 on legislation.gov.au; Fair Work Ombudsman pages (minimum wages, award and agreement free wages and conditions, casual employees, visa holders and migrants, workers compensation, the Horticulture Showcase deductions page); ATO pages (super guarantee, DASP, working holiday maker tax rates); Home Affairs pages (subclass 462, 6 month work limitation, visa conditions); Safe Work Australia (migrant and multicultural workers).
+
+**NATLEX** (natlex.ilo.org) sits behind a bot check and could not be opened by the curator, so every `natlex_isn` is empty. Someone with a browser should add the record numbers for JP, HK, SG and AU. **ILOSTAT and NORMLEX** also block scripts, so `ilostat_check` is `null` everywhere.
 
 ## Definition of Done
 
@@ -249,29 +346,26 @@ Data ingestion script (the checker is the script here; the loader is NF-P1-018):
 
 Documentation:
 - [x] Markdown, consistent headings and code blocks, no AI attribution
-- [ ] Reviewed by at least one other teammate (the JP and HK files especially)
+- [ ] Reviewed by at least one other teammate (JP, HK, SG and AU especially)
 - [ ] Committed
 
 Task complete for all six countries:
-- [x] JP.json and HK.json curated and valid
-- [ ] SG.json and AU.json (Devam)
+- [x] JP.json and HK.json curated and valid (merged)
+- [x] SG.json and AU.json curated and valid (this branch, waiting for Devam's review)
 - [ ] KR.json and MY.json (Aditya)
-- [ ] NATLEX record numbers added to JP.json and HK.json
+- [ ] NATLEX record numbers added to JP.json, HK.json, SG.json and AU.json
 
 ## Commit
 
-Branch: `feature/data-ilo-jp-hk`. No shared files were changed.
+Branch: `feature/data-ilo-sg-au`. No shared files were changed. Only these files change on this branch:
 
 ```bash
-git add data-scripts/src/config.py data-scripts/src/validators/labor_law.py data-scripts/tests/test_labor_law.py \
-  data-scripts/data/source/labor-laws/JP.json data-scripts/data/source/labor-laws/HK.json \
-  data-scripts/data/source/labor-laws/README.md data-scripts/README.md \
-  docs/data-model/collections/labor_laws.md docs/data-model/versioning.md \
+git add data-scripts/data/source/labor-laws/SG.json data-scripts/data/source/labor-laws/AU.json \
   docs/runbooks/NF-P1-017-labor-law-curation.md
-git commit -m "feat(data): curate Japan and Hong Kong labor laws with a shared checker" -m "Refs: NF-P1-017"
+git commit -m "feat(data): curate Singapore and Australia labor laws" -m "Refs: NF-P1-017"
 ```
 
-Devam and Aditya use their own branches and commit only their own country files. Before pushing, run `git status` and confirm nothing else is listed.
+Aditya uses his own branch and commits only KR.json and MY.json. Before pushing, run `git status` and confirm nothing else is listed.
 
 ## Troubleshooting
 
@@ -291,7 +385,7 @@ Devam and Aditya use their own branches and commit only their own country files.
 
 ## Not covered here
 
-- SG, AU, KR and MY content (Devam and Aditya)
+- KR and MY content (Aditya)
 - The Firestore loader and the `_meta` version bump: NF-P1-018
 - Retrieval and clause comparison: NF-P2-003, NF-P2-004
 - Complaint templates and authority details: NF-P2-006

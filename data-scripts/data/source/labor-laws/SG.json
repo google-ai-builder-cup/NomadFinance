@@ -1,1 +1,1044 @@
-{}
+{
+  "country": "SG",
+  "name": "Singapore",
+  "curated_by": [
+    "Pranjal (drafted for Devam)"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "Statute and regulation texts were read on Singapore Statutes Online (Attorney-General's Chambers) on the verification date; guidance comes from the Ministry of Manpower (MOM) website. NATLEX records could not be opened by the curator (the site shows a bot check), so natlex_isn is empty. Worker groups: employees under the Employment Act ('all') and migrant domestic workers ('domestic_worker'). Domestic workers are excluded from the Employment Act and the Work Injury Compensation Act; their protections come from the Work Passes Regulations 2012 (Fourth Schedule, Parts I and II) and MOM requirements. 'all' also describes other Work Permit holders through Part III of the same Schedule. S Pass and Employment Pass holders are not covered. Breaking a plain 'condition' is a criminal offence under s. 22(1); breaking a 'regulatory condition' (Part II for domestic workers) leads to a financial penalty under s. 25(2). Not curated: Part IV of the Fourth Schedule, the Foreign Employee Dormitories Act 2015, the Employment Claims Act 2016 and the Penal Code.",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "partly_regulated",
+      "title": "Minimum wage",
+      "summary": "Singapore has no general statutory minimum wage in the sources reviewed. The Progressive Wage Model sets wage floors in certain sectors, but only for Singapore citizens and permanent residents. An employer of a foreign worker must pay at least the monthly salary it declared to MOM.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Progressive Wage Model (PWM) requires a minimum wage for eligible workers in listed sectors (cleaning, security, landscape, lift and escalator, retail, food services, waste management) and for administrator and driver occupations (MOM, What is the Progressive Wage Model).",
+            "The PWM covers Singapore citizens and permanent residents; it does not set a wage floor for a foreign worker on a Work Permit.",
+            "An employer of a Work Permit holder must pay not less than the fixed monthly salary declared in the work pass application, whether or not there is work, unless the worker is on no-pay leave outside Singapore (Work Passes Regulations 2012, Fourth Schedule, Part III, para. 4)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must pay the foreign domestic worker not less than the fixed monthly salary declared in the work permit application, whether or not there is actual work, and not later than 7 days after the salary period ends (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 6 and 7).",
+            "The employer must not reduce her basic monthly salary or fixed monthly allowances below the declared amount without her prior written agreement and written notice to MOM (Part II, para. 5A)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)). Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Ministry of Manpower: What is the Progressive Wage Model",
+          "section": "Who it covers",
+          "url": "https://www.mom.gov.sg/employment-practices/progressive-wage-model/what-is-pwm"
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 6 and 7; Part II, para. 5A; Part III, para. 4",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Employment of Foreign Manpower Act 1990",
+          "section": "s. 22(1)(a) and (h); s. 25(2)",
+          "url": "https://sso.agc.gov.sg/Act/EFMA1990",
+          "year": 1990
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "'No general minimum wage' means none was found in the sources reviewed. PWM wage levels are revised by sector and were not curated. MOM also says employers hiring foreign workers must meet PWM requirements for their local staff to renew or apply for work passes.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "partly_regulated",
+      "title": "Working hours",
+      "summary": "Employees covered by Part 4 of the Employment Act may not be made to work more than 8 hours a day or 44 hours a week, or more than 6 hours in a row without a break. Domestic workers are outside the Act; their work permit only requires adequate rest each day.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employee must not be required to work more than 6 consecutive hours without a period of leisure, or more than 8 hours in a day or 44 hours in a week (Employment Act, s. 38(1)).",
+            "Exceptions: continuous-process work may run 8 consecutive hours including at least 45 minutes for a meal; where the contract has a 5-day week or fewer hours on some days, a day may reach 9 hours if the 44-hour week is kept (s. 38(1)(c)-(e)).",
+            "Except in emergencies and similar cases, an employee must not work more than 12 hours in any one day (s. 38(8)).",
+            "These limits apply under Part 4, which covers workmen earning up to $4,500 a month and other employees who are not managers or executives and earn up to $2,600 a month, excluding overtime, bonuses and allowances (s. 35)."
+          ],
+          "limits": {
+            "daily_hours_limit": {
+              "value": 8,
+              "unit": "hours",
+              "period": "day"
+            },
+            "weekly_hours_limit": {
+              "value": 44,
+              "unit": "hours",
+              "period": "week"
+            },
+            "longest_stretch_without_break": {
+              "value": 6,
+              "unit": "hours",
+              "period": "once"
+            },
+            "absolute_daily_maximum": {
+              "value": 12,
+              "unit": "hours",
+              "period": "day",
+              "note": "Except in emergencies, s. 38(8)."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic workers are excluded from the definition of 'employee' in the Employment Act (s. 2(1)), so the Act's rules do not apply to them; MOM confirms this.",
+            "The employer must grant a foreign domestic worker adequate rest daily (Work Passes Regulations 2012, Fourth Schedule, Part I, para. 10). No daily or weekly hours cap was found."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 2(1), 35 and 38",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, para. 10",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Contracts and safety agreement for migrant domestic workers",
+          "section": "contracts-and-safety-agreement",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/contracts-and-safety-agreement"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Act does not apply s. 38 to fire-service work or work with long inactive or stand-by hours (s. 38(9)); this was not explored. The absence of an hours cap for domestic workers is a finding from the sources reviewed, not a statement that their contract cannot set one.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "partly_regulated",
+      "title": "Overtime pay",
+      "summary": "Employees covered by Part 4 of the Employment Act must be paid at least 1.5 times their hourly basic pay for overtime, and overtime is capped at 72 hours a month. Domestic workers are outside the Act; if the employer does not give a rest day, she must get a replacement rest day or at least a day's pay.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Extra work beyond the daily or weekly hours, at the employer's request, must be paid at not less than one and a half times the employee's hourly basic rate of pay (Employment Act, s. 38(4)).",
+            "An employee must not be permitted to work overtime for more than 72 hours a month (s. 38(5)).",
+            "Overtime pay must be paid not later than 14 days after the last day of the salary period in which it was worked (s. 21(2)).",
+            "An employee who works on a rest day at the employer's request must be paid one day's basic pay if the work is up to half the normal hours, two days' basic pay if it is more than half, and at least 1.5 times the hourly basic rate for hours beyond normal hours (s. 37(3))."
+          ],
+          "limits": {
+            "overtime_rate_minimum": {
+              "value": 1.5,
+              "unit": "times",
+              "note": "Multiple of the hourly basic rate."
+            },
+            "overtime_cap": {
+              "value": 72,
+              "unit": "hours",
+              "period": "month"
+            },
+            "overtime_payment_deadline": {
+              "value": 14,
+              "unit": "days",
+              "period": "once",
+              "note": "After the salary period ends."
+            }
+          },
+          "penalty": "An employer who fails to pay salary on time under s. 21 faces a fine of $3,000 to $15,000, imprisonment of up to 6 months, or both (Employment Act, s. 34(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic workers are excluded from the definition of 'employee' in the Employment Act (s. 2(1)), so the Act's rules do not apply to them; MOM confirms this.",
+            "If the employer does not grant a rest day, the worker must have agreed in writing beforehand to work in place of it and be compensated with either a replacement rest day in the same month or pay of at least one day's work, calculated as the monthly rate of pay divided by 26 and paid with the next salary (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 13A and 14)."
+          ],
+          "limits": {
+            "rest_day_pay_minimum": {
+              "value": 1,
+              "unit": "days",
+              "period": "once",
+              "note": "One day's pay, monthly rate divided by 26."
+            }
+          },
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 21, 34, 37 and 38",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 13A and 14",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "No statutory overtime rate was found for domestic workers.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "regulated",
+      "title": "Rest days and public holidays",
+      "summary": "Employees covered by the Employment Act get one whole rest day a week and paid public holidays. A foreign domestic worker must get a rest day in every 7 days, and at least one rest day a month that cannot be paid out.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Every employee covered by Part 4 must be allowed a rest day of one whole day without pay each week, which is Sunday or another day the employer sets, and the employer must give a monthly roster of rest days (Employment Act, s. 36(1) and (4)).",
+            "Every employee is entitled to a paid holiday at the gross rate of pay on a public holiday that falls during employment; if a public holiday falls on a rest day, the next working day is a paid holiday (s. 88(1))."
+          ],
+          "limits": {
+            "rest_days": {
+              "value": 1,
+              "unit": "days",
+              "period": "week"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must grant a rest day for every 7-day period, on a day mutually agreed; Sundays and public holidays count as rest days only if both agree (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 12 and 14(a)).",
+            "The employer may skip rest days in a month only under a prior written agreement and with compensation, and must still grant at least one rest day or replacement rest day in that month, unless the Controller says otherwise (paras. 13 and 13A).",
+            "For a new work permit issued from 1 January 2023, the first rest day must be granted within 30 days after employment starts, unless deferred by written agreement (para. 13B)."
+          ],
+          "limits": {
+            "rest_days": {
+              "value": 1,
+              "unit": "days",
+              "period": "week"
+            },
+            "minimum_rest_days_that_cannot_be_paid_out": {
+              "value": 1,
+              "unit": "days",
+              "period": "month"
+            },
+            "first_rest_day_deadline": {
+              "value": 30,
+              "unit": "days",
+              "period": "once",
+              "note": "After employment starts."
+            }
+          },
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 36 and 88",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 12, 13, 13A, 13B and 14",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Rest days, health and well-being for migrant domestic workers",
+          "section": "rest-days-and-well-being",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/rest-days-and-well-being"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Section 36 applies only to the Part 4 employees described in s. 35; public holiday pay (s. 88) applies to every employee.",
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "partly_regulated",
+      "title": "Paid annual leave",
+      "summary": "After 3 months, employees covered by the Employment Act get 7 days of paid annual leave, rising by one day a year to 14 days. Domestic workers are outside the Act, and no statutory annual leave was found for them.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "After at least 3 months of service an employee is entitled to 7 days of paid annual leave for the first 12 months, one more day for each further 12 months, up to a maximum of 14 days (Employment Act, s. 88A(1)).",
+            "An employee with at least 3 months but less than 12 months of service is entitled to leave in proportion to the completed months (s. 88A(2)).",
+            "The employee forfeits the leave for a period if absent without permission or reasonable excuse for more than 20% of working days in it (s. 88A(5))."
+          ],
+          "limits": {
+            "first_year_entitlement": {
+              "value": 7,
+              "unit": "days",
+              "period": "year"
+            },
+            "maximum_entitlement": {
+              "value": 14,
+              "unit": "days",
+              "period": "year"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic workers are excluded from the definition of 'employee' in the Employment Act (s. 2(1)), so the Act's rules do not apply to them; MOM confirms this.",
+            "The Work Passes Regulations conditions read set no annual leave entitlement; any leave comes from the employment contract."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 2(1) and 88A",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Parts I and II",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Contracts and safety agreement for migrant domestic workers",
+          "section": "contracts-and-safety-agreement",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/contracts-and-safety-agreement"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The lack of statutory leave for domestic workers is a finding from the sources reviewed, not a statement that no leave applies under a contract. Overseas leave arrangements for domestic workers on MOM's site were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "partly_regulated",
+      "title": "Sick leave and medical care",
+      "summary": "Employees covered by the Employment Act get paid sick leave of 14 days a year, or up to 60 days if hospitalised, after 6 months of service. The employer of a foreign worker must pay for medical care, with limits on what a Work Permit holder may be asked to share, and a domestic worker's employer must also buy medical insurance and keep paying her salary.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employee with at least 6 months of service is entitled, after examination by a medical practitioner, to paid sick leave as certified, up to 14 days a year if no hospitalisation is needed, or the lesser of 60 days a year and 14 days plus the days in hospital if it is (Employment Act, s. 89(1)).",
+            "An employee with 3 to 6 months of service is entitled to 5, 8 or 11 days of outpatient sick leave for 3, 4 or 5 completed months respectively (s. 89(2)).",
+            "The employer of a Work Permit holder who is not a domestic worker must bear the worker's upkeep and medical treatment, but may make the worker pay part of costs above what the insurer pays if it is at most 10% of monthly fixed salary, for at most 6 months in every 2 years, and stated in the contract (Work Passes Regulations 2012, Fourth Schedule, Part III, para. 1).",
+            "The employer may charge the worker at most $5 per clinic visit ($2 by telemedicine) under a Primary Care Plan, or 1% of monthly fixed salary per visit if the contract says so (Part III, para. 1B)."
+          ],
+          "limits": {
+            "outpatient_sick_days": {
+              "value": 14,
+              "unit": "days",
+              "period": "year"
+            },
+            "maximum_with_hospitalisation": {
+              "value": 60,
+              "unit": "days",
+              "period": "year"
+            },
+            "worker_share_of_medical_costs": {
+              "value": 10,
+              "unit": "percent",
+              "period": "month",
+              "note": "Of monthly fixed salary, only above insurance payout; Work Permit holders."
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer is responsible for, and bears the costs of, the worker's upkeep, including adequate food and medical treatment (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 1 and 20A).",
+            "The employer must buy and maintain medical insurance for each 12-month period of employment (Part II, para. 4).",
+            "The employer must pay not less than the declared fixed monthly salary regardless of whether there is actual work (Part I, para. 7)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)). Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "s. 89",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 1, 7 and 20A; Part II, para. 4; Part III, paras. 1 and 1B",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No separate statutory paid sick-leave entitlement was found for domestic workers beyond continued salary and medical costs. The medical insurance requirements for other Work Permit holders (Part IV of the Fourth Schedule) were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "When and how wages are paid",
+      "summary": "Salary must be paid before the end of the 7th day after the salary period. On dismissal, all pay is due on the day or within 3 days. For a foreign worker the salary period cannot exceed one month, and a domestic worker's employer must not keep her salary or money.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Salary, other than overtime, must be paid before the expiry of the 7th day after the last day of the salary period (Employment Act, s. 21(1)).",
+            "The total salary due on completion of the contract must be paid on completion (s. 21(3)); for a dismissed employee it must be paid on the day of dismissal or within 3 days after (s. 22).",
+            "For a Work Permit holder who is not a domestic worker, the employer must pay not less than the declared fixed monthly salary no later than 7 days after the salary period, which may not exceed one month (Work Passes Regulations 2012, Fourth Schedule, Part III, paras. 3 and 4)."
+          ],
+          "limits": {
+            "payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the last day of the salary period."
+            },
+            "payment_on_dismissal": {
+              "value": 3,
+              "unit": "days",
+              "period": "once",
+              "note": "At most, if not paid on the day."
+            },
+            "maximum_salary_period": {
+              "value": 1,
+              "unit": "month",
+              "period": "once",
+              "note": "For Work Permit holders."
+            }
+          },
+          "penalty": "Failing to pay salary on time is an offence: fine of $3,000 to $15,000, imprisonment of up to 6 months, or both; higher for repeat offenders (Employment Act, s. 34(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must pay not less than the fixed monthly salary not later than 7 days after the last day of the salary period, which may not exceed one month (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 6 and 7).",
+            "If the worker asks, salary must be paid by direct transfer into her bank account in Singapore, and the employer must keep a record of salary paid that she can see (Part II, para. 5). MOM adds that cash payments need a record signed by both.",
+            "The employer must not prevent or restrict, by any means, the worker's access to or use of her salary or other money, even with her consent (Part II, para. 5C); MOM states this includes keeping her bank book or bank card."
+          ],
+          "limits": {
+            "payment_deadline": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After the last day of the salary period."
+            },
+            "maximum_salary_period": {
+              "value": 1,
+              "unit": "month",
+              "period": "once"
+            }
+          },
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)). Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 21, 22 and 34",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 6 and 7; Part II, paras. 5 and 5C; Part III, paras. 3 and 4",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Paying the salary of a foreign domestic worker",
+          "section": "salary-guidelines",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/salary-guidelines"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "partly_regulated",
+      "title": "Deductions from salary",
+      "summary": "For employees covered by the Employment Act, only listed deductions are allowed, and total deductions cannot exceed 50% of the salary for a period. Nobody may deduct from a foreign worker's salary as the price of the job. For domestic workers the Act does not apply, but the employer may not cut the declared salary or raise declared deductions without agreement.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Only these deductions may be made: for absence; for damage or loss the employee is directly responsible for; for accommodation or authorised amenities and services with written consent; to recover advances, loans or overpayments; CPF contributions; co-operative society dues; and other deductions the employee consents to in writing (Employment Act, s. 27(1)).",
+            "A deduction for damage or loss must not exceed the loss and, unless the Commissioner permits, one quarter of one month's wages, and only after the employee has had a chance to show cause (s. 29(1)).",
+            "Deductions for accommodation, amenities and services must not exceed their value and, in total in a salary period, one quarter of the salary for it (s. 30(2)).",
+            "Advances may be recovered over not more than 12 months; each instalment for an advance or loan must not exceed one quarter of the salary for the period (s. 31).",
+            "Total deductions in a salary period, other than for absence, recovery of advances and loans, and co-operative society dues, must not exceed 50% of the salary payable; this cap does not apply to the final salary (s. 32).",
+            "No person may deduct from a foreign employee's salary, or demand or receive from them, any sum as consideration or a condition of their employment, or as a financial guarantee for it, in Singapore or elsewhere (Employment of Foreign Manpower Act, s. 22A(1)). MOM adds that a foreign worker's salary cannot be reduced to recover levy costs, and cannot be deducted for liquidated damages."
+          ],
+          "limits": {
+            "maximum_total_deductions": {
+              "value": 50,
+              "unit": "percent",
+              "note": "Of the salary payable in the period, with exceptions."
+            },
+            "maximum_instalment": {
+              "value": 25,
+              "unit": "percent",
+              "note": "Of the salary for the period, advances and loans."
+            },
+            "damage_deduction_cap": {
+              "value": 25,
+              "unit": "percent",
+              "note": "Of one month's wages, unless the Commissioner permits."
+            },
+            "accommodation_and_amenity_cap": {
+              "value": 25,
+              "unit": "percent",
+              "note": "Of the salary for the period."
+            },
+            "advance_recovery_period": {
+              "value": 12,
+              "unit": "months",
+              "period": "once",
+              "note": "At most."
+            }
+          },
+          "penalty": "Deducting or taking money as a condition of a foreign employee's job is an offence: fine of up to $30,000, imprisonment of up to 2 years, or both (Employment of Foreign Manpower Act, s. 22A(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic workers are excluded from the definition of 'employee' in the Employment Act (s. 2(1)), so the Act's rules do not apply to them; MOM confirms this.",
+            "The employer must not reduce the worker's basic monthly salary or fixed monthly allowances below the declared amount, or raise her fixed monthly deductions above the declared amount, without her prior written agreement, and must first inform MOM in writing (Work Passes Regulations 2012, Fourth Schedule, Part II, para. 5A).",
+            "The employer bears the cost of the worker's upkeep, including food and medical treatment (Part I, paras. 1 and 20A).",
+            "No person may deduct from a foreign employee's salary, or demand or receive from them, any sum as consideration or a condition of their employment, or as a financial guarantee (Employment of Foreign Manpower Act, s. 22A(1)); a deduction that is not one of the permitted kinds is presumed to be for this purpose (s. 22A(3))."
+          ],
+          "limits": {},
+          "penalty": "Deducting or taking money as a condition of a foreign employee's job is an offence: fine of up to $30,000, imprisonment of up to 2 years, or both (Employment of Foreign Manpower Act, s. 22A(2)). Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 27 and 29 to 32",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower Act 1990",
+          "section": "s. 22A",
+          "url": "https://sso.agc.gov.sg/Act/EFMA1990",
+          "year": 1990
+        },
+        {
+          "law": "Ministry of Manpower: Allowable salary deductions",
+          "section": "Types and maximum amount of deductions; deducting salaries of migrant workers",
+          "url": "https://www.mom.gov.sg/employment-practices/salary/salary-deductions"
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 1 and 20A; Part II, para. 5A",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Employment Act has no list of permitted deductions for domestic workers; the sources reviewed show only the Part II condition and s. 22A above. The 50% cap and the other limits come from the Act; MOM's guidance page states them in plainer terms. Ask MOM before treating any deduction from a domestic worker's salary as lawful.",
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "partly_regulated",
+      "title": "Notice to end a contract",
+      "summary": "For employees covered by the Employment Act, notice follows the contract; if it is silent it is 1 day, 1 week, 2 weeks or 4 weeks depending on years of service, and it is the same for both sides. Domestic workers are outside the Act, so their notice comes from the contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Either party may give notice to end the contract; its length must be the same for both, set by the contract or, if it is silent, at least: 1 day if employed under 26 weeks, 1 week if 26 weeks to under 2 years, 2 weeks if 2 to under 5 years, and 4 weeks if 5 years or more (Employment Act, s. 10(2)-(3)).",
+            "The notice must be written, and a party may waive their right to notice on an occasion (s. 10(4)-(5)).",
+            "Either party may end the contract without notice by paying the salary that would have accrued during the notice period (s. 11(1))."
+          ],
+          "limits": {
+            "notice_under_26_weeks": {
+              "value": 1,
+              "unit": "days",
+              "period": "once"
+            },
+            "notice_26_weeks_to_2_years": {
+              "value": 1,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_2_to_5_years": {
+              "value": 2,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_5_years_or_more": {
+              "value": 4,
+              "unit": "weeks",
+              "period": "once"
+            }
+          },
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "Domestic workers are excluded from the definition of 'employee' in the Employment Act (s. 2(1)), so the Act's rules do not apply to them; MOM confirms this. No statutory notice period was found; MOM encourages a written employment contract.",
+            "The employer must apply to cancel the work permit and visit pass when employment ends, inform MOM within 7 days, and give the worker reasonable notice of her repatriation (Work Passes Regulations 2012, Fourth Schedule, Part II, paras. 11 and 12)."
+          ],
+          "limits": {
+            "cancellation_report": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "Inform MOM after employment ends."
+            }
+          },
+          "penalty": "Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 2(1), 10 and 11",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part II, paras. 11 and 12",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Contracts and safety agreement for migrant domestic workers",
+          "section": "contracts-and-safety-agreement",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/contracts-and-safety-agreement"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Dismissal for misconduct (s. 14) and retrenchment benefits were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "regulated",
+      "title": "Costs and penalties when a contract ends early",
+      "summary": "The employer of a foreign worker must pay to send the worker home whenever the permit ends early, unless MOM says otherwise, and must first pay all money owed. Employers may not deduct salary as damages for breaking a contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Subject to exceptions, the employer must repatriate a Work Permit holder who is not a domestic worker to the international port of entry nearest their hometown when the work permit or visit pass expires or is cancelled and they are not employed by another employer (Work Passes Regulations 2012, Fourth Schedule, Part III, para. 12).",
+            "The employer must bear the repatriation cost at any time unless MOM permits otherwise, and must first pay all outstanding salary and money due (Part III, para. 14).",
+            "The employer must not repatriate the worker if that would frustrate a pending salary claim or work injury claim, unless the immigration authorities ask (Part III, para. 15), and must return the work permit and visit pass to MOM within 7 days of cancellation (para. 11).",
+            "An employer must not deduct a foreign worker's salary for liquidated damages (MOM guidance on salary deductions)."
+          ],
+          "limits": {
+            "return_of_work_permit": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After cancellation."
+            }
+          },
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must repatriate the worker to the international port of entry nearest her hometown when the work permit or visit pass expires or is cancelled, and bear the cost at any time except where MOM permits otherwise; all outstanding salary and money owed must be paid before she leaves (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 21 and 23).",
+            "MOM guidance: the employer must buy her air ticket, including check-in luggage, and pay connecting transport, and her departure must be within 2 weeks of cancellation.",
+            "The employer must return the work permit and visit pass to MOM within 7 days after cancellation (Part I, para. 20)."
+          ],
+          "limits": {
+            "return_of_work_permit": {
+              "value": 7,
+              "unit": "days",
+              "period": "once",
+              "note": "After cancellation."
+            },
+            "departure_after_cancellation": {
+              "value": 2,
+              "unit": "weeks",
+              "period": "once",
+              "note": "Per MOM guidance."
+            }
+          },
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 20, 21 and 23; Part III, paras. 11, 12, 14 and 15",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Sending a migrant domestic worker home",
+          "section": "sending-an-fdw-home",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/sending-an-fdw-home"
+        },
+        {
+          "law": "Ministry of Manpower: Allowable salary deductions",
+          "section": "Types and maximum amount of deductions; deducting salaries of migrant workers",
+          "url": "https://www.mom.gov.sg/employment-practices/salary/salary-deductions"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": null,
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "regulated",
+      "title": "Fees charged by employment agencies",
+      "summary": "Nobody may take money from a foreign worker as the price of a job. A Singapore employment agency may charge a foreign worker at most one month's salary for each year of the work pass or contract, up to 2 months, and must refund part if the job ends early. The employer may not take money from an agency for the worker's job.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "No person may deduct from a foreign employee's salary, or demand or receive from them, directly or indirectly and in Singapore or elsewhere, any sum as consideration or a condition for their employment or continued employment, or as a financial guarantee for it (Employment of Foreign Manpower Act, s. 22A(1)).",
+            "A licensed agency's fee from a foreign employee may not exceed one month's salary for each year of the work pass or the contract, whichever is shorter, pro-rated, and not more than 2 months' salary (Employment Agencies Rules 2011, r. 12(1)(a)).",
+            "The r. 12(1) cap does not cover fees for costs incurred outside Singapore by or for the worker (r. 12(2)); the agency must give a written receipt with an itemised list of the fee (r. 12(4)).",
+            "The agency must refund at least 50% of the fees if the employer fails to employ the worker or ends the job within 6 months, except where the work is complete, the contract period expired or the worker asked to leave, within 7 working days or before repatriation, whichever is earlier (r. 13(1) and (3)).",
+            "The employer must not demand or receive any sum or benefit from an employment agency or any other person in connection with the worker's employment (Work Passes Regulations 2012, Fourth Schedule, Part III, para. 10)."
+          ],
+          "limits": {
+            "maximum_agency_fee": {
+              "value": 2,
+              "unit": "months",
+              "period": "once",
+              "note": "Of the worker's salary; one month per year of contract or pass, whichever is shorter."
+            },
+            "minimum_refund_share": {
+              "value": 50,
+              "unit": "percent",
+              "period": "once",
+              "note": "Of fees, if the job ends within 6 months for listed reasons."
+            }
+          },
+          "penalty": "Taking money as a condition of a foreign employee's job is an offence: fine of up to $30,000, imprisonment of up to 2 years, or both (Employment of Foreign Manpower Act, s. 22A(2)). Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must not demand or receive any sum or benefit from an employment agency or any other person in connection with the domestic worker's employment (Work Passes Regulations 2012, Fourth Schedule, Part I, para. 19).",
+            "The prohibition in s. 22A(1) and the agency fee rules in r. 12 and r. 13 apply to any foreign employee, including a domestic worker."
+          ],
+          "limits": {},
+          "penalty": "Taking money as a condition of a foreign employee's job is an offence: fine of up to $30,000, imprisonment of up to 2 years, or both (Employment of Foreign Manpower Act, s. 22A(2)). Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment of Foreign Manpower Act 1990",
+          "section": "s. 22A",
+          "url": "https://sso.agc.gov.sg/Act/EFMA1990",
+          "year": 1990
+        },
+        {
+          "law": "Employment Agencies Rules 2011",
+          "section": "rr. 12 and 13",
+          "url": "https://sso.agc.gov.sg/SL/EAA1958-S172-2011",
+          "year": 2011
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, para. 19; Part III, para. 10",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Allowable salary deductions",
+          "section": "Types and maximum amount of deductions; deducting salaries of migrant workers",
+          "url": "https://www.mom.gov.sg/employment-practices/salary/salary-deductions"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Fees charged abroad by recruiters are a common source of worker debt and are outside the r. 12 cap. Whether a particular overseas charge counts as a sum demanded 'as consideration for the employment' under s. 22A depends on the facts and was not analysed. Check the worker's in-principle approval letter and ask MOM.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "partly_regulated",
+      "title": "Employer keeping a work permit or passport",
+      "summary": "An employer of a foreign worker must not keep the worker's original work permit and visit pass, and must let the worker keep them. Breaking the condition is an offence. The rules read do not mention the passport itself.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The employer must not retain possession of the foreign employee's original work permit and visit pass, and must allow the employee to retain them (Work Passes Regulations 2012, Fourth Schedule, Part I, para. 16 for domestic workers; Part III, para. 7 for other Work Permit holders)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must not retain possession of the domestic worker's original work permit and visit pass, and must allow her to retain them (Work Passes Regulations 2012, Fourth Schedule, Part I, para. 16).",
+            "The employer must not prevent or restrict her access to or use of her salary or other money, even with her consent (Part II, para. 5C)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)). Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, para. 16; Part II, para. 5C; Part III, para. 7",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Employment of Foreign Manpower Act 1990",
+          "section": "s. 22(1)(a) and (h)",
+          "url": "https://sso.agc.gov.sg/Act/EFMA1990",
+          "year": 1990
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The Regulations name the work permit and visit pass, not the passport. No provision naming the passport itself was found in the Work Passes Regulations or the Employment of Foreign Manpower Act. Other laws (for example the Passports Act and the Penal Code) were not checked. A worker whose passport is held should still report it to MOM.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "regulated",
+      "title": "Housing for the worker",
+      "summary": "The employer of a foreign worker must provide acceptable accommodation that meets government requirements. For a domestic worker MOM sets minimum standards: shelter, a bed, ventilation, safety, and not sharing a room with a male adult or teenager.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The employer must ensure the Work Permit holder has acceptable accommodation consistent with any law, directive or guideline of a competent authority (Work Passes Regulations 2012, Fourth Schedule, Part III, paras. 2 and 11B).",
+            "An employer who provides accommodation in an unregulated dormitory must follow the operating requirements of the Foreign Employee Dormitories Act 2015 (Part III, para. 2A), and the worker must have access to food and daily supplies when living in a dormitory (para. 2B).",
+            "A deduction for accommodation is allowed only with the employee's written consent and within the value of the accommodation and one quarter of the salary (Employment Act, ss. 27(1)(d) and 30(2))."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "The employer must provide acceptable accommodation, and ensure she lives only at the address stated in the work permit or another approved by MOM (Work Passes Regulations 2012, Fourth Schedule, Part I, paras. 4, 5 and 20B).",
+            "MOM's requirements: adequate shelter; a mattress, pillow, blanket and toiletries; sufficient ventilation, with a fan if needed; no sleeping near dangerous equipment; not in the same room as a male adult or teenager; adequate space and privacy.",
+            "Video recording devices must be disclosed to the worker and not placed where she sleeps, changes clothes or bathes (MOM guidance)."
+          ],
+          "limits": {},
+          "penalty": "Breaking a work pass condition is an offence: fine of up to $10,000 or imprisonment for up to 12 months, or both (Employment of Foreign Manpower Act, s. 22(1)(a) and (h)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part I, paras. 4, 5 and 20B; Part III, paras. 2, 2A, 2B and 11B",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        },
+        {
+          "law": "Ministry of Manpower: Rest days, health and well-being for migrant domestic workers",
+          "section": "rest-days-and-well-being",
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/employers-guide/rest-days-and-well-being"
+        },
+        {
+          "law": "Employment Act 1968 (2020 Revised Edition)",
+          "section": "ss. 27(1)(d) and 30(2)",
+          "url": "https://sso.agc.gov.sg/Act/EmA1968",
+          "year": 1968
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Standards for licensed dormitories under the Foreign Employee Dormitories Act 2015 were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "partly_regulated",
+      "title": "Work injury compensation and insurance",
+      "summary": "Employers of employees covered by the Work Injury Compensation Act must insure against work injury and pay compensation. Domestic workers are outside that Act, so the employer of a foreign domestic worker must instead buy medical insurance and personal accident insurance of at least $60,000.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer is liable to pay compensation to an employee injured by an accident arising out of and in the course of employment (Work Injury Compensation Act 2019, s. 7(1)).",
+            "Every employer must maintain approved work injury insurance against these liabilities for every employee, except prescribed excluded classes (s. 24(1)-(2))."
+          ],
+          "limits": {},
+          "penalty": "Failing to insure is an offence: fine of up to $10,000, imprisonment of up to 12 months, or both; up to $20,000 for a repeat offender (Work Injury Compensation Act 2019, s. 25(1)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        },
+        {
+          "applies_to": [
+            "domestic_worker"
+          ],
+          "requirements": [
+            "A domestic worker, being an individual employed in or in connection with the domestic services of private premises, is not covered by the Work Injury Compensation Act (Third Schedule, para. 3).",
+            "The employer must buy and maintain medical insurance for each 12-month period of employment (Work Passes Regulations 2012, Fourth Schedule, Part II, para. 4).",
+            "The employer must also buy personal accident insurance covering permanent disability or death, with cover of at least $60,000, for the whole period of employment, and claim within 30 days of an accident (Part II, para. 4A)."
+          ],
+          "limits": {
+            "personal_accident_cover_minimum": {
+              "value": 60000,
+              "unit": "SGD",
+              "period": "once"
+            }
+          },
+          "penalty": "Breaking a regulatory condition of the work pass can lead to a financial penalty of up to $10,000 imposed by the Controller of Work Passes (Employment of Foreign Manpower Act, s. 25(2)).",
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Work Injury Compensation Act 2019",
+          "section": "ss. 7, 24 and 25; Third Schedule, para. 3",
+          "url": "https://sso.agc.gov.sg/Act/WICA2019",
+          "year": 2019
+        },
+        {
+          "law": "Employment of Foreign Manpower (Work Passes) Regulations 2012",
+          "section": "Fourth Schedule, Part II, paras. 4 and 4A",
+          "url": "https://sso.agc.gov.sg/SL/EFMA1990-S569-2012",
+          "year": 2012
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Compensation amounts and the excluded classes of employees under s. 24(2) were not curated. The medical insurance requirements for other Work Permit holders (Part IV of the Fourth Schedule) were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "not_regulated",
+      "title": "Pension and social security",
+      "summary": "The Central Provident Fund (CPF), Singapore's retirement and social savings scheme, is described by the Ministry of Manpower as covering Singapore citizens and permanent residents. No CPF or other pension for foreign Work Permit holders was found.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "MOM states that CPF contributions are payable for Singapore citizens and Singapore permanent residents working under a contract of service (MOM, Who is entitled to CPF contributions).",
+            "No provision giving a Work Permit holder a CPF contribution or another statutory pension was found in the sources reviewed."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Ministry of Manpower (MOM)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Ministry of Manpower: Who is entitled to CPF contributions",
+          "section": "Entitlement",
+          "url": "https://www.mom.gov.sg/employment-practices/central-provident-fund/cpf-contributions"
+        },
+        {
+          "law": "Central Provident Fund Act 1953",
+          "section": "s. 7; First Schedule",
+          "url": "https://sso.agc.gov.sg/Act/CPFA1953",
+          "year": 1953
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "low",
+      "notes": "This is inferred from MOM's statement of who is entitled. The Central Provident Fund Act's own text read here (s. 7 and the First Schedule) defines 'employee' widely and does not itself exclude foreign workers; any exclusion is probably in regulations or exemptions that were not read. Confirm with the CPF Board or MOM before showing this to a worker as final. A worker who becomes a permanent resident is covered from that point.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}
