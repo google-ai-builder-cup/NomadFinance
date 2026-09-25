@@ -71,7 +71,8 @@
     "remittance": "Remittance",
     "contract": "Contracts",
     "radar": "Radar",
-    "identity": "Identity"
+    "identity": "Identity",
+    "profile": "Profile"
   },
   "layout": {
     "skipToContent": "Skip to main content",
@@ -152,5 +153,57 @@
     },
     "saveError": "We couldn't save your answers. Check your connection and try again.",
     "loadError": "We couldn't load your profile. Check your connection and try again."
+  },
+  "profile": {
+    "title": "Your profile",
+    "subtitle": "Check and change the details NomadFinance uses for you.",
+    "loadError": "We couldn't load your profile. Check your connection and try again.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "saveError": "We couldn't save your changes. Check your connection and try again.",
+    "account": {
+      "heading": "Your account",
+      "note": "Your name and sign-in details come from your Google account or phone number."
+    },
+    "details": {
+      "heading": "Your details",
+      "language": "Language",
+      "languageHint": "Also used for the reports and messages we send you.",
+      "hostCountry": "Country you work in",
+      "hostCountryHint": "We check your contract against this country's labor law.",
+      "homeCountry": "Country you send money to",
+      "jobType": "Kind of work"
+    },
+    "notifications": {
+      "heading": "Notifications",
+      "radarAlerts": "Warnings about agents and money transfer services that cheat workers",
+      "reminders": "Reminders",
+      "corridors": "Warn me about these routes",
+      "corridorsHint": "Turn on the routes you use to send money."
+    },
+    "delete": {
+      "heading": "Delete my account",
+      "intro": "This permanently deletes:",
+      "itemProfile": "Your profile and settings",
+      "itemContracts": "Your contracts and their reports",
+      "itemMoney": "Your income, bill and savings records",
+      "itemFiles": "Files you uploaded",
+      "radarNote": "Reports you sent to Exploitation Radar stay in the community record. They do not contain your name or account.",
+      "start": "Delete my account",
+      "confirmLabel": "I understand this cannot be undone.",
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "confirm": "Delete permanently",
+      "deleting": "Deleting…",
+      "reauthTitle": "Confirm it's you",
+      "reauthBody": "For your safety, sign in again before deleting your account.",
+      "reauthGoogle": "Sign in with Google again",
+      "reauthSendCode": "Send a code to {{phone}}",
+      "codeLabel": "6-digit code",
+      "reauthConfirm": "Confirm and delete",
+      "error": "We couldn't finish deleting your account. Please try again.",
+      "done": "Your account and data have been deleted."
+    }
   }
 }

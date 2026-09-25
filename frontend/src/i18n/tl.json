@@ -71,7 +71,8 @@
     "remittance": "Remittance",
     "contract": "Mga Kontrata",
     "radar": "Radar",
-    "identity": "Identity"
+    "identity": "Identity",
+    "profile": "Profile"
   },
   "layout": {
     "skipToContent": "Lumaktaw papunta sa pangunahing content",
@@ -152,5 +153,57 @@
     },
     "saveError": "Hindi namin na-save ang mga sagot mo. Tingnan ang koneksyon mo at subukan ulit.",
     "loadError": "Hindi namin ma-load ang profile mo. Tingnan ang koneksyon mo at subukan ulit."
+  },
+  "profile": {
+    "title": "Ang profile mo",
+    "subtitle": "Tingnan at baguhin ang mga detalyeng ginagamit ng NomadFinance para sa iyo.",
+    "loadError": "Hindi namin ma-load ang profile mo. Tingnan ang koneksyon mo at subukan ulit.",
+    "save": "I-save ang mga pagbabago",
+    "saving": "Sine-save…",
+    "saved": "Na-save",
+    "saveError": "Hindi namin na-save ang mga pagbabago mo. Tingnan ang koneksyon mo at subukan ulit.",
+    "account": {
+      "heading": "Ang account mo",
+      "note": "Ang pangalan at detalye ng pag-sign in mo ay galing sa Google account o numero ng telepono mo."
+    },
+    "details": {
+      "heading": "Ang mga detalye mo",
+      "language": "Wika",
+      "languageHint": "Ito rin ang gagamiting wika sa mga ulat at mensaheng ipinapadala namin.",
+      "hostCountry": "Bansang pinagtatrabahuhan mo",
+      "hostCountryHint": "Sinusuri namin ang kontrata mo laban sa batas sa paggawa ng bansang ito.",
+      "homeCountry": "Bansang pinapadalhan mo ng pera",
+      "jobType": "Uri ng trabaho"
+    },
+    "notifications": {
+      "heading": "Mga abiso",
+      "radarAlerts": "Mga babala tungkol sa mga ahente at serbisyo sa pagpapadala ng pera na nandaraya ng manggagawa",
+      "reminders": "Mga paalala",
+      "corridors": "Bigyan ako ng babala tungkol sa mga rutang ito",
+      "corridorsHint": "I-on ang mga rutang ginagamit mo sa pagpapadala ng pera."
+    },
+    "delete": {
+      "heading": "Burahin ang account ko",
+      "intro": "Permanenteng buburahin nito ang:",
+      "itemProfile": "Ang profile at mga setting mo",
+      "itemContracts": "Ang mga kontrata mo at ang mga ulat nito",
+      "itemMoney": "Ang mga tala mo ng kita, bayarin at ipon",
+      "itemFiles": "Ang mga file na ina-upload mo",
+      "radarNote": "Mananatili sa talaan ng komunidad ang mga ulat na ipinadala mo sa Exploitation Radar. Wala itong pangalan o account mo.",
+      "start": "Burahin ang account ko",
+      "confirmLabel": "Naiintindihan kong hindi na ito maibabalik.",
+      "cancel": "Kanselahin",
+      "continue": "Magpatuloy",
+      "confirm": "Burahin nang tuluyan",
+      "deleting": "Binubura…",
+      "reauthTitle": "Tiyaking ikaw ito",
+      "reauthBody": "Para sa kaligtasan mo, mag-sign in ulit bago burahin ang account mo.",
+      "reauthGoogle": "Mag-sign in ulit gamit ang Google",
+      "reauthSendCode": "Magpadala ng code sa {{phone}}",
+      "codeLabel": "6-digit na code",
+      "reauthConfirm": "Kumpirmahin at burahin",
+      "error": "Hindi namin natapos burahin ang account mo. Pakisubukan ulit.",
+      "done": "Nabura na ang account at data mo."
+    }
   }
 }

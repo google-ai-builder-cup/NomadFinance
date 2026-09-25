@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
+import Profile from "@/pages/Profile";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
@@ -30,7 +31,11 @@ export const router = createBrowserRouter([
         children: [
           {
             element: <AppShell />,
-            children: [{ path: "/dashboard", element: <Dashboard /> }, ...pillarRoutes],
+            children: [
+              { path: "/dashboard", element: <Dashboard /> },
+              { path: "/profile", element: <Profile /> },
+              ...pillarRoutes,
+            ],
           },
         ],
       },

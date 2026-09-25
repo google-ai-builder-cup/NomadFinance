@@ -24,3 +24,7 @@ export type LanguageCode = (typeof LANGUAGE_CODES)[number];
 export function isLanguageCode(value: string | undefined): value is LanguageCode {
   return (LANGUAGE_CODES as readonly string[]).includes(value ?? "");
 }
+
+// The six money corridors of the project scope (data-scripts/src/config.py), host-home.
+export const CORRIDOR_IDS = ["SG-PH", "SG-IN", "AU-IN", "MY-ID", "JP-PH", "AU-PH"] as const;
+export type CorridorId = (typeof CORRIDOR_IDS)[number];

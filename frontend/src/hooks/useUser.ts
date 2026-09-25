@@ -1,13 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/useAuth";
-import {
-  completeOnboarding,
-  getUserProfile,
-  updatePreferredLanguage,
-} from "@/services/userService";
-import type { LanguageCode } from "@/types/enums";
-import type { OnboardingAnswers, UserProfile } from "@/types/user";
+import { completeOnboarding, getUserProfile, updateProfile } from "@/services/userService";
+import type { OnboardingAnswers, ProfileChanges } from "@/types/user";
 
 function profileKey(uid: string | undefined) {
   return ["userProfile", uid] as const;
@@ -40,17 +35,17 @@ export function useCompleteOnboarding() {
   });
 }
 
-/** Change the saved preferred_language. For the profile page (NF-P1-023), not the header. */
-export function useUpdatePreferredLanguage() {
+/**
+ * Save profile edits to Firestore, then read the document back. The mutation only counts as
+ * done once the page has the values Firestore really holds, so what is shown is what is saved.
+ */
+export function useUpdateProfile() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const uid = user?.uid ?? "";
 
   return useMutation({
-    mutationFn: (language: LanguageCode) => updatePreferredLanguage(uid, language),
-    onSuccess: (_result, language) =>
-      queryClient.setQueryData<UserProfile | null>(profileKey(uid), (profile) =>
-        profile ? { ...profile, preferred_language: language } : profile
-      ),
+    mutationFn: (changes: ProfileChanges) => updateProfile(uid, changes),
+    onSuccess: () => queryClient.refetchQueries({ queryKey: profileKey(uid) }),
   });
 }

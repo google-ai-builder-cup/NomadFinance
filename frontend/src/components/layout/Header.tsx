@@ -1,4 +1,4 @@
-import { LogOut } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import LanguageSelector from "@/components/layout/LanguageSelector";
@@ -30,6 +30,11 @@ export default function Header() {
             {identity}
           </span>
           <LanguageSelector />
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/profile" aria-label={t("nav.profile")} title={t("nav.profile")}>
+              <UserRound className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
           <Button
             variant="ghost"
             size="icon"

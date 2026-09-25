@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from functools import lru_cache
+
 from fastapi import Depends, HTTPException, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -11,7 +13,11 @@ from app.core.security import (
     verify_google_oidc_token,
     verify_id_token,
 )
+from app.integrations.cloud_storage import UserFileStore
+from app.integrations.firebase_auth import delete_firebase_user
+from app.repositories.base import get_firestore_client
 from app.schemas.user import AuthenticatedUser
+from app.services.auth_service import AccountService
 
 # auto_error=False so a missing token becomes our own 401 instead of FastAPI's default.
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -49,6 +55,7 @@ async def get_current_user(
         phone_number=claims.get("phone_number"),
         name=claims.get("name"),
         picture=claims.get("picture"),
+        auth_time=claims.get("auth_time"),
     )
 
 
@@ -93,3 +100,9 @@ async def require_cloud_scheduler(
     ):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Caller is not allowed")
     return settings.cron_service_account
+
+
+@lru_cache
+def get_account_service() -> AccountService:
+    """The account-deletion service wired to real Firestore, Storage and Firebase Auth."""
+    return AccountService(get_firestore_client(), UserFileStore(), delete_firebase_user)

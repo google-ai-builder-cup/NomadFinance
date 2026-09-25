@@ -71,7 +71,8 @@
     "remittance": "Remitansi",
     "contract": "Kontrak",
     "radar": "Radar",
-    "identity": "Identitas"
+    "identity": "Identitas",
+    "profile": "Profil"
   },
   "layout": {
     "skipToContent": "Lompat ke konten utama",
@@ -152,5 +153,57 @@
     },
     "saveError": "Jawaban Anda gagal disimpan. Periksa koneksi Anda lalu coba lagi.",
     "loadError": "Profil Anda gagal dimuat. Periksa koneksi Anda lalu coba lagi."
+  },
+  "profile": {
+    "title": "Profil Anda",
+    "subtitle": "Lihat dan ubah data yang dipakai NomadFinance untuk Anda.",
+    "loadError": "Profil Anda gagal dimuat. Periksa koneksi Anda lalu coba lagi.",
+    "save": "Simpan perubahan",
+    "saving": "Menyimpan…",
+    "saved": "Tersimpan",
+    "saveError": "Perubahan Anda gagal disimpan. Periksa koneksi Anda lalu coba lagi.",
+    "account": {
+      "heading": "Akun Anda",
+      "note": "Nama dan data masuk Anda berasal dari akun Google atau nomor telepon Anda."
+    },
+    "details": {
+      "heading": "Data Anda",
+      "language": "Bahasa",
+      "languageHint": "Juga dipakai untuk laporan dan pesan yang kami kirim.",
+      "hostCountry": "Negara tempat Anda bekerja",
+      "hostCountryHint": "Kami memeriksa kontrak Anda dengan hukum ketenagakerjaan negara ini.",
+      "homeCountry": "Negara tujuan kiriman uang Anda",
+      "jobType": "Jenis pekerjaan"
+    },
+    "notifications": {
+      "heading": "Notifikasi",
+      "radarAlerts": "Peringatan tentang agen dan layanan kirim uang yang menipu pekerja",
+      "reminders": "Pengingat",
+      "corridors": "Peringatkan saya tentang rute ini",
+      "corridorsHint": "Aktifkan rute yang Anda pakai untuk mengirim uang."
+    },
+    "delete": {
+      "heading": "Hapus akun saya",
+      "intro": "Ini akan menghapus secara permanen:",
+      "itemProfile": "Profil dan pengaturan Anda",
+      "itemContracts": "Kontrak Anda dan laporannya",
+      "itemMoney": "Catatan penghasilan, tagihan, dan tabungan Anda",
+      "itemFiles": "File yang Anda unggah",
+      "radarNote": "Laporan yang Anda kirim ke Exploitation Radar tetap ada dalam catatan komunitas. Laporan itu tidak memuat nama atau akun Anda.",
+      "start": "Hapus akun saya",
+      "confirmLabel": "Saya mengerti ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "continue": "Lanjut",
+      "confirm": "Hapus permanen",
+      "deleting": "Menghapus…",
+      "reauthTitle": "Pastikan ini Anda",
+      "reauthBody": "Demi keamanan Anda, masuk lagi sebelum menghapus akun.",
+      "reauthGoogle": "Masuk lagi dengan Google",
+      "reauthSendCode": "Kirim kode ke {{phone}}",
+      "codeLabel": "Kode 6 digit",
+      "reauthConfirm": "Konfirmasi dan hapus",
+      "error": "Akun Anda belum selesai dihapus. Silakan coba lagi.",
+      "done": "Akun dan data Anda telah dihapus."
+    }
   }
 }

@@ -17,6 +17,7 @@ import {
   sendPhoneCode,
   signInWithGoogle,
 } from "@/services/authService";
+import { accountWasDeleted, clearAccountDeletedNotice } from "@/services/accountService";
 import { PHONE_DIAL_CODES } from "@/utils/constants";
 import { isIosStandalonePwa } from "@/utils/platform";
 import { toE164 } from "@/utils/validators";
@@ -34,6 +35,9 @@ export default function SignIn() {
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
 
   const googleUnavailable = isIosStandalonePwa();
+  // Set by the profile page just before it signs out after deleting an account.
+  const [accountDeleted] = useState(accountWasDeleted);
+  useEffect(() => clearAccountDeletedNotice(), []);
 
   const [dialCode, setDialCode] = useState(PHONE_DIAL_CODES[0].dialCode);
   const [localNumber, setLocalNumber] = useState("");
@@ -142,6 +146,15 @@ export default function SignIn() {
       <div className="flex justify-end">
         <LanguageSelector />
       </div>
+
+      {accountDeleted && (
+        <p
+          role="status"
+          className="rounded-md border border-input bg-muted/50 p-3 text-center text-sm"
+        >
+          {t("profile.delete.done")}
+        </p>
+      )}
 
       <header className="space-y-2 text-center">
         <h1 className="text-2xl font-bold tracking-tight">{t("auth.signIn.title")}</h1>

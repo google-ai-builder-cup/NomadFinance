@@ -3,6 +3,8 @@ import {
   type ConfirmationResult,
   getRedirectResult,
   GoogleAuthProvider,
+  reauthenticateWithPhoneNumber,
+  reauthenticateWithPopup,
   RecaptchaVerifier,
   signOut as firebaseSignOut,
   signInWithPhoneNumber,
@@ -79,6 +81,50 @@ export async function confirmPhoneCode(
 
 export function signOut(): Promise<void> {
   return firebaseSignOut(auth);
+}
+
+export type SignInMethod = "google" | "phone" | "other";
+
+/** How the current user signs in, which decides how they can confirm it is really them. */
+export function signInMethod(): SignInMethod {
+  const providers = auth.currentUser?.providerData.map((info) => info.providerId) ?? [];
+  if (providers.includes("google.com")) {
+    return "google";
+  }
+  return providers.includes("phone") ? "phone" : "other";
+}
+
+/** True when the user signed in (not just refreshed a token) within the last `seconds`. */
+export async function signedInWithin(seconds: number): Promise<boolean> {
+  const result = await auth.currentUser?.getIdTokenResult();
+  return result !== undefined && Date.now() - Date.parse(result.authTime) <= seconds * 1000;
+}
+
+/** Confirm identity with Google again. Afterwards the token carries a fresh sign-in time. */
+export async function reauthenticateWithGoogle(): Promise<void> {
+  const user = auth.currentUser;
+  if (user === null) {
+    throw new Error("Not signed in");
+  }
+  await reauthenticateWithPopup(user, googleProvider);
+  await user.getIdToken(true);
+}
+
+/** Text a new code to the phone number this account already uses. */
+export function sendReauthCode(verifier: RecaptchaVerifier): Promise<ConfirmationResult> {
+  const user = auth.currentUser;
+  if (user?.phoneNumber == null) {
+    throw new Error("This account has no phone number");
+  }
+  return reauthenticateWithPhoneNumber(user, user.phoneNumber, verifier);
+}
+
+export async function confirmReauthCode(
+  confirmation: ConfirmationResult,
+  code: string
+): Promise<void> {
+  await confirmation.confirm(code);
+  await auth.currentUser?.getIdToken(true);
 }
 
 /** ID token for `Authorization: Bearer` on backend calls; Firebase refreshes it when needed. */

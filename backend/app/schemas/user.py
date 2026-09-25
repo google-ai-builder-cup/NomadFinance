@@ -16,3 +16,7 @@ class AuthenticatedUser(BaseModel):
     phone_number: str | None = None
     name: str | None = None
     picture: str | None = None
+    # Unix time of the user's last sign-in (the token's `auth_time`); it changes only when the
+    # person signs in again, not when Firebase refreshes the token. Used to require a fresh
+    # sign-in before irreversible actions.
+    auth_time: int | None = None
