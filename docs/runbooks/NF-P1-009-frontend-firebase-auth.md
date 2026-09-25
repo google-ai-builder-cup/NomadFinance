@@ -61,6 +61,21 @@ npm install -g pnpm@10
 
 or prefix every `pnpm` command below with `npx --yes pnpm@10` (e.g. `npx --yes pnpm@10 install`). Use pnpm **10**: the lockfile is format 9.0.
 
+**NVM for Windows users:** if `pnpm` prints `error: CommandNotFound` even after the install above, nvm's own `pnpm.exe` shim (in `...\AppData\Local\Author Software\nvm\.nodejs\`) comes first on PATH and is broken. Check with `Get-Command pnpm -All`. Use `pnpm.cmd` instead of `pnpm` (for example `pnpm.cmd install`), or fix it once:
+
+**Windows PowerShell**
+```powershell
+if (!(Test-Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force }
+Add-Content $PROFILE "`nSet-Alias pnpm pnpm.cmd"
+```
+
+**Git Bash**
+```bash
+echo "alias pnpm=pnpm.cmd" >> ~/.bashrc
+```
+
+Open a new terminal; `pnpm --version` should print `10.x`. Don't delete nvm's shim.
+
 ### 1. Install
 
 ```bash
@@ -171,7 +186,7 @@ What works where:
 | Sign-in | On `localhost` | On `nomadfinance-prod.web.app` |
 |---|---|---|
 | Phone, **test number** (`AU +61`, `491 570 156`, shared code) | Works | Works |
-| Phone, **real number** (real SMS) | **Never works.** Firebase doesn't accept `localhost` as a domain for phone auth and rejects the reCAPTCHA token (`auth/invalid-app-credential`, shown as "The security check didn't pass…"). Test numbers skip that check. | Should work (billing on, region allowed). Needs a deploy to test (deferred item D-29). |
+| Phone, **real number** (real SMS) | **Never works.** Firebase doesn't accept `localhost` as a domain for phone auth and rejects the reCAPTCHA token (`auth/invalid-app-credential`, shown as "The security check didn't pass…"). Test numbers skip that check. | **Works** (verified on the live site 2026-09-25). |
 | Google | Works (popup) | Works (popup; redirect fallback through the `web.app` auth domain) |
 
 A reCAPTCHA image challenge ("select all squares with buses") can appear, mostly in automated or unusual browsers. Whoever is testing solves it.
@@ -200,7 +215,8 @@ In development builds a failed sign-in also logs `Sign-in failed: FirebaseError:
 | Same token with a changed signature byte / with the phone number edited / no token | 401 / 401 / 401 |
 | Real number on `localhost` | `auth/invalid-app-credential`, shown as "The security check didn't pass…" (expected, see step 5) |
 | Second failed send in a row; two hot reloads after a failed send | Correct message again; no crash (bug found and fixed, see below) |
-| Real SMS to a real phone | **Not run yet**: needs the app on a hosted domain (D-29) |
+| **Real SMS to a real phone**, live site `https://nomadfinance-prod.web.app/sign-in` (after merge, 2026-09-25) | SMS received, code accepted, signed in |
+| **Google sign-in on the live site** | Signed in |
 | **Google sign-in on real Firebase** (tester's Chrome, real popup, team Google account) | → `/dashboard`, "Signed in as AIBuilderCup" |
 
 Bugs found during real-Firebase testing, fixed in this task:
@@ -223,7 +239,7 @@ Bugs found during real-Firebase testing, fixed in this task:
 | Phone: "This sign-in method isn't available right now" for every number, test numbers included | SMS region policy is "allow list" with no countries. Add the 11 countries (step 5). |
 | Stuck on "Sending…" | A reCAPTCHA challenge (image grid) is waiting to be solved. Solve it; if the browser window is hidden, bring it to the front. |
 | "Too many attempts…" | Firebase rate limit on SMS / codes. Wait, or use the emulator. |
-| `pnpm: command not found` / `CommandNotFound` | Step 0. |
+| `pnpm: command not found` / `error: CommandNotFound` | Step 0. `CommandNotFound` after installing pnpm = NVM for Windows shim first on PATH; use `pnpm.cmd` or the alias in step 0. |
 | `pnpm format:check` fails on files you didn't touch (Windows) | `core.autocrlf=true` checks files out with CRLF, and Prettier wants LF. The repo copies are LF. Tracked as deferred item D-21; to check your own files: `pnpm exec prettier --check src`. |
 | "Running in emulator mode" banner in production | `VITE_USE_FIREBASE_EMULATOR=true` leaked into the build env. It must be `false` (or unset) in `.env.local`. |
 
