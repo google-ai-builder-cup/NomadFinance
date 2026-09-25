@@ -1,1 +1,910 @@
-{}
+{
+  "country": "AU",
+  "name": "Australia",
+  "curated_by": [
+    "Pranjal (drafted for Devam)"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-25",
+  "notes": "The Fair Work Act 2009 (compilation 73, 7 July 2026) and the Criminal Code Act 1995 (compilation 174, 30 June 2026) were read on the Federal Register of Legislation; guidance comes from the Fair Work Ombudsman, the Australian Taxation Office, the Department of Home Affairs and Safe Work Australia. AustLII was not used because it blocks automated access. NATLEX records could not be opened (bot check), so natlex_isn is empty. Worker groups: employees under the Fair Work Act ('all') and working holiday makers on subclass 417 or 462 visas ('working_holiday'). The Fair Work Act gives visa holders the same rights as other employees, so the 'working_holiday' variant adds only what differs, chiefly casual work, the 6-month same-employer condition, tax and super on departure. India is a listed passport for subclass 462 (through a ballot) on the Home Affairs page; whether Filipino or Indian workers in the corridors hold these visas was not researched. Not curated: modern awards (they set most real pay rates, overtime and breaks), state and territory laws (workers' compensation, tenancy, labour hire licensing), the Migration Act and its regulations, the Fair Work Regulations, subclass 417 visa conditions and penalty amounts in penalty units.",
+  "rules": {
+    "minimum_wage": {
+      "coverage": "regulated",
+      "title": "Minimum wage",
+      "summary": "Every employee in Australia, including visa holders, must be paid at least the minimum wage in their award or agreement or, if none applies, the National Minimum Wage. From 1 July 2026 that is $26.44 an hour ($1,004.90 a week), or $33.05 an hour for casuals.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Fair Work Commission must make a national minimum wage order each year, and an employer must not contravene it (Fair Work Act, ss. 285, 293 and 294).",
+            "The National Minimum Wage applies to employees not covered by an award or registered agreement; award or agreement rates apply instead where they cover the employee and may be higher (FWO, Minimum wages).",
+            "From the first full pay period on or after 1 July 2026 the National Minimum Wage for an adult award and agreement free employee is $26.44 an hour or $1,004.90 a week, and $33.05 an hour for a casual, which includes a 25% casual loading (FWO).",
+            "Juniors, trainees and employees with a disability have lower rates set as percentages of the National Minimum Wage (s. 294(1)(b)).",
+            "Visa holders are entitled to the same minimum pay rates and conditions as any other employee doing the same job (FWO, Visa holders and migrants)."
+          ],
+          "limits": {
+            "national_minimum_wage_hourly": {
+              "value": 26.44,
+              "unit": "AUD",
+              "period": "hour",
+              "note": "From 1 July 2026, adult employee, not a casual."
+            },
+            "national_minimum_wage_weekly": {
+              "value": 1004.9,
+              "unit": "AUD",
+              "period": "week",
+              "note": "From 1 July 2026, full and part time."
+            },
+            "national_minimum_wage_casual_hourly": {
+              "value": 33.05,
+              "unit": "AUD",
+              "period": "hour",
+              "note": "From 1 July 2026, includes 25% casual loading."
+            },
+            "casual_loading": {
+              "value": 25,
+              "unit": "percent",
+              "note": "For award and agreement free casuals."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1). An employer who intentionally fails to pay a required amount in full when due commits a criminal offence: for an individual up to 10 years' imprisonment or a fine, or both (s. 327A).",
+          "enforced_by": "Fair Work Ombudsman (FWO); Fair Work Commission (FWC)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 285, 293, 294 and 327A",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Minimum wages",
+          "section": "The National Minimum Wage",
+          "url": "https://www.fairwork.gov.au/pay-and-wages/minimum-wages"
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        },
+        {
+          "law": "Fair Work Ombudsman: Visa holders and migrants",
+          "section": "Protections for migrant workers; cashback schemes",
+          "url": "https://www.fairwork.gov.au/find-help-for/visa-holders-migrants"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The National Minimum Wage is revised every 1 July; the figures are those the FWO published for 1 July 2026. Most workers are covered by an award, and the award rate for the job (often higher than the National Minimum Wage) is the one that applies. Awards were not curated; check the FWO Pay and Conditions Tool for the specific job.",
+      "last_verified_on": "2026-09-25"
+    },
+    "working_hours": {
+      "coverage": "partly_regulated",
+      "title": "Working hours",
+      "summary": "An employer may not ask an employee to work more than 38 hours a week unless the extra hours are reasonable, and the employee can refuse unreasonable extra hours. There is no fixed daily limit or weekly cap in the Act; awards, agreements and contracts fill in the details.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must not request or require a full-time employee to work more than 38 hours a week, or a part-time or casual employee more than the lesser of 38 hours and their ordinary hours, unless the additional hours are reasonable (Fair Work Act, s. 62(1)).",
+            "The employee may refuse unreasonable additional hours; reasonableness is judged on health and safety risk, personal circumstances, workplace needs, pay for extra hours, notice, industry patterns and the nature of the role (s. 62(2)-(3)).",
+            "An award or agreement may average hours over a period, keeping the average at or below 38 hours a week (s. 63)."
+          ],
+          "limits": {
+            "weekly_hours_threshold": {
+              "value": 38,
+              "unit": "hours",
+              "period": "week",
+              "note": "Above this, additional hours must be reasonable."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "The same hours rule as for all employees applies to a working holiday maker (Fair Work Act, s. 62); visa holders have the same workplace rights (FWO).",
+            "Visa condition 8547: a working holiday maker must not work for one employer for more than 6 months, whether full time, part time, casual or voluntary, unless an exemption applies (Home Affairs).",
+            "Since 1 January 2024 the limit does not apply to work in plant and animal cultivation, natural disaster recovery, or the critical sectors of agriculture, health, aged and disability care, childcare, and tourism and hospitality, anywhere in Australia, or to work in different locations if work at any one location does not exceed 6 months; it also does not apply to certain industries in Northern Australia. This applies until the Government decides otherwise (Home Affairs).",
+            "The Home Affairs list of conditions that might be attached to a subclass 462 visa includes a maximum of 4 months of study (condition 8548) and no weekly working-hours cap."
+          ],
+          "limits": {
+            "weekly_hours_threshold": {
+              "value": 38,
+              "unit": "hours",
+              "period": "week",
+              "note": "Above this, additional hours must be reasonable."
+            },
+            "same_employer_limit": {
+              "value": 6,
+              "unit": "months",
+              "period": "once",
+              "note": "Visa condition 8547, with exemptions."
+            },
+            "maximum_study": {
+              "value": 4,
+              "unit": "months",
+              "period": "once",
+              "note": "Visa condition 8548."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1). Breaching a visa condition can lead to visa consequences under the Migration Act.",
+          "enforced_by": "Fair Work Ombudsman (FWO); Department of Home Affairs"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 62 and 63",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        },
+        {
+          "law": "Department of Home Affairs: 6 month work limitation (visa condition 8547)",
+          "section": "Exemptions to condition 8547",
+          "url": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-462/6-month-work-limitation"
+        },
+        {
+          "law": "Department of Home Affairs: Visa conditions for Work and Holiday (subclass 462)",
+          "section": "Conditions that might be attached",
+          "url": "https://immi.homeaffairs.gov.au/visas/already-have-a-visa/check-visa-details-and-conditions/see-your-visa-conditions?product=462-A"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Daily maximums, rest breaks and rosters are set by awards, agreements and contracts, which were not curated. The FWO says a worker who breaks a visa condition is still protected by the Fair Work Act and can still seek its help. The 6-month exemptions apply 'until the Government makes further decisions'; check Home Affairs for the current position. Subclass 417 (Working Holiday) visa conditions were read only through Home Affairs' shared condition 8547 page.",
+      "last_verified_on": "2026-09-25"
+    },
+    "overtime_pay": {
+      "coverage": "partly_regulated",
+      "title": "Overtime pay",
+      "summary": "The Fair Work Act does not set an overtime rate. Overtime pay comes from the employee's award, agreement or contract; an employee who has none of these gets no higher rate for overtime.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Overtime is work outside ordinary hours and its rate is set by the applicable award, enterprise agreement or contract (FWO).",
+            "An award and agreement free employee does not get a higher pay rate for overtime unless their employment contract says so (FWO, Award and agreement free wages and conditions).",
+            "Whether an employee is paid overtime or penalty rates is one factor in deciding whether additional hours beyond 38 a week are reasonable (Fair Work Act, s. 62(3)(d))."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "s. 62(3)(d)",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Overtime rates in awards (for example, the Hospitality or Horticulture awards) were not curated and are commonly higher than the ordinary rate; check the award for the job.",
+      "last_verified_on": "2026-09-25"
+    },
+    "rest_days_and_holidays": {
+      "coverage": "partly_regulated",
+      "title": "Rest days, breaks and public holidays",
+      "summary": "Employees may be absent on a public holiday and are paid for it if they would normally have worked that day. The Act sets no weekly rest day or set breaks; those come from awards, agreements or contracts.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employee is entitled to be absent on a public holiday in the place where they work; the employer may ask them to work only if the request is reasonable, and they may refuse an unreasonable request or a reasonable refusal (Fair Work Act, s. 114).",
+            "An employee who is absent on a public holiday must be paid their base rate for their ordinary hours that day; a casual who is not rostered on gets nothing (s. 116).",
+            "An award and agreement free employee has no set meal and rest breaks; these may come from the contract or from work health and safety laws (FWO).",
+            "An award and agreement free employee can agree to work a public holiday and take another paid day off instead (FWO)."
+          ],
+          "limits": {},
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 114 and 116",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No statutory weekly rest day was found in the sources reviewed. Award break and rest-period terms were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "annual_leave": {
+      "coverage": "partly_regulated",
+      "title": "Paid annual leave",
+      "summary": "Full-time and part-time employees get 4 weeks of paid annual leave for each year of service (5 weeks for some shiftworkers), and unused leave is paid out when the job ends. Casual employees do not get paid annual leave.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "For each year of service, other than as a casual, an employee is entitled to 4 weeks of paid annual leave, or 5 weeks for a defined shiftworker; it accrues progressively and accumulates (Fair Work Act, s. 87).",
+            "When employment ends, the employer must pay out untaken paid annual leave (s. 90(2)).",
+            "Casual employment does not count as service for annual leave (s. 87(1)); a casual instead gets a loading, which is 25% for an award and agreement free casual (FWO)."
+          ],
+          "limits": {
+            "annual_leave_entitlement": {
+              "value": 4,
+              "unit": "weeks",
+              "period": "year",
+              "note": "5 weeks for defined shiftworkers; not for casuals."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "A working holiday maker has the same rights as other employees (FWO), so the annual leave rules apply if they are employed as full-time or part-time.",
+            "Many working holiday makers are casuals; a casual employee gets no paid annual leave (Fair Work Act, s. 87(1)), but does get a casual loading in place of it (25% for an award and agreement free casual).",
+            "Whatever the employment type, an employee with untaken paid annual leave must be paid it when the job ends (s. 90(2))."
+          ],
+          "limits": {
+            "annual_leave_entitlement": {
+              "value": 4,
+              "unit": "weeks",
+              "period": "year",
+              "note": "Not for casuals."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 87 and 90",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Casual employees",
+          "section": "What casual employees get",
+          "url": "https://www.fairwork.gov.au/starting-employment/types-of-employees/casual-employees"
+        },
+        {
+          "law": "Fair Work Ombudsman: Visa holders and migrants",
+          "section": "Protections for migrant workers; cashback schemes",
+          "url": "https://www.fairwork.gov.au/find-help-for/visa-holders-migrants"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Whether a worker is really a casual is decided by the 'real substance, practical reality and true nature' of the job under s. 15A, not by what the contract calls it. Annual leave loading for some award workers was not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "sick_leave": {
+      "coverage": "partly_regulated",
+      "title": "Sick and carer's leave",
+      "summary": "Full-time and part-time employees get 10 days of paid personal (sick) or carer's leave a year. Casual employees do not, but get 2 days of unpaid carer's leave for each occasion.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "For each year of service, other than as a casual, an employee is entitled to 10 days of paid personal/carer's leave, accruing progressively and accumulating (Fair Work Act, s. 96).",
+            "It may be taken because the employee is not fit for work because of personal illness or injury, or to care for an immediate family or household member who needs care because of illness, injury or an unexpected emergency (s. 97); the notice and evidence rules in s. 107 apply.",
+            "An employee, including a casual, is entitled to 2 days of unpaid carer's leave for each occasion a family or household member needs care or support (s. 102)."
+          ],
+          "limits": {
+            "paid_personal_carers_leave": {
+              "value": 10,
+              "unit": "days",
+              "period": "year",
+              "note": "Not for casuals."
+            },
+            "unpaid_carers_leave": {
+              "value": 2,
+              "unit": "days",
+              "period": "once",
+              "note": "Per occasion, casuals included."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "A casual working holiday maker gets no paid personal/carer's leave (Fair Work Act, s. 96); a full-time or part-time one gets 10 days a year.",
+            "Casual employees get 2 days of unpaid carer's leave for each occasion (s. 102), 2 days of unpaid compassionate leave for each occasion and 10 days of paid family and domestic violence leave a year (FWO, Casual employees)."
+          ],
+          "limits": {
+            "paid_personal_carers_leave": {
+              "value": 10,
+              "unit": "days",
+              "period": "year",
+              "note": "Not for casuals."
+            },
+            "unpaid_carers_leave": {
+              "value": 2,
+              "unit": "days",
+              "period": "once",
+              "note": "Per occasion."
+            },
+            "paid_family_and_domestic_violence_leave": {
+              "value": 10,
+              "unit": "days",
+              "period": "year",
+              "note": "Casuals included, per the FWO."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 96, 97 and 102",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Casual employees",
+          "section": "What casual employees get",
+          "url": "https://www.fairwork.gov.au/starting-employment/types-of-employees/casual-employees"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The FWO is the source for the compassionate and family and domestic violence leave figures; those sections of the Act were not read. Workers' compensation for injuries at work is a separate state scheme (see insurance_and_injury).",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_payment": {
+      "coverage": "regulated",
+      "title": "When and how wages are paid",
+      "summary": "Wages must be paid in full, in money, at least monthly, and the employer must give a pay slip within one working day of paying. Deliberately not paying what is owed is a criminal offence.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must pay amounts payable for work in full (except for permitted deductions), in money by cash, cheque or similar order, electronic transfer or a method an award or agreement authorises, and at least monthly (Fair Work Act, s. 323(1)-(2)).",
+            "An employer must give a pay slip within one working day of paying an amount for work, and it must not be false or misleading (s. 536(1) and (3)).",
+            "Amounts payable include incentive payments and bonuses, loadings, allowances, overtime, penalty rates and leave payments (s. 323, note 2).",
+            "An employer who intentionally engages in conduct that results in not paying a required amount in full on the due date commits an offence (s. 327A)."
+          ],
+          "limits": {
+            "payment_frequency": {
+              "value": 1,
+              "unit": "month",
+              "period": "once",
+              "note": "At least monthly."
+            },
+            "payslip_deadline": {
+              "value": 1,
+              "unit": "days",
+              "period": "once",
+              "note": "Working day after paying."
+            }
+          },
+          "penalty": "Civil penalties under Part 4-1. For the offence in s. 327A: imprisonment of up to 10 years or a fine for an individual, or both; the fine is the greater of three times the underpayment and 5,000 penalty units (s. 327A(5)-(6)).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 323, 327A and 536",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Visa holders and migrants",
+          "section": "Protections for migrant workers; cashback schemes",
+          "url": "https://www.fairwork.gov.au/find-help-for/visa-holders-migrants"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Visa holders have the same rights (FWO). Award terms on pay periods and methods were not curated. Superannuation is paid separately (see social_security).",
+      "last_verified_on": "2026-09-25"
+    },
+    "salary_deductions": {
+      "coverage": "regulated",
+      "title": "Deductions from pay",
+      "summary": "An employer can deduct from pay only if the employee agrees in writing and it is mainly for the employee's benefit, or the law, an award, an agreement or a court order allows it. Making an employee pay unreasonable amounts to the employer is also banned.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "A deduction is allowed only if: the employee authorises it in writing and it is principally for their benefit; an enterprise agreement authorises it; a modern award or FWC order authorises it; or a law or court order authorises it (Fair Work Act, s. 324(1)).",
+            "A deduction that benefits the employer or a related party and can vary from time to time is not allowed under the written-authorisation route unless prescribed as reasonable (s. 324(1A)).",
+            "The written authorisation must state the amount (or that it varies), can be withdrawn in writing at any time, and any change in amount needs fresh written authorisation (s. 324(2)-(3)).",
+            "An employer must not directly or indirectly require an employee to spend or pay money to the employer or anyone else if the requirement is unreasonable and, for a payment, benefits the employer or a related party (s. 325(1)).",
+            "A term of an award, agreement or contract has no effect to the extent that it allows an unreasonable deduction for the employer's benefit (s. 326(1)).",
+            "Workers must be paid money, not goods or services such as board or transport, and an employee cannot be pressured into agreeing to a deduction (FWO)."
+          ],
+          "limits": {},
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1). Deliberately underpaying by unlawful deductions can be an offence under s. 327A.",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "The same limits on deductions apply to a working holiday maker (Fair Work Act, ss. 324 to 326).",
+            "Income tax is withheld from pay. For working holiday makers on subclass 417 or 462 visas who are foreign residents, the ATO 2025-26 rates are 15 cents in each dollar on taxable income up to $45,000, then higher rates above that (ATO)."
+          ],
+          "limits": {
+            "working_holiday_maker_tax_rate": {
+              "value": 15,
+              "unit": "percent",
+              "period": "year",
+              "note": "On taxable income up to $45,000, 2025-26 ATO rates."
+            },
+            "first_tax_bracket_limit": {
+              "value": 45000,
+              "unit": "AUD",
+              "period": "year",
+              "note": "2025-26 ATO rates."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO); Australian Taxation Office"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 324, 325, 326 and 327A",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman Horticulture Showcase: Deductions for accommodation, transport and job finding",
+          "section": "Rules about deductions; paying for accommodation; job finding",
+          "url": "https://horticulture.fairwork.gov.au/deductions-for-accommodation-transport-job-finding"
+        },
+        {
+          "law": "Australian Taxation Office: Tax rates - working holiday maker",
+          "section": "Working holiday maker tax rates for 2025-26",
+          "url": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-working-holiday-makers"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "The ATO page showed only the 2025-26 working holiday maker tax rates when checked; rates for 2026-27 were not shown. Withholding tax is authorised by tax law that was not read here. Deductions allowed by particular awards (for example, accommodation limits in the Horticulture Award) were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "termination_notice": {
+      "coverage": "partly_regulated",
+      "title": "Notice to end a job",
+      "summary": "An employer must give an employee written notice of 1 to 4 weeks, or pay instead, depending on years of service. This does not cover casual employees or those on fixed-term or single-task contracts. An employee with no award or agreement does not have to give notice unless the contract says so.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must give written notice of the termination day and at least the minimum notice, or pay in lieu: 1 week for up to 1 year of continuous service, 2 weeks for over 1 up to 3 years, 3 weeks for over 3 up to 5 years, 4 weeks for over 5 years, plus 1 week for an employee over 45 with at least 2 years of service (Fair Work Act, s. 117(1)-(3)).",
+            "Casual service does not count as continuous service for notice (s. 117(4)).",
+            "The notice rules do not apply to employees employed for a specified period, task or season, to casual employees, or to employees dismissed for serious misconduct (s. 123(1)).",
+            "An award and agreement free employee does not have to give notice before resigning unless the employment contract requires it (FWO).",
+            "An employee is protected from unfair dismissal only after the minimum employment period: 6 months, or 1 year for a small business employer; casual service counts only for a regular casual with a reasonable expectation of continuing work (ss. 382 to 384)."
+          ],
+          "limits": {
+            "notice_up_to_1_year": {
+              "value": 1,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_1_to_3_years": {
+              "value": 2,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_3_to_5_years": {
+              "value": 3,
+              "unit": "weeks",
+              "period": "once"
+            },
+            "notice_over_5_years": {
+              "value": 4,
+              "unit": "weeks",
+              "period": "once",
+              "note": "Plus 1 week if over 45 with 2 years of service."
+            },
+            "minimum_employment_period": {
+              "value": 6,
+              "unit": "months",
+              "period": "once",
+              "note": "1 year for a small business."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO); Fair Work Commission (FWC)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "A working holiday maker who is a casual employee, or employed for a specified period, task or season, has no statutory right to notice or pay in lieu (Fair Work Act, s. 123(1)(a) and (c)).",
+            "A full-time or part-time working holiday maker who is dismissed is covered by the notice scale in s. 117(3), and service as a casual does not count towards it (s. 117(4)).",
+            "Unfair dismissal protection needs 6 months of employment (1 year for a small business), and casual service counts only if the person was a regular casual with a reasonable expectation of continuing work (ss. 382 to 384); a worker on a visa with a 6-month same-employer limit may not reach that period.",
+            "An award and agreement free employee does not have to give notice before resigning unless the contract requires it (FWO)."
+          ],
+          "limits": {
+            "notice_up_to_1_year": {
+              "value": 1,
+              "unit": "weeks",
+              "period": "once",
+              "note": "Not for casuals or fixed-term workers."
+            },
+            "minimum_employment_period": {
+              "value": 6,
+              "unit": "months",
+              "period": "once",
+              "note": "1 year for a small business."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO); Fair Work Commission (FWC)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 117, 118, 123 and 382 to 384",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        },
+        {
+          "law": "Department of Home Affairs: 6 month work limitation (visa condition 8547)",
+          "section": "Exemptions to condition 8547",
+          "url": "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/work-holiday-462/6-month-work-limitation"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "Redundancy pay (ss. 119 onward), the high income threshold for unfair dismissal and award notice terms were not curated. Whether someone is casual is decided by s. 15A.",
+      "last_verified_on": "2026-09-25"
+    },
+    "early_termination": {
+      "coverage": "partly_regulated",
+      "title": "Costs and penalties when a job ends early",
+      "summary": "The Fair Work Act sets no penalty for an employee who leaves early, and an employer must pay out untaken annual leave and cannot recover unreasonable amounts from the worker. Any notice the worker must give comes from the award, agreement or contract.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An award and agreement free employee does not have to give notice before resigning unless their employment contract requires it (FWO); an award or agreement may set the notice an employee must give (Fair Work Act, s. 118).",
+            "When employment ends the employer must pay out untaken paid annual leave (s. 90(2)), and must pay all amounts payable for work in full (s. 323).",
+            "An employer must not deduct from final pay, or require the worker to pay, amounts except as s. 324 and s. 325 allow, for example to recover the cost of recruitment or accommodation without written authorisation.",
+            "An employer who ends a job must follow the notice rules in s. 117 unless the worker is casual or on a fixed-term contract (see termination_notice)."
+          ],
+          "limits": {},
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 90, 117, 118, 323, 324 and 325",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman: Award and agreement free wages and conditions",
+          "section": "Pay; hours of work, breaks and overtime; public holidays; ending employment",
+          "url": "https://www.fairwork.gov.au/employment-conditions/awards/award-and-agreement-free-wages-and-conditions"
+        },
+        {
+          "law": "Fair Work Ombudsman Horticulture Showcase: Deductions for accommodation, transport and job finding",
+          "section": "Rules about deductions; paying for accommodation; job finding",
+          "url": "https://horticulture.fairwork.gov.au/deductions-for-accommodation-transport-job-finding"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No provision found that lets an employer charge a worker a penalty or damages for leaving early; contract terms and award terms on notice, repayment of training costs and similar were not curated. Whether a particular clause is enforceable was not analysed.",
+      "last_verified_on": "2026-09-25"
+    },
+    "recruitment_fees": {
+      "coverage": "partly_regulated",
+      "title": "Fees charged for getting a job",
+      "summary": "An employer cannot make a job applicant or employee pay money for the job when that is unreasonable and benefits the employer. Deceiving someone when recruiting them for work is a crime, and paying for visa sponsorship is illegal. No cap on agency fees was found.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must not directly or indirectly require a prospective employee to spend or pay money in connection with the job if the requirement is unreasonable and the payment benefits the employer or a related party (Fair Work Act, s. 325(1A)); the same applies to existing employees (s. 325(1)).",
+            "Employers cannot ask job applicants to pay money to receive a job offer, or ask an employee to pay money to keep their job (FWO, Horticulture Showcase). Cashback schemes, where an employer unreasonably requires payment in exchange for a job, are illegal (FWO, Visa holders and migrants).",
+            "It is illegal to ask for, receive, offer or provide a benefit in return for visa sponsorship or employment that requires visa sponsorship (FWO, Visa holders and migrants; the Home Affairs Department handles complaints).",
+            "A recruiter commits an offence if, intending to induce someone to take up work, they deceive that person about how free they will be to leave or stop work, a debt owed, or the fact that the job involves exploitation or confiscation of travel or identity documents (Criminal Code, s. 270.7)."
+          ],
+          "limits": {},
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1). Deceptive recruiting for labour or services: imprisonment for 7 years, or 9 years if aggravated (Criminal Code, s. 270.7).",
+          "enforced_by": "Fair Work Ombudsman (FWO); Department of Home Affairs"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "s. 325",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Criminal Code Act 1995 (Schedule, Criminal Code)",
+          "section": "s. 270.7",
+          "url": "https://www.legislation.gov.au/C2004A04868/latest/text",
+          "year": 1995
+        },
+        {
+          "law": "Fair Work Ombudsman Horticulture Showcase: Deductions for accommodation, transport and job finding",
+          "section": "Rules about deductions; paying for accommodation; job finding",
+          "url": "https://horticulture.fairwork.gov.au/deductions-for-accommodation-transport-job-finding"
+        },
+        {
+          "law": "Fair Work Ombudsman: Visa holders and migrants",
+          "section": "Protections for migrant workers; cashback schemes",
+          "url": "https://www.fairwork.gov.au/find-help-for/visa-holders-migrants"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Rules on labour hire and recruitment agencies charging job seekers, including state labour hire licensing laws, and the Migration Act provisions on paying for sponsorship were not read. The FWO page states the sponsorship rule but its statutory basis was not checked. A working holiday visa does not need an employer sponsor, so a demand for sponsorship money is a warning sign.",
+      "last_verified_on": "2026-09-25"
+    },
+    "passport_retention": {
+      "coverage": "partly_regulated",
+      "title": "Employer keeping a passport or identity documents",
+      "summary": "No offence for simply holding a worker's passport was found. But deceiving someone about confiscation of their travel or identity documents when recruiting or bringing them to Australia is a serious crime, and confiscation is a recognised sign of exploitation.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "The Criminal Code defines 'confiscate' a travel or identity document as taking possession of it, permanently or otherwise, to the exclusion of the person, or destroying it (s. 271.1).",
+            "Deceiving a person about the fact that their job will involve confiscation of their travel or identity documents, while recruiting them for labour or services, is an offence (s. 270.7), and so is deceiving a person about it when organising or facilitating their entry into Australia (s. 271.2(2)).",
+            "No provision was found that itself makes it an offence for an employer to keep an employee's passport after the employee has started work."
+          ],
+          "limits": {},
+          "penalty": "Deceptive recruiting: imprisonment for 7 years, or 9 years if aggravated (Criminal Code, s. 270.7). Trafficking in persons by deceiving about confiscation of documents: imprisonment for 12 years (s. 271.2(2)).",
+          "enforced_by": null
+        }
+      ],
+      "references": [
+        {
+          "law": "Criminal Code Act 1995 (Schedule, Criminal Code)",
+          "section": "ss. 270.7, 271.1 and 271.2(2)",
+          "url": "https://www.legislation.gov.au/C2004A04868/latest/text",
+          "year": 1995
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "Only the Criminal Code Divisions 270 and 271 and their definitions were searched for 'passport'. Other laws (state laws, the Migration Act, the Australian Passports Act 2005 and the Fair Work Act's coercion provisions) were not checked. A worker whose documents are held should contact the Fair Work Ombudsman or the police.",
+      "last_verified_on": "2026-09-25"
+    },
+    "accommodation": {
+      "coverage": "partly_regulated",
+      "title": "Housing for the worker",
+      "summary": "An employer does not have to provide housing. If an employer offers accommodation and takes rent from wages, that deduction is lawful only under the deduction rules, which include the worker's written agreement and that it is mainly for the worker's benefit.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Employees can decide whether to use employer-provided accommodation or transport; if the employer proposes to deduct money from pay for it, the deduction rules must be followed (FWO, Horticulture Showcase).",
+            "A rent deduction with no written agreement, where no award or agreement allows it, is unlawful (FWO, Horticulture Showcase, worked example).",
+            "A deduction that benefits the employer and is unreasonable has no effect even if an award, agreement or contract allows it (Fair Work Act, s. 326(1)).",
+            "Workers cannot be paid in goods or services such as board (FWO)."
+          ],
+          "limits": {},
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "ss. 324 and 326",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Fair Work Ombudsman Horticulture Showcase: Deductions for accommodation, transport and job finding",
+          "section": "Rules about deductions; paying for accommodation; job finding",
+          "url": "https://horticulture.fairwork.gov.au/deductions-for-accommodation-transport-job-finding"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "No employer housing standards were found in the sources reviewed. State and territory tenancy laws and any award limits on accommodation deductions were not curated.",
+      "last_verified_on": "2026-09-25"
+    },
+    "insurance_and_injury": {
+      "coverage": "partly_regulated",
+      "title": "Workers' compensation and health insurance",
+      "summary": "Employers in each state and territory must take out workers' compensation insurance for employees injured or made sick by work. Working holiday visas usually require the holder to keep adequate health insurance.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "Workers' compensation is governed by each state and territory, and employers there must take out workers' compensation insurance to cover themselves and their employees (FWO, Workers compensation).",
+            "It pays wages while the employee is not fit for work and covers medical expenses and rehabilitation (FWO).",
+            "Work health and safety laws protect all workers, no matter how they are employed or their visa status (Safe Work Australia)."
+          ],
+          "limits": {},
+          "penalty": null,
+          "enforced_by": "State and territory workers' compensation regulators"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "The employer duties above apply to a working holiday maker who is an employee (FWO; Safe Work Australia).",
+            "The Home Affairs list of conditions that might be attached to a subclass 462 visa includes condition 8501, maintain adequate health insurance; the visa holder carries this duty."
+          ],
+          "limits": {},
+          "penalty": "Breaching a visa condition can lead to visa consequences under the Migration Act.",
+          "enforced_by": "State and territory workers' compensation regulators; Department of Home Affairs"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Ombudsman: Workers compensation",
+          "section": "What workers compensation is",
+          "url": "https://www.fairwork.gov.au/employment-conditions/workers-compensation"
+        },
+        {
+          "law": "Safe Work Australia: Migrant and multicultural workers",
+          "section": "Overview",
+          "url": "https://www.safeworkaustralia.gov.au/safety-topic/managing-health-and-safety/migrant-and-multicultural-workers"
+        },
+        {
+          "law": "Department of Home Affairs: Visa conditions for Work and Holiday (subclass 462)",
+          "section": "Conditions that might be attached",
+          "url": "https://immi.homeaffairs.gov.au/visas/already-have-a-visa/check-visa-details-and-conditions/see-your-visa-conditions?product=462-A"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "medium",
+      "notes": "The state and territory workers' compensation statutes were not read, so whether every casual or visa holder is covered in each state was not confirmed from an official source. Condition 8501 is described only as 'might be attached'; the visa grant letter or VEVO shows the conditions that apply. Subclass 417 conditions were not read.",
+      "last_verified_on": "2026-09-25"
+    },
+    "social_security": {
+      "coverage": "regulated",
+      "title": "Superannuation and pension",
+      "summary": "Employers must pay superannuation for eligible employees, 12% of earnings, and since 1 July 2026 on each payday. A worker on a temporary visa can claim it back after leaving Australia, but a working holiday maker's payment is taxed at 65%.",
+      "variants": [
+        {
+          "applies_to": [
+            "all"
+          ],
+          "requirements": [
+            "An employer must contribute to a superannuation fund for an employee so as to avoid the superannuation guarantee charge (Fair Work Act, s. 116B).",
+            "The super guarantee is 12% for 2025-26 and 2026-27 and from 1 July 2027; from 1 July 2026 employers must pay it on each payday, calculated on qualifying earnings (ATO, Super guarantee)."
+          ],
+          "limits": {
+            "super_guarantee_rate": {
+              "value": 12,
+              "unit": "percent",
+              "note": "From 1 July 2025."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Australian Taxation Office; Fair Work Ombudsman (FWO)"
+        },
+        {
+          "applies_to": [
+            "working_holiday"
+          ],
+          "requirements": [
+            "A working holiday maker is an employee like any other, so the employer must contribute super for them (Fair Work Act, s. 116B; ATO, DASP: temporary visa workers accumulate super paid under the super guarantee).",
+            "After leaving Australia, with the visa ended and no other active visa, a temporary visa holder who is not a citizen or permanent resident can claim their super as a Departing Australia superannuation payment (DASP) (ATO).",
+            "The DASP tax rate for a working holiday maker is 65% on the taxable component, taxed or untaxed element; the tax-free component is not taxed (ATO, How DASP is taxed). The ordinary rates are 35% and 45%.",
+            "Super not claimed is transferred to the ATO as unclaimed super money 6 months or more after the person leaves and the visa ends; it can still be claimed as DASP (ATO)."
+          ],
+          "limits": {
+            "super_guarantee_rate": {
+              "value": 12,
+              "unit": "percent",
+              "note": "From 1 July 2025."
+            },
+            "dasp_working_holiday_maker_tax": {
+              "value": 65,
+              "unit": "percent",
+              "note": "Of the taxable component."
+            },
+            "unclaimed_super_transfer": {
+              "value": 6,
+              "unit": "months",
+              "period": "once",
+              "note": "After leaving Australia and visa ending."
+            }
+          },
+          "penalty": "Most of these duties are civil remedy provisions: a court can order penalties and back pay (Fair Work Act, Part 4-1).",
+          "enforced_by": "Australian Taxation Office; Fair Work Ombudsman (FWO)"
+        }
+      ],
+      "references": [
+        {
+          "law": "Fair Work Act 2009",
+          "section": "s. 116B",
+          "url": "https://www.legislation.gov.au/C2009A00028/latest/text",
+          "year": 2009
+        },
+        {
+          "law": "Australian Taxation Office: Super guarantee",
+          "section": "Super guarantee percentage",
+          "url": "https://www.ato.gov.au/tax-rates-and-codes/key-superannuation-rates-and-thresholds/super-guarantee"
+        },
+        {
+          "law": "Australian Taxation Office: Departing Australia superannuation payment (DASP)",
+          "section": "Eligibility for DASP; how DASP is taxed",
+          "url": "https://www.ato.gov.au/individuals-and-families/super-for-individuals-and-families/super/temporary-residents-and-superannuation/departing-australia-superannuation-payment-dasp"
+        }
+      ],
+      "ilostat_check": null,
+      "confidence": "high",
+      "notes": "No age pension or unemployment benefit for temporary visa holders was researched. The DASP rate applies to super that includes contributions made while on a working holiday maker visa; mixed histories are worked out by each fund (ATO). Rates and thresholds are revised by the ATO; check the ATO pages for the current year.",
+      "last_verified_on": "2026-09-25"
+    }
+  }
+}
