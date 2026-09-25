@@ -1,17 +1,34 @@
+import i18next from "i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
+
+import bn from "@/i18n/bn.json";
 import en from "@/i18n/en.json";
+import hi from "@/i18n/hi.json";
+import id from "@/i18n/id.json";
+import ne from "@/i18n/ne.json";
+import tl from "@/i18n/tl.json";
+import { DEFAULT_LANGUAGE } from "@/lib/languages";
 
-type Messages = { [key: string]: string | Messages };
-type Params = Record<string, string | number>;
+void i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: en },
+      hi: { translation: hi },
+      tl: { translation: tl },
+      id: { translation: id },
+      ne: { translation: ne },
+      bn: { translation: bn },
+    },
+    fallbackLng: DEFAULT_LANGUAGE,
+    interpolation: { escapeValue: false },
+    detection: {
+      order: ["localStorage", "navigator"],
+      caches: ["localStorage"],
+      lookupLocalStorage: "nomadfinance.language",
+    },
+  });
 
-// TODO(Aditya): replace with react-i18next and all 6 language files NF-P1-011
-// Stand-in with the same key and {{param}} format as i18next, so call sites keep working.
-export function translate(key: string, params?: Params): string {
-  let node: string | Messages | undefined = en as Messages;
-  for (const part of key.split(".")) {
-    node = typeof node === "object" ? node[part] : undefined;
-  }
-  const template = typeof node === "string" ? node : key;
-  return template.replace(/\{\{(\w+)\}\}/g, (match, name: string) =>
-    params && name in params ? String(params[name]) : match
-  );
-}
+export default i18next;

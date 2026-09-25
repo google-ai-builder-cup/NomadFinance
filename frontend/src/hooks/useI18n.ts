@@ -1,6 +1,6 @@
-import { translate } from "@/lib/i18n";
+import { useTranslation } from "react-i18next";
 
-// Shaped like react-i18next's useTranslation() so NF-P1-011 can swap the internals.
-export function useI18n(): { t: typeof translate } {
-  return { t: translate };
+export function useI18n(): { t: ReturnType<typeof useTranslation>["t"] } {
+  const { t } = useTranslation();
+  return { t };
 }

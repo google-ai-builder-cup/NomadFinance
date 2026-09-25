@@ -51,6 +51,7 @@
   },
   "layout": {
     "skipToContent": "Skip to main content",
+    "languageLabel": "Language",
     "footer": {
       "tagline": "Financial protection for migrant workers.",
       "rights": "© {{year}} NomadFinance"

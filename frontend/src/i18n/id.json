@@ -1,1 +1,89 @@
-{}
+{
+  "common": {
+    "loading": "Memuat…"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Masuk ke NomadFinance",
+      "subtitle": "Lindungi gaji, kontrak, dan uang yang Anda kirim pulang.",
+      "google": "Lanjutkan dengan Google",
+      "or": "atau",
+      "phoneLabel": "Nomor ponsel",
+      "countryCodeLabel": "Kode negara",
+      "phonePlaceholder": "8123 4567",
+      "phoneHint": "Kami akan mengirim kode 6 digit lewat SMS.",
+      "sendCode": "Kirim kode",
+      "sendingCode": "Mengirim…",
+      "codeLabel": "Kode 6 digit",
+      "codeSentTo": "Kode dikirim ke {{phone}}",
+      "verify": "Verifikasi dan masuk",
+      "verifying": "Memeriksa…",
+      "changeNumber": "Ganti nomor",
+      "resendCode": "Kirim kode baru",
+      "signingIn": "Sedang masuk…"
+    },
+    "signOut": "Keluar",
+    "error": {
+      "invalidPhone": "Nomor ponsel ini sepertinya salah. Periksa kode negara dan nomornya.",
+      "invalidCode": "Kode itu salah. Periksa SMS Anda dan coba lagi.",
+      "codeExpired": "Kode itu sudah kedaluwarsa. Kirim kode baru.",
+      "tooManyRequests": "Terlalu banyak percobaan. Harap tunggu beberapa menit dan coba lagi.",
+      "network": "Tidak ada koneksi internet. Periksa koneksi Anda dan coba lagi.",
+      "securityCheck": "Pemeriksaan keamanan gagal. Segarkan halaman dan coba lagi.",
+      "unavailable": "Metode masuk ini belum tersedia sekarang. Coba metode lain.",
+      "accountExists": "Email ini sudah menggunakan metode masuk yang berbeda. Gunakan metode itu.",
+      "generic": "Gagal masuk. Silakan coba lagi."
+    }
+  },
+  "dashboard": {
+    "greeting": "Selamat datang, {{name}}",
+    "greetingGeneric": "Selamat datang di NomadFinance",
+    "subtitle": "Pilih apa yang ingin Anda periksa hari ini.",
+    "pillarsHeading": "Alat Anda"
+  },
+  "nav": {
+    "primary": "Navigasi utama",
+    "dashboard": "Beranda",
+    "remittance": "Remitansi",
+    "contract": "Kontrak",
+    "radar": "Radar",
+    "identity": "Identitas"
+  },
+  "layout": {
+    "skipToContent": "Lompat ke konten utama",
+    "languageLabel": "Bahasa",
+    "footer": {
+      "tagline": "Perlindungan finansial untuk pekerja migran.",
+      "rights": "© {{year}} NomadFinance"
+    }
+  },
+  "pillars": {
+    "open": "Buka",
+    "remittance": {
+      "name": "Remittance X-Ray",
+      "description": "Lihat biaya sebenarnya mengirim uang pulang: biaya dan markup nilai tukar, dari setiap penyedia layanan."
+    },
+    "contract": {
+      "name": "Contract Shield",
+      "description": "Unggah kontrak Anda dalam bahasa apa pun dan dapatkan pemeriksaan berbahasa sederhana terhadap hukum ketenagakerjaan setempat."
+    },
+    "radar": {
+      "name": "Exploitation Radar",
+      "description": "Lihat dan laporkan agen, pemberi kerja, dan operator transfer uang yang menipu pekerja."
+    },
+    "identity": {
+      "name": "Identitas Finansial",
+      "description": "Bangun catatan portabel dari penghasilan dan tabungan Anda yang dapat digunakan bank di kampung halaman."
+    }
+  },
+  "comingSoon": {
+    "title": "Segera hadir",
+    "description": "Kami masih membangun bagian NomadFinance ini. Kunjungi lagi nanti.",
+    "backToDashboard": "Kembali ke beranda"
+  },
+  "notFound": {
+    "title": "Halaman tidak ditemukan",
+    "description": "Halaman ini tidak ada atau sudah dipindahkan.",
+    "backToDashboard": "Ke beranda"
+  }
+}
