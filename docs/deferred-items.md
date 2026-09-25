@@ -7,15 +7,16 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-09-24, after NF-P1-006.
+Last updated: 2026-09-25, status check before the next task.
 
 ## 1. Actions needed now (no code, a person has to do them)
 
 | ID | Found in | Item | Why it matters | Who | Status |
 |---|---|---|---|---|---|
-| D-01 | NF-P1-004 | Grant the Cloud Run service account read access to the Gemini key: `gcloud secrets add-iam-policy-binding gemini-api-key --project nomadfinance-prod --member="serviceAccount:nomadfinance-backend@nomadfinance-prod.iam.gserviceaccount.com" --role="roles/secretmanager.secretAccessor"` | Checked 2026-09-24: the secret has **no IAM bindings**. `main` now requires `GEMINI_API_KEY`, so the next Cloud Run deploy fails until this is done. | Project owner | Open |
-| D-02 | NF-P1-004 | Redeploy after D-01: `bash scripts/deploy_manual.sh` from `backend/` | Checked 2026-09-24: the live service only has `APP_ENV=prod`, and is still running an image from before NF-P1-004. | Devam / Pranjal | Open |
-| D-03 | NF-P1-004 | Every teammate adds `GEMINI_API_KEY` to `backend/.env.local` | The backend refuses to start without it (NF-P1-004 runbook, step 1). | Aditya, Pranjal | Open |
+| D-17 | Status check 2026-09-25 | **Billing is off for `nomadfinance-prod`.** `gcloud billing projects describe` shows `billingEnabled: False`; the linked account `01F209-7454D7-9771B4` ("My Billing Account") shows `open: False` (closed). Re-open or replace the billing account and re-link it to the project in the Cloud Console (Billing → Account management / My projects). | The deployed API is **down**: `/health` on the Cloud Run URL returns Google's `500 Server Error` page. Secret Manager, Cloud Run deploys and Artifact Registry pushes are refused. Blocks D-01 and D-02. Firestore in prod and Firebase features on the paid plan are likely affected too. The Gemini AI Studio key still works (checked). | Billing account owner | Open, **critical** |
+| D-01 | NF-P1-004 | Grant the Cloud Run service account read access to the Gemini key: `gcloud secrets add-iam-policy-binding gemini-api-key --project nomadfinance-prod --member="serviceAccount:nomadfinance-backend@nomadfinance-prod.iam.gserviceaccount.com" --role="roles/secretmanager.secretAccessor"` | Checked 2026-09-24: the secret has **no IAM bindings**. `main` now requires `GEMINI_API_KEY`, so the next Cloud Run deploy fails until this is done. | Project owner | Blocked by D-17 (Secret Manager refuses all calls while billing is off) |
+| D-02 | NF-P1-004 | Redeploy after D-01: `bash scripts/deploy_manual.sh` from `backend/` | Checked 2026-09-24: the live service only has `APP_ENV=prod`, and is still running an image from before NF-P1-004. | Devam / Pranjal | Blocked by D-17 |
+| D-03 | NF-P1-004 | Every teammate adds `GEMINI_API_KEY` to `backend/.env.local` | The backend refuses to start without it (NF-P1-004 runbook, step 1). | Aditya, Pranjal | Partly done: Devam's key checked 2026-09-25 (live call OK). Aditya and Pranjal not confirmed. |
 | D-04 | NF-P1-001, 004, 006 | Update the task tracker: NF-P1-006 path is `/api/v1/contracts/extract` (not `/documents/extract`); DoD model names (2.5 / 1.5 / 2.0 Flash) are outdated, see ADR-002; DoD mentions `docs/api-contract.md`, the real file is `docs/api/endpoints.md`; NF-P3-002 says `text-embedding-004`, which is gone (use `gemini-embedding-001`). | The tracker is the team's source for task scope. | Devam | Open |
 
 ## 2. Code fixes scheduled into a later task
