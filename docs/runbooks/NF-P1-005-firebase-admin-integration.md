@@ -94,7 +94,9 @@ gcloud components install cloud-firestore-emulator
 firebase emulators:start --only firestore,auth --project demo-nomadfinance
 ```
 
-In another terminal, with `FIRESTORE_EMULATOR_HOST` / `FIREBASE_AUTH_EMULATOR_HOST` exported (or set in `.env.local`):
+Run that from `frontend/` (where `firebase.json` defines the emulators since NF-P1-009/-014). The Firestore emulator listens on **8085** (not 8080, which the backend uses) and Auth on 9099.
+
+In another terminal, from `backend/`, with `FIRESTORE_EMULATOR_HOST=127.0.0.1:8085`, `FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099`, `FIREBASE_PROJECT_ID=demo-nomadfinance` and `GOOGLE_CLOUD_PROJECT=demo-nomadfinance` exported:
 
 ```bash
 pytest tests/integration/repositories/test_firestore_repository.py -v
@@ -102,7 +104,7 @@ pytest tests/integration/repositories/test_firestore_repository.py -v
 
 Expected: `1 passed` instead of `1 skipped` — a document actually gets written, read back, merged, read again and deleted against the emulator.
 
-This step was **not run in this session** — the Firestore Emulator component isn't installed on this machine. Run it once to get a real pass before relying on it for the demo.
+Run on 2026-09-25 during NF-P1-014 (Firestore emulator only): `1 passed`. Exact commands: `NF-P1-014-firestore-security-rules.md`, step 5.
 
 ### 5. How a future endpoint uses this
 
@@ -131,14 +133,14 @@ An endpoint that should stay public simply omits the dependency — and per the 
 | `mypy app tests` | Success: no issues found in 119 source files |
 | `uvicorn app.main:app --reload --port 8080` | Boots, `Application startup complete.` — Firebase init is lazy, `/health` behavior unchanged |
 | REPL token verification (mocked) | Decoded claims returned unchanged, confirms `verify_id_token` wrapper logic |
-| Firestore Emulator round trip | Not run — emulator component not installed on this machine; test is written and auto-skips |
+| Firestore Emulator round trip | Passed 2026-09-25 (run during NF-P1-014, emulator on port 8085) |
 
 ## Definition of Done
 
 - [x] Firebase Auth token verification implemented (`get_current_user`) — reusable dependency; no live endpoint consumes it yet (none exist besides `/health`, which stays public)
 - [x] `firebase-admin` installed and pinned
 - [x] Firestore read/write path implemented and unit-tested (mocked)
-- [ ] Firestore read/write verified against a real Firestore instance/emulator — pending someone running step 4 with the emulator installed
+- [x] Firestore read/write verified against the emulator (2026-09-25, during NF-P1-014)
 - [x] `docs/api/endpoints.md` updated (Authentication section)
 - [x] Checks pass: `pytest`, `ruff`, `black`, `mypy`
 - [ ] Reviewed by at least one teammate
