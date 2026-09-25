@@ -3,6 +3,28 @@
     "loading": "Memuat…",
     "retry": "Coba lagi"
   },
+  "landing": {
+    "brand": "NomadFinance",
+    "hero": {
+      "eyebrow": "Dibuat untuk pekerja migran di seluruh Asia-Pasifik",
+      "title": "Gajimu. Kontrakmu. Uang kirimanmu. Terlindungi.",
+      "subtitle": "Periksa kontrakmu sesuai hukum ketenagakerjaan setempat, lihat biaya sebenarnya untuk mengirim uang ke rumah, dan kenali hakmu — semua dalam bahasamu sendiri.",
+      "cta": "Mulai sekarang"
+    },
+    "story": {
+      "heading": "Kenalan dengan Priya",
+      "body": "Priya meninggalkan India untuk bekerja sebagai pekerja rumah tangga di Singapura. Agennya memberinya kontrak dalam bahasa Inggris — bahasa yang masih ia pelajari — dan memilihkan layanan transfer uang untuknya. Ia tidak punya cara untuk memeriksa apakah keduanya adil. NomadFinance membaca kontraknya dalam bahasa Hindi, memeriksanya sesuai hukum ketenagakerjaan Singapura, dan menunjukkan biaya sebenarnya dari setiap penyedia untuk mengirim uang ke keluarganya — agar pilihannya ada di tangannya, bukan agennya."
+    },
+    "pillars": {
+      "heading": "Empat cara NomadFinance melindungimu",
+      "cta": "Masuk untuk mencoba"
+    },
+    "finalCta": {
+      "heading": "Siap memeriksa milikmu sendiri?",
+      "subtitle": "Masuk dan lihat posisimu — hanya perlu dua menit.",
+      "button": "Masuk"
+    }
+  },
   "auth": {
     "signIn": {
       "title": "Masuk ke NomadFinance",

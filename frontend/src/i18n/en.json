@@ -3,6 +3,28 @@
     "loading": "Loading…",
     "retry": "Try again"
   },
+  "landing": {
+    "brand": "NomadFinance",
+    "hero": {
+      "eyebrow": "Built for migrant workers across Asia-Pacific",
+      "title": "Your pay. Your contract. Your money home. Protected.",
+      "subtitle": "Check your contract against local labor law, see the true cost of sending money home, and know your rights — all in your own language.",
+      "cta": "Get started"
+    },
+    "story": {
+      "heading": "Meet Priya",
+      "body": "Priya left India to work as a domestic worker in Singapore. Her agency handed her a contract in English — a language she was still learning — and picked the money transfer service she used to send money home. She had no way to check if either was fair. NomadFinance reads her contract in Hindi, checks it against Singapore's labor law, and shows her exactly what each provider really charges to send money to her family — so the choice is hers, not her agency's."
+    },
+    "pillars": {
+      "heading": "Four ways NomadFinance has your back",
+      "cta": "Sign in to try it"
+    },
+    "finalCta": {
+      "heading": "Ready to check your own?",
+      "subtitle": "Sign in and see where you stand — it takes two minutes.",
+      "button": "Sign in"
+    }
+  },
   "auth": {
     "signIn": {
       "title": "Sign in to NomadFinance",
