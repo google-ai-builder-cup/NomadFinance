@@ -1,0 +1,47 @@
+name: Backend deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-deploy.yml"
+  workflow_dispatch:
+
+# One deploy at a time; a newer push waits instead of cancelling a deploy half-way.
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # lets the job ask GitHub for the OIDC token that Google exchanges for access
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Keyless login: no JSON key exists. Google only accepts this repo's main branch.
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/54982290462/locations/global/workloadIdentityPools/github/providers/github
+          service_account: nomadfinance-deploy-backend@nomadfinance-prod.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - run: gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+
+      # The same script people run by hand, so CI and manual deploys cannot drift apart.
+      - name: Build, push and deploy
+        working-directory: backend
+        run: bash scripts/deploy_manual.sh
+
+      - name: Check the live service
+        run: |
+          url="$(gcloud run services describe nomadfinance-api --project nomadfinance-prod --region asia-south1 --format 'value(status.url)')"
+          body="$(curl -fsS --retry 5 --retry-delay 5 --retry-all-errors "$url/health")"
+          echo "$body"
+          echo "$body" | grep -q '"environment":"prod"'

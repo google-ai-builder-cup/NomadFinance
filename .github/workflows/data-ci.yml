@@ -1,0 +1,50 @@
+name: Data scripts CI
+
+on:
+  pull_request:
+    paths:
+      - "data-scripts/**"
+      - ".github/workflows/data-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data-scripts/**"
+      - ".github/workflows/data-ci.yml"
+
+concurrency:
+  group: data-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: data-scripts
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: data-scripts/requirements-dev.txt
+
+      - run: pip install -r requirements-dev.txt
+
+      - run: ruff check .
+      - run: black --check .
+      - run: mypy src tests
+      - run: pytest -q
+
+      # The curated data must stay loadable. Dry runs need no Google credentials.
+      - name: Check the curated labor laws
+        run: python -m src.validators.labor_law --require-all
+      - name: Dry-run the labor-law loader
+        run: python -m src.loaders.ilo_natlex --dry-run
+      - name: Dry-run the corridor loader
+        run: python -m src.loaders.corridors --dry-run

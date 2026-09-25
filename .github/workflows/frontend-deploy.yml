@@ -1,0 +1,68 @@
+name: Frontend deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      # An empty value would still build, then ship a site that cannot sign anyone in.
+      - name: Check build settings
+        env:
+          API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+        run: |
+          test -n "$API_KEY" || { echo "Set the repo variable VITE_FIREBASE_API_KEY"; exit 1; }
+          test -n "$APP_ID" || { echo "Set the repo variable VITE_FIREBASE_APP_ID"; exit 1; }
+
+      - name: Build
+        run: pnpm build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: nomadfinance-prod.web.app
+          VITE_FIREBASE_PROJECT_ID: nomadfinance-prod
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/54982290462/locations/global/workloadIdentityPools/github/providers/github
+          service_account: nomadfinance-deploy-frontend@nomadfinance-prod.iam.gserviceaccount.com
+
+      # --only hosting: rules for Firestore and Storage are deployed by their own workflow.
+      - name: Deploy to Firebase Hosting
+        run: pnpm dlx firebase-tools@15.31.0 deploy --only hosting --project nomadfinance-prod
+
+      - name: Check the live site
+        run: curl -fsS --retry 5 --retry-delay 5 --retry-all-errors -o /dev/null https://nomadfinance-prod.web.app/

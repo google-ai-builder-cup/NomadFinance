@@ -64,7 +64,10 @@ export default function Landing() {
           </div>
         </section>
 
-        <section aria-labelledby="pillars-heading" className="mx-auto max-w-4xl px-4 py-10 md:py-14">
+        <section
+          aria-labelledby="pillars-heading"
+          className="mx-auto max-w-4xl px-4 py-10 md:py-14"
+        >
           <h2 id="pillars-heading" className="text-center text-2xl font-bold tracking-tight">
             {t("landing.pillars.heading")}
           </h2>
