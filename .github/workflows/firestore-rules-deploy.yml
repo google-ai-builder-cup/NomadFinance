@@ -1,0 +1,60 @@
+name: Firestore and Storage rules deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/firestore.rules"
+      - "frontend/storage.rules"
+      - ".github/workflows/firestore-rules-deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: rules-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      # test:rules in package.json calls a global `firebase`; a fresh runner has none.
+      - run: npm install --global firebase-tools@15.31.0
+
+      - run: pnpm install --frozen-lockfile
+
+      # Never publish rules that fail their own tests, even if this run was started by hand.
+      - name: Rule tests
+        run: pnpm test:rules
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/54982290462/locations/global/workloadIdentityPools/github/providers/github
+          service_account: nomadfinance-deploy-infra@nomadfinance-prod.iam.gserviceaccount.com
+
+      - name: Deploy the rules
+        run: pnpm dlx firebase-tools@15.31.0 deploy --only firestore:rules,storage --project nomadfinance-prod

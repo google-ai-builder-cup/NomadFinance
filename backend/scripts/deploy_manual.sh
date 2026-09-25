@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Manual Cloud Run deploy: build (linux/amd64), push to Artifact Registry, deploy.
-# Superseded by GitHub Actions in NF-P1-020. Override any variable from the environment.
+# Run by .github/workflows/backend-deploy.yml on every merge to main (NF-P1-020); also usable by
+# hand as a fallback. Override any variable from the environment.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

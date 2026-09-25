@@ -1,0 +1,50 @@
+name: Security scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC: new advisories appear without any code change
+
+concurrency:
+  group: security-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install pip-audit==2.10.1
+
+      # Every pin in each file is checked against known advisories. --no-deps: the files are already pinned.
+      - name: Audit backend
+        run: pip-audit -r backend/requirements.txt --no-deps --disable-pip
+      - name: Audit data-scripts
+        run: pip-audit -r data-scripts/requirements.txt --no-deps --disable-pip
+
+  frontend-dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      # High and critical only: moderate advisories are reviewed by hand, not blocking.
+      - run: pnpm audit --prod --audit-level high
