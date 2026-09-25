@@ -46,6 +46,20 @@ Result: 6 corridors (SG→PH, SG→IN, AU→IN, MY→ID, JP→PH, AU→PH) with 
 
 Full steps, output schema and troubleshooting: [`docs/runbooks/NF-P1-015-worldbank-rpw-parse.md`](../docs/runbooks/NF-P1-015-worldbank-rpw-parse.md).
 
+## Corridor loader (NF-P1-016)
+Loads the committed `data/processed/rpw_corridors.json` (see above) into Firestore `corridors/{corridor_id}`, adding `source` (name/url/attribution) and `loaded_at`. Re-validates the JSON against the same Pydantic models as the parser before writing anything.
+
+Needs a Firestore-writing identity: either `gcloud auth application-default login` against a project you can write to, or `FIRESTORE_EMULATOR_HOST` pointed at a running Firebase emulator (see `docs/runbooks/NF-P1-014-firestore-security-rules.md` for starting one). Defaults to project `nomadfinance-prod`; override with `FIREBASE_PROJECT_ID`.
+
+```bash
+python -m src.loaders.corridors --dry-run   # validate only, no writes
+python -m src.loaders.corridors             # write all 6 corridors
+```
+
+Options: `--input` (default `data/processed/rpw_corridors.json`), `--collection` (default `corridors`). Writing again is safe: each corridor is a plain `set()` on a fixed id, so a re-run replaces the document instead of duplicating it.
+
+Full steps and troubleshooting: [`docs/runbooks/NF-P1-016-corridor-load.md`](../docs/runbooks/NF-P1-016-corridor-load.md).
+
 ## Labor-law curation (NF-P1-017)
 One JSON file per host country in `data/source/labor-laws/`, 15 rules each, curated by hand and loaded to Firestore by NF-P1-018. Check your file (and start a new one) with:
 
