@@ -47,6 +47,12 @@ Every signed-in page renders inside `AppShell` (header, footer, and a left sideb
 
 Full structure, how to test it, and how later tasks plug in: [`docs/runbooks/NF-P1-010-frontend-app-shell.md`](../docs/runbooks/NF-P1-010-frontend-app-shell.md).
 
+## PWA
+
+`vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time (`pnpm build`, not `pnpm dev` — the service worker only registers against a built app). Every signed-in page shows a dismissible "Install NomadFinance" banner once the browser fires `beforeinstallprompt` (Chrome/Edge/Android only; iOS never fires it). Icons and manifest colors are placeholders pending NF-P1-024's real branding.
+
+Full setup, how to verify installability, and how later tasks (real icons, update-available toast) plug in: [`docs/runbooks/NF-P1-012-frontend-pwa.md`](../docs/runbooks/NF-P1-012-frontend-pwa.md).
+
 ## Deploy
 
 Manual deploy (until GitHub Actions lands in NF-P1-020): from `frontend/`, `pnpm build` then `firebase deploy --only hosting --project nomadfinance-prod`. `.env.local` must hold the real Firebase web config before `pnpm build`, or the deployed app shows a blank page.

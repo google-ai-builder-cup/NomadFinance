@@ -81,6 +81,12 @@
     "description": "हम अभी भी NomadFinance का यह हिस्सा बना रहे हैं। जल्द ही फिर देखें।",
     "backToDashboard": "होम पर वापस जाएँ"
   },
+  "pwa": {
+    "installTitle": "NomadFinance इंस्टॉल करें",
+    "installDescription": "तेज़ और ऑफ़लाइन उपयोग के लिए इसे अपनी होम स्क्रीन पर जोड़ें।",
+    "install": "इंस्टॉल करें",
+    "dismiss": "खारिज करें"
+  },
   "notFound": {
     "title": "पेज नहीं मिला",
     "description": "यह पेज मौजूद नहीं है या हटा दिया गया है।",

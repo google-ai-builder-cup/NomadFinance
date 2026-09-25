@@ -81,6 +81,12 @@
     "description": "We're still building this part of NomadFinance. Check back soon.",
     "backToDashboard": "Back to home"
   },
+  "pwa": {
+    "installTitle": "Install NomadFinance",
+    "installDescription": "Add it to your home screen for faster, offline-ready access.",
+    "install": "Install",
+    "dismiss": "Dismiss"
+  },
   "notFound": {
     "title": "Page not found",
     "description": "This page doesn't exist or has moved.",
