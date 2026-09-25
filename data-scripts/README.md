@@ -45,3 +45,13 @@ It reads `data/source/rpw_dataset_2011_2025_q1.xlsx` (about 30 s), spot-checks 1
 Result: 6 corridors (SG→PH, SG→IN, AU→IN, MY→ID, JP→PH, AU→PH) with 221 provider records for 2025 Q1. KR→NP is not in RPW, so AU→IN replaces it.
 
 Full steps, output schema and troubleshooting: [`docs/runbooks/NF-P1-015-worldbank-rpw-parse.md`](../docs/runbooks/NF-P1-015-worldbank-rpw-parse.md).
+
+## Labor-law curation (NF-P1-017)
+One JSON file per host country in `data/source/labor-laws/`, 15 rules each, curated by hand and loaded to Firestore by NF-P1-018. Check your file (and start a new one) with:
+
+```bash
+python -m src.validators.labor_law
+python -m src.validators.labor_law --template SG --output data/source/labor-laws/SG.json
+```
+
+Japan and Hong Kong are done; SG, AU, KR and MY are still empty `{}` stubs. Curator guide: [`data/source/labor-laws/README.md`](data/source/labor-laws/README.md). Full steps, results and limits: [`docs/runbooks/NF-P1-017-labor-law-curation.md`](../docs/runbooks/NF-P1-017-labor-law-curation.md).
