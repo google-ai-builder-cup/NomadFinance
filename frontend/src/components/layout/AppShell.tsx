@@ -5,11 +5,13 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import InstallPrompt from "@/components/layout/InstallPrompt";
 import Sidebar from "@/components/layout/Sidebar";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { useI18n } from "@/hooks/useI18n";
 
 /** Layout route for every signed-in page: header, navigation, footer and the page itself. */
 export default function AppShell() {
   const { t } = useI18n();
+  useAnalytics();
 
   return (
     <div className="flex min-h-screen flex-col">
