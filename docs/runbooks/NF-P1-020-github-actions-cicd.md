@@ -9,13 +9,13 @@ Merging to `main` now deploys the app, and every pull request is checked first. 
 | `backend-ci.yml` | PR and push to `main` touching `backend/**` | `ruff`, `black --check`, `mypy app`, `pytest`, and a `docker build` of the image |
 | `frontend-ci.yml` | PR and push touching `frontend/**` | `pnpm lint`, `pnpm format:check`, `pnpm build` (type-check + Vite); a second job runs the Firestore and Storage rule tests on the emulators |
 | `data-ci.yml` | PR and push touching `data-scripts/**` | `ruff`, `black`, `mypy`, `pytest`, then the labor-law checker with `--require-all` and dry runs of both loaders |
-| `security-scan.yml` | every PR, push to `main`, and Mondays 03:00 UTC | `pip-audit` on both Python requirement files, `pnpm audit` (high and above), CodeQL for Python and JavaScript/TypeScript |
+| `security-scan.yml` | every PR, push to `main`, and Mondays 03:00 UTC | `pip-audit` on both Python requirement files, `pnpm audit` (high and above) |
 | `backend-deploy.yml` | push to `main` touching `backend/**` (or run by hand) | builds the image, pushes it to Artifact Registry, deploys `nomadfinance-api` to Cloud Run, then calls `/health` |
 | `frontend-deploy.yml` | push to `main` touching `frontend/**` (or by hand) | `pnpm build` then `firebase deploy --only hosting`, then fetches the live site |
 | `firestore-rules-deploy.yml` | push to `main` touching `frontend/firestore.rules` or `storage.rules` (or by hand) | runs the rule tests, then deploys both rule files |
 | `scheduler-deploy.yml` | push to `main` touching `infra/cloud-scheduler/**` (or by hand) | creates or updates one Cloud Scheduler job per non-empty YAML file |
 
-No JSON key exists anywhere. Deploys log in with **OIDC (Workload Identity Federation)**: GitHub gives the job a short-lived signed token, and Google trades it for a short-lived access token for one deployer service account. Google accepts the token only from **this repository, on the `main` branch**. The repository is public, so this matters: another branch, a fork or a pull request cannot deploy.
+No JSON key exists anywhere. Deploys log in with **OIDC (Workload Identity Federation)**: GitHub gives the job a short-lived signed token, and Google trades it for a short-lived access token for one deployer service account. Google accepts the token only from **this repository, on the `main` branch**. So another branch, a fork or a pull request cannot deploy, even for someone who can push branches to the repository. (The repository is private, so forks are not a concern today; the restriction is still the safer default and costs nothing.)
 
 The tracker asked for two deploy workflows. The other six were added at the team's request in the same task, because no other task covered them (the four CI files existed as empty stubs).
 
@@ -90,12 +90,12 @@ Repository → Settings → Secrets and variables → Actions → **Variables** 
 | `VITE_FIREBASE_API_KEY` | `apiKey` from `firebase apps:sdkconfig WEB --project nomadfinance-prod` (also in your `frontend/.env.local`) |
 | `VITE_FIREBASE_APP_ID` | `appId` from the same command |
 
-These are public identifiers that ship in the browser bundle, but they are kept out of the repository because GitHub secret scanning flags Google API keys. Variables, not Secrets: they must be readable in the build step. The frontend workflow stops with a clear message if either is empty; without that check it would deploy a site nobody can sign in to.
+These are public identifiers that ship in the browser bundle, but they are kept out of the repository so a Google API key is never committed (secret scanners flag them). Variables, not Secrets: they must be readable in the build step. The frontend workflow stops with a clear message if either is empty; without that check it would deploy a site nobody can sign in to.
 
 ### 3. GitHub: settings worth turning on (recommended)
 
 - Settings → Branches → add a rule for `main`: require a pull request and require these checks to pass: `Backend CI / checks`, `Frontend CI / checks`, `Frontend CI / rules`, `Data scripts CI / checks`, `Security scan / python-dependencies`, `Security scan / frontend-dependencies`. A check only appears in the list after it has run once on some pull request.
-- Settings → Code security: turn on **Secret scanning** and **Push protection** (free for public repositories). They catch keys before they land, which no workflow can do.
+- Secret scanning and Push protection (Settings → Code security) catch keys before they land, which no workflow can do. On a **private** repository they need GitHub Advanced Security, a paid add-on; without it, rely on the rule "no secrets in the repo" and the review.
 - Settings → Actions → General: "Workflow permissions" = read repository contents only (the workflows ask for what they need).
 
 ## First run
@@ -156,9 +156,10 @@ Verified on a laptop before this change:
 | `pip-audit` on `backend/requirements.txt` and `data-scripts/requirements.txt` | No known vulnerabilities |
 | `pnpm audit --prod --audit-level high` | Exit 0 (two moderate advisories, see "Noticed") |
 | All eight workflow files parse as YAML | Yes |
+| First run on GitHub (the pull request) | Backend CI, data-scripts CI, the frontend `checks` job, `pip-audit` and `pnpm audit` passed. Two things failed and were fixed: the rules tests (`firebase: not found`, fixed by installing `firebase-tools` in the two workflows that run them) and the CodeQL upload (private repository without Advanced Security, so the CodeQL job was removed) |
 | `setup-github-actions.sh` | `bash -n` clean |
 
-**Not verified until the first run on GitHub** (these cannot run on a laptop): the OIDC login itself, the deployer accounts' roles, `docker push` from the runner, `firebase-tools` deploying with federated credentials, and the CodeQL job. If a role is missing, the log shows the exact permission; add the role to the script and to the table above and run the script again.
+**Not verified until the first run on GitHub** (these cannot run on a laptop): the OIDC login itself, the deployer accounts' roles, `docker push` from the runner, and `firebase-tools` deploying with federated credentials. If a role is missing, the log shows the exact permission; add the role to the script and to the table above and run the script again.
 
 ## Definition of Done
 
@@ -204,7 +205,8 @@ git commit -m "chore(ci): add GitHub Actions CI, security scan and OIDC deploy w
 | Rules deploy 403 on `firebaserules.releases.update` | `firebaserules.admin` missing on the infra deployer |
 | `pnpm test:rules` fails in CI only | The emulator jar could not download, or Java is older than 11. The workflow installs Temurin 21; re-run the job |
 | Scheduler job `update` rejects the file | The YAML no longer matches `gcloud scheduler jobs update http` flags. Try the same command locally with the file |
-| CodeQL job fails with "Advanced Security must be enabled" | Only on a private repository; the repo is public, so re-check the repo's visibility |
+| `firebase: not found` in the rules tests | `pnpm test:rules` calls a global `firebase` that `package.json` does not install. The workflows run `npm install --global firebase-tools@15.31.0` first; keep that version in step with the deploy command |
+| Code scanning upload refused ("Advanced Security must be enabled") | Code scanning (CodeQL) is not available on a private repository without GitHub Advanced Security. The CodeQL job was removed for this reason; add it back only if the repo goes public or Advanced Security is bought |
 | Security scan fails the `pip-audit` step | A pinned dependency has a new advisory. Bump the pin in the requirements file, or add a reasoned ignore |
 | A workflow did not start on merge | Its `paths:` filter did not match the changed files. Use **Run workflow** |
 
@@ -215,4 +217,5 @@ git commit -m "chore(ci): add GitHub Actions CI, security scan and OIDC deploy w
 - Deploying Firestore indexes (`firestore.indexes.json` is not referenced by `frontend/firebase.json`, and that file was left alone)
 - Preview deployments for pull requests
 - Cloud Scheduler jobs other than `refresh-rates` (their YAML files are still empty placeholders for later tasks)
+- CodeQL code scanning and GitHub secret scanning: both need Advanced Security on a private repository
 - Upgrading `react-router` to 7.x for two moderate advisories

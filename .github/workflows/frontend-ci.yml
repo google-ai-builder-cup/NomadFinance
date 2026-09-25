@@ -74,5 +74,8 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      # test:rules in package.json calls a global `firebase`; a fresh runner has none.
+      - run: npm install --global firebase-tools@15.31.0
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:rules
