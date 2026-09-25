@@ -6,6 +6,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompleteOnboarding, useUserProfile } from "@/hooks/useUser";
+import { trackOnboardingCompleted } from "@/lib/analytics";
 import i18n from "@/lib/i18n";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 import { cn } from "@/lib/utils";
@@ -102,7 +103,12 @@ export default function Onboarding() {
       return;
     }
     if (isComplete(answers)) {
-      save.mutate(answers, { onSuccess: () => navigate("/dashboard", { replace: true }) });
+      save.mutate(answers, {
+        onSuccess: () => {
+          trackOnboardingCompleted();
+          navigate("/dashboard", { replace: true });
+        },
+      });
     }
   }
 

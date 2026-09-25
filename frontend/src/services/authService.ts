@@ -12,6 +12,7 @@ import {
   signInWithRedirect,
 } from "firebase/auth";
 
+import { clearAnalyticsUserProperties, trackLogin } from "@/lib/analytics";
 import { auth } from "@/lib/firebase";
 
 const googleProvider = new GoogleAuthProvider();
@@ -21,6 +22,7 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 export async function signInWithGoogle(): Promise<void> {
   try {
     await signInWithPopup(auth, googleProvider);
+    trackLogin("google");
   } catch (error) {
     // In-app browsers (Facebook, WhatsApp links) block popups; a full-page redirect still works.
     // The redirect result arrives through onAuthStateChanged in AuthProvider.
@@ -77,9 +79,11 @@ export async function confirmPhoneCode(
   code: string
 ): Promise<void> {
   await confirmation.confirm(code);
+  trackLogin("phone");
 }
 
 export function signOut(): Promise<void> {
+  clearAnalyticsUserProperties();
   return firebaseSignOut(auth);
 }
 

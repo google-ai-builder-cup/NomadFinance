@@ -17,11 +17,13 @@ function requireEnv(name: FirebaseEnvKey): string {
   return value;
 }
 
-const firebaseApp = initializeApp({
+export const firebaseApp = initializeApp({
   apiKey: requireEnv("VITE_FIREBASE_API_KEY"),
   authDomain: requireEnv("VITE_FIREBASE_AUTH_DOMAIN"),
   projectId: requireEnv("VITE_FIREBASE_PROJECT_ID"),
   appId: requireEnv("VITE_FIREBASE_APP_ID"),
+  // Optional: without it Analytics stays off (lib/analytics.ts) and nothing else changes.
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || undefined,
 });
 
 export const auth = getAuth(firebaseApp);
