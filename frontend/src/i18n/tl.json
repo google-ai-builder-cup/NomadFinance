@@ -1,1 +1,89 @@
-{}
+{
+  "common": {
+    "loading": "Naglo-load…"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Mag-sign in sa NomadFinance",
+      "subtitle": "Protektahan ang iyong sahod, ang iyong kontrata, at ang perang ipinapadala mo sa bahay.",
+      "google": "Magpatuloy gamit ang Google",
+      "or": "o",
+      "phoneLabel": "Numero ng mobile",
+      "countryCodeLabel": "Country code",
+      "phonePlaceholder": "8123 4567",
+      "phoneHint": "Magpapadala kami ng 6-digit na code sa pamamagitan ng SMS.",
+      "sendCode": "Ipadala ang code",
+      "sendingCode": "Ipinapadala…",
+      "codeLabel": "6-digit na code",
+      "codeSentTo": "Naipadala ang code sa {{phone}}",
+      "verify": "I-verify at mag-sign in",
+      "verifying": "Sinusuri…",
+      "changeNumber": "Palitan ang numero",
+      "resendCode": "Magpadala ng bagong code",
+      "signingIn": "Nagsa-sign in…"
+    },
+    "signOut": "Mag-sign out",
+    "error": {
+      "invalidPhone": "Mukhang mali ang numero ng mobile. Suriin ang country code at numero.",
+      "invalidCode": "Mali ang code na iyon. Suriin ang SMS at subukan ulit.",
+      "codeExpired": "Nag-expire na ang code na iyon. Magpadala ng bago.",
+      "tooManyRequests": "Sobrang daming pagsubok. Maghintay ng ilang minuto at subukan ulit.",
+      "network": "Walang koneksyon sa internet. Suriin ang iyong koneksyon at subukan ulit.",
+      "securityCheck": "Hindi pumasa ang security check. I-refresh ang page at subukan ulit.",
+      "unavailable": "Hindi available ang paraan ng sign-in na ito ngayon. Subukan ang iba.",
+      "accountExists": "Gumagamit na ang email na ito ng ibang paraan ng sign-in. Gamitin iyon.",
+      "generic": "Hindi nag-work ang sign-in. Pakisubukan ulit."
+    }
+  },
+  "dashboard": {
+    "greeting": "Maligayang pagdating, {{name}}",
+    "greetingGeneric": "Maligayang pagdating sa NomadFinance",
+    "subtitle": "Piliin kung ano ang gusto mong tingnan ngayon.",
+    "pillarsHeading": "Iyong mga tool"
+  },
+  "nav": {
+    "primary": "Pangunahing navigation",
+    "dashboard": "Home",
+    "remittance": "Remittance",
+    "contract": "Mga Kontrata",
+    "radar": "Radar",
+    "identity": "Identity"
+  },
+  "layout": {
+    "skipToContent": "Lumaktaw papunta sa pangunahing content",
+    "languageLabel": "Wika",
+    "footer": {
+      "tagline": "Proteksiyong pinansyal para sa mga migranteng manggagawa.",
+      "rights": "© {{year}} NomadFinance"
+    }
+  },
+  "pillars": {
+    "open": "Buksan",
+    "remittance": {
+      "name": "Remittance X-Ray",
+      "description": "Makita ang tunay na gastos sa pagpapadala ng pera sa bahay: mga bayarin at markup sa exchange rate, bawat provider."
+    },
+    "contract": {
+      "name": "Contract Shield",
+      "description": "I-upload ang iyong kontrata sa kahit anong wika at makakuha ng simpleng pagsusuri laban sa lokal na batas sa paggawa."
+    },
+    "radar": {
+      "name": "Exploitation Radar",
+      "description": "Makita at i-report ang mga ahente, employer, at money transfer operator na nandaraya sa mga manggagawa."
+    },
+    "identity": {
+      "name": "Financial Identity",
+      "description": "Gumawa ng portable na record ng iyong kita at ipon na magagamit ng mga bangko sa bahay."
+    }
+  },
+  "comingSoon": {
+    "title": "Malapit na",
+    "description": "Ginagawa pa namin ang bahaging ito ng NomadFinance. Bumalik ulit sa lalong madaling panahon.",
+    "backToDashboard": "Bumalik sa home"
+  },
+  "notFound": {
+    "title": "Hindi nahanap ang page",
+    "description": "Wala o inalis na ang page na ito.",
+    "backToDashboard": "Pumunta sa home"
+  }
+}

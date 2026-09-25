@@ -1,6 +1,7 @@
 import { LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import LanguageSelector from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
@@ -28,6 +29,7 @@ export default function Header() {
           >
             {identity}
           </span>
+          <LanguageSelector />
           <Button
             variant="ghost"
             size="icon"

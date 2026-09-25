@@ -7,6 +7,7 @@ import AuthProvider from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import { router } from "@/router";
 
+import "@/lib/i18n";
 import "@/styles/globals.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
