@@ -4,7 +4,7 @@ import type { ChangeEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
-import { setDeviceLanguage, setSessionLanguage, SUPPORTED_LANGUAGES } from "@/lib/languages";
+import { setSessionLanguage, SUPPORTED_LANGUAGES } from "@/lib/languages";
 
 export default function LanguageSelector() {
   const { t } = useI18n();
@@ -14,11 +14,10 @@ export default function LanguageSelector() {
     const code = event.target.value;
     void i18n.changeLanguage(code);
     // A quick switch only: preferred_language (reports, notifications, SMS) changes in
-    // onboarding and on the profile page, never here. See LanguageSync for how it applies.
+    // onboarding and on the profile page, never here. Signed out, nothing is stored, so the
+    // sign-in page opens in English next time. See LanguageSync for how it applies.
     if (user !== null) {
       setSessionLanguage(code);
-    } else {
-      setDeviceLanguage(code);
     }
   }
 

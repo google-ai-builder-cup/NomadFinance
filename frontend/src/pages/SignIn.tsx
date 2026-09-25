@@ -138,7 +138,7 @@ export default function SignIn() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 px-4 py-10">
-      {/* Signed out, so this only changes the device language (English by default). */}
+      {/* Signed out: changes the language for this visit only; the page opens in English. */}
       <div className="flex justify-end">
         <LanguageSelector />
       </div>

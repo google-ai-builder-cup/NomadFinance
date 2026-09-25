@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-09-25, after the NF-P1-022 deploy.
+Last updated: 2026-09-25, after the NF-P1-022 language rules.
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -43,7 +43,7 @@ Last updated: 2026-09-25, after the NF-P1-022 deploy.
 | D-35 | NF-P1-019 | Show "Rates by Exchange Rate API" with a link wherever a rate with `provider: exchangerate_api` is shown (their open-access terms). | NF-P2-019 (comparison table), NF-P2-020 (trend chart) | Open |
 | D-36 | NF-P1-019 | Backfill daily history (`data-scripts/src/loaders/frankfurter_backfill.py`, `source: "backfill"`, point id `YYYY-MM-DDT00`) so trend and savings features have data on day one; today history starts 2026-09-25T13. | Unassigned; before NF-P2-015 / NF-P2-020 / NF-P2-022 | Open |
 | D-39 | NF-P1-022 | `<html lang>` stays `en` when the UI switches language, so screen readers read Hindi, Nepali or Bengali text with an English voice. Set `document.documentElement.lang` on i18next's `languageChanged` event (in `src/lib/i18n.ts`). | NF-P1-011 owner (Aditya) | Done (NF-P1-022: `LanguageSync` sets `<html lang>` on every language change) |
-| D-40 | NF-P1-022 | The header language selector changes only the UI language; `users/{uid}.preferred_language` (set in onboarding) is not updated, and a later sign-in on another device doesn't restore it. Decide one source of truth and sync them. | NF-P1-023 (profile page, Pranjal) | Done (NF-P1-022, revised after review: `LanguageSync` applies the profile's `preferred_language` when signed in; the header selector is a session-only quick switch and never changes it; signed out, a device language). `preferred_language` changes only in onboarding and on the NF-P1-023 profile page, which should use `useUpdatePreferredLanguage()`. |
+| D-40 | NF-P1-022 | The header language selector changes only the UI language; `users/{uid}.preferred_language` (set in onboarding) is not updated, and a later sign-in on another device doesn't restore it. Decide one source of truth and sync them. | NF-P1-023 (profile page, Pranjal) | Done (NF-P1-022, final rule: signed out the app always opens in English, the sign-in selector lasts only for the visit; signed in `LanguageSync` applies `preferred_language`, the header selector is a session-only quick switch that never changes it). `preferred_language` changes only in onboarding and on the NF-P1-023 profile page (`useUpdatePreferredLanguage()`). |
 | D-41 | NF-P1-022 | The hi, tl, id, ne and bn texts for `onboarding.*` were written without a native speaker. Have someone fluent check them (especially Nepali and Bengali). | Unassigned; before the public demo | Open |
 | D-42 | NF-P1-022 deploy | After a hosting deploy, returning visitors see the previous version once: the PWA service worker (`registerSW` with autoUpdate in `src/main.tsx`) serves the cached app and switches on the next load. Checked 2026-09-25: the live bundle was new, a browser that had visited before still showed the old sign-in page until reloaded. Add a "New version available, Refresh" prompt (`onNeedRefresh`) when the toast system exists. | NF-P1-026 (toasts, Devam) | Open |
 
@@ -57,6 +57,7 @@ Last updated: 2026-09-25, after the NF-P1-022 deploy.
 | D-32 | NF-P1-009 | Turn on **reCAPTCHA Enterprise** for phone auth (Firebase console → Authentication → Settings → reCAPTCHA; the reCAPTCHA Enterprise API is already enabled in the project). Today the SDK logs "Failed to initialize reCAPTCHA Enterprise config" and falls back to reCAPTCHA v2. | reCAPTCHA v2 shows image challenges more often and gives no SMS-fraud scoring, which matters now that SMS costs money. | Devam | Open |
 | D-33 | NF-P1-014 | Create the Firestore indexes listed in `firestore-schema.md` ("Required indexes", incl. the `report_embeddings` vector index) and decide the single home of `firestore.indexes.json`: there are two empty stubs, `frontend/` and `infra/firebase/`. Like the rules, the CLI only deploys the one inside `frontend/`. | Radar queries (NF-P3-002/-004/-007/-008) and the notification feed (NF-P3-009) fail without them. | Unassigned; before NF-P3-002 | Open |
 | D-34 | NF-P1-014 | On Windows, `firebase emulators:exec` can leave the Firestore emulator's Java process running (ports 8085/9150), which blocks the next `pnpm test:rules`. Workaround in the NF-P1-014 runbook, step 2. Check again after a firebase-tools upgrade. | Annoying on Windows only; CI (Linux) not affected. | Devam | Open |
+| D-43 | NF-P1-022 | `i18next-browser-languagedetector` is still in `frontend/package.json` but no longer imported (the app always starts in English). Remove it with `pnpm remove i18next-browser-languagedetector` (shared file: needs the team's OK). | Harmless meanwhile (not in the bundle). | Devam | Open |
 
 ## 4. Notes and decisions to keep in mind (no fix planned)
 

@@ -2,7 +2,7 @@
 
 ## Summary
 
-After their first sign-in, users answer **four questions, one per screen**: preferred language, the country they work in (host), the country they send money to (home), and their kind of work. The answers are saved to Firestore at `users/{uid}` straight from the browser (Firebase Web SDK); the security rules from NF-P1-014 are the validation: only the owner, only the allowed values, `serverTimestamp()` for `created_at` / `updated_at` / `onboarding_completed_at`, and `schema_version: 1`. A new layout route, `RequireOnboarding`, sits between `ProtectedRoute` and the app shell: a signed-in user without `onboarding_completed_at` is sent to `/onboarding`, and a user who has finished is never shown onboarding again. Language comes first and switches the UI immediately, so the other questions are already in the worker's language; country names come from the browser's own localized data (`Intl.DisplayNames`), and job types are translated in all six language files. **Language follows a clear rule** (fixed after first testing, when the sign-in page kept the last user's language): signed out, the app uses the **device language**, English by default and changed only with the new selector on the sign-in page; signed in, it uses the profile's `preferred_language` on every device. The header selector is only a quick switch for the current tab session and never changes `preferred_language`, which also drives reports, notifications and SMS; that is set in onboarding and (from NF-P1-023) on the profile page. `<html lang>` and Firebase's SMS/reCAPTCHA language follow the UI language. The backend is untouched: saving through an API endpoint waits for CORS (NF-P1-027), and the backend can read the profile with the Admin SDK when a later task needs it.
+After their first sign-in, users answer **four questions, one per screen**: preferred language, the country they work in (host), the country they send money to (home), and their kind of work. The answers are saved to Firestore at `users/{uid}` straight from the browser (Firebase Web SDK); the security rules from NF-P1-014 are the validation: only the owner, only the allowed values, `serverTimestamp()` for `created_at` / `updated_at` / `onboarding_completed_at`, and `schema_version: 1`. A new layout route, `RequireOnboarding`, sits between `ProtectedRoute` and the app shell: a signed-in user without `onboarding_completed_at` is sent to `/onboarding`, and a user who has finished is never shown onboarding again. Language comes first and switches the UI immediately, so the other questions are already in the worker's language; country names come from the browser's own localized data (`Intl.DisplayNames`), and job types are translated in all six language files. **Language follows a clear rule** (fixed after first testing, when the sign-in page kept the last user's language): signed out, the app **always opens in English** (phones are often shared); the new selector on the sign-in page changes the language for that visit only, nothing is stored; signed in, it uses the profile's `preferred_language` on every device. The header selector is only a quick switch for the current tab session and never changes `preferred_language`, which also drives reports, notifications and SMS; that is set in onboarding and (from NF-P1-023) on the profile page. `<html lang>` and Firebase's SMS/reCAPTCHA language follow the UI language. The backend is untouched: saving through an API endpoint waits for CORS (NF-P1-027), and the backend can read the profile with the Admin SDK when a later task needs it.
 
 ## Files
 
@@ -17,9 +17,9 @@ After their first sign-in, users answer **four questions, one per screen**: pref
 | `frontend/src/utils/format.ts` | `countryName(code, language)` via `Intl.DisplayNames` (short style: "Hong Kong") |
 | `frontend/src/lib/firebase.ts`, `vite-env.d.ts`, `.env.emulator` | `db` (Firestore); Firestore emulator on 8085 in emulator mode |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `onboarding.*` and `common.retry` in all six languages |
-| `frontend/src/components/common/LanguageSync.tsx` | Applies the right language (device vs profile); sets `<html lang>` and `auth.languageCode` |
-| `frontend/src/components/layout/LanguageSelector.tsx` | Signed in: quick switch for this tab session (`sessionStorage`), profile untouched. Signed out: saves the device language. |
-| `frontend/src/lib/languages.ts`, `lib/i18n.ts` | Device language in `localStorage["nomadfinance.deviceLanguage"]`; i18next no longer caches every change or guesses from the browser |
+| `frontend/src/components/common/LanguageSync.tsx` | Applies the right language (English signed out, profile or session switch signed in); sets `<html lang>` and `auth.languageCode` |
+| `frontend/src/components/layout/LanguageSelector.tsx` | Signed in: quick switch for this tab session (`sessionStorage`), profile untouched. Signed out: this visit only, nothing stored. |
+| `frontend/src/lib/languages.ts`, `lib/i18n.ts` | i18next always starts in English (no browser detection, nothing cached); session quick-switch helpers |
 | `frontend/src/pages/SignIn.tsx`, `src/main.tsx` | Language selector on the sign-in page; `LanguageSync` mounted once |
 | `frontend/src/services/userService.ts`, `hooks/useUser.ts` | `updatePreferredLanguage` / `useUpdatePreferredLanguage()`, for the profile page (NF-P1-023) |
 
@@ -27,12 +27,12 @@ After their first sign-in, users answer **four questions, one per screen**: pref
 
 | Situation | Language |
 |---|---|
-| Signed out (sign-in page), nothing chosen on this device | English |
-| Signed out, someone chose a language with the sign-in page selector | That language, remembered on this device |
+| Signed out (sign-in page) | **Always English** when the page opens |
+| Signed out, a language picked with the sign-in page selector | That language until reload or sign-in; nothing stored |
 | Signed in, onboarding not finished | Whatever is showing; step 1 of onboarding sets it |
 | Signed in, profile exists | The profile's `preferred_language`, on every device and after reload |
 | Signed in, header selector changed | Applied at once for this tab session, also after a reload; `preferred_language` is **not** changed |
-| After sign-out | Back to the device language (English unless chosen on the sign-in page); the quick switch is forgotten |
+| After sign-out | English; the quick switch is forgotten |
 | Next sign-in | The profile's `preferred_language` again |
 
 ## Flow
@@ -127,8 +127,8 @@ Open `http://localhost:5173/sign-in`, sign in with a test phone number (`+61 491
 | Finish | `users/<uid>` = `preferred_language hi, host_country SG, home_country IN, job_type domestic_worker, schema_version 1`, three server timestamps; → dashboard in Hindi |
 | Reload / visit `/onboarding` again / sign out + in | dashboard / redirected to dashboard / straight to dashboard |
 | 375 px wide | one column, 50 px tap targets, no horizontal scroll, buttons on screen |
-| Language, emulator: old `nomadfinance.language = hi` left in the browser | Sign-in page in English (old key ignored) |
-| Sign-in page selector → Bengali, reload | Bengali kept, `<html lang="bn">`; back to English |
+| Language, emulator: old stored values (`nomadfinance.language = hi`, `nomadfinance.deviceLanguage = tl`) | Sign-in page in English (no longer read) |
+| Sign-in page selector → Tagalog, then reload | Tagalog for that visit, nothing stored; reload → English |
 | New user picks Hindi in onboarding → dashboard → **sign out** | Dashboard Hindi; **sign-in page English** (device language still `en`) |
 | Sign in again | Hindi (from the profile) |
 | Onboarding in Nepali → header → English | UI English; profile still `ne`, not written (`updated_at` = `created_at`) |
@@ -146,7 +146,7 @@ Open `http://localhost:5173/sign-in`, sign in with a test phone number (`+61 491
 | Onboarding loops back after Finish | The profile re-read didn't see `onboarding_completed_at`. Check the document in Firestore. |
 | Want to redo onboarding for a test account | Delete `users/<uid>` in the Firebase console (or restart the emulator). |
 | Country names show as codes ("SG") | The browser has no locale data for that language; rare, harmless. |
-| Sign-in page not in English although nobody chose a language there | Someone chose one with the sign-in page selector on this device: pick English there, or clear `localStorage["nomadfinance.deviceLanguage"]`. |
+| Sign-in page not in English | An old version is still running (D-42): close the tab and hard-reload. The current version always opens the sign-in page in English. |
 | Signed in, the header language is gone after closing the tab or signing out | Expected: the header selector is a quick switch. Change `preferred_language` in onboarding or the profile page (NF-P1-023). |
 
 ## Deploy the frontend

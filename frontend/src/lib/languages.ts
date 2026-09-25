@@ -16,32 +16,10 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
 
 export const DEFAULT_LANGUAGE = "en";
 
-// The language chosen on signed-out pages (sign-in), remembered on this device only.
-// Signed-in users follow users/{uid}.preferred_language instead (LanguageSync), so this
-// never holds a profile's language. Renamed from "nomadfinance.language", which used to
-// cache every change, including the signed-in user's.
-export const DEVICE_LANGUAGE_KEY = "nomadfinance.deviceLanguage";
-
-export function getDeviceLanguage(): string {
-  try {
-    const stored = localStorage.getItem(DEVICE_LANGUAGE_KEY);
-    return SUPPORTED_LANGUAGES.some((language) => language.code === stored) && stored
-      ? stored
-      : DEFAULT_LANGUAGE;
-  } catch {
-    // Storage can be blocked (private mode, strict privacy settings).
-    return DEFAULT_LANGUAGE;
-  }
-}
-
-export function setDeviceLanguage(code: string): void {
-  try {
-    localStorage.setItem(DEVICE_LANGUAGE_KEY, code);
-  } catch {
-    // Not remembered on this device; the choice still applies until reload.
-  }
-}
-
+// Signed out, every page load starts in English: phones are often shared, so one person's
+// choice on the sign-in page must not greet the next person. Signed in, the profile's
+// preferred_language applies (LanguageSync).
+//
 // A signed-in user's quick switch from the header, for this browser tab only: kept across
 // reloads, cleared on sign-out (LanguageSync). It never changes preferred_language, which
 // also drives reports, notifications and SMS and is set only in onboarding and the profile page.

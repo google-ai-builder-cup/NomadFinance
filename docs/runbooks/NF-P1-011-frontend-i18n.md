@@ -34,15 +34,15 @@ useI18n() (10 call sites: Header, Sidebar, Footer, BottomNav, AppShell,
 Header
   └─ <LanguageSelector />
        ├─ reads i18n.resolvedLanguage for the current <select> value
-       └─ onChange → i18n.changeLanguage(code); signed out → saved as the device
-          language, signed in → quick switch for the tab session (NF-P1-022)
+       └─ onChange → i18n.changeLanguage(code); signed out → nothing stored, only
+          language for this visit, signed in → quick switch for the tab session (NF-P1-022)
 ```
 
 ## Design choices worth knowing
 
 - **Native `<select>`, not a shadcn/Radix dropdown.** No dropdown/select primitive existed in `components/ui/` yet, and adding `@radix-ui/react-select` would have been an extra shared-file dependency for a control this simple. A native select is fully keyboard-accessible for free.
 - **`useI18n()` kept its exact shape.** NF-P1-010 wrote it as `{ t }` on purpose so this task could swap the implementation without touching any consumer — confirmed by grepping all 10 call sites before and after; none changed.
-- **Changed in NF-P1-022:** the detector no longer caches automatically and no longer reads the browser language. Signed out, the UI uses the device language from `localStorage["nomadfinance.deviceLanguage"]` (English by default, set only by the selector on the sign-in page). Signed in, `LanguageSync` applies the profile's `preferred_language`; the header selector is a session-only quick switch (`sessionStorage`) and never changes the profile. The old key `nomadfinance.language` is ignored, because it had cached the signed-in user's language onto the sign-in page.
+- **Changed in NF-P1-022:** the language detector is no longer used. The app always starts in English; the sign-in page selector changes the language for that visit only (nothing stored, because phones are often shared). Signed in, `LanguageSync` applies the profile's `preferred_language`; the header selector is a session-only quick switch (`sessionStorage`) and never changes the profile. Values stored by older versions (`nomadfinance.language`, `nomadfinance.deviceLanguage`) are ignored.
 - **Translations are best-effort, not reviewed by a native speaker.** None of the team are native speakers of Hindi, Tagalog, Indonesian, Nepali or Bengali beyond a conversational level; worth a review pass before the demo.
 
 ## How later tasks plug in
@@ -83,8 +83,8 @@ pnpm dev
 Open `http://localhost:5173`, sign in, land on `/dashboard`. Use the language dropdown in the header (next to sign-out):
 
 1. Switch through all 6 languages — dashboard, sidebar/bottom-nav labels, and footer text should update instantly, no reload.
-2. Reload the page — signed out, the language chosen on the sign-in page is kept (`localStorage["nomadfinance.deviceLanguage"]`); signed in, the profile's language is applied.
-3. Without signing in, pick a language with the selector on `/sign-in`, or in the DevTools console: `localStorage.setItem('nomadfinance.deviceLanguage', 'bn'); location.reload();`
+2. Reload the page — signed out, it opens in English again; signed in, the profile's language (or this tab's quick switch) is applied.
+3. Without signing in, check a translation by picking a language with the selector on `/sign-in` (it lasts until reload).
 
 ## Verified results (2026-09-25, browser pane)
 
@@ -131,7 +131,7 @@ This runbook was written after the fact, directly against `main` — the code it
 | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A string shows as its raw key (e.g. `pillars.remittance.name`) | The key is missing from that language's JSON file. Add it there — `fallbackLng: "en"` only saves you if it's missing from `en.json` too, otherwise you get the raw key.                       |
 | Language selector shows the wrong current value                | `i18n.resolvedLanguage` reflects the actual applied language, not necessarily `i18n.language` (which can be a region variant like `en-US`); the selector reads `resolvedLanguage` on purpose. |
-| Chosen language doesn't persist across reload                  | Signed out: check `localStorage["nomadfinance.deviceLanguage"]` isn't cleared by privacy settings or a private window. Signed in: the language comes from the profile (NF-P1-022). |
+| Chosen language doesn't persist across reload | Expected when signed out: the sign-in page always opens in English. Signed in, the language comes from the profile (NF-P1-022). |
 | New language file doesn't load                                 | Confirm it's imported and added to the `resources` object in `lib/i18n.ts` — dropping a new JSON file into `src/i18n/` alone isn't enough.                                                    |
 
 ## Not covered here
