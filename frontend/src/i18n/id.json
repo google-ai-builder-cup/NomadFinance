@@ -81,6 +81,12 @@
     "description": "Kami masih membangun bagian NomadFinance ini. Kunjungi lagi nanti.",
     "backToDashboard": "Kembali ke beranda"
   },
+  "pwa": {
+    "installTitle": "Instal NomadFinance",
+    "installDescription": "Tambahkan ke layar utama untuk akses yang lebih cepat dan siap offline.",
+    "install": "Instal",
+    "dismiss": "Tutup"
+  },
   "notFound": {
     "title": "Halaman tidak ditemukan",
     "description": "Halaman ini tidak ada atau sudah dipindahkan.",

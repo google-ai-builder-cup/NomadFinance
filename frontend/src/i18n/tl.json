@@ -81,6 +81,12 @@
     "description": "Ginagawa pa namin ang bahaging ito ng NomadFinance. Bumalik ulit sa lalong madaling panahon.",
     "backToDashboard": "Bumalik sa home"
   },
+  "pwa": {
+    "installTitle": "I-install ang NomadFinance",
+    "installDescription": "Idagdag ito sa iyong home screen para sa mas mabilis at offline na access.",
+    "install": "I-install",
+    "dismiss": "I-dismiss"
+  },
   "notFound": {
     "title": "Hindi nahanap ang page",
     "description": "Wala o inalis na ang page na ito.",
