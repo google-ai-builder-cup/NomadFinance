@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-09-25, after NF-P1-022 (language fix).
+Last updated: 2026-09-25, after the NF-P1-022 deploy.
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -45,6 +45,7 @@ Last updated: 2026-09-25, after NF-P1-022 (language fix).
 | D-39 | NF-P1-022 | `<html lang>` stays `en` when the UI switches language, so screen readers read Hindi, Nepali or Bengali text with an English voice. Set `document.documentElement.lang` on i18next's `languageChanged` event (in `src/lib/i18n.ts`). | NF-P1-011 owner (Aditya) | Done (NF-P1-022: `LanguageSync` sets `<html lang>` on every language change) |
 | D-40 | NF-P1-022 | The header language selector changes only the UI language; `users/{uid}.preferred_language` (set in onboarding) is not updated, and a later sign-in on another device doesn't restore it. Decide one source of truth and sync them. | NF-P1-023 (profile page, Pranjal) | Done (NF-P1-022: signed in, the header selector saves `preferred_language` and `LanguageSync` applies the profile's language; signed out, a device language). NF-P1-023's profile page should reuse `useUpdatePreferredLanguage()`. |
 | D-41 | NF-P1-022 | The hi, tl, id, ne and bn texts for `onboarding.*` were written without a native speaker. Have someone fluent check them (especially Nepali and Bengali). | Unassigned; before the public demo | Open |
+| D-42 | NF-P1-022 deploy | After a hosting deploy, returning visitors see the previous version once: the PWA service worker (`registerSW` with autoUpdate in `src/main.tsx`) serves the cached app and switches on the next load. Checked 2026-09-25: the live bundle was new, a browser that had visited before still showed the old sign-in page until reloaded. Add a "New version available, Refresh" prompt (`onNeedRefresh`) when the toast system exists. | NF-P1-026 (toasts, Devam) | Open |
 
 ## 3. Code fixes not yet assigned to a task
 
