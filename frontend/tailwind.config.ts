@@ -47,6 +47,9 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Sparing marketing accent (NF-P1-024); not part of the shadcn functional palette
+        // above, so use it deliberately (e.g. `text-gold`), not as a general-purpose color.
+        gold: "hsl(var(--brand-gold))",
       },
       borderRadius: {
         lg: "var(--radius)",

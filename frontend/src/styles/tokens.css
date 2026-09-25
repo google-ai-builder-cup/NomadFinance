@@ -1,62 +1,69 @@
-/* shadcn/ui design tokens (slate base). Swap these for brand colors with NF-P1-024. */
+/* NomadFinance brand tokens (NF-P1-024). Primary is "Nomad Teal" #0B5D71 (hsl(192 82% 24%)),
+   chosen for trust/protection and strong contrast outdoors on a phone screen; --brand-gold is a
+   sparing marketing accent (the logo's dot), not wired into any component by this task. See
+   docs/runbooks/NF-P1-024-brand-assets.md for the full palette, hex values and rationale. */
 :root {
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 195 35% 11%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 195 35% 11%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
+  --popover-foreground: 195 35% 11%;
 
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 192 82% 24%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 192 30% 95%;
+  --secondary-foreground: 192 45% 15%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 195 20% 96%;
+  --muted-foreground: 197 15% 40%;
 
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  --accent: 192 30% 95%;
+  --accent-foreground: 192 45% 15%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 4 74% 45%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
+  --border: 195 20% 88%;
+  --input: 195 20% 88%;
+  --ring: 192 82% 24%;
 
   --radius: 0.5rem;
+
+  --brand-gold: 38 92% 50%;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --background: 199 35% 7%;
+  --foreground: 195 25% 94%;
 
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
+  --card: 199 32% 9%;
+  --card-foreground: 195 25% 94%;
 
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  --popover: 199 32% 9%;
+  --popover-foreground: 195 25% 94%;
 
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+  --primary: 193 70% 55%;
+  --primary-foreground: 199 45% 8%;
 
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 199 25% 16%;
+  --secondary-foreground: 195 25% 94%;
 
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: 199 25% 16%;
+  --muted-foreground: 197 15% 65%;
 
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  --accent: 199 25% 16%;
+  --accent-foreground: 195 25% 94%;
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 4 62% 42%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: 199 25% 18%;
+  --input: 199 25% 18%;
+  --ring: 193 70% 55%;
+
+  --brand-gold: 38 92% 55%;
 }
