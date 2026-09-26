@@ -12,7 +12,8 @@ from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.schemas.remittance import RefreshRatesResponse
 from app.services.remittance.rates import refresh_rates
 
-# Called by Cloud Scheduler only (infra/cloud-scheduler/). Hidden from the public API docs.
+# Called by Cloud Scheduler only (infra/cloud-scheduler/). Hidden from the public API docs,
+# and never rate limited (RateLimitMiddleware skips /api/v1/internal/).
 router = APIRouter(prefix="/internal", tags=["internal"], include_in_schema=False)
 
 _RESPONSES: dict[int | str, dict[str, Any]] = {

@@ -21,9 +21,9 @@ must say so explicitly in their own doc section below.
 | Method | Path | Auth | Rate limit | Owner task |
 |---|---|---|---|---|
 | GET | `/health` | Public | None | NF-P1-001 |
-| POST | `/api/v1/contracts/extract` | Firebase ID token | Not yet (NF-P1-027) | NF-P1-006 |
+| POST | `/api/v1/contracts/extract` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P1-006 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
-| DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | Not yet (NF-P1-027) | NF-P1-023 |
+| DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
 ## Error format
 
@@ -37,6 +37,34 @@ Gemini failures (any endpoint that calls Gemini) map to (`app/core/errors.py`):
 | 504 | Gemini timed out on every attempt | Yes |
 | 502 | Gemini answered with empty, blocked or invalid output | Yes, once |
 | 500 | Our request was rejected by Gemini (a bug on our side) | No |
+
+## CORS, rate limits and request size (NF-P1-027)
+
+**CORS.** Browsers may call the API from these origins only (`CORS_ALLOWED_ORIGINS` overrides them):
+
+| `APP_ENV` | Allowed origins |
+|---|---|
+| `prod` | `https://nomadfinance-prod.web.app`, `https://nomadfinance-prod.firebaseapp.com` |
+| `local` | `http://localhost:5173`, `http://127.0.0.1:5173`, `http://localhost:4173`, `http://127.0.0.1:4173` |
+
+Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `Content-Type`, `X-Request-ID`; no cookies (`allow_credentials` off). Readable by the page: `X-Request-ID`, `Retry-After`, `X-RateLimit-*`. Preflights are cached for 1 hour. Other origins get no CORS headers (preflight `400`). In local development the Vite dev server forwards `/api`, so CORS is not involved there.
+
+**Rate limits.** Counted per signed-in user (the token's uid, hashed), or per IP for requests without a token (the last `X-Forwarded-For` entry on Cloud Run). Budgets use a moving one-minute window:
+
+| Budget | Default | Applies to |
+|---|---|---|
+| API-wide | `RATE_LIMIT_DEFAULT` = `60/minute` | Every path under `/api/` except `/api/v1/internal/*`, shared across endpoints |
+| Gemini | `RATE_LIMIT_AI` = `10/minute` | Endpoints that call Gemini (`Depends(limit_ai_calls)`), in addition to the API-wide budget |
+
+`/health` and `/api/v1/internal/*` are never limited. Counted responses carry `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-RateLimit-Reset` (seconds). Over a budget:
+
+| Status | `detail` | Headers |
+|---|---|---|
+| 429 | `Too many requests. Please wait a minute and try again.` | `Retry-After` (seconds), `X-RateLimit-*` of the budget that ran out |
+
+Counts live in each Cloud Run instance's memory: with up to 2 instances a caller can get up to twice the budget, and counts reset when an instance restarts.
+
+**Request size.** Any request body over `UPLOAD_MAX_BYTES` + 64 KB (10 MB + 64 KB by default) gets `413` `The request is larger than 10 MB.` before the body is read (declared `Content-Length`), or as soon as the limit is passed (no `Content-Length`).
 
 ---
 
@@ -108,7 +136,8 @@ curl -s -H "Authorization: Bearer $TOKEN" -F "file=@tests/fixtures/contracts/sam
 |---|---|---|
 | 400 | `The uploaded file is empty.` | Zero-byte file |
 | 401 | `Missing bearer token` / `Invalid authentication token` / ... | No, invalid, expired or revoked token |
-| 413 | `The file is larger than 10 MB.` | Over `UPLOAD_MAX_BYTES` |
+| 413 | `The request is larger than 10 MB.` / `The file is larger than 10 MB.` | Whole request over the limit (refused before reading) / file part over `UPLOAD_MAX_BYTES` |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 uploads a minute (Gemini budget) or 60 API calls a minute |
 | 415 | `Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).` | Any other file type, including Word files and renamed text files |
 | 422 | `No readable document found. ...` | Gemini found no document text (selfie, landscape, blank page) |
 | 422 | FastAPI validation list | No `file` field in the form |
@@ -147,8 +176,9 @@ Deletes the caller's account and everything stored about them (NF-P1-023). It ca
 | `401` | Missing, invalid, expired or revoked token | see Authentication |
 | `403` | The sign-in is older than the limit | `recent_login_required` (the frontend picks its "sign in again" screen by this exact string) |
 | `503` | A backing service failed part-way | `We couldn't finish deleting the account. Please try again.` |
+| `429` | Over 60 API calls a minute | `Too many requests. Please wait a minute and try again.` |
 
-Production needs two roles for the backend's service account, or step 2 and 3 fail with `503`: `roles/firebaseauth.admin` and `roles/storage.objectUser` on the bucket (`infra/iam/grant-account-deletion-roles.sh`). A browser also needs CORS to call it (NF-P1-027).
+Production needs two roles for the backend's service account, or step 2 and 3 fail with `503`: `roles/firebaseauth.admin` and `roles/storage.objectUser` on the bucket (`infra/iam/grant-account-deletion-roles.sh`). A browser can call it from the allowed origins (CORS, NF-P1-027); the deployed site finds the backend through `VITE_API_BASE_URL`.
 
 ```bash
 # local, with the emulators running and a token for the signed-in user

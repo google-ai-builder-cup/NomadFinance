@@ -5,6 +5,7 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from app.config import Settings, get_settings
+from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.schemas.contract import ContractExtractResponse
@@ -20,6 +21,7 @@ _ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     413: {"description": "File larger than the upload limit (default 10 MB)"},
     415: {"description": "Not a PDF, PNG, JPEG, WebP or HEIC/HEIF file"},
     422: {"description": "No readable document in the file, or no file sent"},
+    429: {"description": "Too many uploads (default 10 a minute per user); see Retry-After"},
     502: {"description": "Gemini returned an unusable answer"},
     503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
     504: {"description": "Gemini timed out"},
@@ -31,6 +33,7 @@ _ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     response_model=ContractExtractResponse,
     responses=_ERROR_RESPONSES,
     summary="Extract the text of an uploaded contract",
+    dependencies=[Depends(limit_ai_calls)],
 )
 async def extract_contract_text(
     file: Annotated[UploadFile, File(description="Contract as PDF, PNG, JPEG, WebP or HEIC")],

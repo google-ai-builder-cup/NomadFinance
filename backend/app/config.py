@@ -1,15 +1,32 @@
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from limits import parse_many
 from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolved from this file so settings load the same way whether the app starts from
 # backend/, the repo root, or a test runner. Missing file is fine: Cloud Run injects env vars.
 _ENV_FILE = Path(__file__).resolve().parent.parent / ".env.local"
+
+# The Firebase Hosting sites in prod; the Vite dev server and `vite preview` locally.
+_DEFAULT_CORS_ORIGINS: dict[str, tuple[str, ...]] = {
+    "local": (
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:4173",
+        "http://127.0.0.1:4173",
+    ),
+    "staging": ("https://nomadfinance-prod.web.app", "https://nomadfinance-prod.firebaseapp.com"),
+    "prod": ("https://nomadfinance-prod.web.app", "https://nomadfinance-prod.firebaseapp.com"),
+}
+_ORIGIN = re.compile(r"^https?://[a-z0-9.-]+(:\d{1,5})?$")
+# Boundaries and part headers of a one-file multipart form are well under 1 KB.
+_MULTIPART_OVERHEAD_BYTES = 64 * 1024
 
 
 class Settings(BaseSettings):
@@ -68,6 +85,17 @@ class Settings(BaseSettings):
     currencyfreaks_api_key: SecretStr | None = None
     wise_api_token: SecretStr | None = None
 
+    # Browser origins allowed to call the API (CORS). Empty means the defaults for APP_ENV
+    # below. Override as a JSON list: CORS_ALLOWED_ORIGINS='["https://example.web.app"]'.
+    cors_allowed_origins: list[str] = []
+
+    # Per caller (user, or IP without a token), in the `limits` notation ("60/minute").
+    # Memory storage: counted per Cloud Run instance, reset when an instance restarts.
+    rate_limit_enabled: bool = True
+    rate_limit_default: str = "60/minute"
+    # Endpoints that call Gemini share one free-tier quota across all users.
+    rate_limit_ai: str = "10/minute"
+
     @model_validator(mode="after")
     def _require_cron_auth_when_deployed(self) -> Settings:
         if self.app_env != "local" and not (self.cron_service_account and self.cron_audience):
@@ -75,6 +103,26 @@ class Settings(BaseSettings):
                 "CRON_SERVICE_ACCOUNT and CRON_AUDIENCE are required when APP_ENV is not local"
             )
         return self
+
+    @model_validator(mode="after")
+    def _check_cors_and_rate_limits(self) -> Settings:
+        if not self.cors_allowed_origins:
+            self.cors_allowed_origins = list(_DEFAULT_CORS_ORIGINS[self.app_env])
+        for origin in self.cors_allowed_origins:
+            # An origin is scheme://host[:port] exactly; browsers never send a path or "*".
+            if not _ORIGIN.match(origin):
+                raise ValueError(f"CORS_ALLOWED_ORIGINS: {origin!r} is not an origin")
+        for name in ("rate_limit_default", "rate_limit_ai"):
+            try:
+                parse_many(getattr(self, name))
+            except ValueError as exc:
+                raise ValueError(f"{name.upper()}: {exc}") from exc
+        return self
+
+    @property
+    def request_max_bytes(self) -> int:
+        """Largest request body accepted: one upload plus room for the multipart framing."""
+        return self.upload_max_bytes + _MULTIPART_OVERHEAD_BYTES
 
 
 @lru_cache

@@ -6,6 +6,8 @@ import time
 import uuid
 
 from starlette.datastructures import Headers, MutableHeaders
+from starlette.exceptions import HTTPException
+from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.logging import RequestContext, reset_request_context, set_request_context
@@ -89,3 +91,44 @@ class RequestLoggingMiddleware:
                 exc_info=error,
             )
             reset_request_context(token)
+
+
+class BodySizeLimitMiddleware:
+    """Refuse request bodies over `max_bytes` before they are read (413).
+
+    FastAPI parses a whole multipart form into a temporary file before the endpoint can check
+    the size, so without this an upload endpoint would receive up to Cloud Run's 32 MB. A
+    declared Content-Length is rejected at once; a body without one is counted as it arrives.
+    """
+
+    def __init__(self, app: ASGIApp, max_bytes: int) -> None:
+        self.app = app
+        self.max_bytes = max_bytes
+
+    def _message(self) -> str:
+        return f"The request is larger than {self.max_bytes // (1024 * 1024)} MB."
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        declared = Headers(scope=scope).get("content-length", "")
+        if declared.isdigit() and int(declared) > self.max_bytes:
+            response = JSONResponse(status_code=413, content={"detail": self._message()})
+            await response(scope, receive, send)
+            return
+
+        received = 0
+
+        async def counting_receive() -> Message:
+            nonlocal received
+            message = await receive()
+            if message["type"] == "http.request":
+                received += len(message.get("body", b""))
+                if received > self.max_bytes:
+                    # FastAPI re-raises an HTTPException from body parsing unchanged.
+                    raise HTTPException(413, self._message())
+            return message
+
+        await self.app(scope, counting_receive, send)

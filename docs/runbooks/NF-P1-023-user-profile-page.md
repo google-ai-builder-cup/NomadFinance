@@ -126,7 +126,9 @@ Checks: `pnpm lint`, `pnpm format:check`, `pnpm build`, `pnpm test:rules` (99 pa
 
 Deleting an account works from the browser only after these three things. The page hides the delete section until the last two are done, so nothing broken is shown.
 
-1. **Roles for the backend service account** (a project owner runs it once; it cannot be done from CI or by the assistant):
+> **Status (2026-09-27, NF-P1-027):** step 2 (CORS) and the workflow half of step 3 (`VITE_API_BASE_URL` passed in `frontend-deploy.yml`) are done in NF-P1-027. Still to do by a project owner: step 1 (the grant script: not run yet when checked) and the GitHub variable. The live test is in `NF-P1-027-backend-cors-rate-limit.md`, "Turn on account deletion in production".
+
+1. **Roles for the backend service account** (a project owner runs it once; CI cannot do it):
 
    ```bash
    gcloud config set project nomadfinance-prod

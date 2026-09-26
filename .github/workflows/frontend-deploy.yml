@@ -55,6 +55,7 @@ jobs:
           VITE_FIREBASE_PROJECT_ID: nomadfinance-prod
           VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
       - uses: google-github-actions/auth@v2
         with:
