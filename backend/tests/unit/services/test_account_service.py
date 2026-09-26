@@ -9,6 +9,9 @@ from google.api_core.exceptions import NotFound, ServiceUnavailable
 from app.integrations.cloud_storage import UserFileStore
 from app.services.auth_service import AccountDeletionError, AccountService
 
+# google-api-core's exception constructors have no type hints; build this one once.
+_UNAVAILABLE: Exception = ServiceUnavailable("down")  # type: ignore[no-untyped-call]
+
 
 class _FakeDb:
     def __init__(self, log: list[str], fail: Exception | None = None) -> None:
@@ -82,8 +85,8 @@ def test_an_account_that_is_already_gone_is_not_an_error() -> None:
 @pytest.mark.parametrize(
     ("db_fail", "files_fail", "auth_result", "expected_log"),
     [
-        (ServiceUnavailable("down"), None, True, ["firestore:users/u1"]),
-        (None, ServiceUnavailable("down"), True, ["firestore:users/u1", "files:u1"]),
+        (_UNAVAILABLE, None, True, ["firestore:users/u1"]),
+        (None, _UNAVAILABLE, True, ["firestore:users/u1", "files:u1"]),
         (
             None,
             None,
@@ -118,7 +121,7 @@ class _Blob:
 
     def delete(self) -> None:
         if self._missing:
-            raise NotFound("gone")
+            raise NotFound("gone")  # type: ignore[no-untyped-call]
         self._store.remove(self.name)
 
 

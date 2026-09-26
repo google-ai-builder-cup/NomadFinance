@@ -192,7 +192,25 @@ Signing in with the same test number later creates a new, empty account. Never u
 | Tests also cover | Per-user budgets, one budget across endpoints, forged `X-Forwarded-For` prefix ignored, internal endpoint never limited, switch-off flag, unusable tokens fall back to IP, uid never in the key, Gemini budget (10/min, own headers), 413 carries CORS, settings validation |
 | Production, 2026-09-27, before merge | Preflight from web.app → 405 (no CORS yet); backend service account has only `roles/datastore.user` (grant script not run yet) |
 
-Still to verify: step 3 after merge. The Docker image build is left to `backend-ci.yml`, because Docker Desktop was not running locally.
+Production, after merge (2026-09-27, revision `nomadfinance-api-00008-wvf`, image `4f17b48`):
+
+| Check | Result |
+|---|---|
+| Backend service account roles | `roles/datastore.user`, `roles/firebaseauth.admin`; `roles/storage.objectUser` on the bucket |
+| Preflight from `https://nomadfinance-prod.web.app` | 200, `access-control-allow-origin: https://nomadfinance-prod.web.app`, max-age 3600 |
+| Preflight from another origin | 400 |
+| Counted call from web.app | 401 with `x-ratelimit-limit: 60`, `remaining: 59`, CORS headers |
+| `/health` | No rate-limit headers |
+| 61 calls from one IP | 429, `retry-after: 51`, `{"detail": "Too many requests…"}` |
+| Cron endpoint | Never 429 (411 for a bodyless test POST, from Google's front end) |
+| 30 MB upload | 413 `The request is larger than 10 MB.` |
+| Site bundle | Contains the API URL (`VITE_API_BASE_URL` variable picked up) |
+
+Two things learned in production:
+- **The first check after merge still hit the old revision.** Revision 00008 was created at 20:15:38 UTC and the check ran in that same minute. Wait until "Backend deploy" is green and `gcloud run services describe` shows the new revision serving 100%, then check.
+- **Cloud Run's front end receives the whole upload before the app sees it** (30 MB sent in 3.8 s, then 413). The app still refuses without reading or parsing it, which saves server memory and CPU. Only a check in the browser (NF-P2-009) saves the worker's mobile data.
+
+The Docker image was built by `backend-ci.yml` and `backend-deploy.yml` (Docker Desktop was not running locally); both passed.
 
 ## Troubleshooting
 
