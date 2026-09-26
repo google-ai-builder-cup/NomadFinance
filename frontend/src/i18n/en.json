@@ -107,10 +107,11 @@
     "backToDashboard": "Back to home"
   },
   "pwa": {
-    "installTitle": "Install NomadFinance",
-    "installDescription": "Add it to your home screen for faster, offline-ready access.",
     "install": "Install",
-    "dismiss": "Dismiss"
+    "installOffer": "Install NomadFinance: it opens faster and works offline.",
+    "installIos": "To install NomadFinance, tap the Share button, then “Add to Home Screen”.",
+    "updateAvailable": "A new version of NomadFinance is ready.",
+    "refresh": "Refresh"
   },
   "notFound": {
     "title": "Page not found",
@@ -205,5 +206,19 @@
       "error": "We couldn't finish deleting your account. Please try again.",
       "done": "Your account and data have been deleted."
     }
+  },
+  "errors": {
+    "boundaryTitle": "Something went wrong",
+    "boundaryDescription": "This page stopped working. Your saved information is safe. Try again, or go back to the home page.",
+    "goHome": "Go to home",
+    "offline": "No internet connection. Check your connection and try again.",
+    "server": "Our server had a problem. Please try again in a moment.",
+    "tooManyRequests": "Too many requests. Please wait a minute and try again.",
+    "sessionExpired": "Your session has ended. Please sign in again.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "toast": {
+    "region": "Notifications",
+    "dismiss": "Dismiss"
   }
 }

@@ -8,7 +8,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      // "prompt": main.tsx shows a "New version available" toast and the person chooses when
+      // to load it, instead of the page being swapped silently (NF-P1-026).
+      registerType: "prompt",
       // We register the SW ourselves in main.tsx via virtual:pwa-register,
       // so the plugin shouldn't also inject its own registration script.
       injectRegister: false,
@@ -35,7 +37,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["*/.{js,css,html,svg,png,ico,webmanifest}"],
+        // The whole built app, so it opens offline and every deploy changes sw.js (which is
+        // how the browser notices a new version).
+        globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest}"],
         navigateFallbackDenylist: [/^\/__\//],
       },
     }),

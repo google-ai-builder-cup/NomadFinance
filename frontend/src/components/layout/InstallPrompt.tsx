@@ -1,46 +1,72 @@
-import { Download, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
-import { useI18n } from "@/hooks/useI18n";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
+import { dismissToast, toast } from "@/hooks/useToast";
+import { canAddToIosHomeScreen } from "@/utils/platform";
 
-const DISMISSED_KEY = "nomadfinance.installPromptDismissed";
+const DISMISSED_AT_KEY = "nomadfinance.installOfferDismissedAt";
+// Asking on every visit is nagging; never asking again loses people who change their mind
+// (and phones are often shared).
+const ASK_AGAIN_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
+// Let the page appear first, so the offer doesn't cover it while it is loading.
+const SHOW_DELAY_MS = 3000;
+const TOAST_ID = "app-install";
 
-/** Banner offering the native install prompt. Renders nothing until Chrome/Edge/Android fires `beforeinstallprompt`, and nothing once the user dismisses it or installs. */
+function recentlyDismissed(): boolean {
+  try {
+    return Date.now() - Number(localStorage.getItem(DISMISSED_AT_KEY)) < ASK_AGAIN_AFTER_MS;
+  } catch {
+    return false;
+  }
+}
+
+function rememberDismissed(): void {
+  try {
+    localStorage.setItem(DISMISSED_AT_KEY, String(Date.now()));
+  } catch {
+    // Storage blocked (private mode): the offer may come back on the next visit.
+  }
+}
+
+/**
+ * Offers to install the app, as a toast on any page, signed in or not. Chrome, Edge and
+ * Android get an Install button (the browser's own dialog); iOS gets Share-menu steps,
+ * because it has no install prompt. Closing the toast means "not now" for two weeks.
+ * Renders nothing itself.
+ */
 export default function InstallPrompt() {
-  const { t } = useI18n();
   const { canInstall, promptInstall } = useInstallPrompt();
-  const [dismissed, setDismissed] = useState(() => localStorage.getItem(DISMISSED_KEY) === "true");
 
-  if (!canInstall || dismissed) {
-    return null;
-  }
+  useEffect(() => {
+    const ios = canAddToIosHomeScreen();
+    if ((!canInstall && !ios) || recentlyDismissed()) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      toast({
+        id: TOAST_ID,
+        messageKey: ios ? "pwa.installIos" : "pwa.installOffer",
+        duration: null,
+        action: ios
+          ? undefined
+          : {
+              labelKey: "pwa.install",
+              onClick: () =>
+                void promptInstall().then((outcome) => {
+                  if (outcome === "dismissed") {
+                    rememberDismissed();
+                  }
+                }),
+            },
+        onDismiss: rememberDismissed,
+      });
+    }, SHOW_DELAY_MS);
+    // Also runs once the app is installed (canInstall turns false): the offer goes away.
+    return () => {
+      window.clearTimeout(timer);
+      dismissToast(TOAST_ID);
+    };
+  }, [canInstall, promptInstall]);
 
-  function dismiss() {
-    localStorage.setItem(DISMISSED_KEY, "true");
-    setDismissed(true);
-  }
-
-  return (
-    <div className="mx-4 mt-4 flex items-center gap-3 rounded-lg border bg-card p-3 text-card-foreground shadow-sm md:mx-8">
-      <Download className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{t("pwa.installTitle")}</p>
-        <p className="text-xs text-muted-foreground">{t("pwa.installDescription")}</p>
-      </div>
-      <Button size="sm" onClick={() => void promptInstall()}>
-        {t("pwa.install")}
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t("pwa.dismiss")}
-        title={t("pwa.dismiss")}
-        onClick={dismiss}
-      >
-        <X className="h-4 w-4" aria-hidden="true" />
-      </Button>
-    </div>
-  );
+  return null;
 }

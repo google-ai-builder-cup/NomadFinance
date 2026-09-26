@@ -107,10 +107,11 @@
     "backToDashboard": "Bumalik sa home"
   },
   "pwa": {
-    "installTitle": "I-install ang NomadFinance",
-    "installDescription": "Idagdag ito sa iyong home screen para sa mas mabilis at offline na access.",
     "install": "I-install",
-    "dismiss": "I-dismiss"
+    "installOffer": "I-install ang NomadFinance: mas mabilis itong bumukas at gumagana kahit offline.",
+    "installIos": "Para i-install ang NomadFinance, pindutin ang Share button, pagkatapos ay piliin ang “Add to Home Screen”.",
+    "updateAvailable": "Handa na ang bagong bersyon ng NomadFinance.",
+    "refresh": "I-refresh"
   },
   "notFound": {
     "title": "Hindi nahanap ang page",
@@ -205,5 +206,19 @@
       "error": "Hindi namin natapos burahin ang account mo. Pakisubukan ulit.",
       "done": "Nabura na ang account at data mo."
     }
+  },
+  "errors": {
+    "boundaryTitle": "May nangyaring mali",
+    "boundaryDescription": "Huminto sa paggana ang pahinang ito. Ligtas ang impormasyong na-save mo. Subukan ulit, o bumalik sa home page.",
+    "goHome": "Pumunta sa home",
+    "offline": "Walang koneksyon sa internet. Suriin ang iyong koneksyon at subukan ulit.",
+    "server": "Nagkaproblema ang aming server. Subukan ulit maya-maya.",
+    "tooManyRequests": "Masyadong maraming request. Maghintay ng isang minuto at subukan ulit.",
+    "sessionExpired": "Natapos na ang iyong session. Mag-sign in ulit.",
+    "generic": "May nangyaring mali. Subukan ulit."
+  },
+  "toast": {
+    "region": "Mga abiso",
+    "dismiss": "I-dismiss"
   }
 }

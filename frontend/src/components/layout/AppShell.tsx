@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
-import InstallPrompt from "@/components/layout/InstallPrompt";
 import Sidebar from "@/components/layout/Sidebar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useI18n } from "@/hooks/useI18n";
@@ -26,7 +25,6 @@ export default function AppShell() {
         <Sidebar />
         {/* The bottom padding keeps the footer clear of the fixed tab bar on phones. */}
         <div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
-          <InstallPrompt />
           <main
             id="main-content"
             tabIndex={-1}

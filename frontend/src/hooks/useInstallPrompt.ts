@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+export type InstallOutcome = "accepted" | "dismissed";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+  userChoice: Promise<{ outcome: InstallOutcome }>;
 }
 
 /**
@@ -11,7 +13,8 @@ interface BeforeInstallPromptEvent extends Event {
  */
 export function useInstallPrompt(): {
   canInstall: boolean;
-  promptInstall: () => Promise<void>;
+  /** Shows the browser's install dialog; resolves to the person's choice (null if unavailable). */
+  promptInstall: () => Promise<InstallOutcome | null>;
 } {
   const [deferredEvent, setDeferredEvent] = useState<BeforeInstallPromptEvent | null>(null);
 
@@ -32,14 +35,15 @@ export function useInstallPrompt(): {
     };
   }, []);
 
-  async function promptInstall() {
+  const promptInstall = useCallback(async () => {
     if (!deferredEvent) {
-      return;
+      return null;
     }
     await deferredEvent.prompt();
-    await deferredEvent.userChoice;
+    const { outcome } = await deferredEvent.userChoice;
     setDeferredEvent(null);
-  }
+    return outcome;
+  }, [deferredEvent]);
 
   return { canInstall: deferredEvent !== null, promptInstall };
 }

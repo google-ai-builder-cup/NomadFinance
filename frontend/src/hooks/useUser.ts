@@ -30,6 +30,8 @@ export function useCompleteOnboarding() {
   return useMutation({
     mutationFn: (answers: OnboardingAnswers) =>
       completeOnboarding(uid, answers, profile.data !== null && profile.data !== undefined),
+    // The onboarding page shows the error next to its Finish button.
+    meta: { inlineError: true },
     // Read back the saved document so the onboarding gate sees the server timestamp.
     onSuccess: () => queryClient.refetchQueries({ queryKey: profileKey(uid) }),
   });
@@ -46,6 +48,8 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: (changes: ProfileChanges) => updateProfile(uid, changes),
+    // Each profile form shows the error under its Save button (SaveStatus).
+    meta: { inlineError: true },
     onSuccess: () => queryClient.refetchQueries({ queryKey: profileKey(uid) }),
   });
 }
