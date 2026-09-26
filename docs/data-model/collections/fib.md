@@ -200,7 +200,7 @@ The result of the weekly recompute (NF-P3-013). There is exactly one document pe
   },
   "overall_score": 83,
   "narrative": { "language": "en", "text": "Example narrative.", "model": "gemini-3.5-flash" },
-  "prompt_versions": { "fib.narrative": 1 },
+  "prompt_versions": { "fib.synthesize_narrative": 1 },
   "computed_at": "2026-09-26T02:00:00Z",
   "schema_version": 1
 }
