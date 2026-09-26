@@ -14,7 +14,14 @@ if os.environ.get("RUN_LIVE_GEMINI") != "1":
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from app.core.rate_limit import reset_rate_limits  # noqa: E402
 from app.main import create_app  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _fresh_rate_limits() -> None:
+    # The limiter keeps counts in process memory; without this, tests would share budgets.
+    reset_rate_limits()
 
 
 @pytest.fixture
