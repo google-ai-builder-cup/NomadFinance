@@ -59,7 +59,7 @@ function run(action: (target: Ready) => void): void {
   });
 }
 
-function track(name: string, params?: Record<string, string>): void {
+function track(name: string, params?: Record<string, string | boolean>): void {
   run(({ analytics, sdk }) => sdk.logEvent(analytics, name, params));
 }
 
@@ -84,6 +84,15 @@ export function trackLogin(method: "google" | "phone"): void {
 
 export function trackOnboardingCompleted(): void {
   track("onboarding_completed");
+}
+
+/**
+ * A page crashed and the error screen was shown. Only the error type and the path are sent:
+ * error messages can quote what the person typed or was shown.
+ */
+export function trackCrash(error: unknown, pathname: string): void {
+  const kind = error instanceof Error ? error.name : typeof error;
+  track("exception", { description: `${kind} at ${pathname}`, fatal: true });
 }
 
 /** Coarse profile facts only: no name, phone, email or uid ever goes to Analytics. */

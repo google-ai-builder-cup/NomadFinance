@@ -107,10 +107,11 @@
     "backToDashboard": "Kembali ke beranda"
   },
   "pwa": {
-    "installTitle": "Instal NomadFinance",
-    "installDescription": "Tambahkan ke layar utama untuk akses yang lebih cepat dan siap offline.",
     "install": "Instal",
-    "dismiss": "Tutup"
+    "installOffer": "Instal NomadFinance: lebih cepat dibuka dan tetap bisa dipakai saat offline.",
+    "installIos": "Untuk menginstal NomadFinance, ketuk tombol Bagikan, lalu pilih “Tambahkan ke Layar Utama”.",
+    "updateAvailable": "Versi baru NomadFinance sudah siap.",
+    "refresh": "Muat ulang"
   },
   "notFound": {
     "title": "Halaman tidak ditemukan",
@@ -205,5 +206,19 @@
       "error": "Akun Anda belum selesai dihapus. Silakan coba lagi.",
       "done": "Akun dan data Anda telah dihapus."
     }
+  },
+  "errors": {
+    "boundaryTitle": "Terjadi kesalahan",
+    "boundaryDescription": "Halaman ini berhenti berfungsi. Informasi yang sudah Anda simpan tetap aman. Coba lagi, atau kembali ke beranda.",
+    "goHome": "Ke beranda",
+    "offline": "Tidak ada koneksi internet. Periksa koneksi Anda dan coba lagi.",
+    "server": "Server kami sedang bermasalah. Silakan coba lagi sebentar lagi.",
+    "tooManyRequests": "Terlalu banyak permintaan. Tunggu satu menit lalu coba lagi.",
+    "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk lagi.",
+    "generic": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "toast": {
+    "region": "Notifikasi",
+    "dismiss": "Tutup"
   }
 }

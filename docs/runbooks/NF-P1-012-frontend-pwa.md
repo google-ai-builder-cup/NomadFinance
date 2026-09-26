@@ -4,6 +4,14 @@
 
 The app is now a real installable PWA: `vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time, and a small custom banner offers the native "Install" prompt on Chrome/Edge/Android. The service worker precaches the built app shell (HTML/JS/CSS/icons) so it loads offline after a first visit, and updates itself silently on the next load (`registerType: 'autoUpdate'`) — there's no "new version available" toast yet, because the toast system (NF-P1-026) doesn't exist.
 
+> **Changed by NF-P1-026 (2026-09-27).** Parts of this page describe the first version:
+> - `globPatterns` was `"*/.{js,...}"`, which matched almost nothing: the live service worker cached only the 7 icon files, so the app did not open offline. It is now `"**/*.{js,...}"` (33 files, about 1.3 MB).
+> - `registerType` is now `"prompt"`: a "New version available [Refresh]" toast replaces the silent `autoUpdate`, and the app checks for a new version every hour.
+> - The install offer is now a toast on **every** page (landing and sign-in too), mounted in `main.tsx`, no longer a banner inside `AppShell`. Closing it hides it for 14 days (`nomadfinance.installOfferDismissedAt`). iOS Safari and Chrome get "Share → Add to Home Screen" steps instead of an Install button.
+> - Firebase Hosting now sends `Cache-Control: no-cache` for everything except `/assets/**` (`frontend/firebase.json`).
+>
+> Details, commands and test results: [`NF-P1-026-frontend-error-boundaries-toasts.md`](NF-P1-026-frontend-error-boundaries-toasts.md).
+
 The manifest, favicons and app icons used here are **placeholders**: a plain "N" monogram on the current shadcn slate-900 theme color (`src/styles/tokens.css`'s `--primary`), generated with a throwaway Python/Pillow script (not committed). NF-P1-024 (brand assets) replaces every file under `public/icons/`, `public/apple-touch-icon.png`, `public/favicon.ico` and `public/favicon.svg` with real artwork — the manifest's `theme_color`/`background_color` should move to real brand colors at the same time.
 
 ## Files
