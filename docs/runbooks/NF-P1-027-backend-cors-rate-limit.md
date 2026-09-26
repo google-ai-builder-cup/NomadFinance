@@ -179,6 +179,7 @@ Signing in with the same test number later creates a new, empty account. Never u
 | Check | Result |
 |---|---|
 | `pytest -q` | 211 passed, 5 skipped (26 new) |
+| `pytest -q` without Google credentials (as on the CI runner) | 211 passed. The first push failed Backend CI with 5 errors: the new tests sent fake tokens to the real Firebase token check, which needs credentials (`DefaultCredentialsError`) even to reject a token; it only passed locally because the laptop has gcloud credentials. The tests now stub `get_current_user` and `get_account_service` like the other API tests. Reproduce CI locally: `GOOGLE_APPLICATION_CREDENTIALS=/nonexistent CLOUDSDK_CONFIG=/tmp/empty python -m pytest -q` (Windows: also set `APPDATA` to an empty folder) |
 | `ruff check .`, `black --check .`, `mypy app` | Pass |
 | `pip install --dry-run -r requirements.txt` | Resolves: 61 packages, `limits` 5.8.0 (+ `deprecated`, `wrapt`) |
 | slowapi 0.1.10 check, before switching | `_find_route_handler` returned `None` for `/api/v1/contracts/extract`: 62 requests, never a 429 |
@@ -202,6 +203,7 @@ Still to verify: step 3 after merge. The Docker image build is left to `backend-
 | App fails at startup: `... is not an origin` | A malformed entry in `CORS_ALLOWED_ORIGINS` (must be `https://host[:port]`) |
 | App fails at startup: `RATE_LIMIT_DEFAULT: couldn't parse` | Use the `limits` notation: `60/minute`, `100/hour`, `60/minute;1000/day` |
 | 429 during local testing | Wait for `Retry-After`, restart the server (counts are in memory), or set `RATE_LIMIT_ENABLED=false` in `backend/.env.local` |
+| Backend CI fails with `DefaultCredentialsError` but tests pass on your laptop | A test reaches real Firebase/Google clients. Stub the dependency (`app.dependency_overrides`) and re-run without credentials (see Verified results) |
 | Tests hit 429 unexpectedly | A test built its own app without the `conftest.py` reset; the limiter is process-wide |
 | Cron run gets 429 | Can't happen for `/api/v1/internal/*`; if a new internal route lives elsewhere, move it under `/api/v1/internal/` |
 | "Delete my account" still missing on the live site | `VITE_API_BASE_URL` variable missing (step 3b) or the site wasn't rebuilt after adding it (re-run "Frontend deploy") |

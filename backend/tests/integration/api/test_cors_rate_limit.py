@@ -5,16 +5,25 @@ import json
 from collections.abc import Iterator
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
 from app.config import Settings, get_settings
 from app.core.rate_limit import TOO_MANY_REQUESTS, rate_limit_key
+from app.dependencies import get_account_service, get_current_user
 from app.main import create_app
+from app.schemas.user import AuthenticatedUser
 
 LOCAL_ORIGIN = "http://localhost:5173"
-# Unauthenticated DELETE /users/me answers 401 without touching Firebase: a cheap counted path.
+# A cheap counted path: with the stubs below it answers 401 at once.
 COUNTED = "/api/v1/users/me"
+
+
+def _reject_every_token() -> AuthenticatedUser:
+    # Stands in for the real token check, which needs Google credentials (none in CI) before
+    # it can even reject a token. The limiter reads the token itself, so it is still tested.
+    raise HTTPException(401, "Invalid authentication token")
 
 
 def _fake_token(sub: str) -> str:
@@ -38,7 +47,11 @@ def make_client(monkeypatch: pytest.MonkeyPatch) -> Iterator[object]:
         for name, value in env.items():
             monkeypatch.setenv(name, value)
         get_settings.cache_clear()
-        return TestClient(create_app())
+        app = create_app()
+        app.dependency_overrides[get_current_user] = _reject_every_token
+        # DELETE /users/me would otherwise build a Firestore client (credentials again).
+        app.dependency_overrides[get_account_service] = lambda: None
+        return TestClient(app)
 
     yield build
     get_settings.cache_clear()
