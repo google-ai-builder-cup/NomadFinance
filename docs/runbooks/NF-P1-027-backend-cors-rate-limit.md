@@ -205,6 +205,7 @@ Production, after merge (2026-09-27, revision `nomadfinance-api-00008-wvf`, imag
 | Cron endpoint | Never 429 (411 for a bodyless test POST, from Google's front end) |
 | 30 MB upload | 413 `The request is larger than 10 MB.` |
 | Site bundle | Contains the API URL (`VITE_API_BASE_URL` variable picked up) |
+| Delete a throwaway account on the live site (step 3e) | Done by Devam: the Delete section showed on Profile and the account was deleted end to end |
 
 Two things learned in production:
 - **The first check after merge still hit the old revision.** Revision 00008 was created at 20:15:38 UTC and the check ran in that same minute. Wait until "Backend deploy" is green and `gcloud run services describe` shows the new revision serving 100%, then check.
