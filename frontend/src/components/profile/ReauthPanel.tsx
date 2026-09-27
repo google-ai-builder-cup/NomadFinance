@@ -1,6 +1,7 @@
 import type { ConfirmationResult, RecaptchaVerifier } from "firebase/auth";
 import { Loader2 } from "lucide-react";
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { fieldClass } from "@/components/profile/styles";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ export interface ReauthPanelProps {
 export default function ReauthPanel({ onConfirmed, onCancel }: ReauthPanelProps) {
   const { t } = useI18n();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const method = signInMethod();
   const phone = user?.phoneNumber ?? "";
 
@@ -69,6 +71,13 @@ export default function ReauthPanel({ onConfirmed, onCancel }: ReauthPanelProps)
     recaptchaHostRef.current?.replaceChildren(element);
     verifierRef.current = createRecaptchaVerifier(element);
     return verifierRef.current;
+  }
+
+  // Without this, ProtectedRoute would catch the signed-out state and redirect to /sign-in
+  // instead of the public landing page.
+  async function handleSignOut() {
+    await signOut();
+    navigate("/", { replace: true });
   }
 
   function sendCode() {
@@ -155,7 +164,12 @@ export default function ReauthPanel({ onConfirmed, onCancel }: ReauthPanelProps)
       )}
 
       {method === "other" && (
-        <Button variant="outline" size="lg" className="h-11 w-full" onClick={() => void signOut()}>
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-11 w-full"
+          onClick={() => void handleSignOut()}
+        >
           {t("auth.signOut")}
         </Button>
       )}

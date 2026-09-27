@@ -96,6 +96,13 @@ export default function Onboarding() {
     }
   }
 
+  // Without this, ProtectedRoute would catch the signed-out state and redirect to /sign-in
+  // instead of the public landing page.
+  async function handleSignOut() {
+    await signOut();
+    navigate("/", { replace: true });
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!isLast) {
@@ -124,7 +131,7 @@ export default function Onboarding() {
             size="icon"
             aria-label={t("auth.signOut")}
             title={t("auth.signOut")}
-            onClick={() => void signOut()}
+            onClick={() => void handleSignOut()}
           >
             <LogOut className="h-4 w-4" aria-hidden="true" />
           </Button>
