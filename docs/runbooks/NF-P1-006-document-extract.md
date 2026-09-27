@@ -2,6 +2,8 @@
 
 ## Summary
 
+> **Changed by NF-P2-001 (2026-09-27).** The endpoint now returns the document's structure too (`blocks`, `title`, `legibility`) using prompt `contract/extract.v2`; `extract_text()` / `ExtractedText` became `extract_contract()` / `ExtractedContract`, and `extract.v1.yaml` was removed. See `NF-P2-001-contract-text-extraction.md`.
+
 `POST /api/v1/contracts/extract` is the first real endpoint and the base of Contract Shield. A signed-in user uploads a contract as a PDF or a phone photo. The API checks the Firebase token, rejects empty, oversized (over 10 MB) and unsupported files, and detects the file type from its **bytes**, never from the filename or `Content-Type`. It then sends the file to Gemini's **extraction tier** (`gemini-3.5-flash-lite`) with a versioned prompt (`app/prompts/contract/extract.v1.yaml`) and returns the text in its **original language**, line by line, with a blank line between pages. Files with no readable document (a selfie, a landscape) get a 422. Nothing is stored: the file lives in memory for the request only. This task also adds the app-wide mapping from Gemini failures to clean HTTP errors (502/503/504/500, never a stack trace) and a minimal prompt loader that NF-P1-029 builds on. The task text said `/documents/extract`; it lives under `/contracts/` to use the scaffolded `contracts.py` stub (decided 2026-09-24).
 
 ## Files

@@ -10,7 +10,7 @@ from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.schemas.contract import ContractExtractResponse
 from app.schemas.user import AuthenticatedUser
-from app.services.contract.extractor import NotADocumentError, extract_text
+from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.utils.validators import sniff_document_mime_type
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
@@ -32,7 +32,7 @@ _ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     "/extract",
     response_model=ContractExtractResponse,
     responses=_ERROR_RESPONSES,
-    summary="Extract the text of an uploaded contract",
+    summary="Extract the text and structure of an uploaded contract",
     dependencies=[Depends(limit_ai_calls)],
 )
 async def extract_contract_text(
@@ -41,9 +41,11 @@ async def extract_contract_text(
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> ContractExtractResponse:
-    """Transcribe a contract PDF or photo into text in its original language.
+    """Transcribe a contract PDF or photo in its original language, clause by clause.
 
-    The file is only held in memory for this request; nothing is stored.
+    Returns the document as ordered blocks (headings, numbered clauses, list items, tables)
+    and as plain text. A `legibility` of "poor" means the photo should be retaken. The file
+    is only held in memory for this request; nothing is stored.
     """
     # Read one byte past the limit so an oversized file is detected without loading all of it.
     data = await file.read(settings.upload_max_bytes + 1)
@@ -63,7 +65,7 @@ async def extract_contract_text(
         )
 
     try:
-        extracted = await extract_text(data, mime_type, gemini)
+        extracted, text = await extract_contract(data, mime_type, gemini)
     except NotADocumentError as exc:
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
@@ -75,5 +77,8 @@ async def extract_contract_text(
         mime_type=mime_type,
         size_bytes=len(data),
         page_count=extracted.page_count,
-        text=extracted.text,
+        title=extracted.title,
+        legibility=extracted.legibility,
+        text=text,
+        blocks=extracted.blocks,
     )

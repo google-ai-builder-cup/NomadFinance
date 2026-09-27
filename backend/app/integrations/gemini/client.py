@@ -69,6 +69,7 @@ class GeminiClient:
         response_model: type[ResponseT],
         system_instruction: str | None = None,
         temperature: float | None = None,
+        timeout_seconds: float | None = None,
     ) -> ResponseT:
         """Run one Gemini call and return its output validated as `response_model`.
 
@@ -79,6 +80,8 @@ class GeminiClient:
             response_model: Pydantic model used as the response schema and for validation.
             system_instruction: System prompt, loaded from the prompt library by the caller.
             temperature: Sampling temperature; None keeps the model default.
+            timeout_seconds: Per-attempt timeout; None uses GEMINI_TIMEOUT_SECONDS. Calls
+                whose output grows with the input (a long contract) need more.
 
         Returns:
             The validated `response_model` instance.
@@ -109,7 +112,7 @@ class GeminiClient:
 
         started = time.perf_counter()
         response: types.GenerateContentResponse = await retrying(
-            self._call, model, contents, config
+            self._call, model, contents, config, timeout_seconds
         )
         latency_ms = round((time.perf_counter() - started) * 1000)
 
@@ -128,8 +131,9 @@ class GeminiClient:
         model: str,
         contents: types.ContentListUnion | types.ContentListUnionDict,
         config: types.GenerateContentConfig,
+        timeout_seconds: float | None = None,
     ) -> types.GenerateContentResponse:
-        timeout = self._settings.gemini_timeout_seconds
+        timeout = timeout_seconds or self._settings.gemini_timeout_seconds
         try:
             async with asyncio.timeout(timeout):
                 return await self._sdk.aio.models.generate_content(

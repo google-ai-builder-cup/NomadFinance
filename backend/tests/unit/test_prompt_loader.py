@@ -14,7 +14,7 @@ PROMPTS_DIR = Path(loader.__file__).resolve().parent
 # Every pipeline step with a Gemini call (design doc section 5, ADR-002). A new step or
 # version adds a line here.
 EXPECTED_PROMPTS = {
-    "contract/extract.v1",
+    "contract/extract.v2",
     "contract/detect.v1",
     "contract/compare.v1",
     "contract/translate.v1",
@@ -87,10 +87,11 @@ def test_every_prompt_renders_with_its_declared_variables(prompt_id: str) -> Non
 
 
 def test_loads_contract_extract_prompt() -> None:
-    prompt = load_prompt("contract", "extract", 1)
+    prompt = load_prompt("contract", "extract", 2)
 
-    assert prompt.id == "contract/extract.v1"
+    assert prompt.id == "contract/extract.v2"
     assert "original language" in prompt.system
+    assert '" | "' in prompt.system  # table rows format promised by ContractBlock.text
     assert prompt.variables == ()
     assert prompt.render_user() == prompt.user
 

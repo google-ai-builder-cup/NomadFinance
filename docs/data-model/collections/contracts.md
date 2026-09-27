@@ -19,7 +19,7 @@ users/{uid}/contracts/{contractId}/reports/{lang}   heavy: the full report in on
 | `filename` | string | no | Name sent by the client |
 | `mime_type` | string | yes | Detected from the file bytes (`application/pdf`, `image/jpeg`, ...) |
 | `size_bytes` | number | yes | |
-| `page_count` | number | no | From the extraction step (`ExtractedText.page_count`) |
+| `page_count` | number | no | From the extraction step (`ExtractedContract.page_count`, NF-P2-001) |
 | `storage_path` | string | no | Cloud Storage path of the uploaded file. Absent when the file was not kept. |
 | `content_hash` | string | yes | SHA-256 (hex) of the file bytes. Part of the cache key. |
 | `detected` | map | after step 2 | `language`, `host_country`, `contract_type` (NF-P2-002) |
