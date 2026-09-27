@@ -1,5 +1,5 @@
 import { LogOut, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,14 @@ import { signOut } from "@/services/authService";
 export default function Header() {
   const { user } = useAuth();
   const { t } = useI18n();
+  const navigate = useNavigate();
+
+  // Without this, ProtectedRoute would catch the signed-out state and redirect to /sign-in
+  // instead of the public landing page.
+  async function handleSignOut() {
+    await signOut();
+    navigate("/", { replace: true });
+  }
   // Phone-only accounts have no name or email, so the number is the only identifier.
   const identity = user?.displayName ?? user?.email ?? user?.phoneNumber ?? "";
 
@@ -40,7 +48,7 @@ export default function Header() {
             size="icon"
             aria-label={t("auth.signOut")}
             title={t("auth.signOut")}
-            onClick={() => void signOut()}
+            onClick={() => void handleSignOut()}
           >
             <LogOut className="h-4 w-4" aria-hidden="true" />
           </Button>
