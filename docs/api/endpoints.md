@@ -98,12 +98,13 @@ curl -s http://127.0.0.1:8080/health
 
 ## `POST /api/v1/contracts/extract`
 
-Transcribes an uploaded contract (PDF or phone photo) into text in its **original language**, using Gemini's extraction tier (`gemini-3.5-flash-lite` by default). First building block of Contract Shield. The file is held in memory for the request only; nothing is stored.
+Transcribes an uploaded contract (PDF or phone photo) in its **original language**, clause by clause, using Gemini's extraction tier (`gemini-3.5-flash-lite` by default, prompt `contract/extract.v2`). Step 1 of Contract Shield (NF-P1-006, structure added in NF-P2-001). The file is held in memory for the request only; nothing is stored.
 
 - **Auth:** `Authorization: Bearer <firebase-id-token>` required
 - **Request:** `multipart/form-data` with one field `file`
   - Accepted: PDF, PNG, JPEG, WebP, HEIC/HEIF. The type is detected from the file's bytes; the filename and `Content-Type` are ignored.
   - Max size: 10 MB (`UPLOAD_MAX_BYTES`)
+- **Time:** usually 3 to 5 s for a photo or a 2-page PDF, about 2.6 s per PDF page (15 pages: 39 s). Gemini sometimes hangs or slows down (seen: 76 s for 2 pages); the client retries after 30 s (photos) or 90 s (PDFs), up to 3 attempts, then answers 504. Show progress in the UI.
 - **Response `200`:** `ContractExtractResponse` (`app/schemas/contract.py`)
 
 | Field | Type | Description |
@@ -112,7 +113,12 @@ Transcribes an uploaded contract (PDF or phone photo) into text in its **origina
 | `mime_type` | string | Type detected from the file bytes |
 | `size_bytes` | integer | Size of the uploaded file |
 | `page_count` | integer | Pages in the PDF; 1 for a photo |
-| `text` | string | Full transcription, original language, one line per paragraph or list item, blank line between pages |
+| `title` | string or null | Document title as written |
+| `legibility` | `good` / `partial` / `poor` | `partial`: some words are `[illegible]`; `poor`: much of the text could not be read, so ask for a clearer photo before analysing |
+| `text` | string | Whole document in its original language, built from `blocks`: each block's number then its text, blocks separated by a blank line |
+| `blocks` | array | The document in reading order, see below |
+
+A block has `page` (from 1), `kind` (`heading`, `clause`, `paragraph`, `list_item`, `table`, `signature`, `other`), `number` (as printed: `"3"`, `"3.1"`, `"(a)"`, or null) and `text` (exact words, without the number; a table is one row per line, cells separated by ` | `, header row first).
 
 Example (bash; in PowerShell use `curl.exe`):
 
@@ -120,14 +126,39 @@ Example (bash; in PowerShell use `curl.exe`):
 curl -s -H "Authorization: Bearer $TOKEN" -F "file=@tests/fixtures/contracts/sample_contract_sg.pdf" http://127.0.0.1:8080/api/v1/contracts/extract
 ```
 
+Real output, shortened:
+
 ```json
 {
   "filename": "sample_contract_sg.pdf",
   "mime_type": "application/pdf",
-  "size_bytes": 1881,
+  "size_bytes": 1924,
   "page_count": 2,
-  "text": "STANDARD EMPLOYMENT CONTRACT - FOREIGN DOMESTIC WORKER\nRepublic of Singapore\n\nEmployer: Tan Wei Ming, ...\n2. Monthly salary: SGD 650, paid on the last day of each month.\n..."
+  "title": "STANDARD EMPLOYMENT CONTRACT - FOREIGN DOMESTIC WORKER",
+  "legibility": "good",
+  "text": "STANDARD EMPLOYMENT CONTRACT - FOREIGN DOMESTIC WORKER
+
+Republic of Singapore
+
+Employer: Tan Wei Ming, ...
+
+1 Duration: 24 months from the date of arrival in Singapore.
+
+...",
+  "blocks": [
+    { "page": 1, "kind": "heading", "number": null, "text": "STANDARD EMPLOYMENT CONTRACT - FOREIGN DOMESTIC WORKER" },
+    { "page": 1, "kind": "paragraph", "number": null, "text": "Republic of Singapore" },
+    { "page": 1, "kind": "clause", "number": "1", "text": "Duration: 24 months from the date of arrival in Singapore." }
+  ]
 }
+```
+
+A table block, from a live run:
+
+```json
+{ "page": 4, "kind": "table", "number": null, "text": "Item | Amount | Paid by
+Placement fee | SGD 2,400 | Worker
+Medical examination | SGD 120 | Employer" }
 ```
 
 - **Errors:**

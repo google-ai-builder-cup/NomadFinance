@@ -171,6 +171,20 @@ async def test_times_out_each_attempt_then_gives_up() -> None:
     assert len(fake.calls) == 2
 
 
+async def test_per_call_timeout_overrides_the_default() -> None:
+    # Default 30 s would wait out the 5 s hang; the call's own 0.01 s must win.
+    client, _ = make_client(["hang"], gemini_max_attempts=1)
+
+    with pytest.raises(GeminiTimeoutError, match="within 0.01s"):
+        await client.generate_structured(
+            operation="test.clause",
+            tier=ModelTier.REASONING,
+            contents="Analyse this clause",
+            response_model=Clause,
+            timeout_seconds=0.01,
+        )
+
+
 async def test_schema_mismatch_raises_response_error_without_retry() -> None:
     client, fake = make_client([json_response('{"title": "Overtime"}'), OK])
 

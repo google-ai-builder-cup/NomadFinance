@@ -19,23 +19,33 @@ from app.integrations.gemini import (
     get_gemini_client,
 )
 from app.main import create_app
-from app.schemas.contract import ExtractedText
+from app.schemas.contract import ContractBlock, ExtractedContract
 from app.schemas.user import AuthenticatedUser
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "contracts"
 URL = "/api/v1/contracts/extract"
 
 
+SAMPLE = ExtractedContract(
+    is_document=True,
+    page_count=2,
+    title="Employment Contract",
+    legibility="partial",
+    blocks=[
+        ContractBlock(page=1, kind="heading", number=None, text="Employment Contract"),
+        ContractBlock(page=2, kind="clause", number="2.", text="Monthly salary: SGD 650"),
+    ],
+)
+
+
 class FakeGemini:
     """Replaces the Gemini client: returns one preset result or raises one preset error."""
 
     def __init__(self) -> None:
-        self.outcome: ExtractedText | Exception = ExtractedText(
-            is_document=True, page_count=2, text="Monthly salary: SGD 650"
-        )
+        self.outcome: ExtractedContract | Exception = SAMPLE
         self.calls: list[dict[str, Any]] = []
 
-    async def generate_structured(self, **kwargs: Any) -> ExtractedText:
+    async def generate_structured(self, **kwargs: Any) -> ExtractedContract:
         self.calls.append(kwargs)
         if isinstance(self.outcome, Exception):
             raise self.outcome
@@ -66,7 +76,7 @@ def upload(api: TestClient, name: str, data: bytes | None = None, content_type: 
     return api.post(URL, files={"file": (name, body, content_type or "application/octet-stream")})
 
 
-def test_pdf_upload_returns_extracted_text(api: TestClient, fake_gemini: FakeGemini) -> None:
+def test_pdf_upload_returns_text_and_structure(api: TestClient, fake_gemini: FakeGemini) -> None:
     response = upload(api, "sample_contract_sg.pdf", content_type="application/pdf")
 
     assert response.status_code == 200
@@ -76,7 +86,13 @@ def test_pdf_upload_returns_extracted_text(api: TestClient, fake_gemini: FakeGem
         "mime_type": "application/pdf",
         "size_bytes": (FIXTURES / "sample_contract_sg.pdf").stat().st_size,
         "page_count": 2,
-        "text": "Monthly salary: SGD 650",
+        "title": "Employment Contract",
+        "legibility": "partial",
+        "text": "Employment Contract\n\n2. Monthly salary: SGD 650",
+        "blocks": [
+            {"page": 1, "kind": "heading", "number": None, "text": "Employment Contract"},
+            {"page": 2, "kind": "clause", "number": "2.", "text": "Monthly salary: SGD 650"},
+        ],
     }
     assert fake_gemini.calls[0]["contents"][0].inline_data.mime_type == "application/pdf"
 
@@ -138,7 +154,7 @@ def test_unsupported_file_type_is_rejected(
 
 
 def test_file_without_document_returns_422(api: TestClient, fake_gemini: FakeGemini) -> None:
-    fake_gemini.outcome = ExtractedText(is_document=False, page_count=1, text="")
+    fake_gemini.outcome = SAMPLE.model_copy(update={"is_document": False, "blocks": []})
 
     response = upload(api, "not_a_document.jpg")
 
@@ -152,7 +168,7 @@ def test_file_without_document_returns_422(api: TestClient, fake_gemini: FakeGem
         (GeminiRateLimitError("gemini-x: 429 RESOURCE_EXHAUSTED quota"), 503),
         (GeminiUnavailableError("gemini-x: 503 UNAVAILABLE high demand"), 503),
         (GeminiTimeoutError("gemini-x did not respond within 30s"), 504),
-        (GeminiResponseError("gemini-x output did not match ExtractedText"), 502),
+        (GeminiResponseError("gemini-x output did not match ExtractedContract"), 502),
         (GeminiRequestError("gemini-x: 400 INVALID_ARGUMENT bad"), 500),
     ],
 )

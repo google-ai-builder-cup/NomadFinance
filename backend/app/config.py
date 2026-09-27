@@ -62,6 +62,10 @@ class Settings(BaseSettings):
     gemini_model_extraction: str = "gemini-3.5-flash-lite"
     gemini_model_classification: str = "gemini-3.1-flash-lite"
     gemini_timeout_seconds: float = Field(default=30.0, gt=0)
+    # PDF contract extraction writes out the whole document: about 2.6 s per page (NF-P2-001),
+    # so a 20-page PDF needs about 55 s. 3 attempts x 90 s + backoff stay under Cloud Run's
+    # 300 s request limit. Photos (one page) keep gemini_timeout_seconds.
+    gemini_extraction_timeout_seconds: float = Field(default=90.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
     # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted
