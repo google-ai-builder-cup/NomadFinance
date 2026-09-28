@@ -30,6 +30,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/contracts/{contract_id}/analyze` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/contracts/{contract_id}/reports/{language}` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
+| POST | `/api/v1/remittance/compare` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-014 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -573,6 +574,103 @@ A failed analysis can be run again with the same call. What was stored is reused
 - **Errors:** 404 no such contract, 409 not analysed yet (or stale: analyze again), 502 incomplete translation, 503/504.
 
 ---
+
+## `POST /api/v1/remittance/compare`
+
+Compares every surveyed way to send money along one corridor, for the amount the worker chooses: what each service costs, and how much the recipient receives, best first. Steps 1 to 6 of the Remittance X-Ray pipeline (NF-P2-014, `docs/pipelines/remittance-xray.md`). No Gemini call, so only the API-wide budget applies. Nothing is stored.
+
+The prices are the World Bank's Remittance Prices Worldwide survey of early 2025, not a live price list. The mid-market exchange rate is the cron's latest (`rates_cache`). The response carries the survey period and the attribution text the World Bank requires wherever the prices are shown.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `corridor_id` | `SG-PH` / `SG-IN` / `AU-IN` / `MY-ID` / `JP-PH` / `AU-PH` | Sending country and receiving country |
+| `amount` | number, greater than 0 | Amount to send, **in the corridor's sending currency** (SGD for `SG-PH`) |
+
+- **Amount limits:** from a quarter of the smaller survey amount to ten times the larger one (about USD 50 to 5,000): `SG-PH` 65 to 6,450 SGD, `JP-PH` 4,250 to 420,000 JPY. Outside them the answer is a `422` that states the limits.
+- **Response `200`:** `RemittanceComparison` (`app/schemas/remittance_compare.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `corridor_id`, `send_amount`, `send_currency`, `receive_currency` | | The request, with the two currencies |
+| `rate` | object | `pair`, `rate` (units received per 1 sent), `source` (`live` or `survey`), `provider`, `rate_date`, `fetched_at`, `stale` |
+| `survey` | object | `period`, `surveyed_from`, `surveyed_to`, `source_name`, `source_url`, `attribution` |
+| `providers` | array | Ranked services first, then the ones that cannot be compared |
+| `summary` | object | `comparable_count`, `best_rpw_id`, `best_firm`, `best_recipient_receives`, `worst_rpw_id`, `worst_firm`, `worst_recipient_receives`, `extra_vs_worst`, `mid_market_receives`, `median_total_cost_pct` |
+
+Each entry of `providers`:
+
+| Field | Description |
+|---|---|
+| `rpw_id` | The service's id. A firm appears once per service (Wise on the web, at an agent, ...), so `firm` is not unique: use `rpw_id` as the key |
+| `firm`, `firm_type`, `payment_instrument`, `access_point`, `pickup_method`, `network_coverage`, `note` | What the World Bank recorded |
+| `speed`, `speed_order` | Delivery time, and 0 (fastest) to 5 to sort by |
+| `rank` | 1 = the recipient receives most. `null` when `comparable` is false |
+| `comparable` | False for services that pay out in another currency (USD): 6 of 221, in SG-PH, SG-IN and JP-PH. They are listed last and not ranked |
+| `estimated` | True when the amount is outside the two survey amounts, so the fee and rate margin are the nearest survey point's |
+| `fee`, `rate_cost`, `total_cost` | Flat fee, the rate markup as an amount, and their sum, in the sending currency |
+| `fx_margin_pct`, `total_cost_pct` | The markup, and the total cost as a percentage of the amount sent |
+| `recipient_receives` | In the receiving currency; `null` when not comparable |
+| `lost_to_costs` | Mid-market amount minus `recipient_receives`. Negative for the few services the survey found cheaper than mid-market |
+| `less_than_best` | What the best service gives the recipient over this one; 0 for rank 1 |
+
+`stale` on `rate` is true when the cached rate is older than 6 hours, or when there is none and the survey's own median rate was used (`source: "survey"`): the app should say the rate may be out of date. All amounts are rounded to two decimals (the rate to six).
+
+Example: 500 SGD to the Philippines, with a live rate of 43.2 (abridged: 39 services in the real answer).
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"corridor_id": "SG-PH", "amount": 500}' \
+  http://127.0.0.1:8080/api/v1/remittance/compare
+```
+
+```json
+{
+  "corridor_id": "SG-PH",
+  "send_amount": 500.0,
+  "send_currency": "SGD",
+  "receive_currency": "PHP",
+  "rate": {
+    "pair": "SGD_PHP", "rate": 43.2, "source": "live", "provider": "frankfurter",
+    "rate_date": "2026-09-28", "fetched_at": "2026-09-28T11:40:00Z", "stale": false
+  },
+  "survey": {
+    "period": "2025_1Q", "surveyed_from": "2025-02-05", "surveyed_to": "2025-02-28",
+    "source_name": "World Bank Remittance Prices Worldwide",
+    "source_url": "http://remittanceprices.worldbank.org",
+    "attribution": "The World Bank, Remittance Prices Worldwide, available at http://remittanceprices.worldbank.org"
+  },
+  "providers": [
+    {
+      "rpw_id": 521250759, "firm": "InstaReM", "firm_type": "Money Transfer Operator",
+      "payment_instrument": "Bank account transfer", "access_point": "Internet",
+      "pickup_method": "Bank account", "speed": "Same day", "speed_order": 1,
+      "network_coverage": "Medium", "note": null, "payout_currency": "PHP",
+      "comparable": true, "rank": 1, "estimated": false,
+      "fee": 3.3, "fx_margin_pct": 0.07, "rate_cost": 0.35, "total_cost": 3.65,
+      "total_cost_pct": 0.73, "recipient_receives": 21442.17, "lost_to_costs": 157.83,
+      "less_than_best": 0.0
+    }
+  ],
+  "summary": {
+    "comparable_count": 38, "best_firm": "InstaReM", "best_recipient_receives": 21442.17,
+    "worst_firm": "Maybank", "worst_recipient_receives": 18874.08, "extra_vs_worst": 2568.09,
+    "mid_market_receives": 21600.0, "median_total_cost_pct": 1.74
+  }
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No prices are available yet for <corridor>.` | The corridor is not loaded in Firestore (data-scripts loader, NF-P1-016), or none of its services can be compared |
+| 422 | `Enter an amount between 65.00 and 6,450.00 SGD.` | The amount is outside the limits of that corridor |
+| 422 | FastAPI validation list | Missing or unknown `corridor_id`, or an amount that is missing, not a number, zero, negative, `NaN` or infinite |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ## `POST /api/v1/internal/refresh-rates` (internal)
 
