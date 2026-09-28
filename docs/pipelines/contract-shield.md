@@ -179,10 +179,27 @@ POST /contracts/{id}/reports/{language}              report_store.ensure_report
   stored and current → return it; else translate reports/en, store, return
 ```
 
-- **Progress:** the contract's `step` changes as each step starts. The app shows it by listening to the document in Firestore (NF-P2-010).
+- **Progress:** the contract's `step` changes as each step starts. The app shows it by listening to the document in Firestore (NF-P2-010), see below.
 - **Cloud Run:** everything runs inside the request, because Cloud Run gives CPU only to open requests. The request timeout is 900 s (`scripts/deploy_manual.sh`); a normal analysis takes 30 s to 2 minutes.
 - **Cache key:** `content_hash` + `law_version` + `prompt_versions`, and per report its language (`docs/data-model/versioning.md`). Per user on purpose: one worker's analysis is never served to another.
 - **Account deletion** (NF-P1-023) already removes `users/{uid}` with all contracts, extractions and reports.
+
+## How the app shows progress (NF-P2-010)
+
+The upload page (`pages/contract/ContractUpload.tsx`) follows `users/{uid}/contracts/{id}` with `onSnapshot` from the moment the upload returns, and shows five steps with a report skeleton under them (`components/contract/PipelineProgress.tsx`, `ReportSkeleton.tsx`; the logic is in `utils/pipelineProgress.ts`).
+
+| Screen step | While |
+|---|---|
+| 1 Reading your contract | the upload request runs (step 1, `extract`) |
+| 2 Finding where you work | `detect`, and before this run's claim |
+| 3 Looking up the labor law | `law` |
+| 4 Checking every clause | `compare` |
+| 5 Preparing your report | `complaint`, `translate` |
+
+- **This run versus the last one.** A re-upload of the same file reuses the contract, so its document can still say `completed` or `failed` from last time. Until the page sees this run's `status: processing` (the claim), it shows step 2 running and ignores that old state. A cache hit never writes `processing`; its result comes from the HTTP answer.
+- **Done** = the HTTP answer, or a `completed` document seen after this run's claim (the phone lost the answer).
+- **Failed** = `error: {step, code}` on the document. The page shows a message per code and "Try again" (analyze again, no upload) unless the code is `poor_legibility`, `not_employment_contract`, `no_law_data` or `no_terms`. With no stored error (the upload failed, or the network), the HTTP status gives the message: 503 = AI busy, 504 = AI too slow. A failed upload goes back to the form with the file kept.
+- **Slow step:** after 45 s on one step the page adds "Still working…" (D-54).
 
 ## E2E testing (NF-P2-008)
 

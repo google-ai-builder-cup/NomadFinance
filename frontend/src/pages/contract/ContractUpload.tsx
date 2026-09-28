@@ -1,17 +1,31 @@
 import { type FormEvent, useState } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PipelineProgress from "@/components/contract/PipelineProgress";
+import ReportSkeleton from "@/components/contract/ReportSkeleton";
 import UploadDropzone from "@/components/contract/UploadDropzone";
 import { Button } from "@/components/ui/button";
-import { useUploadAndAnalyzeContract } from "@/hooks/useContract";
+import {
+  useContractProgress,
+  useRetryAnalysis,
+  useUploadAndAnalyzeContract,
+} from "@/hooks/useContract";
 import { useI18n } from "@/hooks/useI18n";
 import { useUserProfile } from "@/hooks/useUser";
 import { trackContractAnalyzed } from "@/lib/analytics";
 import i18n from "@/lib/i18n";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 import { cn } from "@/lib/utils";
-import { errorMessageKey } from "@/utils/errors";
+import type { AnalyzeRequest } from "@/types/contract";
 import { countryName } from "@/utils/format";
+import {
+  analysisFromDoc,
+  canRetry,
+  failureMessageKey,
+  type Phase,
+  progressView,
+  requestFailureKey,
+} from "@/utils/pipelineProgress";
 import { HOST_COUNTRIES, type HostCountry, isLanguageCode, type LanguageCode } from "@/types/enums";
 
 const fieldClass =
@@ -28,10 +42,27 @@ export default function ContractUpload() {
   const { t } = useI18n();
   const profile = useUserProfile();
   const upload = useUploadAndAnalyzeContract();
+  const retry = useRetryAnalysis();
+  // The choices the running or failed check was started with, reused by "Try again".
+  const [submitted, setSubmitted] = useState<AnalyzeRequest | null>(null);
+  // A new progress card for each run, so nothing (a step's stall hint) carries over from the last.
+  const [attempt, setAttempt] = useState(0);
   const [file, setFile] = useState<File | null>(null);
   const [hostCountry, setHostCountry] = useState<HostCountry | null>(null);
   const [reportLanguage, setReportLanguage] = useState<LanguageCode | null>(null);
   const [poorLegibility, setPoorLegibility] = useState(false);
+  const contractId = upload.contractId;
+  const working = upload.isPending || retry.isPending;
+  // The analysis stopped after the upload: the steps show where, with a way to try again.
+  const stopped = !working && contractId !== null && (upload.isError || retry.isError);
+  const progress = useContractProgress(working || stopped ? contractId : null);
+  // The attempt the backend was seen analysing. Until then a `completed` document is the last
+  // check of the same file (a re-upload reuses the contract), not this run's answer.
+  const [seenAttempt, setSeenAttempt] = useState<number | null>(null);
+  if (progress?.status === "processing" && seenAttempt !== attempt) {
+    setSeenAttempt(attempt);
+  }
+  const seenThisRun = seenAttempt === attempt;
 
   if (profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -54,7 +85,20 @@ export default function ContractUpload() {
   function resetForAnotherContract() {
     setFile(null);
     setPoorLegibility(false);
+    setSubmitted(null);
     upload.reset();
+    retry.reset();
+  }
+
+  function retryAnalysis() {
+    if (contractId === null || submitted === null) {
+      return;
+    }
+    setAttempt((count) => count + 1);
+    retry.mutate(
+      { contractId, choices: submitted },
+      { onSuccess: (analysis) => trackContractAnalyzed(analysis.host_country) }
+    );
   }
 
   function handleSubmit(event: FormEvent) {
@@ -63,11 +107,15 @@ export default function ContractUpload() {
       return;
     }
     setPoorLegibility(false);
+    const choices = {
+      host_country: effectiveHostCountry,
+      report_language: effectiveReportLanguage,
+    };
+    setSubmitted(choices);
+    setAttempt((count) => count + 1);
+    retry.reset();
     upload.mutate(
-      {
-        file,
-        choices: { host_country: effectiveHostCountry, report_language: effectiveReportLanguage },
-      },
+      { file, choices },
       {
         onSuccess: (result) => {
           if (result.analysis === null) {
@@ -81,7 +129,13 @@ export default function ContractUpload() {
     );
   }
 
-  const result = upload.data?.analysis ?? null;
+  const result =
+    retry.data ??
+    upload.data?.analysis ??
+    // The server finished but the phone lost the answer (mobile data): read it from the document.
+    (contractId !== null && progress !== null && seenThisRun
+      ? analysisFromDoc(contractId, progress, effectiveReportLanguage)
+      : null);
 
   if (result) {
     return (
@@ -128,6 +182,40 @@ export default function ContractUpload() {
         <Button className="h-11 w-full" variant="outline" onClick={resetForAnotherContract}>
           {t("contract.result.analyzeAnother")}
         </Button>
+      </div>
+    );
+  }
+
+  if (working || stopped) {
+    const phase: Phase = working ? (contractId === null ? "uploading" : "analyzing") : "failed";
+    const view = progressView(phase, progress, seenThisRun);
+    const failureKey = stopped
+      ? view.failedCode
+        ? failureMessageKey(view.failedCode)
+        : requestFailureKey(retry.error ?? upload.error)
+      : null;
+    return (
+      <div className="mx-auto max-w-lg space-y-6">
+        <header className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">{t("contract.upload.title")}</h1>
+        </header>
+        <PipelineProgress
+          key={attempt}
+          states={view.states}
+          current={view.current}
+          failureKey={failureKey}
+          actions={
+            <>
+              {canRetry(view.failedCode) && (
+                <Button onClick={retryAnalysis}>{t("common.retry")}</Button>
+              )}
+              <Button variant="outline" onClick={resetForAnotherContract}>
+                {t("contract.result.analyzeAnother")}
+              </Button>
+            </>
+          }
+        />
+        {working && <ReportSkeleton />}
       </div>
     );
   }
@@ -198,13 +286,9 @@ export default function ContractUpload() {
           </select>
         </div>
 
-        {upload.isPending && (
-          <LoadingSpinner label={t("contract.upload.analyzing")} className="py-2" />
-        )}
-
         {upload.isError && (
           <p role="alert" className="text-sm text-destructive">
-            {t(errorMessageKey(upload.error))}
+            {t(requestFailureKey(upload.error))}
           </p>
         )}
 

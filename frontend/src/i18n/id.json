@@ -224,7 +224,6 @@
       "hostCountry": "Negara tempat Anda bekerja",
       "hostCountryHint": "Kami memeriksa kontrak Anda dengan hukum ketenagakerjaan negara ini.",
       "reportLanguage": "Bahasa laporan",
-      "analyzing": "Memeriksa kontrak Anda dengan hukum. Ini bisa memakan waktu hingga beberapa menit.",
       "submitting": "Memeriksa…",
       "submit": "Periksa kontrak saya",
       "poorLegibility": "Foto terlalu buram untuk dibaca. Ambil foto baru di tempat terang dengan seluruh halaman terlihat.",
@@ -246,6 +245,37 @@
       },
       "complaintPending": "Kami masih menyiapkan surat pengaduan Anda. Kembali lagi nanti untuk melihatnya.",
       "analyzeAnother": "Periksa kontrak lain"
+    },
+    "progress": {
+      "title": "Memeriksa kontrak Anda",
+      "subtitle": "Biasanya butuh 1 sampai 2 menit. Biarkan halaman ini tetap terbuka selama kami bekerja.",
+      "steps": {
+        "read": "Membaca kontrak Anda",
+        "place": "Mencari tahu tempat Anda bekerja",
+        "law": "Mencari hukum ketenagakerjaan",
+        "check": "Memeriksa setiap pasal",
+        "report": "Menyiapkan laporan Anda"
+      },
+      "state": {
+        "waiting": "menunggu",
+        "running": "sedang berjalan",
+        "done": "selesai",
+        "failed": "gagal"
+      },
+      "stalled": "Masih bekerja. Layanan AI sedang sibuk, jadi langkah ini butuh waktu lebih lama.",
+      "announce": "Langkah {{number}} dari {{total}}: {{step}}",
+      "failedTitle": "Kami tidak bisa menyelesaikan pemeriksaan kontrak Anda.",
+      "reportLoading": "Laporan Anda sedang disiapkan.",
+      "errors": {
+        "poorLegibility": "Kontrak terlalu sulit dibaca. Unggah foto yang lebih jelas di tempat terang, dengan seluruh halaman terlihat.",
+        "countryUnknown": "Kami tidak bisa mengetahui hukum negara mana yang berlaku. Pilih negara tempat Anda bekerja, lalu coba lagi.",
+        "notEmploymentContract": "Dokumen ini tidak tampak seperti kontrak kerja atau perjanjian penempatan, jadi kami tidak bisa memeriksanya dengan hukum ketenagakerjaan.",
+        "noLawData": "Kami belum punya hukum ketenagakerjaan untuk negara ini.",
+        "noTerms": "Kami tidak menemukan ketentuan kontrak untuk diperiksa. Unggah kontrak lengkap.",
+        "aiBusy": "Layanan AI sedang sibuk. Silakan coba lagi dalam satu menit.",
+        "aiSlow": "Layanan AI terlalu lama menjawab. Silakan coba lagi.",
+        "generic": "Terjadi kesalahan saat memeriksa kontrak Anda. Silakan coba lagi."
+      }
     }
   },
   "errors": {

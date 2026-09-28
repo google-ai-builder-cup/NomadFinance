@@ -47,6 +47,9 @@ export interface ContractAnalysis {
   complaint_pending: boolean;
 }
 
+/** The step on `users/{uid}/contracts/{id}.step` while it is analysed, and in `error.step`. */
+export type PipelineStep = "extract" | "detect" | "law" | "compare" | "complaint" | "translate";
+
 /** The worker-facing reasons `POST .../analyze` can stop, from `error.code` on the contract. */
 export type PipelineErrorCode =
   | "poor_legibility"

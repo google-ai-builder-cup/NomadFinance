@@ -1,5 +1,9 @@
+import { doc, onSnapshot, type Unsubscribe } from "firebase/firestore";
+
+import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
 import type { AnalyzeRequest, ContractAnalysis, ContractUploadResponse } from "@/types/contract";
+import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
 /** Step 1: read and store the file (`POST /api/v1/contracts`). Usually 3 to 40 s. */
 export async function uploadContract(file: File): Promise<ContractUploadResponse> {
@@ -23,4 +27,25 @@ export async function analyzeContract(
     body: JSON.stringify(choices),
   });
   return (await response.json()) as ContractAnalysis;
+}
+
+/**
+ * Follow `users/{uid}/contracts/{contractId}` live while it is analysed (NF-P2-010). The
+ * backend updates `status` and `step` as each step starts; the owner may read the document.
+ *
+ * Returns:
+ *   The function that stops listening.
+ */
+export function watchContractProgress(
+  uid: string,
+  contractId: string,
+  onChange: (progress: ContractProgressDoc | null) => void
+): Unsubscribe {
+  return onSnapshot(
+    doc(db, "users", uid, "contracts", contractId),
+    (snapshot) => onChange(snapshot.exists() ? (snapshot.data() as ContractProgressDoc) : null),
+    // Offline or a lost listener: keep the last progress shown; the analyze request still
+    // decides the outcome.
+    () => undefined
+  );
 }
