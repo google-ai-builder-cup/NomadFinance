@@ -6,6 +6,7 @@ import RouteError from "@/components/common/RouteError";
 import AppShell from "@/components/layout/AppShell";
 import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import ComingSoon from "@/pages/ComingSoon";
+import ContractUpload from "@/pages/contract/ContractUpload";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
@@ -14,9 +15,10 @@ import Profile from "@/pages/Profile";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
+// Contract Shield's upload flow is that page now (NF-P2-009); the rest still wait their turn.
 const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({
   path: pillar.to,
-  element: <ComingSoon pillar={pillar} />,
+  element: pillar.to === "/contract" ? <ContractUpload /> : <ComingSoon pillar={pillar} />,
 }));
 
 export const router = createBrowserRouter([

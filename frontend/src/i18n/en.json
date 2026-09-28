@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "Loading…",
-    "retry": "Try again"
+    "retry": "Try again",
+    "or": "or"
   },
   "landing": {
     "brand": "NomadFinance",
@@ -205,6 +206,46 @@
       "reauthConfirm": "Confirm and delete",
       "error": "We couldn't finish deleting your account. Please try again.",
       "done": "Your account and data have been deleted."
+    }
+  },
+  "contract": {
+    "upload": {
+      "title": "Check your contract",
+      "subtitle": "Upload your employment contract and we'll check it against local labor law, in your language.",
+      "dropzoneLabel": "Drag and drop your contract here, or click to browse",
+      "dropzoneHint": "PDF or photo (PNG, JPEG, WebP, HEIC), up to 10 MB",
+      "takePhoto": "Take a photo",
+      "remove": "Remove file",
+      "errors": {
+        "tooLarge": "This file is larger than 10 MB. Choose a smaller file.",
+        "badType": "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
+        "generic": "This file couldn't be used. Try a different one."
+      },
+      "hostCountry": "Country you work in",
+      "hostCountryHint": "We check your contract against this country's labor law.",
+      "reportLanguage": "Report language",
+      "analyzing": "Checking your contract against the law. This can take up to a couple of minutes.",
+      "submitting": "Checking…",
+      "submit": "Check my contract",
+      "poorLegibility": "The photo is too unclear to read. Take a new photo in good light with the whole page in view.",
+      "profileLoadError": "We couldn't load your profile. Please try again."
+    },
+    "result": {
+      "title": "Your contract, checked",
+      "subtitle": "Here's what we found.",
+      "score": "Contract health score",
+      "riskLevel": {
+        "safe": "Looks safe",
+        "caution": "Some concerns",
+        "danger": "Serious concerns"
+      },
+      "counts": {
+        "safe": "Safe",
+        "caution": "Caution",
+        "danger": "Danger"
+      },
+      "complaintPending": "We're still preparing your complaint letter. Come back soon to see it.",
+      "analyzeAnother": "Check another contract"
     }
   },
   "errors": {

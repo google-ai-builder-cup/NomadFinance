@@ -26,6 +26,7 @@
     "lucide-react": "1.48.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-dropzone": "20.1.2",
     "react-i18next": "17.0.15",
     "react-router-dom": "6.30.6",
     "tailwind-merge": "3.7.0"
