@@ -10,6 +10,7 @@ and analyze a contract. Built on Firebase Analytics (Google Analytics 4), which 
 | `page_view` | every route change inside the signed-in app | `page_path` (pathname only, never the query string) |
 | `pillar_used` | a person enters a pillar (`/remittance`, `/contract`, `/radar`, `/identity`) | `pillar_name` |
 | `contract_analyzed` | a contract finishes analysis. **Helper only**: Contract Shield calls `trackContractAnalyzed()` when it is built | `host_country` |
+| `remittance_compared` | a remittance comparison is shown (NF-P2-018, `trackRemittanceCompared()`) | `corridor_id`. Never the amount |
 | `login` | Google popup or phone code accepted | `method` (`google` or `phone`) |
 | `onboarding_completed` | the last onboarding question is saved | none |
 

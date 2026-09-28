@@ -92,6 +92,13 @@ These are the contracts the built step offers. Their owners decide the details.
 - **Radar flags (NF-P3-022).** A `flagged` field per firm can be added to `ProviderResult` when `radar_entities/` exists.
 - **Transfer log (NF-P2-017).** A logged transfer can carry `corridor_id`, `rpw_id`, `firm`, the amount, `fee`, `total_cost_pct` and `rate.rate` from the comparison the worker chose from.
 - **Frontend (NF-P2-018, NF-P2-019).** `speed_order` sorts the speed column; `estimated` and `rate.stale` need a visible note; `survey.attribution` must be on screen.
+- **Form and page (NF-P2-018, built).** `/remittance` (`pages/remittance/RemittanceCompare.tsx`) shows `components/remittance/CorridorPicker.tsx`:
+  - the worker's own corridor is pre-selected from the profile
+  - the send and receive currencies are named
+  - the amount is checked in the browser against the same limits as the backend, with shortcuts for the two surveyed amounts
+  - `useCompareRemittance()` then calls `/compare`
+
+  A summary card shows the best service, what the recipient receives, the gap to the worst, the rate, the stale and estimate notes, the survey dates and the attribution. NF-P2-019's table goes under it. The per-corridor limits live in `frontend/src/utils/corridors.ts`; `corridors.test.ts` recomputes them from `rpw_corridors.json`, so a new survey quarter must update both.
 
 ## Errors
 

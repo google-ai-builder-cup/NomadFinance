@@ -323,6 +323,41 @@
       "whereToSend": "Ke mana mengirimnya"
     }
   },
+  "remittance": {
+    "title": "Kirim uang ke rumah",
+    "subtitle": "Lihat biaya sebenarnya dari setiap layanan dan berapa yang diterima keluarga Anda.",
+    "form": {
+      "corridor": "Dari mana ke mana Anda mengirim uang",
+      "currencies": "Anda mengirim {{send}}. Keluarga Anda menerima {{receive}}.",
+      "amount": "Jumlah yang Anda kirim",
+      "amountHint": "Dalam {{currency}}, antara {{min}} dan {{max}}.",
+      "shortcuts": "Jumlah dengan harga pasti dari Bank Dunia:",
+      "submit": "Bandingkan layanan",
+      "submitting": "Membandingkan…",
+      "errors": {
+        "empty": "Masukkan jumlah yang ingin Anda kirim.",
+        "invalid": "Masukkan jumlah dalam angka, misalnya 500.",
+        "decimals": "Gunakan paling banyak {{places}} angka desimal.",
+        "wholeNumber": "Masukkan jumlah {{currency}} yang bulat, tanpa desimal.",
+        "tooSmall": "Masukkan paling sedikit {{min}}.",
+        "tooLarge": "Masukkan paling banyak {{max}}.",
+        "outOfRange": "Kami tidak dapat membandingkan jumlah ini. Masukkan jumlah antara {{min}} dan {{max}}.",
+        "notLoaded": "Harga untuk koridor ini belum tersedia. Coba lagi nanti."
+      }
+    },
+    "result": {
+      "title": "Mengirim {{amount}} ke {{country}}",
+      "best": "Layanan terbaik",
+      "receives": "Keluarga Anda menerima",
+      "extra": "Itu {{amount}} lebih banyak daripada layanan termahal ({{firm}}).",
+      "midMarket": "Tanpa biaya apa pun, jumlahnya {{amount}}.",
+      "compared": "Layanan yang dibandingkan: {{number}}",
+      "rate": "Kurs yang digunakan: 1 {{send}} = {{rate}} {{receive}}",
+      "staleRate": "Kurs mungkin sudah tidak terbaru, jadi jumlahnya adalah perkiraan.",
+      "estimated": "Jumlah ini di luar jumlah yang disurvei Bank Dunia, jadi sebagian harga adalah perkiraan.",
+      "survey": "Biaya dan kurs disurvei oleh Bank Dunia dari {{from}} sampai {{to}}."
+    }
+  },
   "errors": {
     "boundaryTitle": "Terjadi kesalahan",
     "boundaryDescription": "Halaman ini berhenti berfungsi. Informasi yang sudah Anda simpan tetap aman. Coba lagi, atau kembali ke beranda.",

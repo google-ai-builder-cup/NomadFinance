@@ -323,6 +323,41 @@
       "whereToSend": "Saan ito ipapadala"
     }
   },
+  "remittance": {
+    "title": "Magpadala ng pera sa pamilya",
+    "subtitle": "Tingnan ang tunay na gastos ng bawat serbisyo at kung magkano ang matatanggap ng pamilya mo.",
+    "form": {
+      "corridor": "Saan ka nagpapadala ng pera",
+      "currencies": "Magpapadala ka ng {{send}}. Matatanggap ng pamilya mo ang {{receive}}.",
+      "amount": "Halagang ipapadala mo",
+      "amountHint": "Sa {{currency}}, mula {{min}} hanggang {{max}}.",
+      "shortcuts": "Mga halagang may eksaktong presyo mula sa World Bank:",
+      "submit": "Ikumpara ang mga serbisyo",
+      "submitting": "Ikinukumpara…",
+      "errors": {
+        "empty": "Ilagay ang halagang gusto mong ipadala.",
+        "invalid": "Ilagay ang halaga bilang numero, halimbawa 500.",
+        "decimals": "Hanggang {{places}} decimal place lang ang puwede.",
+        "wholeNumber": "Maglagay ng buong halaga ng {{currency}}, walang decimal.",
+        "tooSmall": "Maglagay ng hindi bababa sa {{min}}.",
+        "tooLarge": "Maglagay ng hindi hihigit sa {{max}}.",
+        "outOfRange": "Hindi namin maikumpara ang halagang ito. Maglagay ng halaga mula {{min}} hanggang {{max}}.",
+        "notLoaded": "Wala pang presyo para sa rutang ito. Subukan ulit mamaya."
+      }
+    },
+    "result": {
+      "title": "Pagpapadala ng {{amount}} sa {{country}}",
+      "best": "Pinakamagandang serbisyo",
+      "receives": "Matatanggap ng pamilya mo",
+      "extra": "{{amount}} ang mas malaki niyan kaysa sa pinakamahal na serbisyo ({{firm}}).",
+      "midMarket": "Kung walang anumang bayad, magiging {{amount}} ito.",
+      "compared": "Mga serbisyong naikumpara: {{number}}",
+      "rate": "Palitang ginamit: 1 {{send}} = {{rate}} {{receive}}",
+      "staleRate": "Maaaring luma na ang palitan, kaya tantiya lang ang mga halaga.",
+      "estimated": "Wala ang halagang ito sa mga halagang sinuri ng World Bank, kaya tantiya ang ilang presyo.",
+      "survey": "Mga bayad at palitang sinuri ng World Bank mula {{from}} hanggang {{to}}."
+    }
+  },
   "errors": {
     "boundaryTitle": "May nangyaring mali",
     "boundaryDescription": "Huminto sa paggana ang pahinang ito. Ligtas ang impormasyong na-save mo. Subukan ulit, o bumalik sa home page.",

@@ -62,6 +62,7 @@ describe("analytics", () => {
     const analytics = await loadModule({ VITE_FIREBASE_MEASUREMENT_ID: "G-TEST" });
     analytics.trackPillarUsed("remittance");
     analytics.trackContractAnalyzed("SG");
+    analytics.trackRemittanceCompared("SG-PH");
     analytics.trackPageView("/dashboard");
     await settle();
 
@@ -70,6 +71,7 @@ describe("analytics", () => {
     expect(sent).toEqual([
       ["pillar_used", { pillar_name: "remittance" }],
       ["contract_analyzed", { host_country: "SG" }],
+      ["remittance_compared", { corridor_id: "SG-PH" }],
       ["page_view", { page_path: "/dashboard" }],
     ]);
   });
