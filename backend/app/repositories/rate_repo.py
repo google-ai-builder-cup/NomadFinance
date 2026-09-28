@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from datetime import datetime
+from datetime import date, datetime
 from functools import lru_cache
 from typing import Any
 
@@ -21,6 +21,15 @@ class RateRepository(FirestoreRepository):
         """The latest cached rate of a pair such as `SGD_PHP`, or None if the cron never ran."""
         return self.get(pair_id)
 
+    def get_history(self, pair_id: str) -> dict[str, Any] | None:
+        """The rates_history header of a pair, with its `daily` map, or None if never written.
+
+        The map holds one rate per market day, so a year of history is one read instead of
+        thousands of hourly points.
+        """
+        snapshot = self._client.collection("rates_history").document(pair_id).get()
+        return snapshot.to_dict() if snapshot.exists else None
+
     def save_pair(
         self,
         pair: CurrencyPair,
@@ -32,9 +41,15 @@ class RateRepository(FirestoreRepository):
         """Write the latest rate, the history header and the hourly point in one batch.
 
         The point id is the UTC hour, so a second run in the same hour overwrites the
-        point instead of adding a duplicate.
+        point instead of adding a duplicate. The header's `daily` map gets the rate under the
+        provider's own date (a weekend run repeats Friday's rate, so it only rewrites Friday);
+        the merge keeps every other day.
         """
         rate = quote.rates[pair.quote]
+        try:
+            day = date.fromisoformat(quote.rate_date).isoformat()
+        except ValueError:
+            day = hour_start.date().isoformat()
         history = self._client.collection("rates_history").document(pair.pair_id)
         batch = self._client.batch()
         batch.set(
@@ -59,7 +74,9 @@ class RateRepository(FirestoreRepository):
                 "base_currency": pair.base,
                 "quote_currency": pair.quote,
                 "updated_at": firestore.SERVER_TIMESTAMP,
+                "daily": {day: {"rate": rate, "provider": provider, "source": "cron"}},
             },
+            merge=True,
         )
         batch.set(
             history.collection("points").document(hour_start.strftime("%Y-%m-%dT%H")),

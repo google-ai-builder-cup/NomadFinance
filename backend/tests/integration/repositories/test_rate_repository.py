@@ -56,3 +56,38 @@ def test_save_pair_writes_cache_history_header_and_hourly_point() -> None:
         "provider": "exchangerate_api",
         "source": "cron",
     }
+
+
+def test_the_daily_map_keeps_every_market_day_across_runs() -> None:
+    client = get_firestore_client()
+    repo = RateRepository(client)
+    pair = CURRENCY_PAIRS[3]  # MYR_IDR
+    attempts = [ProviderAttempt("frankfurter", True)]
+    thursday = FxQuote(base="MYR", rates={"IDR": 3570.5}, rate_date="2026-09-24")
+    friday = FxQuote(base="MYR", rates={"IDR": 3581.25}, rate_date="2026-09-25")
+    friday_again = FxQuote(base="MYR", rates={"IDR": 3582.0}, rate_date="2026-09-25")
+    undated = FxQuote(base="MYR", rates={"IDR": 3590.0}, rate_date="None")
+
+    repo.save_pair(pair, thursday, "frankfurter", attempts, datetime(2026, 9, 24, 16, tzinfo=UTC))
+    repo.save_pair(pair, friday, "frankfurter", attempts, datetime(2026, 9, 25, 16, tzinfo=UTC))
+    # Saturday's run gets Friday's rate again: it rewrites Friday, it adds no Saturday.
+    repo.save_pair(
+        pair, friday_again, "exchangerate_api", attempts, datetime(2026, 9, 26, 10, tzinfo=UTC)
+    )
+    # A provider without a usable date is filed under the run's own UTC day.
+    repo.save_pair(pair, undated, "currencyfreaks", attempts, datetime(2026, 9, 27, 6, tzinfo=UTC))
+
+    history = repo.get_history("MYR_IDR")
+    assert history is not None
+    assert history["base_currency"] == "MYR" and history["updated_at"] is not None
+    assert history["daily"] == {
+        "2026-09-24": {"rate": 3570.5, "provider": "frankfurter", "source": "cron"},
+        "2026-09-25": {"rate": 3582.0, "provider": "exchangerate_api", "source": "cron"},
+        "2026-09-27": {"rate": 3590.0, "provider": "currencyfreaks", "source": "cron"},
+    }
+    points = [p.id for p in client.collection("rates_history/MYR_IDR/points").stream()]
+    assert points == ["2026-09-24T16", "2026-09-25T16", "2026-09-26T10", "2026-09-27T06"]
+
+
+def test_get_history_of_a_pair_never_written_is_none() -> None:
+    assert RateRepository(get_firestore_client()).get_history("XXX_YYY") is None
