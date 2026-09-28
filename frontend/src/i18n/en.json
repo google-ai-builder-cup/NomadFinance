@@ -323,6 +323,41 @@
       "whereToSend": "Where to send it"
     }
   },
+  "remittance": {
+    "title": "Send money home",
+    "subtitle": "See what each service really costs and how much your family receives.",
+    "form": {
+      "corridor": "Where you send money",
+      "currencies": "You send {{send}}. Your family receives {{receive}}.",
+      "amount": "Amount you send",
+      "amountHint": "In {{currency}}, between {{min}} and {{max}}.",
+      "shortcuts": "Amounts with exact World Bank prices:",
+      "submit": "Compare services",
+      "submitting": "Comparing…",
+      "errors": {
+        "empty": "Enter the amount you want to send.",
+        "invalid": "Enter the amount as a number, for example 500.",
+        "decimals": "Use at most {{places}} decimal places.",
+        "wholeNumber": "Enter a whole number of {{currency}}, without decimals.",
+        "tooSmall": "Enter at least {{min}}.",
+        "tooLarge": "Enter at most {{max}}.",
+        "outOfRange": "We can't compare this amount. Enter an amount between {{min}} and {{max}}.",
+        "notLoaded": "Prices for this corridor aren't available yet. Try again later."
+      }
+    },
+    "result": {
+      "title": "Sending {{amount}} to {{country}}",
+      "best": "Best service",
+      "receives": "Your family receives",
+      "extra": "That is {{amount}} more than with the most expensive service ({{firm}}).",
+      "midMarket": "With no fees at all, it would be {{amount}}.",
+      "compared": "Services compared: {{number}}",
+      "rate": "Exchange rate used: 1 {{send}} = {{rate}} {{receive}}",
+      "staleRate": "The exchange rate may be out of date, so the amounts are estimates.",
+      "estimated": "This amount is outside the amounts the World Bank priced, so some prices are estimates.",
+      "survey": "Fees and rates surveyed by the World Bank from {{from}} to {{to}}."
+    }
+  },
   "errors": {
     "boundaryTitle": "Something went wrong",
     "boundaryDescription": "This page stopped working. Your saved information is safe. Try again, or go back to the home page.",

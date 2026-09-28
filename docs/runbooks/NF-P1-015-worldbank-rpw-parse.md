@@ -264,6 +264,7 @@ Rounding: percentages, fees and amounts are rounded to 6 decimals and rates to 1
 3. Run the parser (step 3). It picks the newest quarter automatically.
 4. If it stops with `missing columns`, the World Bank changed the layout. Compare the new headers with `REQUIRED_COLUMNS` in `world_bank.py` before changing anything.
 5. If a corridor has no rows in the newest quarter, the script stops with `no rows for period`. That is intended: decide whether to use the previous quarter (`--period`) or investigate.
+6. The remittance form checks amounts in the browser (NF-P2-018). Run `pnpm exec vitest run src/utils/corridors.test.ts` from `frontend/`. If the surveyed amounts changed, it fails and names the corridor; update `surveyAmounts` in `frontend/src/utils/corridors.ts`.
 
 ## Adding or replacing a corridor later
 

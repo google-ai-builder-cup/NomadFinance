@@ -1,7 +1,7 @@
 import type { Analytics } from "firebase/analytics";
 
 import { firebaseApp } from "@/lib/firebase";
-import type { HomeCountry, HostCountry, JobType, LanguageCode } from "@/types/enums";
+import type { CorridorId, HomeCountry, HostCountry, JobType, LanguageCode } from "@/types/enums";
 
 export type PillarId = "remittance" | "contract" | "radar" | "identity";
 
@@ -76,6 +76,11 @@ export function trackPillarUsed(pillar: PillarId): void {
 /** A contract finished analysis. Called by the Contract Shield flow once it exists. */
 export function trackContractAnalyzed(hostCountry: HostCountry): void {
   track("contract_analyzed", { host_country: hostCountry });
+}
+
+/** A remittance comparison was shown. The corridor only: the amount is the person's own. */
+export function trackRemittanceCompared(corridorId: CorridorId): void {
+  track("remittance_compared", { corridor_id: corridorId });
 }
 
 export function trackLogin(method: "google" | "phone"): void {

@@ -12,13 +12,19 @@ import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
+import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
-// Contract Shield's upload flow is that page now (NF-P2-009); the rest still wait their turn.
+// Contract Shield (NF-P2-009) and Remittance X-Ray (NF-P2-018) have theirs; the rest wait their turn.
+const PILLAR_PAGES: Readonly<Record<string, JSX.Element>> = {
+  "/contract": <ContractUpload />,
+  "/remittance": <RemittanceCompare />,
+};
+
 const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({
   path: pillar.to,
-  element: pillar.to === "/contract" ? <ContractUpload /> : <ComingSoon pillar={pillar} />,
+  element: PILLAR_PAGES[pillar.to] ?? <ComingSoon pillar={pillar} />,
 }));
 
 export const router = createBrowserRouter([
