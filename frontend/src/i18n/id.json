@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "Memuat…",
-    "retry": "Coba lagi"
+    "retry": "Coba lagi",
+    "or": "atau"
   },
   "landing": {
     "brand": "NomadFinance",
@@ -205,6 +206,46 @@
       "reauthConfirm": "Konfirmasi dan hapus",
       "error": "Akun Anda belum selesai dihapus. Silakan coba lagi.",
       "done": "Akun dan data Anda telah dihapus."
+    }
+  },
+  "contract": {
+    "upload": {
+      "title": "Periksa kontrak Anda",
+      "subtitle": "Unggah kontrak kerja Anda dan kami akan memeriksanya dengan hukum ketenagakerjaan setempat, dalam bahasa Anda.",
+      "dropzoneLabel": "Seret dan lepas kontrak Anda di sini, atau klik untuk menjelajah",
+      "dropzoneHint": "PDF atau foto (PNG, JPEG, WebP, HEIC), hingga 10 MB",
+      "takePhoto": "Ambil foto",
+      "remove": "Hapus file",
+      "errors": {
+        "tooLarge": "File ini lebih besar dari 10 MB. Pilih file yang lebih kecil.",
+        "badType": "Unggah PDF atau foto (PNG, JPEG, WebP, atau HEIC).",
+        "generic": "File ini tidak dapat digunakan. Coba file lain."
+      },
+      "hostCountry": "Negara tempat Anda bekerja",
+      "hostCountryHint": "Kami memeriksa kontrak Anda dengan hukum ketenagakerjaan negara ini.",
+      "reportLanguage": "Bahasa laporan",
+      "analyzing": "Memeriksa kontrak Anda dengan hukum. Ini bisa memakan waktu hingga beberapa menit.",
+      "submitting": "Memeriksa…",
+      "submit": "Periksa kontrak saya",
+      "poorLegibility": "Foto terlalu buram untuk dibaca. Ambil foto baru di tempat terang dengan seluruh halaman terlihat.",
+      "profileLoadError": "Kami tidak dapat memuat profil Anda. Silakan coba lagi."
+    },
+    "result": {
+      "title": "Kontrak Anda telah diperiksa",
+      "subtitle": "Berikut yang kami temukan.",
+      "score": "Skor kesehatan kontrak",
+      "riskLevel": {
+        "safe": "Tampak aman",
+        "caution": "Ada beberapa kekhawatiran",
+        "danger": "Kekhawatiran serius"
+      },
+      "counts": {
+        "safe": "Aman",
+        "caution": "Perhatian",
+        "danger": "Bahaya"
+      },
+      "complaintPending": "Kami masih menyiapkan surat pengaduan Anda. Kembali lagi nanti untuk melihatnya.",
+      "analyzeAnother": "Periksa kontrak lain"
     }
   },
   "errors": {

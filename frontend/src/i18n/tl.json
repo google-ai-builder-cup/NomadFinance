@@ -1,7 +1,8 @@
 {
   "common": {
     "loading": "Naglo-load…",
-    "retry": "Subukan ulit"
+    "retry": "Subukan ulit",
+    "or": "o"
   },
   "landing": {
     "brand": "NomadFinance",
@@ -205,6 +206,46 @@
       "reauthConfirm": "Kumpirmahin at burahin",
       "error": "Hindi namin natapos burahin ang account mo. Pakisubukan ulit.",
       "done": "Nabura na ang account at data mo."
+    }
+  },
+  "contract": {
+    "upload": {
+      "title": "Suriin ang iyong kontrata",
+      "subtitle": "I-upload ang iyong kontrata sa trabaho at susuriin namin ito laban sa lokal na batas sa paggawa, sa wika mo.",
+      "dropzoneLabel": "I-drag at i-drop ang kontrata mo rito, o i-click para mag-browse",
+      "dropzoneHint": "PDF o larawan (PNG, JPEG, WebP, HEIC), hanggang 10 MB",
+      "takePhoto": "Kumuha ng larawan",
+      "remove": "Alisin ang file",
+      "errors": {
+        "tooLarge": "Mas malaki sa 10 MB ang file na ito. Pumili ng mas maliit na file.",
+        "badType": "Mag-upload ng PDF o larawan (PNG, JPEG, WebP o HEIC).",
+        "generic": "Hindi magamit ang file na ito. Subukan ang ibang file."
+      },
+      "hostCountry": "Bansang pinagtatrabahuhan mo",
+      "hostCountryHint": "Sinusuri namin ang kontrata mo laban sa batas sa paggawa ng bansang ito.",
+      "reportLanguage": "Wika ng ulat",
+      "analyzing": "Sinusuri ang kontrata mo laban sa batas. Maaaring umabot ito ng ilang minuto.",
+      "submitting": "Sinusuri…",
+      "submit": "Suriin ang kontrata ko",
+      "poorLegibility": "Masyadong malabo ang larawan para basahin. Kumuha ng bagong larawan sa maliwanag na lugar, buong pahina ang makikita.",
+      "profileLoadError": "Hindi namin na-load ang profile mo. Pakisubukang muli."
+    },
+    "result": {
+      "title": "Nasuri na ang kontrata mo",
+      "subtitle": "Ito ang nakita namin.",
+      "score": "Marka ng kalusugan ng kontrata",
+      "riskLevel": {
+        "safe": "Mukhang ligtas",
+        "caution": "May ilang alalahanin",
+        "danger": "Malalang alalahanin"
+      },
+      "counts": {
+        "safe": "Ligtas",
+        "caution": "Pag-iingat",
+        "danger": "Panganib"
+      },
+      "complaintPending": "Inihahanda pa namin ang iyong sulat-reklamo. Bumalik ka rito sa madaling panahon.",
+      "analyzeAnother": "Suriin ang ibang kontrata"
     }
   },
   "errors": {
