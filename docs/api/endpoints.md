@@ -25,6 +25,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts/detect` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-002 |
 | GET | `/api/v1/contracts/labor-law/{host_country}` | Firebase ID token | 60/min API-wide only (no Gemini call) | NF-P2-003 |
 | POST | `/api/v1/contracts/compare` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-004 |
+| POST | `/api/v1/contracts/translate` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-005 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -370,6 +371,75 @@ yuran agensi selama 12 bulan",
 | 422 | FastAPI validation list | No blocks, too many blocks or characters, unknown country or job type |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
 | 502 / 503 / 504 / 500 | see Error format above | Gemini failure (503 also when the free-tier quota is used up) |
+
+---
+
+## `POST /api/v1/contracts/translate`
+
+Translates a finished report into the worker's language: `full_text`, `summary`, and each clause's `text`, `explanation` and `recommendation`. Step 5 of Contract Shield (NF-P2-005), classification tier (`gemini-3.1-flash-lite`, prompt `contract/translate.v1`). Nothing is stored.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `full_text` | string, 1 to 200,000 chars | The `text` from `/contracts/extract`, unchanged |
+| `summary` | string, non-empty | The `summary` from `/contracts/compare` |
+| `clauses` | array (1 to 200) | The `clauses` from `/contracts/compare`, unchanged; total clause text capped at 200,000 characters |
+| `target_language` | `en` / `hi` / `tl` / `id` / `ne` / `bn` | The report language to translate into |
+
+- **Time:** not yet measured live; classification tier is fast per call, but the output is a whole report (default timeout 60 s, `GEMINI_TRANSLATE_TIMEOUT_SECONDS`).
+- **Response `200`:** `ContractReportTranslation` (`app/schemas/contract_translate.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `language` | string | Same as `target_language` |
+| `full_text` | string | Translated |
+| `summary` | string | Translated |
+| `clauses` | array | See below |
+
+A clause has `index`, `number`, `page`, `category`, `risk`, `law_reference` and `block_ids` **unchanged from the request**, and `text`, `explanation`, `recommendation` **translated**. `category` and `risk` are never taken from Gemini's answer, even though the model sees them: they are the codes the UI keys its risk flags on.
+
+Example (bash; in PowerShell use `curl.exe` and a here-string or a JSON file):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"full_text": "...", "summary": "The employer keeps the passport.", "target_language": "hi",
+       "clauses": [{"index": 1, "number": "2", "page": 1, "text": "The employer keeps the passport.",
+         "category": "passport_retention", "risk": "danger", "law_reference": "Passports Act, s. 47",
+         "explanation": "The employer keeps your passport; the rule forbids it.",
+         "recommendation": "Ask to keep your own passport.", "block_ids": [3]}]}' \
+  http://127.0.0.1:8080/api/v1/contracts/translate
+```
+
+```json
+{
+  "language": "hi",
+  "full_text": "...",
+  "summary": "नियोक्ता पासपोर्ट रखता है।",
+  "clauses": [
+    {
+      "index": 1, "number": "2", "page": 1,
+      "text": "नियोक्ता कर्मचारी का पासपोर्ट रख सकता है।",
+      "category": "passport_retention", "risk": "danger",
+      "law_reference": "Passports Act, s. 47",
+      "explanation": "नियोक्ता आपका पासपोर्ट रखता है; नियम इसे मना करता है।",
+      "recommendation": "अपना पासपोर्ट खुद रखने के लिए कहें।",
+      "block_ids": [3]
+    }
+  ]
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list | Empty `full_text`/`summary`, no clauses, more than 200 clauses, over the character limit, or `target_language` outside the six supported codes |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
+| 502 | `The AI service returned an unusable answer. Please try again.` | Gemini left a clause out of its answer, or answered with something that did not match the schema |
+| 503 / 504 / 500 | see Error format above | Gemini failure |
 
 ---
 

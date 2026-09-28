@@ -18,11 +18,13 @@ from app.schemas.contract import (
     LaborLawContext,
 )
 from app.schemas.contract_compare import ContractCompareRequest, ContractComparison
+from app.schemas.contract_translate import ContractReportTranslation, ContractTranslateRequest
 from app.schemas.user import AuthenticatedUser
 from app.services.contract.comparator import NotComparableError, NoTermsError, compare_contract
 from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
+from app.services.contract.translator import TranslationIncompleteError, translate_report
 from app.utils.validators import sniff_document_mime_type
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
@@ -218,4 +220,43 @@ async def compare_contract_terms(
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             "No contract terms were found to check. Upload the full contract.",
+        ) from exc
+
+
+_TRANSLATE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    422: {"description": "Invalid body: empty text, no clauses, or text over the length limit"},
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/translate",
+    response_model=ContractReportTranslation,
+    responses=_TRANSLATE_ERROR_RESPONSES,
+    summary="Translate a finished contract report into a worker's language",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def translate_contract_report(
+    body: ContractTranslateRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> ContractReportTranslation:
+    """Translate `full_text`, `summary` and each clause's text into `target_language`. Step 5.
+
+    Send the `text` from `/contracts/extract` as `full_text`, and the `summary` and `clauses`
+    from `/contracts/compare`. `category`, `risk`, `law_reference` and every number are kept
+    exactly as sent; only the text fields are translated. Nothing is stored.
+    """
+    try:
+        return await translate_report(
+            body.full_text, body.summary, body.clauses, body.target_language, gemini
+        )
+    except TranslationIncompleteError as exc:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "The AI service returned an unusable answer. Please try again.",
         ) from exc

@@ -69,6 +69,11 @@ class Settings(BaseSettings):
     # Clause comparison (NF-P2-004, reasoning tier) took 20 to 33 s for 6 to 25 terms; the
     # default 30 s would fail the longer ones. Same bound as above for Cloud Run.
     gemini_compare_timeout_seconds: float = Field(default=90.0, gt=0)
+    # Report translation (NF-P2-005) writes out the whole contract text plus every clause
+    # again in another language: comparable output size to extraction, so it gets the same
+    # longer bound rather than the 30 s default (classification tier is fast, but the output
+    # is not small).
+    gemini_translate_timeout_seconds: float = Field(default=60.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
     # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted

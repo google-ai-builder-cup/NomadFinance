@@ -12,7 +12,7 @@ Each step's owner adds its section below when the step is built.
 | 2 | Detect language, host country, contract type, employer/salary | NF-P2-002 (Pranjal) | extraction | `contract/detect.v2` | `services/contract/detector.py` | Built |
 | 3 | Fetch the host country's labor-law rules | NF-P2-003 (Aditya) | none (Firestore) | none | `services/contract/rag.py` | Built |
 | 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Built |
-| 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Not started |
+| 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Built |
 | 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v1` | `services/contract/complaint.py` | Not started |
 | - | Cache reports by hash, language, law and prompt versions | NF-P2-007 (Devam) | none | none | `services/contract/pipeline.py` (proposed) | Not started |
 
@@ -121,3 +121,17 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
 - **Standalone endpoint:** `POST /api/v1/contracts/compare` (`docs/api/endpoints.md`).
 - **For step 5 (Aditya):** translate `summary` and each clause's `text`, `explanation` and `recommendation`, and keep `category`, `risk`, `law_reference` and numbers as they are.
 - **For step 6 (Pranjal):** the danger clauses (`risk == "danger"`, each with its `category` and `law_reference`) are the `violations_json` of `contract/complaint.v1`.
+
+## Step 5: translate the report (NF-P2-005)
+
+`translate_report(full_text, summary, clauses, target_language, gemini)` in `backend/app/services/contract/translator.py`.
+
+- **In:** `full_text` from step 1 (the source-language transcription), `summary` and `clauses` from step 4's `ContractComparison`, and `target_language` (one of the six UI languages: `en`, `hi`, `tl`, `id`, `ne`, `bn`).
+- **Gemini call:** classification tier, prompt `contract/translate.v1` (key `contract.translate`, version 1), response schema `TranslationAnswer`. Only `index`, `category`, `risk`, `text`, `explanation` and `recommendation` of each clause go to the model, inside `<report>` tags; a closing tag inside a clause's text is neutralised the same way step 2 and step 4 neutralise theirs.
+- **Never sent to the model, and never taken from its answer:** `law_reference`, `number`, `page` and `block_ids` are carried straight over from the source clauses. `category` and `risk` are round-tripped for the model's own bookkeeping but the merged result still takes them from the source, never the answer — they are the codes the UI keys its risk flags on, so a mistranslated word can never change one.
+- **Out:** `ContractReportTranslation`: `language`, `full_text`, `summary`, `clauses` (each a `TranslatedClause`: `index`, `number`, `page`, `text`, `category`, `risk`, `law_reference`, `explanation`, `recommendation`, `block_ids`). This is the shape of `reports/{lang}` minus the storage-only fields (`content_hash`, `law_version`, `prompt_versions`, `models`, `created_at`, `schema_version`), which the pipeline (D-53) adds when it stores the report.
+- **Errors:** `TranslationIncompleteError` when the answer leaves out a clause that was sent (the endpoint answers 502, same message as an unusable Gemini answer); Gemini failures raise `GeminiError` subclasses (503/504/502/500).
+- **Time:** not yet measured live (classification tier, but the output is a whole report — comparable in size to extraction's output).
+- **Standalone endpoint:** `POST /api/v1/contracts/translate` (`docs/api/endpoints.md`). Also meant for the report language switcher (NF-P2-012): call it again with a different `target_language` on the same `full_text`/`summary`/`clauses`.
+- **For step 6 (Pranjal):** the complaint letter (`contract/complaint.v1`) is generated from the English `ContractComparison`, then translated the same way if the worker's language isn't English — or extend this step to also accept a `letter_text`, whichever fits NF-P2-006's shape better.
+- **For the pipeline owner (D-53):** this step is stateless like steps 1 to 4; storing `reports/{lang}` and filling in `content_hash`, `law_version`, `prompt_versions` and `models` is still unowned.
