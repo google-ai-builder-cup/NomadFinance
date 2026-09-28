@@ -23,6 +23,9 @@ SalaryPeriod = Literal["month", "week", "day", "hour"]
 LawCoverage = Literal["regulated", "partly_regulated", "not_regulated", "unclear"]
 LawConfidence = Literal["high", "medium", "low"]
 LawLimitPeriod = Literal["hour", "day", "week", "month", "year", "once"]
+# The six UI languages (frontend/src/i18n/*.json); a contract report can only be translated
+# into one of these, whatever language the contract itself is written in.
+ReportLanguage = Literal["en", "hi", "tl", "id", "ne", "bn"]
 
 # About 50k tokens: far above a 15-page contract (about 60k characters), well below what the
 # model accepts. Bounds the cost of one call.
