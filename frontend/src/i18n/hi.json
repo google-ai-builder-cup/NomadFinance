@@ -286,7 +286,11 @@
       "noLawReference": "किसी खास कानूनी धारा से जुड़ा नहीं है",
       "recommendation": "सुझाव:",
       "clauseWithNumber": "धारा {{number}} · पेज {{page}}",
-      "clauseNoNumber": "पेज {{page}}"
+      "clauseNoNumber": "पेज {{page}}",
+      "language": "रिपोर्ट की भाषा",
+      "languageHint": "दूसरी भाषाओं का अनुवाद पहली बार चुनने पर होता है। इसमें कुछ सेकंड लगते हैं।",
+      "switching": "आपकी रिपोर्ट का अनुवाद हो रहा है…",
+      "switchOutOfDate": "यह रिपोर्ट पुरानी हो चुकी है। इसे इस भाषा में देखने के लिए अपने अनुबंध की फिर से जाँच करें।"
     },
     "category": {
       "minimum_wage": "न्यूनतम वेतन",

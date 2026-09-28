@@ -286,7 +286,11 @@
       "noLawReference": "Walang partikular na seksyon ng batas na naka-ugnay",
       "recommendation": "Mungkahi:",
       "clauseWithNumber": "Sugnay {{number}} · pahina {{page}}",
-      "clauseNoNumber": "Pahina {{page}}"
+      "clauseNoNumber": "Pahina {{page}}",
+      "language": "Wika ng ulat",
+      "languageHint": "Isinasalin ang ibang wika sa unang beses na piliin mo ito. Ilang segundo lang ito.",
+      "switching": "Isinasalin ang iyong ulat…",
+      "switchOutOfDate": "Luma na ang ulat na ito. Suriin muli ang iyong kontrata para makita ito sa wikang ito."
     },
     "category": {
       "minimum_wage": "Minimum na sahod",

@@ -286,7 +286,11 @@
       "noLawReference": "Not tied to a specific law section",
       "recommendation": "Suggestion:",
       "clauseWithNumber": "Clause {{number}} · page {{page}}",
-      "clauseNoNumber": "Page {{page}}"
+      "clauseNoNumber": "Page {{page}}",
+      "language": "Report language",
+      "languageHint": "Other languages are translated the first time you choose them. This takes a few seconds.",
+      "switching": "Translating your report…",
+      "switchOutOfDate": "This report is out of date. Check your contract again to see it in this language."
     },
     "category": {
       "minimum_wage": "Minimum wage",

@@ -72,3 +72,18 @@ export async function getContractReport(
   );
   return snapshot.exists() ? (snapshot.data() as ContractReport) : null;
 }
+
+/**
+ * The report in another language (`POST /api/v1/contracts/{id}/reports/{language}`,
+ * NF-P2-012). The backend returns the stored report at once, or translates the English one
+ * (a few seconds), stores it under `reports/{language}` and returns it.
+ */
+export async function switchReportLanguage(
+  contractId: string,
+  language: LanguageCode
+): Promise<ContractReport> {
+  const response = await apiRequest(`/api/v1/contracts/${contractId}/reports/${language}`, {
+    method: "POST",
+  });
+  return (await response.json()) as ContractReport;
+}

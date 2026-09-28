@@ -569,6 +569,7 @@ A failed analysis can be run again with the same call. What was stored is reused
   - `complaint`
   - `content_hash`, `law_version`, `prompt_versions`, `models`
 - A current stored report is returned at once; otherwise the English report is translated (a few seconds), stored and returned. This is the language switch of NF-P2-012.
+- **How the app uses it (NF-P2-012):** the report language switcher reads a language listed in the analysis' `report_languages` straight from Firestore (`reports/{language}`) and calls this endpoint only for a language that is not stored yet. It sends no body, does not retry a failed call by itself (the backend already tries Gemini three times), and keeps each language it has seen, so switching back makes no request. A `409` means the analysis is not current: the app tells the worker to check the contract again. It does not use the position of a language in `report_languages`, which is sorted alphabetically (D-60).
 - **Errors:** 404 no such contract, 409 not analysed yet (or stale: analyze again), 502 incomplete translation, 503/504.
 
 ---

@@ -286,7 +286,11 @@
       "noLawReference": "Tidak terkait pasal hukum tertentu",
       "recommendation": "Saran:",
       "clauseWithNumber": "Klausul {{number}} · halaman {{page}}",
-      "clauseNoNumber": "Halaman {{page}}"
+      "clauseNoNumber": "Halaman {{page}}",
+      "language": "Bahasa laporan",
+      "languageHint": "Bahasa lain diterjemahkan saat pertama kali Anda memilihnya. Ini butuh beberapa detik.",
+      "switching": "Laporan Anda sedang diterjemahkan…",
+      "switchOutOfDate": "Laporan ini sudah kedaluwarsa. Periksa kontrak Anda lagi untuk melihatnya dalam bahasa ini."
     },
     "category": {
       "minimum_wage": "Upah minimum",

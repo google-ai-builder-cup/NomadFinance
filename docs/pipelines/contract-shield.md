@@ -203,9 +203,23 @@ The upload page (`pages/contract/ContractUpload.tsx`) follows `users/{uid}/contr
 
 ## How the app shows the report (NF-P2-011)
 
-Once `status` is `completed`, the upload page (`ContractUpload.tsx`) reads the full report straight from Firestore — `users/{uid}/contracts/{id}/reports/{language}`, one `getDoc` (`useContractReport`, `contractService.getContractReport`) — rather than calling `POST .../reports/{language}`: the analyze request has already written that document before it answers, and `firestore.rules` already lets the owner read it (same pattern as `watchContractProgress` for the progress document). The standalone endpoint is for the language switcher (NF-P2-012) translating into a language with no stored report yet.
+Once `status` is `completed`, the upload page (`ContractUpload.tsx`) reads the full report straight from Firestore — `users/{uid}/contracts/{id}/reports/{language}`, one `getDoc` (`useContractReport`, `contractService.getContractReport`) — rather than calling `POST .../reports/{language}`: the analyze request has already written that document before it answers, and `firestore.rules` already lets the owner read it (same pattern as `watchContractProgress` for the progress document). The standalone endpoint is for the language switcher (NF-P2-012, next section) translating into a language with no stored report yet.
 
 `components/contract/ReportCard.tsx` renders the score header (score, risk badge, the three counts, the summary, the complaint-pending note) and, for every clause (`ClauseRow.tsx`), a 🟢🟡🔴 flag, its category, and the clause's exact words next to `law_reference` (or a fallback when there is none), the explanation and any recommendation — side by side from the `md:` breakpoint up, stacked with their own labels on a phone. Nothing here reads `radar_entities/` or renders `report.complaint`; those are NF-P3-023 and NF-P2-013.
+
+## Switching the report language (NF-P2-012)
+
+Above the report, `ReportLanguageSwitcher` lists the six languages by their own names. Choosing one changes only the report: neither the app language nor `users/{uid}.preferred_language` changes (D-40).
+
+| Language | Where it comes from | Cost |
+|---|---|---|
+| In the analysis' `report_languages` | `reports/{language}` read from Firestore | One read |
+| Not stored yet | `POST /api/v1/contracts/{id}/reports/{language}`: the backend translates the English report once and stores it | A few seconds, one Gemini call |
+| Already seen in this visit | The app's cache | None |
+
+While a new language loads, the previous language of the same contract stays on screen, dimmed, with a "Translating your report…" note, so the score does not vanish. A report of another contract is never shown in its place. On failure the page shows the message for the status (busy, too slow, offline, or "out of date, check your contract again" for a `409`), with Try again except for the `409`. The switcher stays usable, and going back to a language already seen is instant. The report block carries `lang`, so a screen reader speaks it in the report's language.
+
+Code: `useContractReport(contractId, language, storedLanguages)` and `reportQueryOptions` in `hooks/useContract.ts`, `switchReportLanguage` in `services/contractService.ts`, `reportFailureKey` in `utils/reportLanguage.ts`.
 
 ## E2E testing (NF-P2-008)
 
