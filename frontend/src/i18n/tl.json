@@ -224,7 +224,6 @@
       "hostCountry": "Bansang pinagtatrabahuhan mo",
       "hostCountryHint": "Sinusuri namin ang kontrata mo laban sa batas sa paggawa ng bansang ito.",
       "reportLanguage": "Wika ng ulat",
-      "analyzing": "Sinusuri ang kontrata mo laban sa batas. Maaaring umabot ito ng ilang minuto.",
       "submitting": "Sinusuri…",
       "submit": "Suriin ang kontrata ko",
       "poorLegibility": "Masyadong malabo ang larawan para basahin. Kumuha ng bagong larawan sa maliwanag na lugar, buong pahina ang makikita.",
@@ -246,6 +245,37 @@
       },
       "complaintPending": "Inihahanda pa namin ang iyong sulat-reklamo. Bumalik ka rito sa madaling panahon.",
       "analyzeAnother": "Suriin ang ibang kontrata"
+    },
+    "progress": {
+      "title": "Sinusuri ang iyong kontrata",
+      "subtitle": "Karaniwang 1 hanggang 2 minuto ito. Panatilihing bukas ang pahinang ito habang nagtatrabaho kami.",
+      "steps": {
+        "read": "Binabasa ang iyong kontrata",
+        "place": "Inaalam kung saan ka nagtatrabaho",
+        "law": "Tinitingnan ang batas sa paggawa",
+        "check": "Sinusuri ang bawat sugnay",
+        "report": "Inihahanda ang iyong ulat"
+      },
+      "state": {
+        "waiting": "naghihintay",
+        "running": "ginagawa",
+        "done": "tapos",
+        "failed": "hindi natapos"
+      },
+      "stalled": "Ginagawa pa rin. Abala ang AI service ngayon, kaya mas matagal ang hakbang na ito.",
+      "announce": "Hakbang {{number}} sa {{total}}: {{step}}",
+      "failedTitle": "Hindi namin natapos ang pagsusuri sa iyong kontrata.",
+      "reportLoading": "Inihahanda ang iyong ulat.",
+      "errors": {
+        "poorLegibility": "Masyadong mahirap basahin ang kontrata. Mag-upload ng mas malinaw na larawan sa maliwanag na lugar, kita ang buong pahina.",
+        "countryUnknown": "Hindi namin matukoy kung aling bansa ang batas na angkop. Piliin ang bansa kung saan ka nagtatrabaho at subukan ulit.",
+        "notEmploymentContract": "Mukhang hindi ito kontrata sa trabaho o kasunduan sa recruitment, kaya hindi namin ito masusuri ayon sa batas sa paggawa.",
+        "noLawData": "Wala pa kaming batas sa paggawa ng bansang ito.",
+        "noTerms": "Wala kaming nakitang kondisyon ng kontrata na masusuri. I-upload ang buong kontrata.",
+        "aiBusy": "Abala ang AI service ngayon. Subukan ulit pagkalipas ng isang minuto.",
+        "aiSlow": "Masyadong natagalan ang AI service sa pagsagot. Subukan ulit.",
+        "generic": "May nangyaring mali habang sinusuri ang iyong kontrata. Subukan ulit."
+      }
     }
   },
   "errors": {
