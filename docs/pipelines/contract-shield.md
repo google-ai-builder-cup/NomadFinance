@@ -10,7 +10,7 @@ Each step's owner adds its section below when the step is built.
 |---|---|---|---|---|---|---|
 | 1 | Extract text and structure | NF-P2-001 (Devam) | extraction | `contract/extract.v2` | `services/contract/extractor.py` | Built |
 | 2 | Detect language, host country, contract type, employer/salary | NF-P2-002 (Pranjal) | extraction | `contract/detect.v2` | `services/contract/detector.py` | Built |
-| 3 | Fetch the host country's labor-law rules | NF-P2-003 (Aditya) | none (Firestore) | none | `services/contract/rag.py` | Not started |
+| 3 | Fetch the host country's labor-law rules | NF-P2-003 (Aditya) | none (Firestore) | none | `services/contract/rag.py` | Built |
 | 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Not started |
 | 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Not started |
 | 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v1` | `services/contract/complaint.py` | Not started |
@@ -77,3 +77,14 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
 - **Time:** 1.4 to 2.0 s per call in live runs (about 580 to 730 prompt tokens, 75 to 135 output tokens).
 - **Standalone endpoint:** `POST /api/v1/contracts/detect` (`docs/api/endpoints.md`).
 - **For step 3 (Aditya):** read `host_country` (and `job_type` to choose the rules). When it is null there is nothing to look up: the pipeline decides between the profile country and asking the worker.
+
+## Step 3: fetch the host country's labor law (NF-P2-003)
+
+`get_labor_law_context(country, job_type, repo)` in `backend/app/services/contract/rag.py`, backed by `LaborLawRepository` (`backend/app/repositories/labor_law_repo.py`).
+
+- **In:** `host_country` and `job_type` from step 2. `host_country` is a plain `HostCountryCode`, never `None`: this step does not decide what happens for a null country (D-55 is the pipeline owner's call), it just isn't called until one is chosen.
+- **Firestore reads, no Gemini call:** `labor_laws/{country}/_meta/current.version` and the 15 documents under `labor_laws/{country}/rules`.
+- **Out:** `LaborLawContext`: `country`, `job_type`, `law_version` (for the cache key, `docs/data-model/versioning.md`), and 15 `LaborLawRule`s. Each rule carries `applicable_variant` — the variant whose `applies_to` contains the given `job_type`, falling back to the `all` variant — plus the full `variants` list, `references`, `confidence` and `notes`. Step 4 should compare a contract against `applicable_variant.requirements`.
+- **Errors:** `LaborLawNotFoundError` when the country has no curated data loaded yet (NF-P1-018 not run for it, or the version/rules are missing) — the endpoint answers 404.
+- **Standalone endpoint:** `GET /api/v1/contracts/labor-law/{host_country}?job_type=...` (`docs/api/endpoints.md`).
+- **For step 4 (Devam):** use `rules[i].applicable_variant` directly; no need to re-resolve `job_type` against `variants` yourself. Skip labor-law comparison entirely when `document_kind` is `loan_agreement` (that check stays in step 2's output, this step does not look at `document_kind`).

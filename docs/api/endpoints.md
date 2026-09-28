@@ -23,6 +23,7 @@ must say so explicitly in their own doc section below.
 | GET | `/health` | Public | None | NF-P1-001 |
 | POST | `/api/v1/contracts/extract` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P1-006 |
 | POST | `/api/v1/contracts/detect` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-002 |
+| GET | `/api/v1/contracts/labor-law/{host_country}` | Firebase ID token | 60/min API-wide only (no Gemini call) | NF-P2-003 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -229,6 +230,66 @@ Real output (2026-09-28):
 | 422 | FastAPI validation list | No `text`, empty or whitespace-only text, or more than 200,000 characters |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 Gemini calls a minute or 60 API calls a minute |
 | 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
+
+## `GET /api/v1/contracts/labor-law/{host_country}`
+
+Fetches a host country's curated labor-law rules from Firestore (`labor_laws/{country}`), each with the variant that applies to a given job type. Step 3 of Contract Shield (NF-P2-003). Plain Firestore read — **no Gemini call**, so only the API-wide rate limit applies. Send the `host_country` and `job_type` returned by `/contracts/detect`.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request:** path parameter `host_country` (`SG` / `KR` / `MY` / `JP` / `HK` / `AU`), query parameter `job_type` (one of the seven onboarding job types), required
+- **Response `200`:** `LaborLawContext` (`app/schemas/contract.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `country` | string | Same as the path parameter |
+| `job_type` | string | Same as the query parameter |
+| `law_version` | integer | `labor_laws/{country}/_meta/current.version`; record it on the eventual contract report (`docs/data-model/versioning.md`) |
+| `rules` | array | All 15 curated categories, see below |
+
+A rule has `category` (one of the 15 ids in [labor_laws](../data-model/collections/labor_laws.md)), `coverage` (`regulated` / `partly_regulated` / `not_regulated` / `unclear`), `title`, `summary`, `applicable_variant` (the variant matching `job_type`, falling back to the `all` variant), the full `variants` array (for any category a caller wants a different job type from), `references`, `confidence` and `notes`. A variant has `applies_to`, `requirements`, `limits`, `penalty` and `enforced_by`.
+
+Example:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "http://127.0.0.1:8080/api/v1/contracts/labor-law/JP?job_type=domestic_worker"
+```
+
+```json
+{
+  "country": "JP",
+  "job_type": "domestic_worker",
+  "law_version": 1,
+  "rules": [
+    {
+      "category": "working_hours",
+      "coverage": "regulated",
+      "title": "Working hours and breaks",
+      "summary": "Workers may not be made to work more than 8 hours a day or 40 hours a week...",
+      "applicable_variant": {
+        "applies_to": ["all"],
+        "requirements": ["No more than 40 hours per week and 8 hours per day..."],
+        "limits": { "weekly_hours_limit": { "value": 40, "unit": "hours", "period": "week" } },
+        "penalty": null,
+        "enforced_by": "Labour standards inspection offices (Ministry of Health, Labour and Welfare)"
+      },
+      "variants": ["..."],
+      "references": [{ "law": "Labor Standards Act (Act No. 49 of 1947)", "section": "Arts. 32, 34, 36(1)", "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/3567/en" }],
+      "confidence": "high",
+      "notes": null
+    }
+  ]
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | `Missing bearer token` / `Invalid authentication token` / ... | No, invalid, expired or revoked token |
+| 422 | FastAPI validation list | `host_country` outside `SG`/`KR`/`MY`/`JP`/`HK`/`AU`, or `job_type` missing/outside the seven job types |
+| 404 | `No labor-law data is available yet for <country>.` | NF-P1-018 has not loaded that country yet |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---
 

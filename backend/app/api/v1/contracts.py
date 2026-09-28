@@ -2,16 +2,25 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
-from app.schemas.contract import ContractDetectRequest, ContractExtractResponse, DetectedContract
+from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
+from app.schemas.contract import (
+    ContractDetectRequest,
+    ContractExtractResponse,
+    DetectedContract,
+    HostCountryCode,
+    JobTypeId,
+    LaborLawContext,
+)
 from app.schemas.user import AuthenticatedUser
 from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
+from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
 from app.utils.validators import sniff_document_mime_type
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
@@ -114,3 +123,40 @@ async def detect_contract_facts(
     country outside SG, KR, MY, JP, HK, AU or shows none: ask the worker. Nothing is stored.
     """
     return await detect_contract(body.text, gemini)
+
+
+_LAW_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    404: {"description": "No curated labor-law data is loaded for this country yet"},
+    429: {"description": "Too many requests (default 60 a minute); see Retry-After"},
+}
+
+
+@router.get(
+    "/labor-law/{host_country}",
+    response_model=LaborLawContext,
+    responses=_LAW_ERROR_RESPONSES,
+    summary="Fetch a host country's curated labor-law rules",
+)
+async def get_labor_law(
+    host_country: HostCountryCode,
+    job_type: Annotated[
+        JobTypeId, Query(description="Worker's job type, to pick each rule's applicable variant.")
+    ],
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    repo: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
+) -> LaborLawContext:
+    """Look up the labor law of a contract's host country. Step 3 of Contract Shield.
+
+    Send the `host_country` and `job_type` returned by `/contracts/detect`. Returns all 15
+    curated categories, each with the variant that applies to `job_type`, and the
+    `law_version` a stored report would be cached against. No Gemini call; not rate-limited
+    beyond the API-wide budget.
+    """
+    try:
+        return await get_labor_law_context(host_country, job_type, repo)
+    except LaborLawNotFoundError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"No labor-law data is available yet for {host_country}.",
+        ) from exc
