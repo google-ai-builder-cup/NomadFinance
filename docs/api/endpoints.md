@@ -27,6 +27,9 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts/compare` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-004 |
 | POST | `/api/v1/contracts/translate` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-005 |
 | POST | `/api/v1/contracts/complaint` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-006 |
+| POST | `/api/v1/contracts` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
+| POST | `/api/v1/contracts/{contract_id}/analyze` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
+| POST | `/api/v1/contracts/{contract_id}/reports/{language}` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -502,6 +505,73 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
 | 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no letter, no worker copy, or left a `{{marker}}` unfilled |
 | 503 / 504 | see Error format | Gemini busy or timed out |
+
+## Contract Shield as the app uses it (NF-P2-007)
+
+The endpoints above run one step each and store nothing. These three run the whole pipeline and store every result under `users/{uid}/contracts/{contract_id}` (`docs/data-model/collections/contracts.md`). The app reads the contract and its reports straight from Firestore; the security rules already let the owner read them.
+
+**How the app uses them:**
+
+1. `POST /api/v1/contracts` with the file (multipart field `file`). The server reads it (step 1, 3 to 40 s) and returns `contract_id`. If `legibility` is `poor`, ask for a clearer photo instead of analysing.
+2. Start listening to `users/{uid}/contracts/{contract_id}` in Firestore (`onSnapshot`). Its `status` and `step` show progress: `detect`, `law`, `compare`, `complaint`, `translate`.
+3. `POST /api/v1/contracts/{contract_id}/analyze`, with the upload form's choices if any. Usually 30 s to 2 minutes. Keep the request open: all the work happens inside it (Cloud Run gives CPU only to open requests).
+4. Show `reports/{language}` from Firestore. To switch language, `POST .../reports/{language}`.
+
+### `POST /api/v1/contracts`
+
+- **Request:** `multipart/form-data`, field `file`. The same checks as `/contracts/extract`: PDF, PNG, JPEG, WebP or HEIC, up to 10 MB, type from the bytes.
+- **Response `201`:** `ContractUploadResponse`: `contract_id` (20 characters), `status` (`uploaded`), `reused`, `page_count`, `title`, `legibility`.
+- The same file uploaded again by the same user returns the stored contract (`reused: true`) without calling Gemini. The file is **not stored**, only the blocks and text read from it (`extraction/current`, backend only).
+- **Errors:** 400 empty file, 413 too large, 415 wrong type, 422 no readable document, 429, 502/503/504 (Gemini).
+
+### `POST /api/v1/contracts/{contract_id}/analyze`
+
+- **Request body (optional JSON):** the upload form's choices, each winning over the contract and the profile: `host_country`, `job_type`, `report_language`.
+- **Choosing values when not given:**
+
+  | Value | Order |
+  |---|---|
+  | Country | Worker's choice, then detected, then profile `host_country`. None at all: 422 `country_unknown` |
+  | Job | Worker's choice, then detected (unless `other`), then profile `job_type` |
+  | Report language | Worker's choice, then profile `preferred_language`, then `en` |
+
+- **Response `200`:** `ContractAnalysis`:
+  - `contract_id`, `status` (`completed`)
+  - `cached`: the stored analysis was still current, so no Gemini call
+  - `host_country`, `job_type`, `health_score`, `risk_level`, `clause_counts`
+  - `report_language`, `report_languages`
+  - `complaint_pending`: the letter failed for a passing reason; call analyze again to write only the letter
+- **Stored:**
+  - the contract's `detected`, `extracted`, `host_country`, `job_type`, scores, `law_version`, `prompt_versions`, `models`
+  - `reports/en`: the analysis in English, with the complaint letter when a term is danger
+  - `reports/{report_language}` when that isn't English
+- **Errors** (the code is also stored as the contract's `error`, with the step):
+
+| Status | `detail` | `error.code` |
+|---|---|---|
+| 404 | `No such contract.` | (not stored) |
+| 409 | `This contract is already being analysed. Please wait.` | (not stored) |
+| 422 | `The contract is too hard to read. ...` | `poor_legibility` |
+| 422 | `Choose the country where you work, then try again.` | `country_unknown` |
+| 422 | `The labor-law check covers employment contracts and recruitment agreements only.` | `not_employment_contract` |
+| 404 | `Labor-law data for this country is not available yet.` | `no_law_data` |
+| 422 | `No contract terms were found to check. Upload the full contract.` | `no_terms` |
+| 503 / 504 / 502 / 500 | see Error format above | `gemini_unavailable`, `gemini_busy`, `gemini_timeout`, `gemini_bad_answer`, `internal` |
+
+A failed analysis can be run again with the same call. What was stored is reused: after a failed translation, only the translation runs again.
+
+### `POST /api/v1/contracts/{contract_id}/reports/{language}`
+
+- **Path:** `language` is one of `en`, `hi`, `tl`, `id`, `ne`, `bn`.
+- **Response `200`:** `ContractReport`, the stored `reports/{language}` document without timestamps:
+  - `language`, `is_source`, `full_text`, `summary`
+  - `clauses` (with `number`, `page`, `block_ids`)
+  - `complaint`
+  - `content_hash`, `law_version`, `prompt_versions`, `models`
+- A current stored report is returned at once; otherwise the English report is translated (a few seconds), stored and returned. This is the language switch of NF-P2-012.
+- **Errors:** 404 no such contract, 409 not analysed yet (or stale: analyze again), 502 incomplete translation, 503/504.
+
+---
 
 ## `POST /api/v1/internal/refresh-rates` (internal)
 

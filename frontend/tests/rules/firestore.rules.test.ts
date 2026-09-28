@@ -276,6 +276,7 @@ describe("users/{uid} backend-written subcollections", () => {
       await seed(path, { schema_version: 1 });
     }
     await seed("users/alice/private_backend_data/x", { secret: true });
+    await seed("users/alice/contracts/c1/extraction/current", { text: "contract text" });
   });
 
   it.each(paths)("lets only the owner read %s", async (path) => {
@@ -290,6 +291,13 @@ describe("users/{uid} backend-written subcollections", () => {
 
   it("denies subcollections that aren't in the schema", async () => {
     await assertFails(getDoc(doc(db(ALICE), "users/alice/private_backend_data/x")));
+  });
+
+  it("keeps a contract's extraction backend-only, even from its owner (NF-P2-007)", async () => {
+    await assertFails(getDoc(doc(db(ALICE), "users/alice/contracts/c1/extraction/current")));
+    await assertFails(
+      setDoc(doc(db(ALICE), "users/alice/contracts/c1/extraction/current"), { text: "x" })
+    );
   });
 });
 

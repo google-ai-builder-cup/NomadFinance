@@ -4,6 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 
+from app.api.v1.contract_analysis import NOT_A_DOCUMENT, read_contract_upload
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
@@ -36,7 +37,6 @@ from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
 from app.services.contract.translator import TranslationIncompleteError, translate_report
-from app.utils.validators import sniff_document_mime_type
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
 
@@ -72,30 +72,11 @@ async def extract_contract_text(
     and as plain text. A `legibility` of "poor" means the photo should be retaken. The file
     is only held in memory for this request; nothing is stored.
     """
-    # Read one byte past the limit so an oversized file is detected without loading all of it.
-    data = await file.read(settings.upload_max_bytes + 1)
-    if not data:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "The uploaded file is empty.")
-    if len(data) > settings.upload_max_bytes:
-        limit_mb = settings.upload_max_bytes // (1024 * 1024)
-        raise HTTPException(
-            status.HTTP_413_CONTENT_TOO_LARGE, f"The file is larger than {limit_mb} MB."
-        )
-
-    mime_type = sniff_document_mime_type(data)
-    if mime_type is None:
-        raise HTTPException(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
-        )
-
+    data, mime_type = await read_contract_upload(file, settings)
     try:
         extracted, text = await extract_contract(data, mime_type, gemini)
     except NotADocumentError as exc:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_CONTENT,
-            "No readable document found. Upload a clear photo or PDF of the contract.",
-        ) from exc
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, NOT_A_DOCUMENT) from exc
 
     return ContractExtractResponse(
         filename=file.filename,

@@ -32,6 +32,8 @@ done
 docker build --platform linux/amd64 -t "${IMAGE}" .
 docker push "${IMAGE}"
 
+# --timeout 900: a contract analysis (steps 2 to 6, NF-P2-007) runs inside one request and can
+# pass the default 300 s when Gemini is slow and retries.
 gcloud run deploy "${SERVICE}" \
   --project "${PROJECT}" \
   --region "${REGION}" \
@@ -42,6 +44,7 @@ gcloud run deploy "${SERVICE}" \
   --allow-unauthenticated \
   --cpu 1 \
   --memory 512Mi \
+  --timeout 900 \
   --min-instances 0 \
   --max-instances 2
 

@@ -14,9 +14,9 @@ Each step's owner adds its section below when the step is built.
 | 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Built |
 | 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Built |
 | 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v2` | `services/contract/complaint.py` | Built |
-| - | Cache reports by hash, language, law and prompt versions | NF-P2-007 (Devam) | none | none | `services/contract/pipeline.py` (proposed) | Not started |
+| - | Run the steps in order, store the contract and reports, cache by hash, law and prompt versions | NF-P2-007 (Devam) | none | none | `services/contract/upload.py`, `pipeline.py`, `report_store.py`, `letter.py` | Built |
 
-Not owned yet (D-53): storing the upload in Cloud Storage, the `users/{uid}/contracts/{id}` document and its `status`, `pipeline.py` running the steps in order, and the endpoint the upload UI calls for a full analysis. Proposed: NF-P2-007, since the cache needs the contract document and `content_hash` anyway.
+The pipeline as a whole (D-53) was added to NF-P2-007 by team decision; see "The pipeline" at the end.
 
 ## Flow
 
@@ -152,3 +152,34 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
 - **Data:** the six country files in `data-scripts/data/source/complaint-templates/`, checked by `python -m src.validators.complaint_template` and loaded by `python -m src.loaders.complaint_templates` (see the runbook).
 - **For the report UI (Aditya, NF-P2-013):** show `worker_copy` (or `letter_text` when it is null) as the preview and `letter_text` for the PDF and the copy action; list `channels` under it as where to send it.
 - **For the pipeline owner (D-53):** the letter is written in one call from the English comparison, so it is independent of the report language. Store the `complaint` map in the source-language report, and reuse it, with `worker_copy`, in the other languages of the same worker.
+
+## The pipeline: upload, analyze, store (NF-P2-007)
+
+Three endpoints run the steps above in order and store everything under `users/{uid}/contracts/{id}` (`docs/api/endpoints.md`, `docs/data-model/collections/contracts.md`).
+
+```
+POST /contracts (file)                              upload.py
+  same user + same file hash + same extract prompt → return the stored contract, no Gemini
+  else step 1 → store contract {status: uploaded, legibility, title, content_hash, ...}
+            + extraction/current {blocks, text}      the file itself is not kept
+
+POST /contracts/{id}/analyze (optional choices)      pipeline.py
+  stored analysis still current (law_version, prompt_versions, reports/en)?  report_store.py
+      → translate only a missing language, write only a pending letter → cached: true
+  claim the contract (transaction; 409 if another request runs it, taken over after 16 min)
+  step 2 detect      → country / job / language: choice > detected > profile (D-55)
+  step 3 law         → labor_laws/{country}
+  step 4 compare     → clauses, score
+  step 6 complaint   → letter.py: only when a term is danger; a passing failure = complaint_pending
+  store reports/en, then the analysis fields on the contract
+  step 5 translate   → reports/{worker language} when it isn't English
+  status completed; on any failure: status failed, error {step, code}, then the HTTP error
+
+POST /contracts/{id}/reports/{language}              report_store.ensure_report
+  stored and current → return it; else translate reports/en, store, return
+```
+
+- **Progress:** the contract's `step` changes as each step starts. The app shows it by listening to the document in Firestore (NF-P2-010).
+- **Cloud Run:** everything runs inside the request, because Cloud Run gives CPU only to open requests. The request timeout is 900 s (`scripts/deploy_manual.sh`); a normal analysis takes 30 s to 2 minutes.
+- **Cache key:** `content_hash` + `law_version` + `prompt_versions`, and per report its language (`docs/data-model/versioning.md`). Per user on purpose: one worker's analysis is never served to another.
+- **Account deletion** (NF-P1-023) already removes `users/{uid}` with all contracts, extractions and reports.
