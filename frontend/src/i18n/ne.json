@@ -244,7 +244,9 @@
         "danger": "खतरा"
       },
       "complaintPending": "हामी तपाईंको उजुरी पत्र अझै तयार गर्दैछौं। यसलाई हेर्न चाँडै फर्कनुहोस्।",
-      "analyzeAnother": "अर्को सम्झौता जाँच्नुहोस्"
+      "analyzeAnother": "अर्को सम्झौता जाँच्नुहोस्",
+      "reportLoadError": "हामीले पूरा रिपोर्ट लोड गर्न सकेनौं।",
+      "reportMissing": "तपाईंको रिपोर्ट अझै तयार छैन। कृपया केही बेरमा फेरि प्रयास गर्नुहोस्।"
     },
     "progress": {
       "title": "तपाईंको सम्झौता जाँच गरिँदै छ",
@@ -276,6 +278,33 @@
         "aiSlow": "AI सेवाले जवाफ दिन धेरै समय लगायो। कृपया फेरि प्रयास गर्नुहोस्।",
         "generic": "तपाईंको सम्झौता जाँच गर्दा केही गडबड भयो। कृपया फेरि प्रयास गर्नुहोस्।"
       }
+    },
+    "report": {
+      "heading": "धारा अनुसार विवरण",
+      "contractColumn": "सम्झौतामा के लेखिएको छ",
+      "lawColumn": "कानूनले के भन्छ",
+      "noLawReference": "कुनै खास कानूनी धारासँग जोडिएको छैन",
+      "recommendation": "सुझाव:",
+      "clauseWithNumber": "धारा {{number}} · पृष्ठ {{page}}",
+      "clauseNoNumber": "पृष्ठ {{page}}"
+    },
+    "category": {
+      "minimum_wage": "न्यूनतम ज्याला",
+      "working_hours": "काम गर्ने घण्टा",
+      "overtime_pay": "ओभरटाइम भुक्तानी",
+      "rest_days_and_holidays": "विश्राम दिन र बिदा",
+      "annual_leave": "वार्षिक बिदा",
+      "sick_leave": "बिरामी बिदा",
+      "salary_payment": "तलब भुक्तानी",
+      "salary_deductions": "तलबबाट कटौती",
+      "termination_notice": "सेवा अन्त्यको सूचना",
+      "early_termination": "समयभन्दा अगाडि सेवा अन्त्य",
+      "recruitment_fees": "भर्ना शुल्क",
+      "passport_retention": "राहदानी आफूसँग राख्ने",
+      "accommodation": "बसोबास व्यवस्था",
+      "insurance_and_injury": "बीमा र चोटपटक",
+      "social_security": "सामाजिक सुरक्षा",
+      "other": "अन्य"
     }
   },
   "errors": {

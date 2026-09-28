@@ -23,11 +23,11 @@ export default function ReportSkeleton() {
       </div>
       <div className="space-y-3 pt-2">
         {[0, 1, 2].map((key) => (
-          <div key={key} className="flex items-start gap-3">
-            <Skeleton className="mt-1 h-3 w-3 shrink-0 rounded-full" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-3 w-11/12" />
-              <Skeleton className="h-3 w-2/3" />
+          <div key={key} className="space-y-2 rounded-lg border p-4">
+            <Skeleton className="h-3 w-24" />
+            <div className="grid gap-3 md:grid-cols-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
           </div>
         ))}

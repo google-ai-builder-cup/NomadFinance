@@ -1,8 +1,14 @@
-import { doc, onSnapshot, type Unsubscribe } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, type Unsubscribe } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
-import type { AnalyzeRequest, ContractAnalysis, ContractUploadResponse } from "@/types/contract";
+import type {
+  AnalyzeRequest,
+  ContractAnalysis,
+  ContractReport,
+  ContractUploadResponse,
+} from "@/types/contract";
+import type { LanguageCode } from "@/types/enums";
 import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
 /** Step 1: read and store the file (`POST /api/v1/contracts`). Usually 3 to 40 s. */
@@ -48,4 +54,21 @@ export function watchContractProgress(
     // decides the outcome.
     () => undefined
   );
+}
+
+/**
+ * The finished report in one language (NF-P2-011): summary and clause-by-clause detail. Read
+ * straight from Firestore, not the API: the analyze step (NF-P2-007) already stores
+ * `reports/{language}` before it answers, and the owner may read it (firestore.rules). Null
+ * when the report has not been written yet.
+ */
+export async function getContractReport(
+  uid: string,
+  contractId: string,
+  language: LanguageCode
+): Promise<ContractReport | null> {
+  const snapshot = await getDoc(
+    doc(db, "users", uid, "contracts", contractId, "reports", language)
+  );
+  return snapshot.exists() ? (snapshot.data() as ContractReport) : null;
 }

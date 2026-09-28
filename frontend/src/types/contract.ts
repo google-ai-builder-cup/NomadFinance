@@ -4,6 +4,25 @@ export type Legibility = "good" | "partial" | "poor";
 
 export type ClauseRisk = "safe" | "caution" | "danger";
 
+/** The 15 curated labor-law categories (docs/data-model/collections/labor_laws.md) plus other. */
+export type ClauseCategory =
+  | "minimum_wage"
+  | "working_hours"
+  | "overtime_pay"
+  | "rest_days_and_holidays"
+  | "annual_leave"
+  | "sick_leave"
+  | "salary_payment"
+  | "salary_deductions"
+  | "termination_notice"
+  | "early_termination"
+  | "recruitment_fees"
+  | "passport_retention"
+  | "accommodation"
+  | "insurance_and_injury"
+  | "social_security"
+  | "other";
+
 export interface ClauseCounts {
   safe: number;
   caution: number;
@@ -45,6 +64,57 @@ export interface ContractAnalysis {
   report_languages: LanguageCode[];
   /** The letter failed for a passing reason; analyze again to write only it. */
   complaint_pending: boolean;
+}
+
+/** One clause of a stored report (`reports/{lang}.clauses`, contracts.md). */
+export interface ReportClause {
+  index: number;
+  number: string | null;
+  page: number;
+  /** The clause's exact words, in the report's language. */
+  text: string;
+  category: ClauseCategory;
+  risk: ClauseRisk;
+  law_reference: string | null;
+  explanation: string;
+  recommendation: string | null;
+  block_ids: number[];
+}
+
+export interface ComplaintChannel {
+  kind: "web" | "email" | "phone" | "post";
+  value: string;
+  note: string | null;
+}
+
+/** The complaint letter stored on a report when a term broke the law (NF-P2-006). */
+export interface ContractComplaint {
+  template_type: string;
+  authority_name: string;
+  authority_url: string | null;
+  channels: ComplaintChannel[];
+  letter_language: string;
+  letter_text: string;
+  worker_language: LanguageCode;
+  /** Same letter in `worker_language`, to read; null when that is the letter language. */
+  worker_copy: string | null;
+  violation_count: number;
+}
+
+/** A stored `users/{uid}/contracts/{id}/reports/{language}` document (contracts.md). */
+export interface ContractReport {
+  language: LanguageCode;
+  /** True for `reports/en`, the report the analysis wrote; false for a translation. */
+  is_source: boolean;
+  full_text: string;
+  summary: string;
+  clauses: ReportClause[];
+  complaint: ContractComplaint | null;
+  content_hash: string;
+  law_version: number;
+  prompt_versions: Record<string, number>;
+  models: Record<string, string>;
+  schema_version: number;
 }
 
 /** The step on `users/{uid}/contracts/{id}.step` while it is analysed, and in `error.step`. */

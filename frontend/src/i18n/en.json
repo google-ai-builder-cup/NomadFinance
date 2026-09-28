@@ -244,7 +244,9 @@
         "danger": "Danger"
       },
       "complaintPending": "We're still preparing your complaint letter. Come back soon to see it.",
-      "analyzeAnother": "Check another contract"
+      "analyzeAnother": "Check another contract",
+      "reportLoadError": "We couldn't load the full report.",
+      "reportMissing": "Your report isn't ready yet. Please try again in a moment."
     },
     "progress": {
       "title": "Checking your contract",
@@ -276,6 +278,33 @@
         "aiSlow": "The AI service took too long to answer. Please try again.",
         "generic": "Something went wrong while checking your contract. Please try again."
       }
+    },
+    "report": {
+      "heading": "Clause by clause",
+      "contractColumn": "What the contract says",
+      "lawColumn": "What the law says",
+      "noLawReference": "Not tied to a specific law section",
+      "recommendation": "Suggestion:",
+      "clauseWithNumber": "Clause {{number}} · page {{page}}",
+      "clauseNoNumber": "Page {{page}}"
+    },
+    "category": {
+      "minimum_wage": "Minimum wage",
+      "working_hours": "Working hours",
+      "overtime_pay": "Overtime pay",
+      "rest_days_and_holidays": "Rest days and holidays",
+      "annual_leave": "Annual leave",
+      "sick_leave": "Sick leave",
+      "salary_payment": "Salary payment",
+      "salary_deductions": "Salary deductions",
+      "termination_notice": "Termination notice",
+      "early_termination": "Early termination",
+      "recruitment_fees": "Recruitment fees",
+      "passport_retention": "Passport retention",
+      "accommodation": "Accommodation",
+      "insurance_and_injury": "Insurance and injury",
+      "social_security": "Social security",
+      "other": "Other"
     }
   },
   "errors": {

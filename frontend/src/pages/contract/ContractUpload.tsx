@@ -2,11 +2,13 @@ import { type FormEvent, useState } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PipelineProgress from "@/components/contract/PipelineProgress";
+import ReportCard from "@/components/contract/ReportCard";
 import ReportSkeleton from "@/components/contract/ReportSkeleton";
 import UploadDropzone from "@/components/contract/UploadDropzone";
 import { Button } from "@/components/ui/button";
 import {
   useContractProgress,
+  useContractReport,
   useRetryAnalysis,
   useUploadAndAnalyzeContract,
 } from "@/hooks/useContract";
@@ -15,7 +17,6 @@ import { useUserProfile } from "@/hooks/useUser";
 import { trackContractAnalyzed } from "@/lib/analytics";
 import i18n from "@/lib/i18n";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
-import { cn } from "@/lib/utils";
 import type { AnalyzeRequest } from "@/types/contract";
 import { countryName } from "@/utils/format";
 import {
@@ -31,12 +32,6 @@ import { HOST_COUNTRIES, type HostCountry, isLanguageCode, type LanguageCode } f
 const fieldClass =
   "h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm " +
   "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
-
-const RISK_STYLES: Record<string, string> = {
-  safe: "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400",
-  caution: "border-yellow-600/30 bg-yellow-600/10 text-yellow-700 dark:text-yellow-400",
-  danger: "border-red-600/30 bg-red-600/10 text-red-700 dark:text-red-400",
-};
 
 export default function ContractUpload() {
   const { t } = useI18n();
@@ -63,6 +58,19 @@ export default function ContractUpload() {
     setSeenAttempt(attempt);
   }
   const seenThisRun = seenAttempt === attempt;
+  const effectiveReportLanguage =
+    reportLanguage ??
+    (isLanguageCode(profile.data?.preferred_language) ? profile.data.preferred_language : "en");
+  const result =
+    retry.data ??
+    upload.data?.analysis ??
+    // The server finished but the phone lost the answer (mobile data): read it from the document.
+    (contractId !== null && progress !== null && seenThisRun
+      ? analysisFromDoc(contractId, progress, effectiveReportLanguage)
+      : null);
+  // The report card (NF-P2-011) needs the full clause list, a separate Firestore document from
+  // the score summary above; called unconditionally so hook order stays stable across renders.
+  const report = useContractReport(result?.contract_id ?? null, result?.report_language ?? null);
 
   if (profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -78,9 +86,6 @@ export default function ContractUpload() {
 
   const language = i18n.resolvedLanguage ?? "en";
   const effectiveHostCountry = hostCountry ?? profile.data?.host_country ?? HOST_COUNTRIES[0];
-  const effectiveReportLanguage =
-    reportLanguage ??
-    (isLanguageCode(profile.data?.preferred_language) ? profile.data.preferred_language : "en");
 
   function resetForAnotherContract() {
     setFile(null);
@@ -129,55 +134,37 @@ export default function ContractUpload() {
     );
   }
 
-  const result =
-    retry.data ??
-    upload.data?.analysis ??
-    // The server finished but the phone lost the answer (mobile data): read it from the document.
-    (contractId !== null && progress !== null && seenThisRun
-      ? analysisFromDoc(contractId, progress, effectiveReportLanguage)
-      : null);
-
   if (result) {
     return (
-      <div className="mx-auto max-w-lg space-y-6">
+      <div className="mx-auto max-w-3xl space-y-6">
         <header className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t("contract.result.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("contract.result.subtitle")}</p>
         </header>
 
-        <div className="space-y-4 rounded-lg border bg-card p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">
-              {t("contract.result.score")}
-            </span>
-            <span className="text-3xl font-bold tabular-nums">{result.health_score}</span>
-          </div>
+        {report.isPending && <ReportSkeleton />}
+
+        {report.isError && (
           <div
-            className={cn(
-              "inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium",
-              RISK_STYLES[result.risk_level]
-            )}
+            role="alert"
+            className="flex flex-col items-center gap-4 rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-center"
           >
-            {t(`contract.result.riskLevel.${result.risk_level}`)}
+            <p className="text-sm text-destructive">{t("contract.result.reportLoadError")}</p>
+            <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
           </div>
-          <dl className="grid grid-cols-3 gap-2 text-center text-sm">
-            <div>
-              <dt className="text-muted-foreground">{t("contract.result.counts.safe")}</dt>
-              <dd className="text-lg font-semibold">{result.clause_counts.safe}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("contract.result.counts.caution")}</dt>
-              <dd className="text-lg font-semibold">{result.clause_counts.caution}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("contract.result.counts.danger")}</dt>
-              <dd className="text-lg font-semibold">{result.clause_counts.danger}</dd>
-            </div>
-          </dl>
-          {result.complaint_pending && (
-            <p className="text-sm text-muted-foreground">{t("contract.result.complaintPending")}</p>
-          )}
-        </div>
+        )}
+
+        {report.isSuccess && report.data === null && (
+          <div
+            role="alert"
+            className="flex flex-col items-center gap-4 rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-center"
+          >
+            <p className="text-sm text-destructive">{t("contract.result.reportMissing")}</p>
+            <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
+          </div>
+        )}
+
+        {report.data && <ReportCard analysis={result} report={report.data} />}
 
         <Button className="h-11 w-full" variant="outline" onClick={resetForAnotherContract}>
           {t("contract.result.analyzeAnother")}
@@ -195,7 +182,7 @@ export default function ContractUpload() {
         : requestFailureKey(retry.error ?? upload.error)
       : null;
     return (
-      <div className="mx-auto max-w-lg space-y-6">
+      <div className="mx-auto max-w-3xl space-y-6">
         <header className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t("contract.upload.title")}</h1>
         </header>

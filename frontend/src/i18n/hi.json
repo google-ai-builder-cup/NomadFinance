@@ -244,7 +244,9 @@
         "danger": "खतरा"
       },
       "complaintPending": "हम आपकी शिकायत पत्र अभी तैयार कर रहे हैं। इसे देखने के लिए जल्द वापस आएँ।",
-      "analyzeAnother": "कोई और कॉन्ट्रैक्ट जाँचें"
+      "analyzeAnother": "कोई और कॉन्ट्रैक्ट जाँचें",
+      "reportLoadError": "हम पूरी रिपोर्ट लोड नहीं कर सके।",
+      "reportMissing": "आपकी रिपोर्ट अभी तैयार नहीं है। कृपया थोड़ी देर बाद फिर से कोशिश करें।"
     },
     "progress": {
       "title": "आपका अनुबंध जाँचा जा रहा है",
@@ -276,6 +278,33 @@
         "aiSlow": "AI सेवा ने जवाब देने में बहुत समय लिया। कृपया फिर से कोशिश करें।",
         "generic": "आपके अनुबंध की जाँच में कुछ गड़बड़ हो गई। कृपया फिर से कोशिश करें।"
       }
+    },
+    "report": {
+      "heading": "धारा दर धारा",
+      "contractColumn": "अनुबंध में क्या लिखा है",
+      "lawColumn": "कानून क्या कहता है",
+      "noLawReference": "किसी खास कानूनी धारा से जुड़ा नहीं है",
+      "recommendation": "सुझाव:",
+      "clauseWithNumber": "धारा {{number}} · पेज {{page}}",
+      "clauseNoNumber": "पेज {{page}}"
+    },
+    "category": {
+      "minimum_wage": "न्यूनतम वेतन",
+      "working_hours": "कार्य के घंटे",
+      "overtime_pay": "ओवरटाइम भुगतान",
+      "rest_days_and_holidays": "आराम के दिन और छुट्टियाँ",
+      "annual_leave": "वार्षिक छुट्टी",
+      "sick_leave": "बीमारी की छुट्टी",
+      "salary_payment": "वेतन भुगतान",
+      "salary_deductions": "वेतन से कटौती",
+      "termination_notice": "नौकरी समाप्ति की सूचना",
+      "early_termination": "समय से पहले नौकरी समाप्ति",
+      "recruitment_fees": "भर्ती शुल्क",
+      "passport_retention": "पासपोर्ट अपने पास रखना",
+      "accommodation": "रहने की व्यवस्था",
+      "insurance_and_injury": "बीमा और चोट",
+      "social_security": "सामाजिक सुरक्षा",
+      "other": "अन्य"
     }
   },
   "errors": {

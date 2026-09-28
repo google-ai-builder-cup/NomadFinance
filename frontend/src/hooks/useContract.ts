@@ -1,9 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
-import { analyzeContract, uploadContract, watchContractProgress } from "@/services/contractService";
+import {
+  analyzeContract,
+  getContractReport,
+  uploadContract,
+  watchContractProgress,
+} from "@/services/contractService";
 import type { AnalyzeRequest, ContractAnalysis, Legibility } from "@/types/contract";
+import type { LanguageCode } from "@/types/enums";
 import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
 export interface UploadAndAnalyzeArgs {
@@ -93,4 +99,29 @@ export function useContractProgress(contractId: string | null): ContractProgress
   }, [contractId, uid]);
 
   return key !== null && latest?.key === key ? latest.doc : null;
+}
+
+function reportKey(
+  uid: string | undefined,
+  contractId: string | null,
+  language: LanguageCode | null
+) {
+  return ["contractReport", uid, contractId, language] as const;
+}
+
+/**
+ * The finished report in one language (NF-P2-011): summary and clause-by-clause detail, read
+ * straight from Firestore. Enabled once analysis has produced a `contractId` and a language.
+ */
+export function useContractReport(contractId: string | null, language: LanguageCode | null) {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: reportKey(uid, contractId, language),
+    queryFn: () => getContractReport(uid ?? "", contractId ?? "", language as LanguageCode),
+    enabled: uid !== undefined && contractId !== null && language !== null,
+    // Written once by the analysis and not changed here; NF-P2-012's language switch is its
+    // own new report document, a different query key.
+    staleTime: Infinity,
+  });
 }
