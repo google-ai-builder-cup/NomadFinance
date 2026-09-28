@@ -18,7 +18,7 @@ EXPECTED_PROMPTS = {
     "contract/detect.v2",
     "contract/compare.v1",
     "contract/translate.v1",
-    "contract/complaint.v1",
+    "contract/complaint.v2",
     "remittance/recommend.v1",
     "radar/extract_entity.v1",
     "radar/validate.v1",

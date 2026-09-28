@@ -8,6 +8,10 @@ from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
+from app.repositories.complaint_template_repo import (
+    ComplaintTemplateRepository,
+    get_complaint_template_repository,
+)
 from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
 from app.schemas.contract import (
     ContractDetectRequest,
@@ -18,9 +22,16 @@ from app.schemas.contract import (
     LaborLawContext,
 )
 from app.schemas.contract_compare import ContractCompareRequest, ContractComparison
+from app.schemas.contract_complaint import ContractComplaint, ContractComplaintRequest
 from app.schemas.contract_translate import ContractReportTranslation, ContractTranslateRequest
 from app.schemas.user import AuthenticatedUser
 from app.services.contract.comparator import NotComparableError, NoTermsError, compare_contract
+from app.services.contract.complaint import (
+    ComplaintIncompleteError,
+    ComplaintTemplateNotFoundError,
+    NoViolationsError,
+    generate_complaint,
+)
 from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
@@ -256,6 +267,66 @@ async def translate_contract_report(
             body.full_text, body.summary, body.clauses, body.target_language, gemini
         )
     except TranslationIncompleteError as exc:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "The AI service returned an unusable answer. Please try again.",
+        ) from exc
+
+
+_COMPLAINT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    404: {"description": "No complaint template is loaded for this country yet"},
+    422: {"description": "No clause with risk `danger`, or an invalid body"},
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/complaint",
+    response_model=ContractComplaint,
+    responses=_COMPLAINT_ERROR_RESPONSES,
+    summary="Write the complaint letter for the clauses that break the law",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def write_complaint_letter(
+    body: ContractComplaintRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    repo: Annotated[ComplaintTemplateRepository, Depends(get_complaint_template_repository)],
+) -> ContractComplaint:
+    """Write a formal complaint to the host country's labor authority. Step 6.
+
+    Send the `clauses` from `/contracts/compare` and the employer, agency and salary from
+    `/contracts/detect` as `contract_facts`. Only clauses with risk `danger` go in the letter.
+    `letter_text` is in the language the authority works in; `worker_copy` is the same letter
+    in `worker_language`, for the worker to read (null when both are the same language). The
+    worker's name, contact details and start date are left as [bracketed blanks] to fill in.
+    The authority and where to send the letter come from curated data, not from Gemini.
+    Nothing is stored.
+    """
+    try:
+        return await generate_complaint(
+            body.host_country,
+            body.clauses,
+            body.contract_facts,
+            body.worker_language,
+            repo,
+            gemini,
+        )
+    except NoViolationsError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "No term of this contract was found to break the law, so there is nothing to report.",
+        ) from exc
+    except ComplaintTemplateNotFoundError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"No complaint letter is available yet for {body.host_country}.",
+        ) from exc
+    except ComplaintIncompleteError as exc:
         raise HTTPException(
             status.HTTP_502_BAD_GATEWAY,
             "The AI service returned an unusable answer. Please try again.",

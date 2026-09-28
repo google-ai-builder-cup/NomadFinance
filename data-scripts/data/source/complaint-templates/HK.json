@@ -1,0 +1,55 @@
+{
+  "country": "HK",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "Hong Kong: the Labour Department takes enquiries and complaints by hotline, email, fax and post, and runs a separate hotline and email for foreign domestic helpers. Channels read from the pages in sources on 2026-09-28; the general contact page lists no online complaint form.",
+  "sources": [
+    "https://www.labour.gov.hk/eng/tele/content.htm",
+    "https://www.fdh.labour.gov.hk/en/contact_us.html"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "Labour Department, Hong Kong",
+      "authority_url": "https://www.labour.gov.hk/eng/tele/content.htm",
+      "channels": [
+        {
+          "kind": "phone",
+          "value": "2717 1771",
+          "note": "Labour Department enquiry hotline, handled by 1823, round the clock"
+        },
+        {
+          "kind": "email",
+          "value": "enquiry@labour.gov.hk"
+        },
+        {
+          "kind": "phone",
+          "value": "2157 9537",
+          "note": "Dedicated hotline for foreign domestic helpers"
+        },
+        {
+          "kind": "email",
+          "value": "fdh-enquiry@labour.gov.hk",
+          "note": "Foreign domestic helpers"
+        },
+        {
+          "kind": "post",
+          "value": "The Commissioner for Labour, Labour Department, 16/F, Harbour Building, 38 Pier Road, Central, Hong Kong"
+        }
+      ],
+      "letter_language": "en",
+      "template_text": "To: {{authority_name}}\n\nSubject: Complaint about employment terms that appear to break the law\n\nDear Sir or Madam,\n\nI am {{worker_name}}, and I work for {{employer_name}}.\n\nThe employment contract I was given contains terms that appear to conflict with the law:\n\n{{violation_summary}}\n\nContract details, for reference:\n{{contract_details}}\n\nI respectfully ask your office to look into this matter and to advise me on the steps I should take. I can provide a copy of my contract if needed.\n\nThank you for your attention.\n\nYours faithfully,\n{{worker_name}}\nContact: {{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}

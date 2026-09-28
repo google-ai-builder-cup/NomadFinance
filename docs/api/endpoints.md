@@ -26,6 +26,7 @@ must say so explicitly in their own doc section below.
 | GET | `/api/v1/contracts/labor-law/{host_country}` | Firebase ID token | 60/min API-wide only (no Gemini call) | NF-P2-003 |
 | POST | `/api/v1/contracts/compare` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-004 |
 | POST | `/api/v1/contracts/translate` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-005 |
+| POST | `/api/v1/contracts/complaint` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-006 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -442,6 +443,65 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 503 / 504 / 500 | see Error format above | Gemini failure |
 
 ---
+
+## `POST /api/v1/contracts/complaint`
+
+Writes a formal complaint to the host country's labor authority for the clauses that break the law. Step 6 of Contract Shield (NF-P2-006), reasoning tier (`gemini-3.5-flash`, prompt `contract/complaint.v2`). Nothing is stored.
+
+The letter is written twice: `letter_text` in the language the authority works in (English, Korean, Malay or Japanese), and `worker_copy` in the worker's own language so the worker can read what they are sending. `worker_copy` is `null` when both are the same language. The worker's name, contact details and start date are left as `[bracketed blanks]`, in the same places in both texts.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `host_country` | `SG` / `KR` / `MY` / `JP` / `HK` / `AU` | From `/contracts/detect`, or the worker's answer |
+| `clauses` | array (1 to 200) | The `clauses` from `/contracts/compare`, unchanged. Only clauses with `risk` `danger` go in the letter; total clause text capped at 200,000 characters |
+| `contract_facts` | object, optional | `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period` from `/contracts/detect`; every field may be `null` |
+| `worker_language` | `en` / `hi` / `tl` / `id` / `ne` / `bn` | Language of the worker's own copy |
+
+- **Time:** see the runbook `docs/runbooks/NF-P2-006-contract-complaint.md` (default timeout 60 s per attempt, `GEMINI_COMPLAINT_TIMEOUT_SECONDS`).
+- **Response `200`:** `ContractComplaint` (`app/schemas/contract_complaint.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `template_type` | string | `general` for every violation |
+| `authority_name` | string | From the curated template, never from Gemini |
+| `authority_url` | string or null | Official page of the authority |
+| `channels` | array | Ways to reach it: `{kind: web/email/phone/post, value, note}` |
+| `letter_language` | `en` / `ko` / `ms` / `ja` | Language of `letter_text` |
+| `letter_text` | string | The letter to send |
+| `worker_language` | string | Same as the request |
+| `worker_copy` | string or null | The same letter in `worker_language` |
+| `violation_count` | number | How many danger clauses the letter covers |
+
+The authority, its channels and `template_type` come from `complaint_templates/{country}/types/general`, so a wrong phone number can only come from the curated file, never from a model answer. `authority_name`, `template_type` and `letter_text` are the `complaint` map of `reports/{lang}` (`docs/data-model/collections/contracts.md`).
+
+Example (bash; in PowerShell use `curl.exe` and a here-string or a JSON file):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"host_country": "SG", "worker_language": "hi",
+       "contract_facts": {"employer_name": "Acme Pte Ltd", "salary_amount": 650, "salary_currency": "SGD"},
+       "clauses": [{"index": 1, "number": "2", "page": 1,
+         "text": "The employer may keep the worker's passport.",
+         "category": "passport_retention", "risk": "danger", "law_reference": "Passports Act, s. 47",
+         "explanation": "The employer keeps your passport; the rule forbids it.",
+         "recommendation": "Ask to keep your own passport.", "block_ids": [3]}]}' \
+  http://127.0.0.1:8080/api/v1/contracts/complaint
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No complaint letter is available yet for <country>.` | The complaint templates are not loaded for this country |
+| 422 | `No term of this contract was found to break the law, so there is nothing to report.` | No clause has `risk` `danger` |
+| 422 | FastAPI validation list | No clauses, more than 200, over the character limit, or a country or language outside the supported codes |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
+| 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no letter, no worker copy, or left a `{{marker}}` unfilled |
+| 503 / 504 | see Error format | Gemini busy or timed out |
 
 ## `POST /api/v1/internal/refresh-rates` (internal)
 

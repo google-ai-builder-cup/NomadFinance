@@ -72,7 +72,7 @@ The document id is the language code. One document per language the user asked f
 | `full_text` | string | yes | The whole contract text in this language (the transcription for the source report, the translation otherwise) |
 | `summary` | string | yes | Short plain-language summary for the report header |
 | `clauses` | array of map | yes | One entry per clause, see below |
-| `complaint` | map or null | yes | `null` when no violation was found. Otherwise `{ "template_type": "salary_deductions", "authority_name": "...", "letter_text": "..." }` |
+| `complaint` | map or null | yes | `null` when no violation was found. Otherwise `{ "template_type": "general", "authority_name": "...", "letter_text": "...", "letter_language": "en", "worker_copy": "..." or null, "authority_url": "..." or null, "channels": [...] }`. `letter_text` is in the authority's language, `worker_copy` is the same letter in this report's language (null when they are the same). NF-P2-006 |
 | `content_hash` | string | yes | Copy of the contract's hash when this report was made |
 | `law_version` | number | yes | Labor-law version used |
 | `prompt_versions` | map | yes | As on the contract |

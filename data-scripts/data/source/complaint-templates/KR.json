@@ -1,0 +1,42 @@
+{
+  "country": "KR",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "South Korea: a petition about Labor Standards Act violations goes through the e-people portal to the labor consultation center and then to the competent local employment and labor office; MOEL's own petition form must be attached. Channels read from the pages listed in sources on 2026-09-28.",
+  "sources": [
+    "https://moel.go.kr/english/info/application.do",
+    "https://www.moel.go.kr/english/about/contact.do"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "고용노동부 관할 지방고용노동관서 (Ministry of Employment and Labor, local office)",
+      "authority_url": "https://www.moel.go.kr/english/",
+      "channels": [
+        {
+          "kind": "web",
+          "value": "https://www.epeople.go.kr/petition/pps/pps.npaid",
+          "note": "Petition about unpaid wages or other Labor Standards Act violations (e-people); download MOEL's petition form from the ministry website and attach it"
+        },
+        {
+          "kind": "phone",
+          "value": "1350",
+          "note": "Ministry of Employment and Labor customer counseling center"
+        }
+      ],
+      "letter_language": "ko",
+      "template_text": "{{authority_name}} 귀중\n\n제목: 근로계약 내용이 법령에 위반되는 것으로 보이는 사항에 대한 진정\n\n담당자님께,\n\n저는 {{employer_name}}에서 일하고 있는 {{worker_name}}입니다.\n\n제가 받은 근로계약서에 법령에 위반되는 것으로 보이는 다음 내용이 있어 진정드립니다.\n\n{{violation_summary}}\n\n계약 내용(참고):\n{{contract_details}}\n\n귀 기관에서 위 사항을 확인해 주시고, 제가 취해야 할 조치를 안내해 주시기 바랍니다. 필요하시면 근로계약서 사본을 제출하겠습니다.\n\n감사합니다.\n\n{{worker_name}}\n연락처: {{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}
