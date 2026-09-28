@@ -10,3 +10,12 @@ export function countryName(code: string, language: string): string {
     return code;
   }
 }
+
+/** Language name in the given UI language, from the browser's own locale data (NF-P2-013). */
+export function languageName(code: string, language: string): string {
+  try {
+    return new Intl.DisplayNames([language], { type: "language" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}

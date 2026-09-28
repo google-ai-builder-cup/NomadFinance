@@ -309,6 +309,18 @@
       "insurance_and_injury": "Asuransi dan cedera",
       "social_security": "Jaminan sosial",
       "other": "Lainnya"
+    },
+    "complaint": {
+      "heading": "Surat pengaduan",
+      "subtitle": "Surat ini melaporkan {{count}} klausul yang mungkin melanggar hukum ketenagakerjaan kepada {{authority}}.",
+      "blanksReminder": "Isi bagian [dalam tanda kurung] — nama, kontak, dan tanggal mulai kerja Anda — sebelum mengirimkannya.",
+      "sendNote": "Pratinjau ini untuk Anda baca. Unduh atau salin akan memberikan surat resmi dalam bahasa {{language}}.",
+      "download": "Unduh sebagai PDF",
+      "copy": "Salin surat",
+      "copied": "Surat disalin ke clipboard.",
+      "copyFailed": "Kami tidak dapat menyalin surat. Silakan salin secara manual.",
+      "printBlocked": "Izinkan pop-up untuk situs ini, lalu coba unduh lagi.",
+      "whereToSend": "Ke mana mengirimnya"
     }
   },
   "errors": {

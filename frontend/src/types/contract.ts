@@ -87,13 +87,16 @@ export interface ComplaintChannel {
   note: string | null;
 }
 
+/** The language a labor authority works in (`complaint_templates/{country}`, contracts.md). */
+export type LetterLanguage = "en" | "ko" | "ms" | "ja";
+
 /** The complaint letter stored on a report when a term broke the law (NF-P2-006). */
 export interface ContractComplaint {
   template_type: string;
   authority_name: string;
   authority_url: string | null;
   channels: ComplaintChannel[];
-  letter_language: string;
+  letter_language: LetterLanguage;
   letter_text: string;
   worker_language: LanguageCode;
   /** Same letter in `worker_language`, to read; null when that is the letter language. */

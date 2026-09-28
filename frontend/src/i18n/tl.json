@@ -309,6 +309,18 @@
       "insurance_and_injury": "Seguro at pinsala",
       "social_security": "Social security",
       "other": "Iba pa"
+    },
+    "complaint": {
+      "heading": "Sulat-reklamo",
+      "subtitle": "Iniuulat ng sulat na ito ang {{count}} sugnay na maaaring lumabag sa batas sa paggawa, sa {{authority}}.",
+      "blanksReminder": "Punan ang mga detalye sa loob ng [bracket] — ang iyong pangalan, contact details at petsa ng pagsisimula — bago ito ipadala.",
+      "sendNote": "Ang preview na ito ay para sa iyong pagbasa. Ang i-download o kopyahin ay ang opisyal na sulat sa {{language}}.",
+      "download": "I-download bilang PDF",
+      "copy": "Kopyahin ang sulat",
+      "copied": "Nakopya ang sulat sa clipboard.",
+      "copyFailed": "Hindi namin nakopya ang sulat. Paki-kopya na lang ito nang manu-mano.",
+      "printBlocked": "Paki-allow ang pop-ups para sa site na ito, pagkatapos ay subukan ulit i-download.",
+      "whereToSend": "Saan ito ipapadala"
     }
   },
   "errors": {
