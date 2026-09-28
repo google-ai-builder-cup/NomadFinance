@@ -71,7 +71,9 @@ class ContractAnalysis(BaseModel):
     risk_level: ClauseRisk
     clause_counts: ClauseCounts
     report_language: ReportLanguage = Field(description="The worker's report language.")
-    report_languages: list[ReportLanguage] = Field(description="Languages with a stored report.")
+    report_languages: list[ReportLanguage] = Field(
+        description="Languages with a stored report, alphabetically sorted (not source-first)."
+    )
     complaint_pending: bool = Field(
         default=False,
         description="The letter failed for a passing reason; analyze again to write only it.",

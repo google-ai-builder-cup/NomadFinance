@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-09-28, after NF-P2-007 (Contract Shield pipeline and caching).
+Last updated: 2026-09-28, after NF-P2-008 (Contract Shield E2E testing).
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -58,6 +58,7 @@ Last updated: 2026-09-28, after NF-P2-007 (Contract Shield pipeline and caching)
 | D-59 | NF-P2-007 | `backend/app/api/v1/contracts.py` is 314 lines (the per-step endpoints of NF-P2-001 to 006), over the ~300-line guideline. Split it, for example the translate and complaint endpoints into their own router file like `contract_analysis.py`. | Whoever next adds a contract endpoint | Open |
 | D-55 | NF-P2-002 | `detect_contract` returns `host_country: null` for a contract from another country or one that shows none, and `language: null` when the code is unusable. Someone has to decide what happens next: fall back to `users/{uid}.host_country` and `preferred_language`, or ask the worker to pick (the upload form of NF-P2-009 has a country and language selector). | Pipeline owner (D-53), NF-P2-009 (upload UI, Aditya) | Done (NF-P2-007): country = the worker's choice, else detected, else the profile's `host_country`, else stop with `country_unknown` (the app asks); job and report language fall back the same way |
 | D-56 | NF-P2-002 | `salary_period` can now be `day`. The Financial Identity step that logs a contract's salary as verified employment (NF-P3-024) must decide how to show or convert a day or hour rate; the `verified_employment` map in `collections/fib.md` has no period field. | NF-P3-024 (Devam) | Open |
+| D-60 | NF-P2-008 | `ContractAnalysis.report_languages` is alphabetically sorted (`report_store.py`: `sorted(set(...) | {...})`), not source-language-first. Every earlier test happened to use a worker language that sorts after "en" (hi, tl, id, ne), so `["en", lang]` always looked source-first by luck; a Bengali-preferring worker (KR E2E scenario) exposed `["bn", "en"]`. Not a functional bug — just undocumented — so field descriptions in `schemas/contract_pipeline.py`, `docs/api/endpoints.md` and `collections/contracts.md` now say so explicitly. | NF-P2-012 (language switcher, Pranjal): don't assume index 0 is the source language | Done (NF-P2-008: docs fixed in the same change; no code change needed, the sort is intentional) |
 
 ## 3. Code fixes not yet assigned to a task
 

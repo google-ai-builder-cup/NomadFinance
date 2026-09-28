@@ -183,3 +183,7 @@ POST /contracts/{id}/reports/{language}              report_store.ensure_report
 - **Cloud Run:** everything runs inside the request, because Cloud Run gives CPU only to open requests. The request timeout is 900 s (`scripts/deploy_manual.sh`); a normal analysis takes 30 s to 2 minutes.
 - **Cache key:** `content_hash` + `law_version` + `prompt_versions`, and per report its language (`docs/data-model/versioning.md`). Per user on purpose: one worker's analysis is never served to another.
 - **Account deletion** (NF-P1-023) already removes `users/{uid}` with all contracts, extractions and reports.
+
+## E2E testing (NF-P2-008)
+
+The full pipeline was exercised for all 5 target countries (SG, AU, KR, MY, JP) against real Firestore-backed repositories and real curated data, with Gemini's answers scripted (no live-quota cost) — see `docs/runbooks/NF-P2-008-contract-e2e-testing.md`. It found and closed **D-60** (`report_languages` is alphabetically sorted, not source-first). The real-Gemini live pass for AU, KR, MY and JP is written and ready but blocked by D-58 (shared quota exhausted); SG's live path is already covered by NF-P2-007's own test.

@@ -34,7 +34,7 @@ The uploaded file itself is **not kept** (NF-P2-007): step 1 reads it during the
 | `health_score` | number | when completed | 0 to 100, where 100 is safest (`risk_scorer.py`, NF-P2-004) |
 | `risk_level` | string | when completed | `safe`, `caution`, `danger` (the design doc's Safe / Caution / Danger) |
 | `clause_counts` | map | when completed | `{ "safe": 9, "caution": 3, "danger": 1 }` |
-| `report_languages` | array of string | when completed | Languages that already have a `reports/{lang}` document |
+| `report_languages` | array of string | when completed | Languages that already have a `reports/{lang}` document, alphabetically sorted (not source-language-first; found by NF-P2-008 while testing a worker whose language sorts before "en") |
 | `law_version` | number | when completed | `labor_laws/{country}/_meta/current.version` used for the analysis |
 | `prompt_versions` | map | yes | Prompt file versions used. After upload only `contract.extract`; after analysis all five, for example `{ "contract.extract": 2, "contract.detect": 2, "contract.compare": 1, "contract.translate": 1, "contract.complaint": 2 }` |
 | `models` | map | when completed | Model per tier, for example `{ "reasoning": "gemini-3.5-flash" }` (ADR-002) |
