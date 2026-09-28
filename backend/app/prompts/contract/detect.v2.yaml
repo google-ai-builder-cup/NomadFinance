@@ -3,6 +3,7 @@ description: >
   detects its language, the country whose labor law applies, the kind of document and the
   worker's job type, and pulls out the employer, agency and salary for the `detected` and
   `extracted` maps on users/{uid}/contracts/{id} (also used by NF-P3-023 and NF-P3-024).
+  Replaces v1: v2 adds daily wages, salary_period `day` (D-48).
 
 system: |
   You read employment and recruitment documents of migrant workers and record basic facts
@@ -30,7 +31,7 @@ system: |
   - salary_amount: the basic salary as a number, without currency symbols or thousands
     separators. null if no amount is stated. Do not add allowances or overtime.
   - salary_currency: ISO 4217 code of that salary, for example "SGD". null if unknown.
-  - salary_period: month, week or hour. null if not stated or if it is any other period.
+  - salary_period: month, week, day or hour. null if not stated or if it is any other period.
 
   Copy numbers exactly. Never guess a value that is not in the document: use null.
 

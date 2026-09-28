@@ -36,7 +36,7 @@ The pipeline code that calls these prompts belongs to each step's task; this tas
 | File | Purpose |
 |---|---|
 | `backend/app/prompts/loader.py` | `PromptTemplate`: `variables`, startup checks, `render_user(**values)`, `key`, `version`. Backward compatible (`extract.v1` and `extractor.py` unchanged) |
-| `backend/app/prompts/contract/{detect,compare,translate,complaint}.v1.yaml` | Contract Shield steps (NF-P2-002, -004, -005, -006) |
+| `backend/app/prompts/contract/{detect,compare,translate,complaint}.v1.yaml` | Contract Shield steps (NF-P2-002, -004, -005, -006). `detect` is now `detect.v2` (NF-P2-002) |
 | `backend/app/prompts/remittance/recommend.v1.yaml` | Recommendation in the worker's language (NF-P2-016) |
 | `backend/app/prompts/radar/{extract_entity,validate,categorize}.v1.yaml` | Report intake (NF-P3-001) |
 | `backend/app/prompts/fib/{extract_bill,categorize,synthesize_narrative}.v1.yaml` | Bill reading, categories, narrative (NF-P3-011, -012, -013) |
@@ -77,7 +77,7 @@ per request
 
 | Step task | Build with |
 |---|---|
-| NF-P2-002 detect | Response fields: `language`, `host_country` (6 codes or null), `host_country_evidence`, `document_kind`, `job_type`, `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period`. Daily wages come back null: D-48 |
+| NF-P2-002 detect | Response fields: `language`, `host_country` (6 codes or null), `host_country_evidence`, `document_kind`, `job_type`, `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period` (`month`, `week`, `day`, `hour`; `day` added in NF-P2-002, prompt `detect.v2`) |
 | NF-P2-004 compare | `clauses[]` (`index`, `text`, `category`, `risk`, `law_reference`, `explanation`, `recommendation`) + `summary`. Pass the country's rules as JSON in `law_rules_json`, and the user's `job_type` so the right variant is used. Slow: D-08 |
 | NF-P2-005 translate | Send `full_text`, `summary`, `clauses` as JSON; the same structure comes back with text translated and codes untouched. Normalise `\n` (D-50) |
 | NF-P2-006 complaint | `template_json` from `complaint_templates/{country}/types/{type}`, `violations_json` = danger clauses, `contract_facts_json` = the `extracted` map. Returns `template_type`, `authority_name`, `letter_text` with [bracketed] blanks for the worker's own details |
@@ -135,7 +135,7 @@ class Detected(BaseModel):
     salary_currency: str | None
 
 async def main() -> None:
-    prompt = load_prompt("contract", "detect", 1)
+    prompt = load_prompt("contract", "detect", 2)
     result = await get_gemini_client().generate_structured(
         operation=prompt.key,
         tier=ModelTier.EXTRACTION,

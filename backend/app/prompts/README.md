@@ -9,7 +9,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | File | Step (task) | Tier (ADR-002) | Variables |
 |---|---|---|---|
 | `contract/extract.v2` | Transcribe the upload as ordered blocks: clauses, tables, pages (NF-P1-006, NF-P2-001; v1 removed) | extraction | none: the file is a separate part |
-| `contract/detect.v1` | Language, host country, document kind, job type, employer/agency/salary (NF-P2-002) | extraction | `contract_text` |
+| `contract/detect.v2` | Language, host country, document kind, job type, employer/agency/salary incl. daily wages (NF-P2-002; v1 removed) | extraction | `contract_text` |
 | `contract/compare.v1` | Clause-by-clause check against the labor-law rules (NF-P2-004) | reasoning | `job_type`, `host_country_name`, `law_rules_json`, `contract_text` |
 | `contract/translate.v1` | Report into the worker's language (NF-P2-005, NF-P2-012) | classification | `target_language`, `report_json` |
 | `contract/complaint.v1` | Complaint letter from the authority template (NF-P2-006) | reasoning | `template_json`, `violations_json`, `contract_facts_json` |

@@ -22,6 +22,7 @@ must say so explicitly in their own doc section below.
 |---|---|---|---|---|
 | GET | `/health` | Public | None | NF-P1-001 |
 | POST | `/api/v1/contracts/extract` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P1-006 |
+| POST | `/api/v1/contracts/detect` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-002 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -172,6 +173,61 @@ Medical examination | SGD 120 | Employer" }
 | 415 | `Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).` | Any other file type, including Word files and renamed text files |
 | 422 | `No readable document found. ...` | Gemini found no document text (selfie, landscape, blank page) |
 | 422 | FastAPI validation list | No `file` field in the form |
+| 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
+
+## `POST /api/v1/contracts/detect`
+
+Finds a contract's language, the country whose labor law applies, the kind of document and the worker's job type, and reads the employer, agency and basic salary when the document states them. Step 2 of Contract Shield (NF-P2-002), Gemini extraction tier (prompt `contract/detect.v2`). Send the `text` returned by `/contracts/extract`. Nothing is stored.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request:** JSON `{ "text": "<whole contract text, original language>" }`. Surrounding whitespace is trimmed; the text must not be empty and at most 200,000 characters (a 15-page contract is about 60,000).
+- **Time:** about 1.5 to 2 s.
+- **Response `200`:** `DetectedContract` (`app/schemas/contract.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `language` | string or null | ISO 639-1 code of the main language (`en`, `ms`, `ko`, ...); null if it could not be told |
+| `host_country` | `SG` / `KR` / `MY` / `JP` / `HK` / `AU` or null | Where the work is done. **Null for a contract from any other country or one that shows none: ask the worker** |
+| `host_country_evidence` | string | What showed the country, e.g. `"laws of the Republic of Singapore"`; empty when `host_country` is null |
+| `document_kind` | `employment_contract` / `recruitment_agreement` / `loan_agreement` / `other` | Loan agreements are not compared against labor law |
+| `job_type` | `domestic_worker` / `manufacturing_worker` / `care_worker` / `plantation_worker` / `construction_worker` / `working_holiday` / `other` | Same values as the profile's job type |
+| `employer_name`, `agency_name` | string or null | As written in the document |
+| `salary_amount` | number or null | Basic pay only, without allowances or overtime |
+| `salary_currency` | string or null | ISO 4217 code, e.g. `SGD` |
+| `salary_period` | `month` / `week` / `day` / `hour` or null | Null when not stated or any other period |
+
+Example (bash; in PowerShell use `curl.exe` and a here-string or a JSON file):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"text": "EMPLOYMENT AGREEMENT - CONSTRUCTION LABOURER\n\nEmployer: Southern Cross Builders Pty Ltd, Sydney NSW, Australia\n\n2. Pay: AUD 230 per day worked, paid weekly.\n3. Governed by the Fair Work Act 2009 (Cth)."}' \
+  http://127.0.0.1:8080/api/v1/contracts/detect
+```
+
+Real output (2026-09-28):
+
+```json
+{
+  "language": "en",
+  "host_country": "AU",
+  "host_country_evidence": "Fair Work Act 2009 (Cth)",
+  "document_kind": "employment_contract",
+  "job_type": "construction_worker",
+  "employer_name": "Southern Cross Builders Pty Ltd",
+  "agency_name": null,
+  "salary_amount": 230.0,
+  "salary_currency": "AUD",
+  "salary_period": "day"
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | `Missing bearer token` / `Invalid authentication token` / ... | No, invalid, expired or revoked token |
+| 422 | FastAPI validation list | No `text`, empty or whitespace-only text, or more than 200,000 characters |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 Gemini calls a minute or 60 API calls a minute |
 | 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
 
 ---

@@ -8,8 +8,9 @@ from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
-from app.schemas.contract import ContractExtractResponse
+from app.schemas.contract import ContractDetectRequest, ContractExtractResponse, DetectedContract
 from app.schemas.user import AuthenticatedUser
+from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.utils.validators import sniff_document_mime_type
 
@@ -82,3 +83,34 @@ async def extract_contract_text(
         text=text,
         blocks=extracted.blocks,
     )
+
+
+_DETECT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    422: {"description": "No text, or text longer than 200,000 characters"},
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/detect",
+    response_model=DetectedContract,
+    responses=_DETECT_ERROR_RESPONSES,
+    summary="Detect the language, host country and kind of a contract",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def detect_contract_facts(
+    body: ContractDetectRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> DetectedContract:
+    """Find the contract's language, the country whose labor law applies, its kind and job type.
+
+    Send the `text` returned by `/contracts/extract`. Also returns the employer, agency and
+    salary when the document states them. `host_country` is null when the contract is for a
+    country outside SG, KR, MY, JP, HK, AU or shows none: ask the worker. Nothing is stored.
+    """
+    return await detect_contract(body.text, gemini)
