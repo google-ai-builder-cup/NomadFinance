@@ -22,14 +22,14 @@ users/{uid}/contracts/{contractId}/reports/{lang}   heavy: the full report in on
 | `page_count` | number | no | From the extraction step (`ExtractedContract.page_count`, NF-P2-001) |
 | `storage_path` | string | no | Cloud Storage path of the uploaded file. Absent when the file was not kept. |
 | `content_hash` | string | yes | SHA-256 (hex) of the file bytes. Part of the cache key. |
-| `detected` | map | after step 2 | `language`, `host_country`, `contract_type` (NF-P2-002) |
-| `extracted` | map | after analysis | `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period` (`month`, `week`, `hour`). Any key may be absent. Feeds Radar (NF-P2-021) and Financial Identity (NF-P3-024). |
+| `detected` | map | after step 2 | `language` (ISO 639-1), `host_country` (`SG`, `KR`, `MY`, `JP`, `HK`, `AU`), `document_kind` (`employment_contract`, `recruitment_agreement`, `loan_agreement`, `other`), `job_type` (as `users.job_type`). Any key may be null: `host_country` is null for a contract from another country or one that shows none (NF-P2-002) |
+| `extracted` | map | after step 2 | `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period` (`month`, `week`, `day`, `hour`). Any key may be absent (NF-P2-002). Feeds Radar (NF-P2-021) and Financial Identity (NF-P3-024). |
 | `health_score` | number | when completed | 0 to 100, where 100 is safest. How it is computed belongs to NF-P2-004. |
 | `risk_level` | string | when completed | `safe`, `caution`, `danger` (the design doc's Safe / Caution / Danger) |
 | `clause_counts` | map | when completed | `{ "safe": 9, "caution": 3, "danger": 1 }` |
 | `report_languages` | array of string | when completed | Languages that already have a `reports/{lang}` document |
 | `law_version` | number | when completed | `labor_laws/{country}/_meta/current.version` used for the analysis |
-| `prompt_versions` | map | when completed | Prompt file versions used, for example `{ "contract.extract": 1, "contract.compare": 1 }` |
+| `prompt_versions` | map | when completed | Prompt file versions used, for example `{ "contract.extract": 2, "contract.detect": 2, "contract.compare": 1 }` |
 | `error` | map | when failed | `{ "step": "compare", "code": "gemini_unavailable" }`. No stack traces. |
 | `created_at`, `updated_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
@@ -45,14 +45,14 @@ users/{uid}/contracts/{contractId}/reports/{lang}   heavy: the full report in on
   "page_count": 4,
   "storage_path": "contracts/uid_priya_demo/c_01/sg_domestic_worker.pdf",
   "content_hash": "9f2c1b7e4d0a8c53e6b1f9a2d4c7e8b0a1f3d5c6b7e9a0c2d4f6e8a1b3c5d7e9",
-  "detected": { "language": "en", "host_country": "SG", "contract_type": "domestic_worker" },
+  "detected": { "language": "en", "host_country": "SG", "document_kind": "employment_contract", "job_type": "domestic_worker" },
   "extracted": { "employer_name": "Example Household", "salary_amount": 650, "salary_currency": "SGD", "salary_period": "month" },
   "health_score": 58,
   "risk_level": "caution",
   "clause_counts": { "safe": 9, "caution": 3, "danger": 1 },
   "report_languages": ["en", "hi"],
   "law_version": 1,
-  "prompt_versions": { "contract.extract": 1, "contract.compare": 1 },
+  "prompt_versions": { "contract.extract": 2, "contract.detect": 2, "contract.compare": 1 },
   "created_at": "2026-09-26T10:00:00Z",
   "updated_at": "2026-09-26T10:01:12Z",
   "schema_version": 1

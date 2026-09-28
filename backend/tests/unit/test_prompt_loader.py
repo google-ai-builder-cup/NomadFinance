@@ -15,7 +15,7 @@ PROMPTS_DIR = Path(loader.__file__).resolve().parent
 # version adds a line here.
 EXPECTED_PROMPTS = {
     "contract/extract.v2",
-    "contract/detect.v1",
+    "contract/detect.v2",
     "contract/compare.v1",
     "contract/translate.v1",
     "contract/complaint.v1",
@@ -113,7 +113,7 @@ def test_render_user_fills_placeholders() -> None:
 
 
 def test_render_user_keeps_placeholders_in_values_literal() -> None:
-    prompt = load_prompt("contract", "detect", 1)
+    prompt = load_prompt("contract", "detect", 2)
 
     rendered = prompt.render_user(contract_text="Salary ${salary} and $5 deposit")
 
@@ -128,7 +128,7 @@ def test_render_user_rejects_missing_variable() -> None:
 
 
 def test_render_user_rejects_unexpected_variable() -> None:
-    prompt = load_prompt("contract", "detect", 1)
+    prompt = load_prompt("contract", "detect", 2)
 
     with pytest.raises(ValueError, match="unexpected \\['language'\\]"):
         prompt.render_user(contract_text="...", language="hi")
