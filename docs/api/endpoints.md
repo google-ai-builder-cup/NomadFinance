@@ -31,6 +31,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts/{contract_id}/analyze` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/contracts/{contract_id}/reports/{language}` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/remittance/compare` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-014 |
+| GET | `/api/v1/remittance/trends` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-015 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -670,6 +671,85 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 404 | `No prices are available yet for <corridor>.` | The corridor is not loaded in Firestore (data-scripts loader, NF-P1-016), or none of its services can be compared |
 | 422 | `Enter an amount between 65.00 and 6,450.00 SGD.` | The amount is outside the limits of that corridor |
 | 422 | FastAPI validation list | Missing or unknown `corridor_id`, or an amount that is missing, not a number, zero, negative, `NaN` or infinite |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+## `GET /api/v1/remittance/trends`
+
+A corridor's mid-market exchange rate over time, one value per market day, for the trend chart, plus the weekday that is usually best to send on. Steps 4 and 7 of the Remittance X-Ray pipeline (NF-P2-015, `docs/pipelines/remittance-xray.md`). One Firestore read (`rates_history/{pair}`, its `daily` map), no Gemini call. Nothing is stored.
+
+The rates are the European Central Bank's reference rates (via Frankfurter): backfilled for past days (`data-scripts/src/loaders/frankfurter_backfill.py`) and kept up by the rate cron. The ECB publishes on working days only, so there are no weekend points. `providers` lists every source used in the period; show "Rates by Exchange Rate API" when it contains `exchangerate_api` (D-35).
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Query parameters:**
+
+| Name | Type | Description |
+|---|---|---|
+| `corridor_id` | `SG-PH` / `SG-IN` / `AU-IN` / `MY-ID` / `JP-PH` / `AU-PH`, required | Sending country and receiving country |
+| `days` | `30` / `90` / `180` / `365`, default `90` | Period of the `points` and the `summary` |
+
+- **Response `200`:** `RemittanceTrends` (`app/schemas/remittance_trends.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `corridor_id`, `pair`, `base_currency`, `quote_currency`, `days` | | The request, with the pair id (`AUD_INR`) and its currencies |
+| `points` | array of `{date, rate}` | One per market day in the period, oldest first. `rate` = units received per 1 sent, so higher is better for the worker |
+| `summary` | object or `null` | `first`, `latest`, `low`, `high` (each `{date, rate}`), `change_pct` (latest against first; above 0 = the recipient now gets more), `average`. `null` when the period has no points |
+| `last_date` | date | The newest day stored, even if it is outside the period (a stalled cron shows here) |
+| `best_day` | object or `null` | `weekday` (`monday` … `friday`), `advantage_pct`, `weeks`, `beat_share`: see below |
+| `best_day_reason` | `not_enough_history` / `no_clear_pattern` / `null` | Why `best_day` is null |
+| `weeks_analysed` | integer | Weeks with at least 3 market days in the last 52 weeks |
+| `weekdays` | array | The same four fields for all five weekdays, Monday first; empty with `not_enough_history` |
+| `providers` | array of string | Rate sources used in `points`, e.g. `["frankfurter"]` |
+
+**How the best day is found.** Each market day of the last 52 weeks is compared with the average rate of its own week (Monday to Friday), so a rate that rises or falls over the year does not favour the days that come later in the week.
+- `advantage_pct` is a weekday's average percentage above its week's average.
+- `beat_share` is the share of weeks in which it was above that average.
+- A weekday is named only when:
+  - at least 8 weeks count, otherwise `not_enough_history`
+  - it leads by at least 0.05 % and in more than half of the weeks, otherwise `no_clear_pattern`
+- The period chosen with `days` does not change the best day.
+- Days are market dates (the rate's own date), not the worker's local weekday.
+
+On the ECB data of 2025-09 to 2026-09 this names Wednesday for AU-IN (0.085 %, 65 % of weeks) and Thursday for MY-ID. The other four corridors have no clear pattern. The app must say "no reliable best day" rather than invent one.
+
+Example: AU-IN, last 30 days (real ECB data; `points` abridged).
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN"   "http://127.0.0.1:8080/api/v1/remittance/trends?corridor_id=AU-IN&days=30"
+```
+
+```json
+{
+  "corridor_id": "AU-IN", "pair": "AUD_INR", "base_currency": "AUD", "quote_currency": "INR",
+  "days": 30,
+  "points": [{"date": "2026-08-31", "rate": 68.161}, {"date": "2026-09-01", "rate": 67.807}],
+  "summary": {
+    "first": {"date": "2026-08-31", "rate": 68.161}, "latest": {"date": "2026-09-28", "rate": 67.418},
+    "change_pct": -1.09, "low": {"date": "2026-09-25", "rate": 67.361},
+    "high": {"date": "2026-09-09", "rate": 68.713}, "average": 68.095143
+  },
+  "last_date": "2026-09-28",
+  "best_day": {"weekday": "wednesday", "advantage_pct": 0.085, "weeks": 52, "beat_share": 0.65},
+  "best_day_reason": null,
+  "weeks_analysed": 52,
+  "weekdays": [
+    {"weekday": "monday", "advantage_pct": -0.066, "weeks": 50, "beat_share": 0.48},
+    {"weekday": "tuesday", "advantage_pct": -0.109, "weeks": 52, "beat_share": 0.35},
+    {"weekday": "wednesday", "advantage_pct": 0.085, "weeks": 52, "beat_share": 0.65},
+    {"weekday": "thursday", "advantage_pct": 0.044, "weeks": 50, "beat_share": 0.52},
+    {"weekday": "friday", "advantage_pct": 0.048, "weeks": 49, "beat_share": 0.51}
+  ],
+  "providers": ["frankfurter"]
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No rate history is available yet for <corridor>.` | Nothing in `rates_history/{pair}.daily`: run the backfill, or wait for the cron |
+| 422 | FastAPI validation list | Missing or unknown `corridor_id`, or `days` not one of 30, 90, 180, 365 |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ## `POST /api/v1/internal/refresh-rates` (internal)

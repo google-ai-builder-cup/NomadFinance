@@ -50,18 +50,44 @@ The rate value is illustrative.
 
 ## `rates_history/{pair}` and `rates_history/{pair}/points/{pointId}`
 
-The parent `rates_history/{pair}` is a small header: `{ "base_currency": "SGD", "quote_currency": "PHP", "updated_at": ... }`.
+The parent `rates_history/{pair}` is the header, and it holds the **daily series** that the trend chart, the best day to send (NF-P2-015) and the savings calculation (NF-P2-022) read. One document per pair, so a year of history is one read instead of thousands of points.
 
-Each point is one observation, used for trend charts, "best day to send" and the "you would have saved" calculation.
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `base_currency`, `quote_currency` | string | yes | ISO-4217, as in `rates_cache` |
+| `updated_at` | timestamp | yes (cron) | Last cron write; the backfill leaves it alone |
+| `daily` | map | yes | Key: the market day `YYYY-MM-DD`, the provider's own `rate_date`. Value: `{ rate, provider, source }`, with `source` `cron` or `backfill` |
 
-**Point id:** the UTC hour, `2026-09-27T08`. It is derived from the time, so running the cron twice in the same hour overwrites the same point instead of adding a duplicate. Backfilled daily points use hour `00`, for example `2026-03-01T00`.
+**Example** — `rates_history/SGD_PHP` (two of about 255 days a year; the 2026-09-25 rate is illustrative)
+
+```json
+{
+  "base_currency": "SGD",
+  "quote_currency": "PHP",
+  "updated_at": "2026-09-28T10:00:02Z",
+  "daily": {
+    "2026-09-25": { "rate": 48.87, "provider": "frankfurter", "source": "backfill" },
+    "2026-09-28": { "rate": 48.906, "provider": "frankfurter", "source": "cron" }
+  }
+}
+```
+
+How the two writers use `daily`:
+- **Cron.** Every run merges its rate under the provider's `rate_date` (`set(..., merge=True)`, so other days stay). The ECB publishes on working days, so a weekend run rewrites Friday instead of adding a Saturday. A provider without a usable date is filed under the run's UTC day.
+- **Backfill** (`data-scripts/src/loaders/frankfurter_backfill.py`, D-36). Adds only the days the map lacks, so the cron's values win and a re-run changes nothing.
+
+Size: about 255 entries (a few KB) a year. Each entry adds indexed fields, so after roughly 13 years the header nears Firestore's 40,000 index entries per document. Add a single-field index exemption on `daily` before that; nothing queries it.
+
+Each point below is one raw observation of the cron, kept for audit and finer charts later.
+
+**Point id:** the UTC hour, `2026-09-27T08`. It is derived from the time, so running the cron twice in the same hour overwrites the same point instead of adding a duplicate. Only the cron writes points; the backfill writes the `daily` map instead.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `at` | timestamp | yes | The observation time (start of the hour) |
 | `rate` | number | yes | Same meaning as `rates_cache.rate` |
 | `provider` | string | yes | Provider that answered |
-| `source` | string | yes | `cron` or `backfill` |
+| `source` | string | yes | `cron` |
 
 **Example** — `rates_history/SGD_PHP/points/2026-09-27T08`
 
@@ -87,11 +113,11 @@ If storage ever matters, a TTL policy on a `delete_after` field can prune old ho
 ### Notes
 
 - **Cron interval.** The design doc and diagrams say every 2 hours; NF-P1-019 says hourly. The point id works for either. The schedule itself is set in Cloud Scheduler, not here.
-- **Backfill.** `data-scripts/src/loaders/frankfurter_backfill.py` (stub) fills daily points so the trend chart has a history on day one. Set `source: "backfill"`.
+- **Backfill.** `data-scripts/src/loaders/frankfurter_backfill.py` fills the header's `daily` map with the ECB's daily rates (default the last 365 days), so the trend chart has a history on day one. See the header above.
 - **Rate for the recipient-receives calculation.** Use the corridor's RPW `fx_rate` and `interbank_rate` from [corridors](corridors.md) for the provider comparison; `rates_cache` is the current mid-market reference and the base for savings and trend features.
 
 ## Access and tasks
 
 - **Access:** signed-in users read; only the cron and backfill write.
-- **Index:** none beyond the automatic ones. `points` are read with a range on `at`, which the automatic single-field index handles.
+- **Index:** none beyond the automatic ones. The trends endpoint reads the header only; `points` can be read with a range on `at`, which the automatic single-field index handles.
 - **Tasks:** NF-P1-019 (cron and endpoint), NF-P2-014 (comparison), NF-P2-015 (trends endpoint), NF-P2-020 (trend chart), NF-P2-022 (savings calculator).

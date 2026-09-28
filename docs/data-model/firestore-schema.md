@@ -39,7 +39,7 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `users/{uid}/financial_profile/current` | `current` | Computed financial identity | FIB | Backend, weekly (NF-P3-013) | [fib](collections/fib.md) |
 | `corridors/{corridorId}` | `SG-PH` style | RPW provider prices for one corridor | Remittance | Data script (NF-P1-016) | [corridors](collections/corridors.md) |
 | `rates_cache/{pair}` | `SGD_PHP` style | Latest live FX rate | Remittance | Cron (NF-P1-019) | [rates_cache](collections/rates_cache.md) |
-| `rates_history/{pair}` and `.../points/{pointId}` | hour or day | FX rate history for trend charts | Remittance | Cron, backfill | [rates_cache](collections/rates_cache.md) |
+| `rates_history/{pair}` and `.../points/{pointId}` | pair; hour | FX rate history: the daily series on the header (trends, savings), hourly cron points below | Remittance | Cron, backfill (header only) | [rates_cache](collections/rates_cache.md) |
 | `labor_laws/{country}` | ISO-2 country | Country header | Contract Shield | Data script (NF-P1-018) | [labor_laws](collections/labor_laws.md) |
 | `labor_laws/{country}/_meta/current` | `current` | Version for cache invalidation | Contract Shield | Data script (NF-P1-018) | [labor_laws](collections/labor_laws.md) |
 | `labor_laws/{country}/rules/{category}` | one of 15 category ids | One curated legal rule | Contract Shield | Data script (NF-P1-018) | [labor_laws](collections/labor_laws.md) |

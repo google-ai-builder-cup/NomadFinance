@@ -11,10 +11,10 @@ Each step's owner adds its section below when the step is built.
 | 1 | Verify the caller | NF-P1-005 | none | `dependencies.get_current_user` | Built |
 | 2 | Fetch the corridor's providers | NF-P2-014 (Pranjal) | none (Firestore) | `repositories/corridor_repo.py` | Built |
 | 3 | Fetch the live rate | NF-P2-014 (Pranjal) | none (Firestore) | `repositories/rate_repo.py` `get_rate` | Built |
-| 4 | Fetch historical rates | NF-P2-015 (Devam) | none (Firestore) | `services/remittance/trends.py` | Not started |
+| 4 | Fetch historical rates | NF-P2-015 (Devam) | none (Firestore) | `services/remittance/trends.py` | Done: one read of `rates_history/{pair}.daily` |
 | 5 | Calculate the true cost of each provider | NF-P2-014 (Pranjal) | none | `services/remittance/engine.py` | Built |
 | 6 | Rank by what the recipient receives | NF-P2-014 (Pranjal) | none | `services/remittance/engine.py` | Built |
-| 7 | Detect the trend, best day to send | NF-P2-015 (Devam) | none | `services/remittance/trends.py` | Not started |
+| 7 | Detect the trend, best day to send | NF-P2-015 (Devam) | none | `services/remittance/trends.py` | Done |
 | 8 | Historical savings against the worker's choice | NF-P2-022 (Devam) | none | not yet named | Not started |
 | 9 | Recommendation, in the worker's language | NF-P2-016 (Pranjal) | classification | `services/remittance/recommender.py`, `remittance/recommend.v1` | Not started |
 | 10 | Translate | folded into step 9 | | `recommend.v1` writes in the worker's language directly, saving one call | Not needed |
@@ -33,11 +33,12 @@ POST /api/v1/remittance/compare   {corridor_id, amount}
   5 for each provider: fee + rate markup at this amount   → total cost, recipient receives
   6 rank the comparable providers; list the others last   → RemittanceComparison
   ─ later steps, each its own call, reading the same stored data ─
-  4, 7  GET .../trends    rates_history/{pair}/points     → series, best weekday
+  4, 7  GET .../trends    rates_history/{pair}.daily      → series, summary, best weekday
   8     GET .../savings   history + the survey's margins  → "you would have saved X"
   9     recommend(comparison, trend?, savings?, language) → best_provider, headline, explanation, timing_tip
   -     POST .../log      users/{uid}/transfers           → feeds Financial Identity
-cron (every 1 to 2 hours): refresh_rates → rates_cache + rates_history
+cron (every 1 to 2 hours): refresh_rates → rates_cache + rates_history (daily map + hourly point)
+backfill (once, data-scripts): Frankfurter ECB daily rates → rates_history/{pair}.daily
 ```
 
 ## Where the prices come from
@@ -84,7 +85,8 @@ A flat fee weighs more on a small amount: a 5 SGD fee is 2 % of 250 and 0.5 % of
 
 These are the contracts the built step offers. Their owners decide the details.
 
-- **Trends and best day (steps 4 and 7, NF-P2-015).** Reads `rates_history/{pair}/points` for the same pair (`constants.pair_for_corridor`). A separate call from the comparison, so a slow history read never delays the table. The comparison already carries `rate.pair`.
+- **Trends and best day (steps 4 and 7, NF-P2-015).** Built: see "Trends and best day" below.
+- **Savings and recommendation inputs.** NF-P2-022 reads the same daily series (`RateRepository.get_history`, `trends.daily_rates`). NF-P2-016 can pass `best_day` (or `best_day_reason`) to the prompt as its `timing_tip`; it must not claim a best day when `best_day` is null.
 - **Savings (step 8, NF-P2-022).** Uses the history and the survey's margins; the cost model above is the same function (`engine._terms`) and should be reused, not copied.
 - **Recommendation (step 9, NF-P2-016).** `recommend.v1` takes the comparison as JSON (`<comparison>`) and returns `best_provider`, `headline`, `explanation`, `timing_tip`, in the worker's language. `RemittanceComparison` already holds everything the prompt names: the amount and corridor, providers ranked by what the recipient receives, fee and markup per provider, `extra_vs_worst` and `mid_market_receives`. Trend and savings are added by their steps. The prompt copies numbers, it never calculates them, so the figures come from this step. Keep it a separate call from `/compare`: it is the only step that needs Gemini.
 - **Radar flags (NF-P3-022).** A `flagged` field per firm can be added to `ProviderResult` when `radar_entities/` exists.
@@ -101,3 +103,28 @@ These are the contracts the built step offers. Their owners decide the details.
 | 429 | Over the API-wide budget (60 a minute) |
 
 A damaged corridor document is a server error (500), never a wrong answer. The request log holds the corridor, counts, the rate source and staleness, never the amount.
+
+## Trends and best day (steps 4 and 7)
+
+`GET /api/v1/remittance/trends?corridor_id=SG-PH&days=90` (NF-P2-015, `docs/api/endpoints.md`). A separate call from `/compare`, so the history never delays the table.
+
+```
+1 get_current_user                                401
+  corridor_id, days (30/90/180/365) validated     422
+4 rates_history/{pair} (one read), its daily map  404 when empty
+  points = days in the period, oldest first; summary = first, latest, change, low, high, average
+7 last 52 weeks, Monday to Friday, weeks with ≥ 3 market days:
+    each day's rate against its own week's average → per weekday: advantage_pct, beat_share
+    best_day = the top weekday if ≥ 8 weeks and it leads by ≥ 0.05 % in > half the weeks
+    else null + best_day_reason (not_enough_history / no_clear_pattern)
+```
+
+- **Why one value per day, and why the ECB.** Frankfurter (the cron's first provider) serves the ECB reference rate, published once per working day. Intraday cron points are mostly the same number. The cron and the backfill therefore both write one entry per market day to the header's `daily` map. The whole year is one read, and the endpoint needs no cache.
+- **Why against the week.** Over a year every pair moved 2 to 16 %. Comparing weekdays on raw averages would favour whichever day comes later in a rising week. Against its own week's average, the trend cancels out.
+- **What the data says.** On 2025-09 to 2026-09:
+  - AU-IN: Wednesday, +0.085 %, better in 65 % of weeks.
+  - MY-ID: Thursday, +0.079 %, 66 %.
+  - The other four: no clear pattern.
+
+  Any tip is small; the recommendation should present it as such.
+- **Dates** are market dates (the rate's own date), not the worker's local weekday.

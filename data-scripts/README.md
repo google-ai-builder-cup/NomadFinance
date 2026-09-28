@@ -96,3 +96,15 @@ python -m src.loaders.complaint_templates                   # write all countrie
 The loader writes `complaint_templates/{country}` (header) and `complaint_templates/{country}/types/{type}` in one batch per country, after every file has passed the checker's model; if any file fails, nothing is written. A type removed from a file is deleted from Firestore, and running it again is safe. There is no version number: a stored report keeps the letter it was made with. Options: `--only SG JP`, `--input-dir`, `--collection` (default `complaint_templates`), `--require-all`. It is not part of `scripts/load_bootstrap.sh`; run it yourself when the files change.
 
 Full steps and results: [`docs/runbooks/NF-P2-006-contract-complaint.md`](../docs/runbooks/NF-P2-006-contract-complaint.md).
+
+## Rate history backfill (D-36, NF-P2-015)
+Fetches the European Central Bank's daily reference rates from Frankfurter (no key) for the six corridor pairs and adds them to `rates_history/{pair}.daily`, the series the remittance trends endpoint reads. Days already stored (by the rate cron or an earlier backfill) are never overwritten, so a re-run adds nothing.
+
+```bash
+python -m src.loaders.frankfurter_backfill --dry-run   # fetch and count, no Firestore access
+python -m src.loaders.frankfurter_backfill             # last 365 days, all six pairs
+```
+
+Options: `--days 365` (1 to 3650), `--end YYYY-MM-DD` (default today UTC), `--only SGD_PHP AUD_INR`. Needs internet access to `api.frankfurter.dev`, and the same Firestore identity as the loaders above.
+
+Full steps and results: [`docs/runbooks/NF-P2-015-remittance-trends.md`](../docs/runbooks/NF-P2-015-remittance-trends.md).
