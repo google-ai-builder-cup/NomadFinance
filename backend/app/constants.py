@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import timedelta
 
 
 @dataclass(frozen=True)
@@ -25,3 +26,20 @@ CURRENCY_PAIRS: tuple[CurrencyPair, ...] = (
     CurrencyPair("JPY", "PHP", ("JP-PH",)),
     CurrencyPair("AUD", "PHP", ("AU-PH",)),
 )
+
+
+# A cached rate older than this is flagged stale: the cron runs every 1 to 2 hours
+# (docs/data-model/collections/rates_cache.md), so this means at least two runs failed.
+RATE_MAX_AGE = timedelta(hours=6)
+
+
+def pair_for_corridor(corridor_id: str) -> CurrencyPair:
+    """The FX pair a corridor's live rate is stored under.
+
+    Raises:
+        KeyError: The id is not one of the six corridors.
+    """
+    for pair in CURRENCY_PAIRS:
+        if corridor_id in pair.corridor_ids:
+            return pair
+    raise KeyError(corridor_id)

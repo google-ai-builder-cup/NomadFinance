@@ -47,7 +47,7 @@ Quote map (amounts are in the **sender's** currency):
 | `fee_lcu` | Flat fee |
 | `fx_rate` | Rate applied by the provider (payout currency per 1 unit of sending currency) |
 | `fx_margin_pct` | How much worse than the interbank rate; negative means better |
-| `total_cost_pct` | Fee plus rate margin as a percentage of the amount sent. **Rank by this. Do not recompute it**: recomputing from fee and rate differs by up to 0.8 percentage points because RPW rounds its published rates. |
+| `total_cost_pct` | Fee plus rate margin as a percentage of the amount sent. **Rank by this.** Do not recompute it from `fx_rate` and `interbank_rate`: that differs by up to 0.8 percentage points because RPW rounds its published rates. It is exactly `fee_lcu / send_amount_lcu * 100 + fx_margin_pct` (all 442 quotes agree to 0.005 points), which is how the comparison engine (NF-P2-014) prices amounts other than the two survey amounts. |
 
 `total_cost_pct` can be negative (5 quotes in the 2025 Q1 data), and that is real.
 

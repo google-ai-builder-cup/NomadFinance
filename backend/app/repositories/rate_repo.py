@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from datetime import datetime
 from functools import lru_cache
+from typing import Any
 
 from google.cloud import firestore
 
@@ -15,6 +16,10 @@ class RateRepository(FirestoreRepository):
     """rates_cache/{pair} and rates_history/{pair}/points/{hour} (collections/rates_cache.md)."""
 
     collection_name = "rates_cache"
+
+    def get_rate(self, pair_id: str) -> dict[str, Any] | None:
+        """The latest cached rate of a pair such as `SGD_PHP`, or None if the cron never ran."""
+        return self.get(pair_id)
 
     def save_pair(
         self,
