@@ -201,6 +201,12 @@ The upload page (`pages/contract/ContractUpload.tsx`) follows `users/{uid}/contr
 - **Failed** = `error: {step, code}` on the document. The page shows a message per code and "Try again" (analyze again, no upload) unless the code is `poor_legibility`, `not_employment_contract`, `no_law_data` or `no_terms`. With no stored error (the upload failed, or the network), the HTTP status gives the message: 503 = AI busy, 504 = AI too slow. A failed upload goes back to the form with the file kept.
 - **Slow step:** after 45 s on one step the page adds "Still working…" (D-54).
 
+## How the app shows the report (NF-P2-011)
+
+Once `status` is `completed`, the upload page (`ContractUpload.tsx`) reads the full report straight from Firestore — `users/{uid}/contracts/{id}/reports/{language}`, one `getDoc` (`useContractReport`, `contractService.getContractReport`) — rather than calling `POST .../reports/{language}`: the analyze request has already written that document before it answers, and `firestore.rules` already lets the owner read it (same pattern as `watchContractProgress` for the progress document). The standalone endpoint is for the language switcher (NF-P2-012) translating into a language with no stored report yet.
+
+`components/contract/ReportCard.tsx` renders the score header (score, risk badge, the three counts, the summary, the complaint-pending note) and, for every clause (`ClauseRow.tsx`), a 🟢🟡🔴 flag, its category, and the clause's exact words next to `law_reference` (or a fallback when there is none), the explanation and any recommendation — side by side from the `md:` breakpoint up, stacked with their own labels on a phone. Nothing here reads `radar_entities/` or renders `report.complaint`; those are NF-P3-023 and NF-P2-013.
+
 ## E2E testing (NF-P2-008)
 
 The full pipeline was exercised for all 5 target countries (SG, AU, KR, MY, JP) against real Firestore-backed repositories and real curated data, with Gemini's answers scripted (no live-quota cost) — see `docs/runbooks/NF-P2-008-contract-e2e-testing.md`. It found and closed **D-60** (`report_languages` is alphabetically sorted, not source-first). The real-Gemini live pass for AU, KR, MY and JP is written and ready but blocked by D-58 (shared quota exhausted); SG's live path is already covered by NF-P2-007's own test.

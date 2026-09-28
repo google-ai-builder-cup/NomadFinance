@@ -244,7 +244,9 @@
         "danger": "Panganib"
       },
       "complaintPending": "Inihahanda pa namin ang iyong sulat-reklamo. Bumalik ka rito sa madaling panahon.",
-      "analyzeAnother": "Suriin ang ibang kontrata"
+      "analyzeAnother": "Suriin ang ibang kontrata",
+      "reportLoadError": "Hindi namin na-load ang buong ulat.",
+      "reportMissing": "Hindi pa handa ang iyong ulat. Subukan ulit sandali."
     },
     "progress": {
       "title": "Sinusuri ang iyong kontrata",
@@ -276,6 +278,33 @@
         "aiSlow": "Masyadong natagalan ang AI service sa pagsagot. Subukan ulit.",
         "generic": "May nangyaring mali habang sinusuri ang iyong kontrata. Subukan ulit."
       }
+    },
+    "report": {
+      "heading": "Bawat sugnay, isa-isa",
+      "contractColumn": "Ang sinasabi ng kontrata",
+      "lawColumn": "Ang sinasabi ng batas",
+      "noLawReference": "Walang partikular na seksyon ng batas na naka-ugnay",
+      "recommendation": "Mungkahi:",
+      "clauseWithNumber": "Sugnay {{number}} · pahina {{page}}",
+      "clauseNoNumber": "Pahina {{page}}"
+    },
+    "category": {
+      "minimum_wage": "Minimum na sahod",
+      "working_hours": "Oras ng trabaho",
+      "overtime_pay": "Bayad sa overtime",
+      "rest_days_and_holidays": "Araw ng pahinga at bakasyon",
+      "annual_leave": "Taunang bakasyon",
+      "sick_leave": "Sick leave",
+      "salary_payment": "Pagbabayad ng sahod",
+      "salary_deductions": "Bawas sa sahod",
+      "termination_notice": "Abiso sa pagtatanggal",
+      "early_termination": "Maagang pagtatapos ng kontrata",
+      "recruitment_fees": "Bayad sa recruitment",
+      "passport_retention": "Pagkuha ng pasaporte",
+      "accommodation": "Tirahan",
+      "insurance_and_injury": "Seguro at pinsala",
+      "social_security": "Social security",
+      "other": "Iba pa"
     }
   },
   "errors": {

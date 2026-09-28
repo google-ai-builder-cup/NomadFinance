@@ -244,7 +244,9 @@
         "danger": "বিপদ"
       },
       "complaintPending": "আমরা এখনও আপনার অভিযোগপত্র প্রস্তুত করছি। এটি দেখতে শীঘ্রই ফিরে আসুন।",
-      "analyzeAnother": "আরেকটি চুক্তি যাচাই করুন"
+      "analyzeAnother": "আরেকটি চুক্তি যাচাই করুন",
+      "reportLoadError": "আমরা সম্পূর্ণ রিপোর্ট লোড করতে পারিনি।",
+      "reportMissing": "আপনার রিপোর্ট এখনও প্রস্তুত নয়। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।"
     },
     "progress": {
       "title": "আপনার চুক্তি পরীক্ষা করা হচ্ছে",
@@ -276,6 +278,33 @@
         "aiSlow": "AI পরিষেবা উত্তর দিতে অনেক সময় নিয়েছে। আবার চেষ্টা করুন।",
         "generic": "আপনার চুক্তি পরীক্ষা করার সময় কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।"
       }
+    },
+    "report": {
+      "heading": "ধারা অনুযায়ী বিবরণ",
+      "contractColumn": "চুক্তিতে যা লেখা আছে",
+      "lawColumn": "আইন যা বলে",
+      "noLawReference": "নির্দিষ্ট কোনো আইনি ধারার সাথে যুক্ত নয়",
+      "recommendation": "পরামর্শ:",
+      "clauseWithNumber": "ধারা {{number}} · পৃষ্ঠা {{page}}",
+      "clauseNoNumber": "পৃষ্ঠা {{page}}"
+    },
+    "category": {
+      "minimum_wage": "ন্যূনতম মজুরি",
+      "working_hours": "কাজের সময়",
+      "overtime_pay": "ওভারটাইম বেতন",
+      "rest_days_and_holidays": "বিশ্রামের দিন ও ছুটি",
+      "annual_leave": "বার্ষিক ছুটি",
+      "sick_leave": "অসুস্থতাজনিত ছুটি",
+      "salary_payment": "বেতন প্রদান",
+      "salary_deductions": "বেতন থেকে কর্তন",
+      "termination_notice": "চাকরি অবসানের নোটিশ",
+      "early_termination": "অকাল চাকরি অবসান",
+      "recruitment_fees": "নিয়োগ ফি",
+      "passport_retention": "পাসপোর্ট আটকে রাখা",
+      "accommodation": "থাকার ব্যবস্থা",
+      "insurance_and_injury": "বীমা ও আঘাত",
+      "social_security": "সামাজিক নিরাপত্তা",
+      "other": "অন্যান্য"
     }
   },
   "errors": {

@@ -244,7 +244,9 @@
         "danger": "Bahaya"
       },
       "complaintPending": "Kami masih menyiapkan surat pengaduan Anda. Kembali lagi nanti untuk melihatnya.",
-      "analyzeAnother": "Periksa kontrak lain"
+      "analyzeAnother": "Periksa kontrak lain",
+      "reportLoadError": "Kami tidak dapat memuat laporan lengkap.",
+      "reportMissing": "Laporan Anda belum siap. Coba lagi sebentar."
     },
     "progress": {
       "title": "Memeriksa kontrak Anda",
@@ -276,6 +278,33 @@
         "aiSlow": "Layanan AI terlalu lama menjawab. Silakan coba lagi.",
         "generic": "Terjadi kesalahan saat memeriksa kontrak Anda. Silakan coba lagi."
       }
+    },
+    "report": {
+      "heading": "Setiap klausul, satu per satu",
+      "contractColumn": "Yang tertulis di kontrak",
+      "lawColumn": "Yang dikatakan hukum",
+      "noLawReference": "Tidak terkait pasal hukum tertentu",
+      "recommendation": "Saran:",
+      "clauseWithNumber": "Klausul {{number}} · halaman {{page}}",
+      "clauseNoNumber": "Halaman {{page}}"
+    },
+    "category": {
+      "minimum_wage": "Upah minimum",
+      "working_hours": "Jam kerja",
+      "overtime_pay": "Upah lembur",
+      "rest_days_and_holidays": "Hari istirahat dan libur",
+      "annual_leave": "Cuti tahunan",
+      "sick_leave": "Cuti sakit",
+      "salary_payment": "Pembayaran gaji",
+      "salary_deductions": "Potongan gaji",
+      "termination_notice": "Pemberitahuan pemutusan kerja",
+      "early_termination": "Pemutusan kerja dini",
+      "recruitment_fees": "Biaya perekrutan",
+      "passport_retention": "Penahanan paspor",
+      "accommodation": "Akomodasi",
+      "insurance_and_injury": "Asuransi dan cedera",
+      "social_security": "Jaminan sosial",
+      "other": "Lainnya"
     }
   },
   "errors": {
