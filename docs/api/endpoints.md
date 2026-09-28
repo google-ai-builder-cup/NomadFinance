@@ -539,7 +539,7 @@ The endpoints above run one step each and store nothing. These three run the who
   - `contract_id`, `status` (`completed`)
   - `cached`: the stored analysis was still current, so no Gemini call
   - `host_country`, `job_type`, `health_score`, `risk_level`, `clause_counts`
-  - `report_language`, `report_languages`
+  - `report_language`, `report_languages` (alphabetically sorted — not source-language-first; e.g. `["bn", "en"]`, not `["en", "bn"]`)
   - `complaint_pending`: the letter failed for a passing reason; call analyze again to write only the letter
 - **Stored:**
   - the contract's `detected`, `extracted`, `host_country`, `job_type`, scores, `law_version`, `prompt_versions`, `models`
