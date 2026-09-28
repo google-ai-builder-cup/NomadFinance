@@ -286,7 +286,11 @@
       "noLawReference": "कुनै खास कानूनी धारासँग जोडिएको छैन",
       "recommendation": "सुझाव:",
       "clauseWithNumber": "धारा {{number}} · पृष्ठ {{page}}",
-      "clauseNoNumber": "पृष्ठ {{page}}"
+      "clauseNoNumber": "पृष्ठ {{page}}",
+      "language": "रिपोर्टको भाषा",
+      "languageHint": "अरू भाषाहरू पहिलो पटक छान्दा अनुवाद गरिन्छ। यसमा केही सेकेन्ड लाग्छ।",
+      "switching": "तपाईंको रिपोर्ट अनुवाद हुँदैछ…",
+      "switchOutOfDate": "यो रिपोर्ट पुरानो भइसक्यो। यो भाषामा हेर्न आफ्नो सम्झौता फेरि जाँच गर्नुहोस्।"
     },
     "category": {
       "minimum_wage": "न्यूनतम ज्याला",

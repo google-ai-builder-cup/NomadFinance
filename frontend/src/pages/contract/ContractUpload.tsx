@@ -2,13 +2,12 @@ import { type FormEvent, useState } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PipelineProgress from "@/components/contract/PipelineProgress";
-import ReportCard from "@/components/contract/ReportCard";
 import ReportSkeleton from "@/components/contract/ReportSkeleton";
+import ReportView from "@/components/contract/ReportView";
 import UploadDropzone from "@/components/contract/UploadDropzone";
 import { Button } from "@/components/ui/button";
 import {
   useContractProgress,
-  useContractReport,
   useRetryAnalysis,
   useUploadAndAnalyzeContract,
 } from "@/hooks/useContract";
@@ -68,9 +67,6 @@ export default function ContractUpload() {
     (contractId !== null && progress !== null && seenThisRun
       ? analysisFromDoc(contractId, progress, effectiveReportLanguage)
       : null);
-  // The report card (NF-P2-011) needs the full clause list, a separate Firestore document from
-  // the score summary above; called unconditionally so hook order stays stable across renders.
-  const report = useContractReport(result?.contract_id ?? null, result?.report_language ?? null);
 
   if (profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -142,29 +138,7 @@ export default function ContractUpload() {
           <p className="text-sm text-muted-foreground">{t("contract.result.subtitle")}</p>
         </header>
 
-        {report.isPending && <ReportSkeleton />}
-
-        {report.isError && (
-          <div
-            role="alert"
-            className="flex flex-col items-center gap-4 rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-center"
-          >
-            <p className="text-sm text-destructive">{t("contract.result.reportLoadError")}</p>
-            <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
-          </div>
-        )}
-
-        {report.isSuccess && report.data === null && (
-          <div
-            role="alert"
-            className="flex flex-col items-center gap-4 rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-center"
-          >
-            <p className="text-sm text-destructive">{t("contract.result.reportMissing")}</p>
-            <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
-          </div>
-        )}
-
-        {report.data && <ReportCard analysis={result} report={report.data} />}
+        <ReportView analysis={result} />
 
         <Button className="h-11 w-full" variant="outline" onClick={resetForAnotherContract}>
           {t("contract.result.analyzeAnother")}

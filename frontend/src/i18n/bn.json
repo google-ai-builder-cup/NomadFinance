@@ -286,7 +286,11 @@
       "noLawReference": "নির্দিষ্ট কোনো আইনি ধারার সাথে যুক্ত নয়",
       "recommendation": "পরামর্শ:",
       "clauseWithNumber": "ধারা {{number}} · পৃষ্ঠা {{page}}",
-      "clauseNoNumber": "পৃষ্ঠা {{page}}"
+      "clauseNoNumber": "পৃষ্ঠা {{page}}",
+      "language": "রিপোর্টের ভাষা",
+      "languageHint": "অন্য ভাষাগুলো প্রথমবার বেছে নিলে অনুবাদ করা হয়। এতে কয়েক সেকেন্ড লাগে।",
+      "switching": "আপনার রিপোর্ট অনুবাদ করা হচ্ছে…",
+      "switchOutOfDate": "এই রিপোর্টটি পুরোনো হয়ে গেছে। এই ভাষায় দেখতে আপনার চুক্তিটি আবার যাচাই করুন।"
     },
     "category": {
       "minimum_wage": "ন্যূনতম মজুরি",

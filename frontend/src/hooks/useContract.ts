@@ -1,15 +1,23 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import {
   analyzeContract,
   getContractReport,
+  switchReportLanguage,
   uploadContract,
   watchContractProgress,
 } from "@/services/contractService";
-import type { AnalyzeRequest, ContractAnalysis, Legibility } from "@/types/contract";
+import { ApiError } from "@/services/apiClient";
+import type {
+  AnalyzeRequest,
+  ContractAnalysis,
+  ContractReport,
+  Legibility,
+} from "@/types/contract";
 import type { LanguageCode } from "@/types/enums";
+import { isRetryable } from "@/utils/errors";
 import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
 export interface UploadAndAnalyzeArgs {
@@ -109,19 +117,74 @@ function reportKey(
   return ["contractReport", uid, contractId, language] as const;
 }
 
+export interface ReportQueryArgs {
+  uid: string | undefined;
+  contractId: string | null;
+  language: LanguageCode | null;
+  /** `report_languages` of the analysis: the languages already stored under `reports/`. */
+  storedLanguages: readonly LanguageCode[];
+}
+
 /**
- * The finished report in one language (NF-P2-011): summary and clause-by-clause detail, read
- * straight from Firestore. Enabled once analysis has produced a `contractId` and a language.
+ * The backend already tries Gemini three times, so a failed backend answer is never repeated
+ * by itself: the worker decides on another try. A failed Firestore read is retried once.
  */
-export function useContractReport(contractId: string | null, language: LanguageCode | null) {
-  const { user } = useAuth();
-  const uid = user?.uid;
-  return useQuery({
+export function retryReportLoad(failureCount: number, error: Error): boolean {
+  return !(error instanceof ApiError) && failureCount < 1 && isRetryable(error);
+}
+
+/**
+ * While a new language loads, the previous language of the same contract stays on screen
+ * (`isPlaceholderData`), so the score does not vanish for the seconds a translation takes.
+ * Only within one contract: another contract's report must never stand in for this one.
+ */
+export function reportPlaceholder(
+  contractId: string | null,
+  previous: ContractReport | null | undefined,
+  previousQuery: { queryKey: readonly unknown[] } | undefined
+): ContractReport | null | undefined {
+  return previousQuery?.queryKey[2] === contractId ? previous : undefined;
+}
+
+/**
+ * How one language of the report is loaded (NF-P2-011, NF-P2-012). A stored language is read
+ * straight from Firestore. Any other is asked of the backend, which translates it once and
+ * stores it, so the next visit finds it stored. Each language has its own cache key: going
+ * back to one already seen makes no request.
+ */
+export function reportQueryOptions({
+  uid,
+  contractId,
+  language,
+  storedLanguages,
+}: ReportQueryArgs) {
+  const stored = language !== null && storedLanguages.includes(language);
+  return queryOptions({
     queryKey: reportKey(uid, contractId, language),
-    queryFn: () => getContractReport(uid ?? "", contractId ?? "", language as LanguageCode),
+    queryFn: () =>
+      stored
+        ? getContractReport(uid ?? "", contractId ?? "", language as LanguageCode)
+        : switchReportLanguage(contractId ?? "", language as LanguageCode),
     enabled: uid !== undefined && contractId !== null && language !== null,
-    // Written once by the analysis and not changed here; NF-P2-012's language switch is its
-    // own new report document, a different query key.
+    // Reports are written once per language and never edited in place.
     staleTime: Infinity,
+    placeholderData: (
+      previous: ContractReport | null | undefined,
+      previousQuery?: { queryKey: readonly unknown[] }
+    ) => reportPlaceholder(contractId, previous, previousQuery),
+    retry: retryReportLoad,
   });
+}
+
+/**
+ * The finished report in one language, for the report card and its language switcher.
+ * Enabled once analysis has produced a `contractId` and a language.
+ */
+export function useContractReport(
+  contractId: string | null,
+  language: LanguageCode | null,
+  storedLanguages: readonly LanguageCode[] = []
+) {
+  const { user } = useAuth();
+  return useQuery(reportQueryOptions({ uid: user?.uid, contractId, language, storedLanguages }));
 }
