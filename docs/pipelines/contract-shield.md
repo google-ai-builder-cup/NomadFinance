@@ -11,7 +11,7 @@ Each step's owner adds its section below when the step is built.
 | 1 | Extract text and structure | NF-P2-001 (Devam) | extraction | `contract/extract.v2` | `services/contract/extractor.py` | Built |
 | 2 | Detect language, host country, contract type, employer/salary | NF-P2-002 (Pranjal) | extraction | `contract/detect.v2` | `services/contract/detector.py` | Built |
 | 3 | Fetch the host country's labor-law rules | NF-P2-003 (Aditya) | none (Firestore) | none | `services/contract/rag.py` | Built |
-| 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Not started |
+| 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Built |
 | 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Not started |
 | 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v1` | `services/contract/complaint.py` | Not started |
 | - | Cache reports by hash, language, law and prompt versions | NF-P2-007 (Devam) | none | none | `services/contract/pipeline.py` (proposed) | Not started |
@@ -88,3 +88,36 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
 - **Errors:** `LaborLawNotFoundError` when the country has no curated data loaded yet (NF-P1-018 not run for it, or the version/rules are missing) — the endpoint answers 404.
 - **Standalone endpoint:** `GET /api/v1/contracts/labor-law/{host_country}?job_type=...` (`docs/api/endpoints.md`).
 - **For step 4 (Devam):** use `rules[i].applicable_variant` directly; no need to re-resolve `job_type` against `variants` yourself. Skip labor-law comparison entirely when `document_kind` is `loan_agreement` (that check stays in step 2's output, this step does not look at `document_kind`).
+
+## Step 4: compare each term with the law (NF-P2-004)
+
+`compare_contract(blocks, law, gemini, document_kind)` in `backend/app/services/contract/comparator.py`.
+
+- **In:**
+  - the `blocks` of step 1
+  - the `LaborLawContext` of step 3
+  - `document_kind` from step 2: only `employment_contract` and `recruitment_agreement` are checked, anything else raises `NotComparableError`
+- **Gemini call:** reasoning tier, prompt `contract/compare.v1` (key `contract.compare`, version 1), response schema `ComparisonAnswer`, per-attempt timeout 90 s (`GEMINI_COMPARE_TIMEOUT_SECONDS`).
+  - **Blocks** are sent as numbered lines, `[id] (kind number, page) text`. The model answers with block ids, so it never copies clause text.
+  - **Rules** are sent as compact JSON: the job type's variant only, and no references.
+- **Checked in code, whatever the model says:**
+  - Block ids that don't exist, or were already used, are dropped.
+  - A `danger` without a `regulated` or `partly_regulated` rule becomes `caution`.
+  - `law_reference` is the curated reference whose law best matches the applied variant's requirements.
+  - Term blocks (clause, list item, table) the model skipped are returned in `unassessed_block_ids` and logged by id.
+- **Score (`risk_scorer.py`):** the worst risk sets the band. Danger 0–49, caution 50–79, safe 100; each further problem lowers the score inside the band.
+- **Out:** `ContractComparison`:
+  - `health_score`, `risk_level`, `clause_counts`, `summary`
+  - `clauses[]`: `index`, `number`, `page`, exact `text`, `category`, `risk`, `law_reference`, `explanation`, `recommendation`, `block_ids`
+  - `law_version`
+
+  This is the clause map of `reports/{lang}` plus number, page and block ids.
+- **Language:** explanations and the summary are English; step 5 translates. The clause `text` stays in the contract's language.
+- **Time:** 20 to 38 s measured for 6 to 25 terms.
+- **Errors:**
+  - `NotComparableError` (422 at the endpoint)
+  - `NoTermsError` when nothing could be assessed (422)
+  - Gemini errors (503/504/502/500)
+- **Standalone endpoint:** `POST /api/v1/contracts/compare` (`docs/api/endpoints.md`).
+- **For step 5 (Aditya):** translate `summary` and each clause's `text`, `explanation` and `recommendation`, and keep `category`, `risk`, `law_reference` and numbers as they are.
+- **For step 6 (Pranjal):** the danger clauses (`risk == "danger"`, each with its `category` and `law_reference`) are the `violations_json` of `contract/complaint.v1`.

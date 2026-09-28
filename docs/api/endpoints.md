@@ -24,6 +24,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts/extract` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P1-006 |
 | POST | `/api/v1/contracts/detect` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-002 |
 | GET | `/api/v1/contracts/labor-law/{host_country}` | Firebase ID token | 60/min API-wide only (no Gemini call) | NF-P2-003 |
+| POST | `/api/v1/contracts/compare` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-004 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -290,6 +291,85 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 | 422 | FastAPI validation list | `host_country` outside `SG`/`KR`/`MY`/`JP`/`HK`/`AU`, or `job_type` missing/outside the seven job types |
 | 404 | `No labor-law data is available yet for <country>.` | NF-P1-018 has not loaded that country yet |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
+
+## `POST /api/v1/contracts/compare`
+
+Checks every term of a contract against the host country's curated labor law and gives it a risk: `safe`, `caution` or `danger`. Step 4 of Contract Shield (NF-P2-004), reasoning tier (`gemini-3.5-flash`, prompt `contract/compare.v1`). Nothing is stored.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `blocks` | array (1 to 1000) | The `blocks` from `/contracts/extract`, unchanged. At most 200,000 characters of text |
+| `host_country` | `SG` `KR` `MY` `JP` `HK` `AU` | From `/contracts/detect`, or asked from the worker |
+| `job_type` | job type id | From `/contracts/detect`, or the worker's profile. Picks each rule's variant |
+| `document_kind` | string, default `employment_contract` | From `/contracts/detect`. `loan_agreement` and `other` get 422 |
+
+The labor law is fetched by the server (`labor_laws/{country}`), never taken from the request.
+
+- **Time:** 20 to 38 s measured (6 to 25 terms, about 4k thinking tokens). Per attempt timeout 90 s (`GEMINI_COMPARE_TIMEOUT_SECONDS`), up to 3 attempts. The reasoning model is often 503 on the free tier; the client retries.
+- **Response `200`:** `ContractComparison` (`app/schemas/contract_compare.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `country`, `job_type` | string | As sent |
+| `law_version` | integer | Labor-law version used (cache key, `docs/data-model/versioning.md`) |
+| `health_score` | integer 0 to 100 | 100 is safest; see below |
+| `risk_level` | `safe` / `caution` / `danger` | The worst risk of any term |
+| `clause_counts` | `{safe, caution, danger}` | Terms per risk |
+| `summary` | string | Two or three plain English sentences, worst problem first |
+| `clauses` | array | The assessed terms in reading order, see below |
+| `unassessed_block_ids` | array of integers | Clause, list item or table blocks the model did not assess; normally empty |
+
+A clause has:
+- `index` (1, 2, 3, ... in reading order)
+- `number` and `page` (of its first block)
+- `text` (the term's exact words, in the contract's language)
+- `category` (one of the 15 labor-law categories, or `other`)
+- `risk`
+- `law_reference` (the curated rule's `"law, section"` for the variant that was applied; null when no rule regulates the matter)
+- `explanation` and `recommendation` (plain English; the recommendation is null for safe terms)
+- `block_ids` (1-based positions in the request's `blocks`)
+
+Rules the server enforces, whatever the model says:
+- Law references come from the curated data only, never from the model.
+- A term can be `danger` only when a rule with coverage `regulated` or `partly_regulated` covers it. Otherwise it's reported as `caution`.
+
+**Health score:** the worst risk sets the band. Any danger: 49 minus 10 per further danger and 2 per caution (at least 0). Caution only: 79 minus 3 per further caution (at least 50). Neither: 100.
+
+Real output for `tests/fixtures/contracts/sample_contract_my_id.blocks.json` (Malaysia, plantation worker, Indonesian text), shortened:
+
+```json
+{
+  "country": "MY", "job_type": "plantation_worker", "law_version": 1,
+  "health_score": 19, "risk_level": "danger",
+  "clause_counts": { "safe": 2, "caution": 0, "danger": 4 },
+  "summary": "This contract contains multiple severe violations of Malaysian labor law. Most critically, it allows the employer to illegally withhold your passport, deducts unauthorized agency fees from your salary, ...",
+  "clauses": [
+    { "index": 3, "number": "3", "page": 1, "text": "3 Potongan gaji: RM 300 sebulan untuk
+yuran agensi selama 12 bulan",
+      "category": "recruitment_fees", "risk": "danger", "law_reference": "...",
+      "explanation": "The contract deducts RM 300 a month for 12 months for agency fees. ...",
+      "recommendation": "...", "block_ids": [6] }
+  ],
+  "unassessed_block_ids": []
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No labor-law data is available yet for XX.` | Country not curated yet |
+| 422 | `The labor-law check covers employment contracts and recruitment agreements only.` | `document_kind` is `loan_agreement` or `other` |
+| 422 | `No contract terms were found to check. Upload the full contract.` | The model found no term to assess |
+| 422 | FastAPI validation list | No blocks, too many blocks or characters, unknown country or job type |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
+| 502 / 503 / 504 / 500 | see Error format above | Gemini failure (503 also when the free-tier quota is used up) |
 
 ---
 

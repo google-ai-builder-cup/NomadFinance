@@ -17,7 +17,9 @@ from app.schemas.contract import (
     JobTypeId,
     LaborLawContext,
 )
+from app.schemas.contract_compare import ContractCompareRequest, ContractComparison
 from app.schemas.user import AuthenticatedUser
+from app.services.contract.comparator import NotComparableError, NoTermsError, compare_contract
 from app.services.contract.detector import detect_contract
 from app.services.contract.extractor import NotADocumentError, extract_contract
 from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
@@ -159,4 +161,61 @@ async def get_labor_law(
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             f"No labor-law data is available yet for {host_country}.",
+        ) from exc
+
+
+_COMPARE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    404: {"description": "No curated labor-law data is loaded for this country yet"},
+    422: {
+        "description": (
+            "Not an employment contract or recruitment agreement, no term could be assessed, "
+            "or an invalid body"
+        )
+    },
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/compare",
+    response_model=ContractComparison,
+    responses=_COMPARE_ERROR_RESPONSES,
+    summary="Check each term of a contract against the host country's labor law",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def compare_contract_terms(
+    body: ContractCompareRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    repo: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
+) -> ContractComparison:
+    """Give every term a risk (safe, caution, danger) with a plain explanation. Step 4.
+
+    Send the `blocks` from `/contracts/extract` and the `host_country`, `job_type` and
+    `document_kind` from `/contracts/detect`. The law is fetched here, never taken from the
+    request. Returns the clauses with law references, the health score, risk level and
+    counts, in English (step 5 translates). Nothing is stored. Usually 20 to 35 s.
+    """
+    try:
+        law = await get_labor_law_context(body.host_country, body.job_type, repo)
+    except LaborLawNotFoundError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"No labor-law data is available yet for {body.host_country}.",
+        ) from exc
+    try:
+        return await compare_contract(body.blocks, law, gemini, body.document_kind)
+    except NotComparableError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "The labor-law check covers employment contracts and recruitment agreements only.",
+        ) from exc
+    except NoTermsError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "No contract terms were found to check. Upload the full contract.",
         ) from exc
