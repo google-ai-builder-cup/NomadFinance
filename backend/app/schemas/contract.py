@@ -20,6 +20,9 @@ JobTypeId = Literal[
 ]
 DocumentKind = Literal["employment_contract", "recruitment_agreement", "loan_agreement", "other"]
 SalaryPeriod = Literal["month", "week", "day", "hour"]
+LawCoverage = Literal["regulated", "partly_regulated", "not_regulated", "unclear"]
+LawConfidence = Literal["high", "medium", "low"]
+LawLimitPeriod = Literal["hour", "day", "week", "month", "year", "once"]
 
 # About 50k tokens: far above a 15-page contract (about 60k characters), well below what the
 # model accepts. Bounds the cost of one call.
@@ -133,3 +136,71 @@ class ContractDetectRequest(BaseModel):
         str,
         StringConstraints(strip_whitespace=True, min_length=1, max_length=MAX_CONTRACT_TEXT_CHARS),
     ] = Field(description="Whole contract text, in its original language.")
+
+
+class LawLimit(BaseModel):
+    """A number a contract clause can be compared with (labor_laws.md, `rules.variants.limits`)."""
+
+    value: float
+    unit: str
+    period: LawLimitPeriod | None = None
+    note: str | None = None
+
+
+class LawReference(BaseModel):
+    """Where a rule comes from (labor_laws.md, `rules.references`)."""
+
+    law: str
+    section: str
+    url: str
+    year: int | None = None
+    in_force_since: str | None = None
+    natlex_isn: str | None = None
+
+
+class LaborLawVariant(BaseModel):
+    """The rule for one group of workers (labor_laws.md, `rules.variants`).
+
+    `applies_to` is `["all"]` or one or more job type ids; a job-type variant overrides the
+    `all` variant for that job type (enforced at curation time by `LaborLawFile`).
+    """
+
+    applies_to: list[str]
+    requirements: list[str]
+    limits: dict[str, LawLimit] = Field(default_factory=dict)
+    penalty: str | None = None
+    enforced_by: str | None = None
+
+
+class LaborLawRule(BaseModel):
+    """One curated category, with the variant that applies to the requested job type.
+
+    `applicable_variant` is what the clause comparison (NF-P2-004) should check a contract
+    against; the full `variants` are kept for any category that needs another job type.
+    """
+
+    category: str = Field(description="One of the 15 category ids in labor_laws.md.")
+    coverage: LawCoverage
+    title: str
+    summary: str
+    applicable_variant: LaborLawVariant
+    variants: list[LaborLawVariant]
+    references: list[LawReference]
+    confidence: LawConfidence
+    notes: str | None = Field(
+        default=None, description="Curator exceptions and caveats, e.g. a job type left out."
+    )
+
+
+class LaborLawContext(BaseModel):
+    """Response of `GET /api/v1/contracts/labor-law/{host_country}` (NF-P2-003).
+
+    `law_version` is `labor_laws/{country}/_meta/current.version`: record it on the eventual
+    contract report so the response cache (NF-P2-007) can tell when the law has changed
+    (`docs/data-model/versioning.md`).
+    """
+
+    country: HostCountryCode
+    job_type: JobTypeId
+    law_version: int
+    rules: list[LaborLawRule]
