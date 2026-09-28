@@ -13,7 +13,7 @@ Each step's owner adds its section below when the step is built.
 | 3 | Fetch the host country's labor-law rules | NF-P2-003 (Aditya) | none (Firestore) | none | `services/contract/rag.py` | Built |
 | 4 | Clause-by-clause comparison, risk per clause | NF-P2-004 (Devam) | reasoning | `contract/compare.v1` | `services/contract/comparator.py`, `risk_scorer.py` | Built |
 | 5 | Translate the report into the worker's language | NF-P2-005 (Aditya) | classification | `contract/translate.v1` | `services/contract/translator.py` | Built |
-| 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v1` | `services/contract/complaint.py` | Not started |
+| 6 | Complaint letter when violations are found | NF-P2-006 (Pranjal) | reasoning | `contract/complaint.v2` | `services/contract/complaint.py` | Built |
 | - | Cache reports by hash, language, law and prompt versions | NF-P2-007 (Devam) | none | none | `services/contract/pipeline.py` (proposed) | Not started |
 
 Not owned yet (D-53): storing the upload in Cloud Storage, the `users/{uid}/contracts/{id}` document and its `status`, `pipeline.py` running the steps in order, and the endpoint the upload UI calls for a full analysis. Proposed: NF-P2-007, since the cache needs the contract document and `content_hash` anyway.
@@ -30,7 +30,7 @@ upload (PDF or photo, ≤ 10 MB)
   4 compare(text or blocks, rules, job)     → clauses[] with risk, law_reference, explanation
        health score computed in code from the clause risks
   5 translate(report, user language)        → reports/{lang}
-  6 complaint(danger clauses, template)     → complaint letter (only if violations)
+  6 complaint(danger clauses, template)     → letter for the authority + copy for the worker (only if violations)
 store: contract document + reports/{lang}, with prompt_versions and law_version (cache key)
 ```
 
@@ -120,7 +120,6 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
   - Gemini errors (503/504/502/500)
 - **Standalone endpoint:** `POST /api/v1/contracts/compare` (`docs/api/endpoints.md`).
 - **For step 5 (Aditya):** translate `summary` and each clause's `text`, `explanation` and `recommendation`, and keep `category`, `risk`, `law_reference` and numbers as they are.
-- **For step 6 (Pranjal):** the danger clauses (`risk == "danger"`, each with its `category` and `law_reference`) are the `violations_json` of `contract/complaint.v1`.
 
 ## Step 5: translate the report (NF-P2-005)
 
@@ -133,5 +132,23 @@ Every step records its prompt as `{prompt.key: prompt.version}` in `prompt_versi
 - **Errors:** `TranslationIncompleteError` when the answer leaves out a clause that was sent (the endpoint answers 502, same message as an unusable Gemini answer); Gemini failures raise `GeminiError` subclasses (503/504/502/500).
 - **Time:** not yet measured live (classification tier, but the output is a whole report — comparable in size to extraction's output).
 - **Standalone endpoint:** `POST /api/v1/contracts/translate` (`docs/api/endpoints.md`). Also meant for the report language switcher (NF-P2-012): call it again with a different `target_language` on the same `full_text`/`summary`/`clauses`.
-- **For step 6 (Pranjal):** the complaint letter (`contract/complaint.v1`) is generated from the English `ContractComparison`, then translated the same way if the worker's language isn't English — or extend this step to also accept a `letter_text`, whichever fits NF-P2-006's shape better.
 - **For the pipeline owner (D-53):** this step is stateless like steps 1 to 4; storing `reports/{lang}` and filling in `content_hash`, `law_version`, `prompt_versions` and `models` is still unowned.
+
+## Step 6: complaint letter (NF-P2-006)
+
+`generate_complaint(host_country, clauses, facts, worker_language, repo, gemini)` in `backend/app/services/contract/complaint.py`.
+
+- **In:** the host country (step 2), the `clauses` of step 4's `ContractComparison`, the employer, agency and salary read in step 2 (`ContractFacts`), and the worker's language. The English comparison is used as it is; step 5 is not needed first.
+- **Violations:** the clauses with `risk == "danger"`, in index order. None: `NoViolationsError` (422 at the endpoint); the pipeline decides not to call this step and stores `complaint: null` (D-53).
+- **Template:** `complaint_templates/{country}/types/general`, read through `ComplaintTemplateRepository`. Only `general` is curated (one template per country); it names the labor authority, the ways to reach it, the language it works in and the letter frame. No template loaded: `ComplaintTemplateNotFoundError` (404).
+- **Gemini call:** reasoning tier, prompt `contract/complaint.v2` (key `contract.complaint`, version 2), response schema `ComplaintAnswer` (`letter_text`, `worker_copy`), per-attempt timeout 60 s (`GEMINI_COMPLAINT_TIMEOUT_SECONDS`). The template, the violations and the contract facts go in their own tags; a closing tag inside a clause or an employer name is neutralised.
+- **Two languages:** `letter_text` is in the authority's language (`en`, `ko`, `ms` or `ja`) so it can be sent as it is; `worker_copy` is the same letter in the worker's language so they can read it. When the two are the same language `worker_copy` is `null`, whatever Gemini returned.
+- **Blanks:** the worker's name, contact details and start date are `[bracketed blanks]` in both texts, in the same places, because none of them is known to the pipeline. The worker fills them in before sending.
+- **Set by code, never taken from Gemini:** `authority_name`, `authority_url`, `channels`, `template_type`, `letter_language`, `violation_count`.
+- **Checked in code:** an empty letter, a missing `worker_copy` (when the languages differ) or a `{{placeholder}}` of the template left in either text is `ComplaintIncompleteError` (502).
+- **Out:** `ContractComplaint`. `template_type`, `authority_name` and `letter_text` are the `complaint` map of `reports/{lang}`; `worker_copy`, `channels` and `letter_language` extend it (`docs/data-model/collections/contracts.md`).
+- **Errors:** `NoViolationsError` (422), `ComplaintTemplateNotFoundError` (404), `ComplaintIncompleteError` (502), Gemini errors (503/504/502/500).
+- **Standalone endpoint:** `POST /api/v1/contracts/complaint` (`docs/api/endpoints.md`).
+- **Data:** the six country files in `data-scripts/data/source/complaint-templates/`, checked by `python -m src.validators.complaint_template` and loaded by `python -m src.loaders.complaint_templates` (see the runbook).
+- **For the report UI (Aditya, NF-P2-013):** show `worker_copy` (or `letter_text` when it is null) as the preview and `letter_text` for the PDF and the copy action; list `channels` under it as where to send it.
+- **For the pipeline owner (D-53):** the letter is written in one call from the English comparison, so it is independent of the report language. Store the `complaint` map in the source-language report, and reuse it, with `worker_copy`, in the other languages of the same worker.

@@ -1,0 +1,49 @@
+{
+  "country": "AU",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "Australia: the Fair Work Ombudsman handles pay and conditions complaints, mainly by phone, with free interpreters through TIS. The fairwork.gov.au pages timed out when read on 2026-09-28, so these details come from the site's search summaries of the pages listed in sources: read those pages and re-check the numbers before relying on them.",
+  "sources": [
+    "https://www.fairwork.gov.au/about-us/contact-us",
+    "https://www.fairwork.gov.au/about-us/contact-us/call-us",
+    "https://www.fairwork.gov.au/about-us/contact-us/online-enquiries",
+    "https://www.fairwork.gov.au/workplace-problems/fixing-a-workplace-problem/workplace-help-in-other-languages"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "Fair Work Ombudsman (FWO), Australia",
+      "authority_url": "https://www.fairwork.gov.au/about-us/contact-us",
+      "channels": [
+        {
+          "kind": "phone",
+          "value": "13 13 94",
+          "note": "Fair Work Infoline, Mon-Fri 8am-5:30pm except public holidays"
+        },
+        {
+          "kind": "phone",
+          "value": "131 450",
+          "note": "Translating and Interpreting Service (TIS): free interpreter; ask them to call the Fair Work Ombudsman on 13 13 94"
+        },
+        {
+          "kind": "web",
+          "value": "https://www.fairwork.gov.au/about-us/contact-us/online-enquiries",
+          "note": "Online enquiry, for people who cannot call in business hours; replies can take up to 10 business days"
+        }
+      ],
+      "letter_language": "en",
+      "template_text": "To: {{authority_name}}\n\nSubject: Complaint about employment terms that appear to break the law\n\nDear Sir or Madam,\n\nI am {{worker_name}}, and I work for {{employer_name}}.\n\nThe employment contract I was given contains terms that appear to conflict with the law:\n\n{{violation_summary}}\n\nContract details, for reference:\n{{contract_details}}\n\nI respectfully ask your office to look into this matter and to advise me on the steps I should take. I can provide a copy of my contract if needed.\n\nThank you for your attention.\n\nYours faithfully,\n{{worker_name}}\nContact: {{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}

@@ -74,6 +74,9 @@ class Settings(BaseSettings):
     # longer bound rather than the 30 s default (classification tier is fast, but the output
     # is not small).
     gemini_translate_timeout_seconds: float = Field(default=60.0, gt=0)
+    # The complaint letter (NF-P2-006, reasoning tier) is written twice, once per language,
+    # and the reasoning tier spends 13 to 23 s thinking even on short prompts (D-08).
+    gemini_complaint_timeout_seconds: float = Field(default=60.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
     # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted

@@ -83,3 +83,16 @@ python -m src.loaders.ilo_natlex             # write all curated countries
 Options: `--only SG JP` (some countries), `--input-dir`, `--collection` (default `labor_laws`), `--require-all` (fail while any file is still `{}`). Each country is written in one batch, so it is never half-loaded. `scripts/load_bootstrap.sh` calls this after the corridor loader.
 
 Full steps and troubleshooting: [`docs/runbooks/NF-P1-018-labor-law-load.md`](../docs/runbooks/NF-P1-018-labor-law-load.md).
+
+## Complaint templates (NF-P2-006)
+One JSON file per host country in `data/source/complaint-templates/`: who a worker complains to (authority, channels, official pages checked on 2026-09-28) and the letter frame the backend fills in. Each file holds one `general` template that covers every violation; its `letter_language` is the language the authority works in (`en`, `ko`, `ms`, `ja`). Authority details must be read from the authority's own pages listed in `sources`: a wrong phone number sends a worker to the wrong place.
+
+```bash
+python -m src.validators.complaint_template --require-all   # check the six files
+python -m src.loaders.complaint_templates --dry-run         # validate only, no Firestore access
+python -m src.loaders.complaint_templates                   # write all countries
+```
+
+The loader writes `complaint_templates/{country}` (header) and `complaint_templates/{country}/types/{type}` in one batch per country, after every file has passed the checker's model; if any file fails, nothing is written. A type removed from a file is deleted from Firestore, and running it again is safe. There is no version number: a stored report keeps the letter it was made with. Options: `--only SG JP`, `--input-dir`, `--collection` (default `complaint_templates`), `--require-all`. It is not part of `scripts/load_bootstrap.sh`; run it yourself when the files change.
+
+Full steps and results: [`docs/runbooks/NF-P2-006-contract-complaint.md`](../docs/runbooks/NF-P2-006-contract-complaint.md).

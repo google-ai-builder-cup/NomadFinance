@@ -1,0 +1,50 @@
+{
+  "country": "MY",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "Malaysia: JTKSM covers Peninsular Malaysia only; Sabah and Sarawak have their own labour departments, so a contract for work there needs the local department instead. Channels read from the JTKSM complaints page on 2026-09-28. The letter is in Malay because the official complaint form is in Malay; have a Malay reader check it before it is sent.",
+  "sources": [
+    "https://jtksm.mohr.gov.my/en/services/complaints",
+    "https://jtksm.mohr.gov.my/en/services/labour-complaint/complaint-form"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "Jabatan Tenaga Kerja Semenanjung Malaysia (JTKSM) (Department of Labour Peninsular Malaysia)",
+      "authority_url": "https://jtksm.mohr.gov.my/en",
+      "channels": [
+        {
+          "kind": "web",
+          "value": "https://mohr.spab.gov.my/eApps/system/index.do",
+          "note": "Sistem Pengurusan Aduan Awam (SisPAA), the public complaints system named on the JTKSM complaints page"
+        },
+        {
+          "kind": "phone",
+          "value": "03-8000 8000",
+          "note": "JTKSM"
+        },
+        {
+          "kind": "email",
+          "value": "jtksm@mohr.gov.my"
+        },
+        {
+          "kind": "post",
+          "value": "Jabatan Tenaga Kerja Semenanjung Malaysia, Aras 5, Blok Setia Perkasa 3, Kompleks Setia Perkasa, Putrajaya 62530, or any JTKSM branch office"
+        }
+      ],
+      "letter_language": "ms",
+      "template_text": "Kepada: {{authority_name}}\n\nPerkara: Aduan mengenai terma pekerjaan yang didapati bercanggah dengan undang-undang\n\nTuan/Puan,\n\nSaya {{worker_name}}, bekerja dengan {{employer_name}}.\n\nKontrak pekerjaan yang diberikan kepada saya mengandungi terma yang didapati bercanggah dengan undang-undang seperti berikut:\n\n{{violation_summary}}\n\nButiran kontrak (untuk rujukan):\n{{contract_details}}\n\nSaya memohon jabatan tuan/puan menyiasat perkara ini dan menasihati saya mengenai langkah yang perlu saya ambil. Saya boleh mengemukakan salinan kontrak sekiranya diperlukan.\n\nSekian, terima kasih.\n\n{{worker_name}}\nNo. telefon: {{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}

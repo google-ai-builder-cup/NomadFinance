@@ -1,0 +1,52 @@
+{
+  "country": "SG",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "Singapore: MOM handles Employment Act reports (Singpass sign-in) and, for migrant domestic workers, salary claims through its helpline. Channels read from the pages listed in sources on 2026-09-28.",
+  "sources": [
+    "https://www.mom.gov.sg/eservices/services/report-an-employment-act-violation",
+    "https://www.mom.gov.sg/faq/work-permit-for-fdw/how-can-an-fdw-report-that-her-salary-has-not-been-paid",
+    "https://www.mom.gov.sg/contact-us"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "Ministry of Manpower (MOM), Singapore",
+      "authority_url": "https://www.mom.gov.sg/",
+      "channels": [
+        {
+          "kind": "web",
+          "value": "https://go.gov.sg/verify-your-issue",
+          "note": "Report an Employment Act violation online (needs a Singpass account); the reporter's identity is kept confidential"
+        },
+        {
+          "kind": "phone",
+          "value": "1800 339 5505",
+          "note": "Migrant domestic workers: MOM Foreign Manpower Management Division (Well-Being Branch), Mon-Fri 8.30am-5.30pm; +65 6339 5505 from overseas"
+        },
+        {
+          "kind": "phone",
+          "value": "6438 5122",
+          "note": "MOM general enquiries, Mon-Fri 8.30am-5.30pm except public holidays"
+        },
+        {
+          "kind": "post",
+          "value": "MOM Services Centre, 1500 Bendemeer Road, Singapore 339946"
+        }
+      ],
+      "letter_language": "en",
+      "template_text": "To: {{authority_name}}\n\nSubject: Complaint about employment terms that appear to break the law\n\nDear Sir or Madam,\n\nI am {{worker_name}}, and I work for {{employer_name}}.\n\nThe employment contract I was given contains terms that appear to conflict with the law:\n\n{{violation_summary}}\n\nContract details, for reference:\n{{contract_details}}\n\nI respectfully ask your office to look into this matter and to advise me on the steps I should take. I can provide a copy of my contract if needed.\n\nThank you for your attention.\n\nYours faithfully,\n{{worker_name}}\nContact: {{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}

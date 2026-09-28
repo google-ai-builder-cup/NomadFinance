@@ -1,0 +1,46 @@
+{
+  "country": "JP",
+  "curated_by": [
+    "Pranjal"
+  ],
+  "reviewed_by": [],
+  "last_verified_on": "2026-09-28",
+  "notes": "Japan: complaints and consultations about working conditions go to the Labour Standards Inspection Office for the workplace. The ministry also runs free foreign-language phone consultation. Channels read from the MHLW page in sources on 2026-09-28; the page lists the phone numbers for 13 languages.",
+  "sources": [
+    "https://www.check-roudou.mhlw.go.jp/soudan/foreigner_eng.html"
+  ],
+  "types": {
+    "general": {
+      "authority_name": "所轄の労働基準監督署 (Labour Standards Inspection Office, Ministry of Health, Labour and Welfare)",
+      "authority_url": "https://www.check-roudou.mhlw.go.jp/soudan/foreigner_eng.html",
+      "channels": [
+        {
+          "kind": "web",
+          "value": "https://www.check-roudou.mhlw.go.jp/soudan/foreigner_eng.html",
+          "note": "Guide to the Labour Bureaus and Labour Standards Inspection Offices with foreign-worker consultation, by prefecture"
+        },
+        {
+          "kind": "phone",
+          "value": "0570-001-701",
+          "note": "Telephone Consultation Service for Foreign Workers, English, Mon-Fri 10:00-15:00 (closed 12:00-13:00); other languages on 0570-001-702 to 0570-001-718, see the page"
+        },
+        {
+          "kind": "phone",
+          "value": "0120-531-401",
+          "note": "Labour Standards Advice Hotline, English, free: weekdays 17:00-22:00, weekends and holidays 9:00-21:00; other languages listed on the page"
+        }
+      ],
+      "letter_language": "ja",
+      "template_text": "{{authority_name}} 御中\n\n件名：労働契約の内容が法令に違反していると思われる点についてのご相談\n\nご担当者様\n\n私は{{employer_name}}で働いている{{worker_name}}と申します。\n\n私が受け取った労働契約書に、法令に違反していると思われる次の内容が含まれているため、ご連絡いたします。\n\n{{violation_summary}}\n\n契約内容（参考）：\n{{contract_details}}\n\n上記の点についてご確認いただき、私が取るべき対応についてご教示いただけますようお願い申し上げます。必要であれば、労働契約書の写しを提出いたします。\n\nどうぞよろしくお願いいたします。\n\n{{worker_name}}\n連絡先：{{worker_contact}}",
+      "placeholders": [
+        "authority_name",
+        "worker_name",
+        "worker_contact",
+        "employer_name",
+        "contract_details",
+        "violation_summary"
+      ],
+      "reviewed_on": "2026-09-28"
+    }
+  }
+}
