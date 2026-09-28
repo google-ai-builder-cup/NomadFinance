@@ -1,4 +1,5 @@
 import ClauseRow from "@/components/contract/ClauseRow";
+import ComplaintPreview from "@/components/contract/ComplaintPreview";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import type { ContractAnalysis, ContractReport } from "@/types/contract";
@@ -72,6 +73,8 @@ export default function ReportCard({ analysis, report }: ReportCardProps) {
           </ul>
         </section>
       )}
+
+      {report.complaint && <ComplaintPreview complaint={report.complaint} />}
     </div>
   );
 }

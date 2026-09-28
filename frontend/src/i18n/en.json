@@ -309,6 +309,18 @@
       "insurance_and_injury": "Insurance and injury",
       "social_security": "Social security",
       "other": "Other"
+    },
+    "complaint": {
+      "heading": "Complaint letter",
+      "subtitle": "This letter reports {{count}} clause(s) that may break labor law to {{authority}}.",
+      "blanksReminder": "Fill in the [bracketed] details — your name, contact information and start date — before sending it.",
+      "sendNote": "This preview is for you to read. Download or copy sends the official letter in {{language}}.",
+      "download": "Download as PDF",
+      "copy": "Copy letter",
+      "copied": "Letter copied to clipboard.",
+      "copyFailed": "We couldn't copy the letter. Please copy it by hand.",
+      "printBlocked": "Please allow pop-ups for this site, then try downloading again.",
+      "whereToSend": "Where to send it"
     }
   },
   "errors": {
