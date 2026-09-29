@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Keyless login: no JSON key exists. Google only accepts this repo's main branch.
       - uses: google-github-actions/auth@v2
