@@ -1,7 +1,7 @@
 -r requirements.txt
 pytest==9.1.1
 httpx==0.28.1
-ruff==0.16.8
+ruff==0.16.9
 black==26.5.1
 mypy==2.3.1
 types-PyYAML==6.0.12.20260906
