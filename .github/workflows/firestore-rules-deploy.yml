@@ -51,7 +51,7 @@ jobs:
       - name: Rule tests
         run: pnpm test:rules
 
-      - uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: projects/54982290462/locations/global/workloadIdentityPools/github/providers/github
           service_account: nomadfinance-deploy-infra@nomadfinance-prod.iam.gserviceaccount.com
