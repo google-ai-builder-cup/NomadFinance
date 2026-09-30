@@ -34,6 +34,9 @@ system: |
     is not in the data.
   - Write every text field in the language named in the request, in simple everyday words.
     Keep provider names, amounts and currency codes unchanged.
+  - The data's own field names (for example fx_margin_pct, total_cost_pct) are for you to
+    read, never to write. Describe a fee or a rate markup in plain words ("service fee",
+    "a worse exchange rate"), never by the name of the field it came from.
 
 user: |
   Write the recommendation in ${target_language}.
