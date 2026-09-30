@@ -38,6 +38,9 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/radar/report` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P3-001 |
 | POST | `/api/v1/radar/report/{report_id}/evidence` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-004 |
 | GET | `/api/v1/radar/entities/{slug}/reports` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-008 |
+| POST | `/api/v1/fib/income` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
+| POST | `/api/v1/fib/bill` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
+| POST | `/api/v1/fib/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
@@ -1106,6 +1109,54 @@ curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/radar/ent
 |---|---|---|
 | 401 | see Authentication | No or invalid token |
 | 422 | FastAPI validation list | `slug` isn't lowercase-words-and-hyphens shaped |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
+
+## `POST /api/v1/fib/income`, `POST /api/v1/fib/bill`, `POST /api/v1/fib/savings`
+
+Manual Financial Identity Builder activity logging (NF-P3-010): `users/{uid}/income`, `users/{uid}/bills`, `users/{uid}/savings` — the same pattern `POST /remittance/log` (NF-P2-017) already established for `users/{uid}/transfers`, the fourth entry type in the same activity log (`docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide rate limit applies. A bill photo read by Gemini Vision is a separate endpoint (NF-P3-011, not built yet), writing into the same `bills` collection.
+
+Every entry's `category` (income, bills) is always `category_source: "user"` here, whatever the worker chose or left blank — Flash-Lite categorization of uncategorized entries (NF-P3-012) is its own, later step over the same collections.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required for all three
+
+**`POST /api/v1/fib/income`** — body: `entry_date` (optional, defaults to today), `amount` (> 0), `currency` (ISO 4217), `category` (required: `salary` / `overtime` / `bonus` / `other_income`), `employer_name` (optional), `notes` (optional, ≤500 chars). Response `201`: `IncomeLogResponse` (`app/schemas/fib.py`) — `entry_id`, the fields above, plus `category_source` (always `"user"`) and `verified` (always `false`: `true` is set only by the contract cross-pillar flow, NF-P3-024, never a manual entry).
+
+**`POST /api/v1/fib/bill`** — body: `entry_date` (optional), `amount` (> 0), `currency`, `vendor` (optional), `bill_date` (optional — the date printed on the bill, separate from `entry_date`), `paid` (required), `category` (optional: `rent` / `utilities` / `phone_internet` / `transport` / `food` / `medical` / `other_expense`), `notes` (optional). Response `201`: `BillLogResponse` — `category_source` is `"user"` when a category was sent, `null` when it was left for NF-P3-012 to fill in later.
+
+**`POST /api/v1/fib/savings`** — body: `entry_date` (optional), `amount` (> 0, always positive — `direction` carries the sign), `currency`, `direction` (required: `deposit` / `withdrawal`), `account_type` (optional: `cash` / `bank` / `mobile_wallet` / `other`), `notes` (optional). Response `201`: `SavingsLogResponse`.
+
+Example (bill, with a category; bash — in PowerShell use `curl.exe`):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"amount": 38.5, "currency": "SGD", "paid": true, "vendor": "Example Telecom", "category": "phone_internet"}' \
+  http://127.0.0.1:8080/api/v1/fib/bill
+```
+
+```json
+{
+  "entry_id": "aBc123XyZ0123456789A",
+  "entry_date": "2026-09-30",
+  "amount": 38.5,
+  "currency": "SGD",
+  "vendor": "Example Telecom",
+  "bill_date": null,
+  "paid": true,
+  "category": "phone_internet",
+  "category_source": "user",
+  "notes": null,
+  "created_at": "2026-09-30T12:00:00Z"
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list | Missing a required field (`category` for income, `paid` for a bill, `direction` for savings), a non-positive `amount`, or `currency` not 3 uppercase letters |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---
