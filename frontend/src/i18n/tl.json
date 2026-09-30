@@ -376,6 +376,27 @@
         "note": "Nagbabayad ang mga serbisyong ito sa ibang currency kaysa {{receiveCurrency}}, kaya hindi sila maaaring ihanay ayon sa matatanggap ng iyong pamilya.",
         "row": "{{firm}}: bayad na {{fee}}, nagbabayad sa {{currency}}"
       }
+    },
+    "trend": {
+      "heading": "Kasaysayan ng palitan",
+      "periodLabel": "Tagal ng panahon",
+      "period": {
+        "month": "1M",
+        "quarter": "3M",
+        "halfYear": "6M",
+        "year": "1Y"
+      },
+      "change": "{{pct}} mula {{from}} hanggang {{to}}",
+      "tableDate": "Petsa",
+      "tableRate": "Palitan",
+      "bestDay": "Karaniwan, {{weekday}} ang pinakamagandang araw magpadala: mga {{pct}} mas mahusay kaysa sa average ng linggo.",
+      "noBestDay": {
+        "notEnoughHistory": "Wala pang sapat na kasaysayan para masabi kung aling araw ang karaniwang pinakamahusay.",
+        "noClearPattern": "Walang araw na palaging mas mahusay kaysa sa iba para sa corridor na ito."
+      },
+      "empty": "Wala pang kasaysayan ng palitan para sa panahong ito.",
+      "notLoaded": "Hindi pa available ang kasaysayan ng palitan para sa corridor na ito.",
+      "loadError": "Hindi namin na-load ang kasaysayan ng palitan."
     }
   },
   "errors": {

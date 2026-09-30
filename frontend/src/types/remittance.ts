@@ -89,3 +89,52 @@ export interface RemittanceComparison {
   providers: ProviderResult[];
   summary: ComparisonSummary;
 }
+
+/** Periods `GET /remittance/trends` offers, in days. Matches the backend's `TrendDays`. */
+export const TREND_DAYS = [30, 90, 180, 365] as const;
+export type TrendDays = (typeof TREND_DAYS)[number];
+
+export type Weekday = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
+
+export interface TrendPoint {
+  date: string;
+  rate: number;
+}
+
+export interface TrendSummary {
+  first: TrendPoint;
+  latest: TrendPoint;
+  /** Latest against first, in percent; above 0 means the recipient now gets more. */
+  change_pct: number;
+  low: TrendPoint;
+  high: TrendPoint;
+  average: number;
+}
+
+/** How one weekday compares with the rest of its own week, over the analysed weeks. */
+export interface WeekdayStat {
+  weekday: Weekday;
+  advantage_pct: number;
+  weeks: number;
+  beat_share: number;
+}
+
+/** Response of `GET /remittance/trends` (NF-P2-015). */
+export interface RemittanceTrends {
+  corridor_id: CorridorId;
+  pair: string;
+  base_currency: string;
+  quote_currency: string;
+  days: TrendDays;
+  /** One per market day in the period, oldest first. */
+  points: TrendPoint[];
+  summary: TrendSummary | null;
+  /** Newest day stored, even if outside the period (a stalled cron shows here). */
+  last_date: string;
+  best_day: WeekdayStat | null;
+  best_day_reason: "not_enough_history" | "no_clear_pattern" | null;
+  weeks_analysed: number;
+  /** All five weekdays, Monday first; empty when there is not enough history. */
+  weekdays: WeekdayStat[];
+  providers: string[];
+}

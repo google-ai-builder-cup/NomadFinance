@@ -1,3 +1,5 @@
+import type { Weekday } from "@/types/remittance";
+
 /**
  * Country name in the given UI language, from the browser's own locale data, so country
  * lists need no translation keys. Falls back to the ISO code if the browser can't name it.
@@ -50,5 +52,27 @@ export function formatMoney(
     }).format(amount);
   } catch {
     return `${amount} ${currency}`;
+  }
+}
+
+// 2026-09-07 is a Monday, chosen only as an anchor with no daylight-saving transition nearby;
+// the weekday names it produces do not depend on the year.
+const WEEKDAY_ANCHOR = Date.UTC(2026, 8, 7);
+const WEEKDAY_OFFSET: Record<Weekday, number> = {
+  monday: 0,
+  tuesday: 1,
+  wednesday: 2,
+  thursday: 3,
+  friday: 4,
+};
+
+/** A weekday's name in the given UI language ("Wednesday", "बुधवार"), from the browser's own
+ * locale data, so the five weekdays need no translation keys (NF-P2-020). */
+export function weekdayName(weekday: Weekday, language: string): string {
+  const date = new Date(WEEKDAY_ANCHOR + WEEKDAY_OFFSET[weekday] * 86_400_000);
+  try {
+    return new Intl.DateTimeFormat(language, { weekday: "long", timeZone: "UTC" }).format(date);
+  } catch {
+    return weekday;
   }
 }
