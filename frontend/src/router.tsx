@@ -12,6 +12,7 @@ import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
+import RadarEntity from "@/pages/radar/RadarEntity";
 import RadarHeatmap from "@/pages/radar/RadarHeatmap";
 import RadarReport from "@/pages/radar/RadarReport";
 import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
                       { path: "/profile", element: <Profile /> },
                       { path: "/radar/heatmap", element: <RadarHeatmap /> },
                       { path: "/radar/report", element: <RadarReport /> },
+                      { path: "/radar/entity/:slug", element: <RadarEntity /> },
                       ...pillarRoutes,
                     ],
                   },

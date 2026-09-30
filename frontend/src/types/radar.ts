@@ -46,6 +46,22 @@ export interface RadarEvidenceResponse {
   evidence_paths: string[];
 }
 
+export type ReportSource = "user" | "contract_signal" | "seed";
+
+/** One entry of `GET /api/v1/radar/entities/{slug}/reports` (NF-P3-008). */
+export interface RadarReportSummary {
+  report_id: string;
+  violation_type: ViolationType;
+  description: string;
+  /** Null for contract_signal/seed reports, which have no free text to summarize. */
+  summary: string | null;
+  language: LanguageCode;
+  corridor_id: CorridorId | null;
+  host_country: HostCountry | null;
+  source: ReportSource;
+  created_at: string;
+}
+
 /** What the form has collected so far. */
 export interface ReportDraft {
   entityType: EntityType | null;

@@ -6,7 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.contract import HostCountryCode, ReportLanguage
-from app.schemas.radar import RadarEntityType, RadarViolationType
+from app.schemas.radar import RadarEntityType, RadarReportSource, RadarViolationType
 from app.schemas.remittance_compare import CorridorId
 
 # A worker's own account of an incident is often longer than a system-generated one
@@ -70,6 +70,25 @@ class RadarReportResponse(BaseModel):
         "separate, alert-level summary from facts aggregated across multiple reports — it "
         "does not reuse this one."
     )
+    created_at: datetime
+
+
+class RadarReportSummary(BaseModel):
+    """One report on an entity's profile (NF-P3-008): `GET /radar/entities/{slug}/reports`.
+
+    `radar_reports` has no client access (`firestore.rules`); this is the backend's own
+    view of it, with `reporter_hash` and the classification internals (`spam_score`,
+    `category_confidence`, `model`) left out — never a client's business.
+    """
+
+    report_id: str
+    violation_type: RadarViolationType
+    description: str
+    summary: str | None
+    language: str
+    corridor_id: CorridorId | None
+    host_country: HostCountryCode | None
+    source: RadarReportSource
     created_at: datetime
 
 

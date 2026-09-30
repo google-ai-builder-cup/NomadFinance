@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import lru_cache
 from typing import Any
 
-from google.cloud.firestore import ArrayUnion, CollectionReference
+from google.cloud.firestore import ArrayUnion, CollectionReference, Query
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
@@ -59,6 +59,17 @@ class RadarRepository(FirestoreRepository):
         ownership first; this just writes.
         """
         self.document(report_id).update({"evidence_paths": ArrayUnion([path])})
+
+    def list_by_entity(self, slug: str) -> list[tuple[str, dict[str, Any]]]:
+        """Every report about one entity, newest first (NF-P3-008's entity profile page).
+
+        Needs the composite index `entity_slug` asc + `created_at` desc
+        (docs/data-model/firestore-schema.md); without it Firestore rejects the query.
+        """
+        query = self.collection.where(filter=FieldFilter("entity_slug", "==", slug)).order_by(
+            "created_at", direction=Query.DESCENDING
+        )
+        return [(doc.id, data) for doc in query.stream() if (data := doc.to_dict()) is not None]
 
     @property
     def _embeddings(self) -> CollectionReference:

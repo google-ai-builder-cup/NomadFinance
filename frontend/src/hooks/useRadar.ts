@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { listRadarEntities, submitReport, uploadEvidence } from "@/services/radarService";
-import type { RadarReportRequest, RadarReportResponse } from "@/types/radar";
+import {
+  getEntityReports,
+  listRadarEntities,
+  submitReport,
+  uploadEvidence,
+} from "@/services/radarService";
+import type { RadarEntityProfile, RadarReportRequest, RadarReportResponse } from "@/types/radar";
 
 export interface SubmitReportArgs {
   report: RadarReportRequest;
@@ -46,6 +51,40 @@ export function useRadarEntities() {
   return useQuery({
     queryKey: ["radar", "entities"],
     queryFn: listRadarEntities,
+    staleTime: 60_000,
+  });
+}
+
+export interface RadarEntityResult {
+  /**
+   * `null` both while loading and when no entity has this slug: the caller checks
+   * `isPending`/`isError` first, same as any other query, before this means "not found".
+   */
+  entity: RadarEntityProfile | null;
+  isPending: boolean;
+  isError: boolean;
+  refetch: () => void;
+}
+
+/**
+ * One business profile, for the entity page. Shares `useRadarEntities`'s cache (the
+ * heatmap's own query) instead of a separate fetch.
+ */
+export function useRadarEntity(slug: string): RadarEntityResult {
+  const entities = useRadarEntities();
+  return {
+    entity: entities.data?.find((candidate) => candidate.slug === slug) ?? null,
+    isPending: entities.isPending,
+    isError: entities.isError,
+    refetch: () => void entities.refetch(),
+  };
+}
+
+/** Every report behind one entity's profile, newest first. */
+export function useEntityReports(slug: string) {
+  return useQuery({
+    queryKey: ["radar", "entity", slug, "reports"],
+    queryFn: () => getEntityReports(slug),
     staleTime: 60_000,
   });
 }
