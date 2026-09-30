@@ -5,7 +5,9 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
+from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.corridor_repo import CorridorRepository, get_corridor_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.schemas.remittance_compare import (
@@ -13,12 +15,17 @@ from app.schemas.remittance_compare import (
     RemittanceCompareRequest,
     RemittanceComparison,
 )
+from app.schemas.remittance_recommend import RemittanceRecommendation, RemittanceRecommendRequest
 from app.schemas.remittance_trends import RemittanceTrends, TrendDays
 from app.schemas.user import AuthenticatedUser
 from app.services.remittance.engine import (
     AmountOutOfRangeError,
     CorridorNotFoundError,
     compare_remittance,
+)
+from app.services.remittance.recommender import (
+    RecommendationIncompleteError,
+    generate_recommendation,
 )
 from app.services.remittance.trends import HistoryNotFoundError, get_trends
 
@@ -105,4 +112,45 @@ async def remittance_trends(
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             f"No rate history is available yet for {corridor_id}.",
+        ) from exc
+
+
+_RECOMMEND_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    422: {"description": "The comparison has no ranked provider, or an invalid body"},
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/recommend",
+    response_model=RemittanceRecommendation,
+    responses=_RECOMMEND_ERROR_RESPONSES,
+    summary="Write a short, personal recommendation from a finished comparison",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def recommend_remittance_option(
+    body: RemittanceRecommendRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> RemittanceRecommendation:
+    """Explain the comparison in one headline and a few sentences. Step 9.
+
+    Send the unmodified body of `/remittance/compare` as `comparison`, the body of
+    `/remittance/trends` as `trend` if you have it (for the timing tip; omit it otherwise),
+    and `target_language`. `recommended_rpw_id` and `recommended_firm` are always the
+    comparison's own top-ranked provider, never a name Gemini chose; the recommendation is
+    rejected as unusable if it names a different one. Nothing is stored.
+    """
+    try:
+        return await generate_recommendation(
+            body.comparison, body.trend, body.target_language, gemini
+        )
+    except RecommendationIncompleteError as exc:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "The AI service returned an unusable answer. Please try again.",
         ) from exc

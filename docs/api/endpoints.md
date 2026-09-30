@@ -32,6 +32,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/contracts/{contract_id}/reports/{language}` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-007 |
 | POST | `/api/v1/remittance/compare` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-014 |
 | GET | `/api/v1/remittance/trends` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-015 |
+| POST | `/api/v1/remittance/recommend` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-016 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -751,6 +752,68 @@ curl -s -H "Authorization: Bearer $TOKEN"   "http://127.0.0.1:8080/api/v1/remitt
 | 404 | `No rate history is available yet for <corridor>.` | Nothing in `rates_history/{pair}.daily`: run the backfill, or wait for the cron |
 | 422 | FastAPI validation list | Missing or unknown `corridor_id`, or `days` not one of 30, 90, 180, 365 |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+## `POST /api/v1/remittance/recommend`
+
+Writes a short, personal recommendation from a finished comparison: one headline and two to four sentences, in the worker's own language. Step 9 of the Remittance X-Ray pipeline (NF-P2-016, `docs/pipelines/remittance-xray.md`), classification tier (`gemini-3.1-flash-lite`, prompt `remittance/recommend.v1`) — the only remittance step that calls Gemini, on a separate quota bucket from Contract Shield's reasoning tier (ADR-002, D-58). Nothing is stored.
+
+**The recommended provider is never a name Gemini chose.** `recommended_rpw_id` and `recommended_firm` are always the comparison's own top-ranked comparable provider (`summary.best_rpw_id` / `best_firm`); the prompt's own answer is only checked against them, and a mismatch is a `502`. There is no radar-flag data yet (NF-P3-022) that would make a different choice correct.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `comparison` | object, required | The unmodified response of `POST /remittance/compare`, at least one ranked provider |
+| `trend` | object or omitted | The unmodified response of `GET /remittance/trends`, for the timing tip. Omit it, or send it with `best_day: null`, when you have none |
+| `target_language` | `en` / `hi` / `tl` / `id` / `ne` / `bn` | Language to write the recommendation in |
+
+- **Response `200`:** `RemittanceRecommendation` (`app/schemas/remittance_recommend.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `corridor_id` | | Same as `comparison.corridor_id` |
+| `target_language` | | Same as the request |
+| `recommended_rpw_id`, `recommended_firm` | | The top-ranked comparable provider of `comparison`, set by code |
+| `headline` | string | One short sentence with the key number |
+| `explanation` | string | Two to four short sentences: the gap to the most expensive option, and the fee or rate markup that causes it, in plain words (never a field name like `fx_margin_pct`) |
+| `timing_tip` | string or `null` | One sentence from `trend.best_day`; always `null` when `trend` had none, whatever Gemini wrote |
+
+Example: the SGD 500 to PHP comparison above, with a Wednesday trend, in Hindi (real Gemini answer, 2026-09-30).
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"comparison": <the /compare response above>,
+       "trend": {"best_day": {"weekday": "wednesday", "advantage_pct": 0.3, "weeks": 12, "beat_share": 0.75}, ...},
+       "target_language": "hi"}' \
+  http://127.0.0.1:8080/api/v1/remittance/recommend
+```
+
+```json
+{
+  "corridor_id": "SG-PH",
+  "target_language": "hi",
+  "recommended_rpw_id": 521250759,
+  "recommended_firm": "InstaReM",
+  "headline": "InstaReM के साथ पैसे भेजें: आपका परिवार 2907.3 PHP अधिक प्राप्त करेगा।",
+  "explanation": "InstaReM चुनने पर आपके परिवार को Maybank की तुलना में 2907.3 PHP अधिक मिलेंगे। यह अंतर मुख्य रूप से Maybank द्वारा लिए जाने वाले उच्च शुल्क और खराब विनिमय दर के कारण है।",
+  "timing_tip": "बुधवार को पैसे भेजने पर आपको 0.3 प्रतिशत का अधिक लाभ मिल सकता है।"
+}
+```
+
+The headline reads "Send with InstaReM: your family will get 2907.3 PHP more."
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list | `comparison` has no ranked provider, more than 60 providers, or `target_language` outside the six supported codes |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
+| 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no headline or explanation, or named a provider other than the top-ranked one |
+| 503 / 504 | see Error format | Gemini busy or timed out |
+
+---
 
 ## `POST /api/v1/internal/refresh-rates` (internal)
 

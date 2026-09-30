@@ -16,12 +16,12 @@ Each step's owner adds its section below when the step is built.
 | 6 | Rank by what the recipient receives | NF-P2-014 (Pranjal) | none | `services/remittance/engine.py` | Built |
 | 7 | Detect the trend, best day to send | NF-P2-015 (Devam) | none | `services/remittance/trends.py` | Done |
 | 8 | Historical savings against the worker's choice | NF-P2-022 (Devam) | none | not yet named | Not started |
-| 9 | Recommendation, in the worker's language | NF-P2-016 (Pranjal) | classification | `services/remittance/recommender.py`, `remittance/recommend.v1` | Not started |
+| 9 | Recommendation, in the worker's language | NF-P2-016 (Pranjal) | classification | `services/remittance/recommender.py`, `remittance/recommend.v1` | Built |
 | 10 | Translate | folded into step 9 | | `recommend.v1` writes in the worker's language directly, saving one call | Not needed |
 | - | Log a transfer | NF-P2-017 (Aditya) | none | `services/remittance/logger.py` | Not started |
 | - | Refresh the rates (cron) | NF-P1-019 (Devam) | none | `services/remittance/rates.py` | Built |
 
-Steps 1 to 6 are one request, `POST /api/v1/remittance/compare` (`docs/api/endpoints.md`). It makes no Gemini call, so the comparison table loads fast and does not spend the Gemini quota that Contract Shield shares (D-58).
+Steps 1 to 6 are one request, `POST /api/v1/remittance/compare` (`docs/api/endpoints.md`). It makes no Gemini call, so the comparison table loads fast and does not spend the Gemini quota that Contract Shield shares (D-58). Step 9, `POST /api/v1/remittance/recommend`, is a separate stateless call taking the unmodified body of `/compare` (and optionally `/trends`): the only remittance step that calls Gemini, on the classification tier, its own quota bucket from Contract Shield's reasoning tier (ADR-002).
 
 ## Flow
 
@@ -88,7 +88,9 @@ These are the contracts the built step offers. Their owners decide the details.
 - **Trends and best day (steps 4 and 7, NF-P2-015).** Built: see "Trends and best day" below.
 - **Savings and recommendation inputs.** NF-P2-022 reads the same daily series (`RateRepository.get_history`, `trends.daily_rates`). NF-P2-016 can pass `best_day` (or `best_day_reason`) to the prompt as its `timing_tip`; it must not claim a best day when `best_day` is null.
 - **Savings (step 8, NF-P2-022).** Uses the history and the survey's margins; the cost model above is the same function (`engine._terms`) and should be reused, not copied.
-- **Recommendation (step 9, NF-P2-016).** `recommend.v1` takes the comparison as JSON (`<comparison>`) and returns `best_provider`, `headline`, `explanation`, `timing_tip`, in the worker's language. `RemittanceComparison` already holds everything the prompt names: the amount and corridor, providers ranked by what the recipient receives, fee and markup per provider, `extra_vs_worst` and `mid_market_receives`. Trend and savings are added by their steps. The prompt copies numbers, it never calculates them, so the figures come from this step. Keep it a separate call from `/compare`: it is the only step that needs Gemini.
+- **Recommendation (step 9, NF-P2-016, built).** `POST /api/v1/remittance/recommend` takes the unmodified body of `/compare` as `comparison`, the body of `/trends` as an optional `trend`, and `target_language`. `recommend.v1` (classification tier) writes `headline`, `explanation` and, when `trend.best_day` was given, `timing_tip`, directly in the worker's language. Only the top-ranked comparable provider's fields and the summary numbers are sent to the model, trimmed from the full comparison (`recommender._comparison_json`); `note`, `network_coverage` and the survey block are not.
+- **The recommended provider is never taken from Gemini.** `recommended_rpw_id` / `recommended_firm` are always `comparison.summary.best_rpw_id` / `best_firm`, the same values step 6 already computed. Gemini's own `best_provider` field is only cross-checked against them, case- and space-insensitively; a mismatch is `RecommendationIncompleteError` (502), since there is no radar-flag data yet (NF-P3-022) that would make a different choice legitimate. When that data exists, this check has to become a lookup that permits the second-ranked provider when the top one is flagged, and the prompt's own instruction for that case is already written into `recommend.v1`.
+- **`timing_tip` is forced to `null` whenever `trend` is missing or has no `best_day`**, whatever Gemini wrote, the same reasoning as never trusting a fact the model was not given data to compute.
 - **Radar flags (NF-P3-022).** A `flagged` field per firm can be added to `ProviderResult` when `radar_entities/` exists.
 - **Transfer log (NF-P2-017).** A logged transfer can carry `corridor_id`, `rpw_id`, `firm`, the amount, `fee`, `total_cost_pct` and `rate.rate` from the comparison the worker chose from.
 - **Frontend (NF-P2-018, NF-P2-019).** `speed_order` sorts the speed column; `estimated` and `rate.stale` need a visible note; `survey.attribution` must be on screen.
