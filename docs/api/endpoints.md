@@ -37,6 +37,7 @@ must say so explicitly in their own doc section below.
 | GET | `/api/v1/remittance/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-022 |
 | POST | `/api/v1/radar/report` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P3-001 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
+| POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
 ## Error format
@@ -1035,6 +1036,16 @@ Called only by the Cloud Scheduler job `refresh-rates` (every 2 hours). Hidden f
 - **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
 - **Response `200`:** `RefreshRatesResponse` (`app/schemas/remittance.py`): `history_point` (e.g. `2026-09-25T13`), `refreshed` (pair, rate, provider, rate_date), `failed` (pair, provider attempts), `completed_at`.
 - **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured **or** some pairs failed on every provider (body is the same `RefreshRatesResponse`; succeeded pairs are saved).
+
+## `POST /api/v1/internal/aggregate-radar` (internal)
+
+Called only by the Cloud Scheduler job `radar-aggregation` (every 6 hours). Hidden from the OpenAPI docs. The AGG subgraph of the Exploitation Radar pipeline (NF-P3-004, `docs/mermaid/exploitation-radar-pipeline.mmd`): for each of the 6 corridors, detects a surge (a business reported noticeably more than its own 7-day baseline), writes `radar_alerts/{corridor}/current/{alertId}`, expires alerts past `expires_at`, and for each freshly created alert writes a `users/{uid}/notifications/{id}` in every subscribed worker's own language plus an FCM push. Details: `docs/runbooks/NF-P3-004-radar-alert-cron.md`.
+
+- **Auth:** `Authorization: Bearer <Google-signed OIDC token>` for `CRON_SERVICE_ACCOUNT` with audience `CRON_AUDIENCE`, the same as `/internal/refresh-rates`. Firebase user tokens are rejected.
+- **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
+- **Response `200`:** `AggregateRadarResponse` (`app/schemas/radar_alert.py`): `corridors_scanned` (always 6), `alerts_created`, `alerts_expired`, `notifications_sent`, `completed_at`.
+- **Always 200.** A failure on one corridor (for example a missing Firestore index) or one recipient (a Gemini failure for one language, a dead FCM token) is caught and logged inside the run itself, never left to make Cloud Scheduler retry the whole thing.
+- **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured.
 
 ---
 

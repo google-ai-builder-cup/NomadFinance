@@ -23,6 +23,7 @@ EXPECTED_PROMPTS = {
     "radar/extract_entity.v1",
     "radar/validate.v1",
     "radar/categorize.v1",
+    "radar/alert_notification.v1",
     "fib/extract_bill.v1",
     "fib/categorize.v1",
     "fib/synthesize_narrative.v1",

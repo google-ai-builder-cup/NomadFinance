@@ -8,8 +8,13 @@ from fastapi.responses import JSONResponse
 
 from app.dependencies import require_cloud_scheduler
 from app.integrations.fx import FxRouter, get_fx_router
+from app.integrations.gemini import GeminiClient, get_gemini_client
+from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
+from app.repositories.user_repo import UserRepository, get_user_repository
+from app.schemas.radar_alert import AggregateRadarResponse
 from app.schemas.remittance import RefreshRatesResponse
+from app.services.radar.alerts import run_aggregation
 from app.services.remittance.rates import refresh_rates
 
 # Called by Cloud Scheduler only (infra/cloud-scheduler/). Hidden from the public API docs,
@@ -35,3 +40,18 @@ async def refresh_rates_endpoint(
     # refresh should trigger. The pairs that did succeed are already saved.
     code = status.HTTP_200_OK if not result.failed else status.HTTP_503_SERVICE_UNAVAILABLE
     return JSONResponse(result.model_dump(mode="json"), status_code=code)
+
+
+@router.post("/aggregate-radar", response_model=AggregateRadarResponse, responses=_RESPONSES)
+async def aggregate_radar_endpoint(
+    _caller: Annotated[str, Depends(require_cloud_scheduler)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> AggregateRadarResponse:
+    """AGG subgraph of the radar pipeline (NF-P3-004): detect surges, alert, expire, notify.
+
+    Always 200: a failure on one corridor or one recipient is caught and logged inside
+    `run_aggregation` itself, never left to make Cloud Scheduler retry the whole run.
+    """
+    return await run_aggregation(radar, users, gemini, datetime.now(UTC))

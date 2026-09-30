@@ -1,0 +1,31 @@
+# Cloud Scheduler job: detect radar report surges, write/expire alerts, notify subscribed
+# workers (NF-P3-004).
+#
+# Create (once):   gcloud scheduler jobs create http radar-aggregation --flags-file=infra/cloud-scheduler/radar-aggregation.yaml
+# Apply a change:  gcloud scheduler jobs update http radar-aggregation --flags-file=infra/cloud-scheduler/radar-aggregation.yaml
+# Run now:         gcloud scheduler jobs run radar-aggregation --project nomadfinance-prod --location asia-south1
+#
+# To change how often it runs, edit --schedule only (cron syntax, UTC), then "Apply a change".
+# The surge window itself (WINDOW_DAYS, services/radar/alerts.py) does not depend on this
+# interval: running more often just notices a surge sooner, it never double-counts.
+
+--project: nomadfinance-prod
+--location: asia-south1
+--schedule: "0 */6 * * *"
+--time-zone: Etc/UTC
+--description: "Detect radar report surges, write/expire alerts, notify workers (NF-P3-004)"
+--uri: https://nomadfinance-api-azewstzfaa-el.a.run.app/api/v1/internal/aggregate-radar
+--http-method: POST
+# Google's front end rejects a POST without Content-Length (411); an empty JSON body avoids it.
+--message-body: "{}"
+--headers: Content-Type=application/json
+# The endpoint accepts only an OIDC token for this service account and audience; they must
+# match CRON_SERVICE_ACCOUNT and CRON_AUDIENCE on the Cloud Run service (deploy_manual.sh).
+--oidc-service-account-email: nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com
+--oidc-token-audience: https://nomadfinance-api-azewstzfaa-el.a.run.app
+# 6 corridors, each a Firestore query plus (worst case) a handful of short classification-tier
+# Gemini calls; a run without any real surge finishes in well under a second, but budget
+# generously since it runs unattended.
+--attempt-deadline: 180s
+--max-retry-attempts: 2
+--min-backoff: 300s

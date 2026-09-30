@@ -12,9 +12,12 @@ from google.cloud.firestore_v1.vector import Vector
 
 from app.repositories.base import FirestoreRepository, get_firestore_client
 from app.schemas.radar import RadarEntity, RadarReport
+from app.schemas.radar_alert import RadarAlert, RadarAlertHeader
 
 EMBEDDINGS_COLLECTION = "report_embeddings"
 ENTITIES_COLLECTION = "radar_entities"
+ALERTS_COLLECTION = "radar_alerts"
+ALERTS_SUBCOLLECTION = "current"
 
 
 @dataclass(frozen=True)
@@ -124,6 +127,60 @@ class RadarRepository(FirestoreRepository):
         # same reasoning as create_report), and community_rating's null is meaningful, not
         # an absent field, so this does not exclude_none either.
         self._entities.document(entity.slug).set(entity.model_dump())
+
+    def reports_since(self, corridor_id: str, since: datetime) -> list[dict[str, Any]]:
+        """Every report on one corridor created at or after `since`, for surge detection.
+
+        Needs the composite index `corridor_id` asc + `created_at` desc
+        (docs/data-model/firestore-schema.md); without it Firestore rejects the query.
+        """
+        query = self.collection.where(filter=FieldFilter("corridor_id", "==", corridor_id)).where(
+            filter=FieldFilter("created_at", ">=", since)
+        )
+        return [data for doc in query.stream() if (data := doc.to_dict()) is not None]
+
+    @property
+    def _alerts(self) -> CollectionReference:
+        return self._client.collection(ALERTS_COLLECTION)
+
+    def _alert_current(self, corridor_id: str) -> CollectionReference:
+        # DocumentReference.collection()'s stub returns Any.
+        return self._alerts.document(corridor_id).collection(ALERTS_SUBCOLLECTION)  # type: ignore[no-any-return]
+
+    def get_alert_header(self, corridor_id: str) -> dict[str, Any] | None:
+        snapshot = self._alerts.document(corridor_id).get()
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def set_alert_header(self, header: RadarAlertHeader) -> None:
+        self._alerts.document(header.corridor_id).set(header.model_dump())
+
+    def get_active_alert(self, corridor_id: str, entity_slug: str) -> dict[str, Any] | None:
+        """The entity's currently active alert on this corridor, if any (for dedup)."""
+        query = (
+            self._alert_current(corridor_id)
+            .where(filter=FieldFilter("entity_slug", "==", entity_slug))
+            .where(filter=FieldFilter("status", "==", "active"))
+            .limit(1)
+        )
+        docs = list(query.stream())
+        return docs[0].to_dict() if docs else None
+
+    def new_alert_id(self, corridor_id: str) -> str:
+        return str(self._alert_current(corridor_id).document().id)
+
+    def create_alert(self, corridor_id: str, alert_id: str, alert: RadarAlert) -> None:
+        self._alert_current(corridor_id).document(alert_id).set(alert.model_dump(exclude_none=True))
+
+    def list_active_alerts(self, corridor_id: str) -> list[tuple[str, dict[str, Any]]]:
+        """Every currently active alert on one corridor, for the expiry sweep."""
+        query = self._alert_current(corridor_id).where(filter=FieldFilter("status", "==", "active"))
+        return [(doc.id, data) for doc in query.stream() if (data := doc.to_dict()) is not None]
+
+    def expire_alert(self, corridor_id: str, alert_id: str) -> None:
+        self._alert_current(corridor_id).document(alert_id).update({"status": "expired"})
+
+    def set_alert_notified(self, corridor_id: str, alert_id: str, notified_at: datetime) -> None:
+        self._alert_current(corridor_id).document(alert_id).update({"notified_at": notified_at})
 
 
 @lru_cache
