@@ -6,6 +6,7 @@ import { registerSW } from "virtual:pwa-register";
 
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 import LanguageSync from "@/components/common/LanguageSync";
+import ThemeSync from "@/components/common/ThemeSync";
 import Toaster from "@/components/common/Toast";
 import InstallPrompt from "@/components/layout/InstallPrompt";
 import AuthProvider from "@/hooks/useAuth";
@@ -50,6 +51,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <LanguageSync />
+          <ThemeSync />
           <RouterProvider router={router} future={{ v7_startTransition: true }} />
         </AuthProvider>
       </QueryClientProvider>

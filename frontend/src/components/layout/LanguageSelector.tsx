@@ -28,11 +28,13 @@ export default function LanguageSelector() {
         className="pointer-events-none absolute left-2 h-4 w-4 text-muted-foreground"
         aria-hidden="true"
       />
+      {/* Icon-only below sm (NF-P2-023: the header has no room for every control's full text
+          there); the native picker still lists every language's own name when opened. */}
       <select
         value={i18n.resolvedLanguage}
         onChange={handleChange}
         aria-label={t("layout.languageLabel")}
-        className="h-9 cursor-pointer appearance-none rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="h-9 w-9 cursor-pointer appearance-none rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm text-transparent shadow-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-auto sm:text-foreground sm:hover:text-accent-foreground"
       >
         {SUPPORTED_LANGUAGES.map((language) => (
           <option key={language.code} value={language.code}>

@@ -8,6 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Brand primary "Nomad Teal" (NF-P1-024) -->
     <meta name="theme-color" content="#0B5D71" />
+    <!-- Applies the dark class before first paint, so there is no flash of the wrong theme
+         while React loads (NF-P2-023). Keep "nomadfinance.theme" in sync with THEME_KEY in
+         src/lib/theme.ts; ThemeSync re-applies this once React is running. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("nomadfinance.theme");
+          var dark =
+            stored === "dark" ||
+            (stored !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+        } catch (e) {
+          // Local storage or matchMedia unavailable: stays in the default light theme.
+        }
+      })();
+    </script>
     <!-- iOS ignores the web manifest for standalone mode; these are required separately. -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />

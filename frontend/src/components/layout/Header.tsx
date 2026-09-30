@@ -2,6 +2,7 @@ import { LogOut, UserRound } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import LanguageSelector from "@/components/layout/LanguageSelector";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
@@ -38,6 +39,7 @@ export default function Header() {
             {identity}
           </span>
           <LanguageSelector />
+          <ThemeToggle />
           <Button variant="ghost" size="icon" asChild>
             <Link to="/profile" aria-label={t("nav.profile")} title={t("nav.profile")}>
               <UserRound className="h-4 w-4" aria-hidden="true" />
