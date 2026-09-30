@@ -188,7 +188,11 @@
       "radarAlerts": "Warnings about agents and money transfer services that cheat workers",
       "reminders": "Reminders",
       "corridors": "Warn me about these routes",
-      "corridorsHint": "Turn on the routes you use to send money."
+      "corridorsHint": "Turn on the routes you use to send money.",
+      "pushOn": "Push notifications are on for this browser.",
+      "pushDenied": "You blocked notifications for this site. Change it in your browser's site settings to turn them on.",
+      "pushEnable": "Turn on browser notifications",
+      "pushDeclined": "Notifications were not turned on. You can try again anytime."
     },
     "delete": {
       "heading": "Delete my account",
@@ -533,7 +537,8 @@
       "loadError": "We could not load the map data. Please try again.",
       "emptyTitle": "No reports yet",
       "emptyDescription": "When workers report a business, it will show up here. You can be the first.",
-      "viewProfile": "View business profile"
+      "viewProfile": "View business profile",
+      "alerts": "Alerts"
     },
     "entity": {
       "back": "Back to map",
@@ -560,6 +565,16 @@
         "contract_signal": "Found during a contract review",
         "seed": "Demo data"
       }
+    },
+    "alerts": {
+      "title": "Alerts",
+      "subtitle": "Notifications about businesses reported near you.",
+      "loadError": "We could not load your alerts. Please try again.",
+      "emptyTitle": "No alerts yet",
+      "emptyDescription": "When a business is reported several times, you will see an alert here.",
+      "unread": "Unread: {{title}}",
+      "pushToast": "You have a new alert",
+      "pushToastAction": "View"
     }
   },
   "errors": {

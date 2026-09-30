@@ -24,6 +24,9 @@ export const firebaseApp = initializeApp({
   appId: requireEnv("VITE_FIREBASE_APP_ID"),
   // Optional: without it Analytics stays off (lib/analytics.ts) and nothing else changes.
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || undefined,
+  // Optional: without it push notifications stay off (lib/messaging.ts) and nothing else
+  // changes — every other Firebase feature works with this unset.
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || undefined,
 });
 
 export const auth = getAuth(firebaseApp);

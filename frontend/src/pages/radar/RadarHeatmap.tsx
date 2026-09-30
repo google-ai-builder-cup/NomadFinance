@@ -1,4 +1,4 @@
-import { Radar } from "lucide-react";
+import { Bell, Radar } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -41,6 +41,14 @@ export default function RadarHeatmap() {
       <Link to="/radar/report">{t("radar.heatmap.report")}</Link>
     </Button>
   );
+  const alertsButton = (
+    <Button asChild variant="outline" className="h-11 gap-1.5">
+      <Link to="/radar/alerts">
+        <Bell className="h-4 w-4" aria-hidden="true" />
+        {t("radar.heatmap.alerts")}
+      </Link>
+    </Button>
+  );
 
   if (entities.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -74,7 +82,10 @@ export default function RadarHeatmap() {
           <h1 className="text-2xl font-bold tracking-tight">{t("radar.heatmap.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("radar.heatmap.subtitle")}</p>
         </div>
-        {reportButton}
+        <div className="flex gap-2">
+          {alertsButton}
+          {reportButton}
+        </div>
       </header>
 
       <div className="space-y-1.5">

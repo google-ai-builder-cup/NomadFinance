@@ -40,6 +40,11 @@ export default defineConfig({
         // The whole built app, so it opens offline and every deploy changes sw.js (which is
         // how the browser notices a new version).
         globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest}"],
+        // Its own service worker (NF-P3-009, registered on its own scope in
+        // lib/messaging.ts), not part of the installable app shell: a service worker script
+        // must never be precached by another one, or the browser's own update check for it
+        // (a fresh network fetch) would be served a stale cached copy instead.
+        globIgnores: ["firebase-messaging-sw.js"],
         navigateFallbackDenylist: [/^\/__\//],
       },
     }),
