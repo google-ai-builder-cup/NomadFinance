@@ -67,6 +67,7 @@ class FakeGemini:
 class FakeRadarRepo:
     def __init__(self) -> None:
         self.created: list[tuple[str, RadarReport]] = []
+        self.entities: dict[str, dict[str, Any]] = {}
 
     def new_report_id(self) -> str:
         return "r_test01"
@@ -79,6 +80,12 @@ class FakeRadarRepo:
 
     def create_report(self, report_id: str, report: RadarReport) -> None:
         self.created.append((report_id, report))
+
+    def get_entity(self, slug: str) -> dict[str, Any] | None:
+        return self.entities.get(slug)
+
+    def set_entity(self, entity: Any) -> None:
+        self.entities[entity.slug] = entity.model_dump()
 
 
 @pytest.fixture
@@ -119,6 +126,7 @@ def test_stores_the_report_and_returns_a_confirmation(
     assert body["corridor_id"] == "SG-IN"
     assert body["summary"] == CLASSIFICATION.summary
     assert len(fake_radar.created) == 1
+    assert fake_radar.entities["example-remit"]["report_count"] == 1
 
 
 def test_the_worker_never_names_the_violation_type(api: TestClient) -> None:

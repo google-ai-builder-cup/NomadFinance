@@ -232,6 +232,7 @@ def test_a_name_with_punctuation_still_produces_a_clean_slug() -> None:
 class FakeRadar:
     def __init__(self) -> None:
         self.reports: dict[str, Any] = {}
+        self.entities: dict[str, dict[str, Any]] = {}
         self._next = 0
 
     def new_report_id(self) -> str:
@@ -240,6 +241,12 @@ class FakeRadar:
 
     def create_report(self, report_id: str, report: Any) -> None:
         self.reports[report_id] = report
+
+    def get_entity(self, slug: str) -> dict[str, Any] | None:
+        return self.entities.get(slug)
+
+    def set_entity(self, entity: Any) -> None:
+        self.entities[entity.slug] = entity.model_dump()
 
 
 async def test_writes_one_document_per_report_and_returns_their_ids() -> None:
@@ -255,6 +262,21 @@ async def test_writes_one_document_per_report_and_returns_their_ids() -> None:
         "passport_retention",
         "illegal_recruitment_fee",
     }
+
+
+async def test_a_contract_signal_also_updates_the_entitys_risk_profile() -> None:
+    radar = FakeRadar()
+    clauses = [_clause(1, category="passport_retention"), _clause(2, category="recruitment_fees")]
+
+    await create_radar_signals(
+        "SG", "employment_contract", clauses, _facts(), cast(RadarRepository, radar)
+    )
+
+    entity = radar.entities["acme-pte-ltd"]
+    # Two distinct violation types on one contract: two separate reports, each its own
+    # incident (no clustering runs on this path), so this alone is already 2 incidents.
+    assert (entity["report_count"], entity["incident_count"]) == (2, 2)
+    assert entity["flagged"] is True
 
 
 async def test_no_danger_clauses_writes_nothing() -> None:

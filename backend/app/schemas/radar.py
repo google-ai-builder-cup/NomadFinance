@@ -24,6 +24,8 @@ RadarViolationType = Literal[
 
 RadarReportSource = Literal["user", "contract_signal", "seed"]
 
+RadarRiskLevel = Literal["low", "medium", "high"]
+
 
 class RadarValidation(BaseModel):
     """Classification-tier output for a worker's own report (NF-P3-001).
@@ -55,4 +57,33 @@ class RadarReport(BaseModel):
     evidence_paths: list[str] = Field(default_factory=list)
     validation: RadarValidation
     created_at: datetime
+    schema_version: int = 1
+
+
+class RadarEntity(BaseModel):
+    """`radar_entities/{slug}` (docs/data-model/collections/radar.md): the running profile of
+    one operator, agency or employer. Recomputed on every new report (NF-P3-003).
+
+    Read by signed-in users (`firestore.rules`); written only by the backend.
+    """
+
+    name: str
+    slug: str
+    entity_type: RadarEntityType
+    aliases: list[str] = Field(default_factory=list)
+    corridors: list[str] = Field(default_factory=list)
+    host_countries: list[str] = Field(default_factory=list)
+    report_count: int = Field(ge=0)
+    incident_count: int = Field(ge=0, description="Distinct clusters: unique incidents.")
+    violation_counts: dict[RadarViolationType, int] = Field(default_factory=dict)
+    first_reported_at: datetime
+    last_reported_at: datetime
+    community_rating: float | None = Field(
+        default=None, ge=0, le=5, description="Null until incident_count reaches the minimum."
+    )
+    risk_level: RadarRiskLevel
+    flagged: bool = Field(
+        description="Drives the 'Community flagged' badges (NF-P3-022, NF-P3-023)."
+    )
+    updated_at: datetime
     schema_version: int = 1

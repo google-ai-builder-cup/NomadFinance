@@ -24,6 +24,7 @@ from app.schemas.contract import DocumentKind, HostCountryCode
 from app.schemas.contract_compare import ClauseCategory, ComparedClause
 from app.schemas.contract_complaint import ContractFacts
 from app.schemas.radar import RadarEntityType, RadarReport, RadarValidation, RadarViolationType
+from app.services.radar.aggregation import update_entity_risk
 from app.utils.slugs import slugify
 
 logger = logging.getLogger(__name__)
@@ -155,11 +156,13 @@ async def create_radar_signals(
     """
     # new_report_id() only generates an id client-side (no Firestore round trip), so it is
     # called directly here, not through run_in_threadpool.
-    reports = build_reports(
-        host_country, document_kind, clauses, facts, radar.new_report_id, datetime.now(UTC)
-    )
+    now = datetime.now(UTC)
+    reports = build_reports(host_country, document_kind, clauses, facts, radar.new_report_id, now)
     for report in reports:
         await run_in_threadpool(radar.create_report, report.cluster_id, report)
+        # A contract signal always starts its own cluster (no clustering pipeline runs on
+        # this path), so report_id == cluster_id here, same as a brand-new user report.
+        await update_entity_risk(report, report.cluster_id, radar, now)
     if reports:
         logger.info(
             "radar_signal_created country=%s slug=%s reports=%d",

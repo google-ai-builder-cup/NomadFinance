@@ -2,7 +2,8 @@
 (docs/mermaid/exploitation-radar-pipeline.mmd).
 
 Steps 5 to 6 (embedding and similarity clustering) live in `clustering.py` (NF-P3-002).
-Steps 8 to 9 (radar_entities risk profile and community rating, NF-P3-003) are not built yet.
+Steps 8 to 9 (radar_entities risk profile and community rating) live in `aggregation.py`
+(NF-P3-003).
 """
 
 from __future__ import annotations
@@ -29,6 +30,7 @@ from app.schemas.radar_report import (
     ViolationClassification,
 )
 from app.schemas.remittance_compare import CorridorId
+from app.services.radar.aggregation import update_entity_risk
 from app.services.radar.clustering import embed_report, find_cluster
 from app.utils.hashing import hash_reporter
 from app.utils.slugs import slugify
@@ -237,7 +239,7 @@ async def submit_report(
     settings: Settings,
     now: datetime,
 ) -> RadarReportResponse:
-    """Run steps 2 to 7 and store the report. Cross-pillar Pillar 3 entry point.
+    """Run steps 2 to 9 and store the report. Cross-pillar Pillar 3 entry point.
 
     Raises:
         EntityUnknownError: No business named, by the form or by step 2.
@@ -290,6 +292,7 @@ async def submit_report(
     await run_in_threadpool(radar.create_report, report_id, report)
     if embedding is not None:
         await _store_embedding(radar, report_id, embedding, report, settings)
+    await update_entity_risk(report, report_id, radar, now)
     logger.info(
         "radar_report_created slug=%s violation=%s corridor=%s country=%s",
         entity_slug,
