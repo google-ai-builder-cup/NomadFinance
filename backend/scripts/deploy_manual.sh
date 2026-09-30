@@ -21,7 +21,7 @@ SERVICE_URL="$(gcloud run services describe "${SERVICE}" --project "${PROJECT}" 
   --format 'value(status.url)')"
 
 # The FX keys are optional (ADR-006): mount each one only if its secret exists.
-SECRETS="GEMINI_API_KEY=gemini-api-key:latest"
+SECRETS="GEMINI_API_KEY=gemini-api-key:latest,RADAR_REPORTER_HASH_SECRET=radar-reporter-hash-secret:latest"
 for mapping in "CURRENCYFREAKS_API_KEY=currencyfreaks-api-key" "WISE_API_TOKEN=wise-api-token"; do
   if gcloud secrets describe "${mapping#*=}" --project "${PROJECT}" >/dev/null 2>&1; then
     SECRETS="${SECRETS},${mapping}:latest"
