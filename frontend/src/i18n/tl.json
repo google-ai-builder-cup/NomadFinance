@@ -188,7 +188,11 @@
       "radarAlerts": "Mga babala tungkol sa mga ahente at serbisyo sa pagpapadala ng pera na nandaraya ng manggagawa",
       "reminders": "Mga paalala",
       "corridors": "Bigyan ako ng babala tungkol sa mga rutang ito",
-      "corridorsHint": "I-on ang mga rutang ginagamit mo sa pagpapadala ng pera."
+      "corridorsHint": "I-on ang mga rutang ginagamit mo sa pagpapadala ng pera.",
+      "pushOn": "Naka-on ang push notifications para sa browser na ito.",
+      "pushDenied": "Na-block mo ang mga notification para sa site na ito. Baguhin ito sa site settings ng iyong browser para i-on.",
+      "pushEnable": "I-on ang mga notification ng browser",
+      "pushDeclined": "Hindi na-on ang mga notification. Puwede kang subukan ulit anumang oras."
     },
     "delete": {
       "heading": "Burahin ang account ko",
@@ -533,7 +537,8 @@
       "loadError": "Hindi namin ma-load ang datos ng mapa. Pakisubukang muli.",
       "emptyTitle": "Wala pang ulat",
       "emptyDescription": "Kapag may nag-report ng negosyo, lalabas ito rito. Puwede kang maging una.",
-      "viewProfile": "Tingnan ang profile ng negosyo"
+      "viewProfile": "Tingnan ang profile ng negosyo",
+      "alerts": "Mga alerto"
     },
     "entity": {
       "back": "Bumalik sa mapa",
@@ -560,6 +565,16 @@
         "contract_signal": "Natukoy habang sinusuri ang isang kontrata",
         "seed": "Demo data"
       }
+    },
+    "alerts": {
+      "title": "Mga alerto",
+      "subtitle": "Mga abiso tungkol sa mga negosyong na-report malapit sa iyo.",
+      "loadError": "Hindi namin ma-load ang mga alerto mo. Pakisubukang muli.",
+      "emptyTitle": "Wala pang alerto",
+      "emptyDescription": "Kapag na-report nang ilang beses ang isang negosyo, makikita mo rito ang alerto.",
+      "unread": "Hindi pa nabasa: {{title}}",
+      "pushToast": "May bago kang alerto",
+      "pushToastAction": "Tingnan"
     }
   },
   "errors": {

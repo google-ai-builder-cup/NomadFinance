@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 import type { OnboardingAnswers, ProfileChanges, UserProfile } from "@/types/user";
@@ -44,4 +44,16 @@ export async function completeOnboarding(
  */
 export async function updateProfile(uid: string, changes: ProfileChanges): Promise<void> {
   await updateDoc(profileRef(uid), { ...changes, updated_at: serverTimestamp() });
+}
+
+/**
+ * Add one push token to `fcm_tokens` (NF-P3-009). `arrayUnion`, not a plain field write: a
+ * person may have several browsers/devices, and the rules cap the list at 5 (NF-P1-014) —
+ * the backend trims a token off when FCM reports it gone, this only ever adds one.
+ */
+export async function saveFcmToken(uid: string, token: string): Promise<void> {
+  await updateDoc(profileRef(uid), {
+    fcm_tokens: arrayUnion(token),
+    updated_at: serverTimestamp(),
+  });
 }

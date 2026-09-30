@@ -4,11 +4,50 @@ import { inputClass, sectionClass } from "@/components/profile/styles";
 import SaveStatus from "@/components/profile/SaveStatus";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
+import { useEnablePush, usePushPermission } from "@/hooks/useNotifications";
 import { useUpdateProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
 import { CORRIDOR_IDS } from "@/types/enums";
 import type { UserProfile } from "@/types/user";
 import { countryName } from "@/utils/format";
+
+/**
+ * Push permission is a one-time browser prompt, separate from the form's own save cycle
+ * below: it takes effect immediately, is not part of `notification_prefs`, and "unsupported"
+ * (not configured, or the browser has no Notification API) shows nothing rather than an
+ * error — that is this feature's normal state until Firebase Cloud Messaging is set up.
+ */
+function PushStatus() {
+  const { t } = useI18n();
+  const permission = usePushPermission();
+  const enable = useEnablePush();
+
+  if (permission === "unsupported") {
+    return null;
+  }
+  if (permission === "granted") {
+    return <p className="text-sm text-muted-foreground">{t("profile.notifications.pushOn")}</p>;
+  }
+  if (permission === "denied") {
+    return <p className="text-sm text-muted-foreground">{t("profile.notifications.pushDenied")}</p>;
+  }
+  return (
+    <div className="space-y-2">
+      <Button
+        type="button"
+        variant="outline"
+        className="h-11"
+        onClick={() => enable.mutate()}
+        disabled={enable.isPending}
+      >
+        {t("profile.notifications.pushEnable")}
+      </Button>
+      {enable.isSuccess && enable.data === null && (
+        <p className="text-sm text-muted-foreground">{t("profile.notifications.pushDeclined")}</p>
+      )}
+    </div>
+  );
+}
 
 interface Draft {
   radar_alerts: boolean;
@@ -76,6 +115,8 @@ export default function NotificationsForm({ profile }: NotificationsFormProps) {
       <h2 id="notifications-heading" className="text-lg font-semibold">
         {t("profile.notifications.heading")}
       </h2>
+
+      <PushStatus />
 
       <label className="flex min-h-11 cursor-pointer items-start gap-3 text-base">
         <input

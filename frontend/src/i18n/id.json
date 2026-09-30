@@ -188,7 +188,11 @@
       "radarAlerts": "Peringatan tentang agen dan layanan kirim uang yang menipu pekerja",
       "reminders": "Pengingat",
       "corridors": "Peringatkan saya tentang rute ini",
-      "corridorsHint": "Aktifkan rute yang Anda pakai untuk mengirim uang."
+      "corridorsHint": "Aktifkan rute yang Anda pakai untuk mengirim uang.",
+      "pushOn": "Notifikasi push aktif untuk browser ini.",
+      "pushDenied": "Anda memblokir notifikasi untuk situs ini. Ubah di pengaturan situs browser Anda untuk mengaktifkannya.",
+      "pushEnable": "Aktifkan notifikasi browser",
+      "pushDeclined": "Notifikasi belum diaktifkan. Anda bisa coba lagi kapan saja."
     },
     "delete": {
       "heading": "Hapus akun saya",
@@ -533,7 +537,8 @@
       "loadError": "Kami tidak bisa memuat data peta. Silakan coba lagi.",
       "emptyTitle": "Belum ada laporan",
       "emptyDescription": "Saat pekerja melaporkan sebuah usaha, usaha itu akan muncul di sini. Anda bisa jadi yang pertama.",
-      "viewProfile": "Lihat profil usaha"
+      "viewProfile": "Lihat profil usaha",
+      "alerts": "Peringatan"
     },
     "entity": {
       "back": "Kembali ke peta",
@@ -560,6 +565,16 @@
         "contract_signal": "Ditemukan saat pemeriksaan kontrak",
         "seed": "Data demo"
       }
+    },
+    "alerts": {
+      "title": "Peringatan",
+      "subtitle": "Notifikasi tentang usaha yang dilaporkan di dekat Anda.",
+      "loadError": "Kami tidak bisa memuat peringatan Anda. Silakan coba lagi.",
+      "emptyTitle": "Belum ada peringatan",
+      "emptyDescription": "Saat sebuah usaha dilaporkan beberapa kali, Anda akan melihat peringatan di sini.",
+      "unread": "Belum dibaca: {{title}}",
+      "pushToast": "Anda punya peringatan baru",
+      "pushToastAction": "Lihat"
     }
   },
   "errors": {
