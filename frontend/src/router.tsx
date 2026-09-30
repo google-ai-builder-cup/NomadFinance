@@ -12,6 +12,7 @@ import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
+import RadarReport from "@/pages/radar/RadarReport";
 import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
 
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
                     children: [
                       { path: "/dashboard", element: <Dashboard /> },
                       { path: "/profile", element: <Profile /> },
+                      { path: "/radar/report", element: <RadarReport /> },
                       ...pillarRoutes,
                     ],
                   },

@@ -416,6 +416,104 @@
       "loadError": "Hindi namin na-load ang mga numero ng matitipid."
     }
   },
+  "radar": {
+    "violation": {
+      "hidden_fees": "Nakatagong bayad",
+      "exchange_rate_markup": "Hindi patas na palitan ng pera",
+      "illegal_recruitment_fee": "Ilegal na bayad sa recruitment",
+      "wage_theft": "Hindi binayarang sahod",
+      "illegal_deduction": "Ilegal na bawas sa sahod",
+      "contract_substitution": "Binago ang kontrata pagkatapos pumirma",
+      "passport_retention": "Kinuha ng employer o ahente ang pasaporte",
+      "unlicensed_operator": "Walang lisensyang operator",
+      "other": "Iba pang problema"
+    },
+    "report": {
+      "title": "Mag-ulat ng problema",
+      "subtitle": "Sabihin sa amin ang tungkol sa serbisyo ng padala, ahensya ng recruitment o employer na nanloko sa iyo. Mababalaan ang ibang manggagawa.",
+      "stepOf": "Hakbang {{current}} sa {{total}}",
+      "steps": {
+        "who": "Tungkol kanino ito?",
+        "where": "Saan ito nangyari?",
+        "what": "Ano ang nangyari?",
+        "review": "Suriin at ipadala"
+      },
+      "who": {
+        "typeLabel": "Sino ang inire-report mo?",
+        "types": {
+          "money_transfer_operator": "Serbisyo ng padala ng pera",
+          "recruitment_agency": "Ahensya ng recruitment",
+          "employer": "Employer"
+        },
+        "hints": {
+          "money_transfer_operator": "Ang tindahan o app na gamit mo sa pagpapadala ng pera sa inyo",
+          "recruitment_agency": "Ang ahente o ahensyang naghanap ng trabaho mo",
+          "employer": "Ang kumpanya o taong pinagtatrabahuhan mo"
+        },
+        "nameLabel": "Pangalan ng negosyo",
+        "nameHint": "Gamitin ang pangalan sa resibo, kontrata o karatula."
+      },
+      "where": {
+        "corridorLabel": "Anong ruta ng padala ito?",
+        "hostLabel": "Bansang pinagtatrabahuhan mo",
+        "choose": "Pumili…"
+      },
+      "what": {
+        "label": "Ano ang nangyari?",
+        "hint": "Sabihin kung ano ang ginawa at kailan. Huwag magsulat ng pangalan ng tao, numero ng telepono o address.",
+        "languageLabel": "Wikang ginamit mo sa pagsulat"
+      },
+      "evidence": {
+        "label": "Mga larawan o dokumento (opsyonal)",
+        "add": "Magdagdag ng larawan o file",
+        "hint": "Nakakatulong ang resibo, screenshot o larawan. Hanggang 5 file, 10 MB bawat isa.",
+        "remove": "Alisin ang {{name}}",
+        "errors": {
+          "tooLarge": "Mas malaki sa 10 MB ang file na ito. Pumili ng mas maliit.",
+          "badType": "Magdagdag ng PDF o larawan (PNG, JPEG, WebP o HEIC).",
+          "tooMany": "Hanggang 5 file lang ang maidaragdag.",
+          "generic": "Hindi magamit ang file na ito. Sumubok ng iba."
+        }
+      },
+      "review": {
+        "about": "Tungkol kanino",
+        "where": "Saan",
+        "what": "Ano ang nangyari"
+      },
+      "privacy": "Hindi ipinapakita ang pangalan at account mo sa ulat mo.",
+      "next": "Susunod",
+      "back": "Bumalik",
+      "submit": "Ipadala ang ulat",
+      "submitting": "Ipinapadala…",
+      "profileLoadError": "Hindi namin ma-load ang profile mo. Pakisubukang muli.",
+      "validation": {
+        "typeRequired": "Piliin kung sino ang inire-report mo.",
+        "nameRequired": "Isulat ang pangalan ng negosyo.",
+        "locationRequired": "Piliin kung saan ito nangyari.",
+        "descriptionShort": "Sumulat ng hindi bababa sa {{min}} character tungkol sa nangyari."
+      },
+      "errors": {
+        "rejected": "Hindi natanggap ang ulat mo. Suriin ang isinulat mo at subukang muli.",
+        "entityUnknown": "Hindi namin matukoy kung tungkol kanino ang ulat. Isulat ang pangalan ng negosyo.",
+        "locationUnknown": "Hindi namin matukoy kung saan ito nangyari. Piliin ang ruta ng padala o bansa.",
+        "spam": "Mukhang hindi ito totoong ulat. Pakilarawan kung ano ang nangyari.",
+        "abusive": "Hindi mailalathala ang ulat na ito ayon sa pagkakasulat. Alisin ang banta o mapang-abusong salita.",
+        "personalData": "Pakialis ang personal na detalye (pangalan ng tao, numero ng telepono, address) at subukang muli.",
+        "aiBusy": "Abala ang AI service ngayon. Pakisubukang muli pagkalipas ng isang minuto.",
+        "aiSlow": "Natagalan ang sagot ng AI service. Pakisubukang muli."
+      },
+      "done": {
+        "title": "Salamat. Natanggap na ang ulat mo.",
+        "subtitle": "Makakatulong ito para mabalaan ang ibang manggagawa. Sinusuri namin ang mga ulat bago ito mabilang.",
+        "about": "Tungkol kanino",
+        "violation": "Uri ng problema",
+        "summary": "Buod",
+        "evidenceAttached": "Mga naidagdag na file: {{n}}",
+        "evidenceFailed": "Mga file na hindi naidagdag: {{n}}. Nase-save pa rin ang ulat mo.",
+        "another": "Mag-ulat ng iba pa"
+      }
+    }
+  },
   "errors": {
     "boundaryTitle": "May nangyaring mali",
     "boundaryDescription": "Huminto sa paggana ang pahinang ito. Ligtas ang impormasyong na-save mo. Subukan ulit, o bumalik sa home page.",
