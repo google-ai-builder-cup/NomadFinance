@@ -34,6 +34,7 @@ must say so explicitly in their own doc section below.
 | GET | `/api/v1/remittance/trends` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-015 |
 | POST | `/api/v1/remittance/recommend` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-016 |
 | POST | `/api/v1/remittance/log` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-017 |
+| GET | `/api/v1/remittance/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-022 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -753,6 +754,77 @@ curl -s -H "Authorization: Bearer $TOKEN"   "http://127.0.0.1:8080/api/v1/remitt
 | 404 | `No rate history is available yet for <corridor>.` | Nothing in `rates_history/{pair}.daily`: run the backfill, or wait for the cron |
 | 422 | FastAPI validation list | Missing or unknown `corridor_id`, or `days` not one of 30, 90, 180, 365 |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
+
+## `GET /api/v1/remittance/savings`
+
+The "you would have saved $X" figure: what sending `amount` with the best comparable service, instead of the worst, would have been worth over real history. Step 8 of the Remittance X-Ray pipeline (NF-P2-022, `docs/pipelines/remittance-xray.md`). No Gemini call, so only the API-wide budget applies. Nothing is stored.
+
+The best and worst service, and their total cost as a percentage of `amount`, are exactly what `/compare` would rank for the same `corridor_id` and `amount` — the survey's fees are one quarter, not a history, so the same two services are used for every month. Only the mid-market rate changes month to month, from `rates_history` (the same data `/trends` reads); each of the last `months` **full** calendar months is priced at that month's own average rate. Today's own, still-incomplete month is never included.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Query parameters:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `corridor_id` | `SG-PH` / `SG-IN` / `AU-IN` / `MY-ID` / `JP-PH` / `AU-PH`, required | Sending country and receiving country |
+| `amount` | number, required, > 0 | Amount to send, in the corridor's sending currency; same limits as `/compare` |
+| `months` | integer, 1 to 12, default `12` | Full calendar months to look back over |
+
+- **Response `200`:** `RemittanceSavings` (`app/schemas/remittance_savings.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `corridor_id`, `send_amount`, `send_currency`, `receive_currency` | | The request, with the corridor's currencies |
+| `months_requested` | integer | `months` from the query |
+| `months_used` | integer | Full months that actually had rate history; less than `months_requested` when the history does not reach back that far |
+| `best_rpw_id`, `best_firm` | | The comparable service that pays out the most, for `amount` |
+| `worst_rpw_id`, `worst_firm` | | The comparable service that pays out the least |
+| `total_best_receives`, `total_worst_receives` | number | Sum of `months[].best_receives` / `worst_receives` |
+| `total_savings` | number | `total_best_receives` minus `total_worst_receives` — the headline figure |
+| `months` | array | One entry per month used, oldest first: `month` (`YYYY-MM`), `average_rate`, `best_receives`, `worst_receives`, `savings` |
+| `survey` | object | Same shape as `/compare`'s `survey`; show the attribution wherever `total_savings` is shown |
+
+Example: SGD 500 on SG-PH, last 3 months (illustrative numbers).
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "http://127.0.0.1:8080/api/v1/remittance/savings?corridor_id=SG-PH&amount=500&months=3"
+```
+
+```json
+{
+  "corridor_id": "SG-PH", "send_amount": 500.0, "send_currency": "SGD", "receive_currency": "PHP",
+  "months_requested": 3, "months_used": 3,
+  "best_rpw_id": 521250759, "best_firm": "InstaReM",
+  "worst_rpw_id": 500123456, "worst_firm": "Maybank",
+  "total_best_receives": 72823.0, "total_worst_receives": 70200.0, "total_savings": 2623.0,
+  "months": [
+    {"month": "2026-06", "average_rate": 43.1, "best_receives": 24200.0, "worst_receives": 23350.0, "savings": 850.0},
+    {"month": "2026-07", "average_rate": 43.3, "best_receives": 24312.0, "worst_receives": 23420.0, "savings": 892.0},
+    {"month": "2026-08", "average_rate": 43.6, "best_receives": 24311.0, "worst_receives": 23430.0, "savings": 881.0}
+  ],
+  "survey": {
+    "period": "2025_1Q", "surveyed_from": "2025-02-05", "surveyed_to": "2025-02-28",
+    "source_name": "World Bank Remittance Prices Worldwide",
+    "source_url": "http://remittanceprices.worldbank.org",
+    "attribution": "The World Bank, Remittance Prices Worldwide"
+  }
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No prices are available yet for <corridor>.` | The corridor is not loaded, or nothing in it can be compared |
+| 404 | `No rate history is available yet for <corridor>.` | No month within the requested period has any stored rate history |
+| 422 | FastAPI validation list | Missing or unknown `corridor_id`, `months` outside 1 to 12, or an amount outside the range `/compare` can be stretched to |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
 
 ## `POST /api/v1/remittance/recommend`
 

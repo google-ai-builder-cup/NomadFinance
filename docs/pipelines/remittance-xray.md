@@ -15,7 +15,7 @@ Each step's owner adds its section below when the step is built.
 | 5 | Calculate the true cost of each provider | NF-P2-014 (Pranjal) | none | `services/remittance/engine.py` | Built |
 | 6 | Rank by what the recipient receives | NF-P2-014 (Pranjal) | none | `services/remittance/engine.py` | Built |
 | 7 | Detect the trend, best day to send | NF-P2-015 (Devam) | none | `services/remittance/trends.py` | Done |
-| 8 | Historical savings against the worker's choice | NF-P2-022 (Devam) | none | not yet named | Not started |
+| 8 | Historical savings, best service vs worst | NF-P2-022 (Devam) | none | `services/remittance/savings.py` | Built |
 | 9 | Recommendation, in the worker's language | NF-P2-016 (Pranjal) | classification | `services/remittance/recommender.py`, `remittance/recommend.v1` | Built |
 | 10 | Translate | folded into step 9 | | `recommend.v1` writes in the worker's language directly, saving one call | Not needed |
 | - | Log a transfer | NF-P2-017 (Aditya) | none | `services/remittance/logger.py` | Built |
@@ -34,7 +34,7 @@ POST /api/v1/remittance/compare   {corridor_id, amount}
   6 rank the comparable providers; list the others last   → RemittanceComparison
   ─ later steps, each its own call, reading the same stored data ─
   4, 7  GET .../trends    rates_history/{pair}.daily      → series, summary, best weekday
-  8     GET .../savings   history + the survey's margins  → "you would have saved X"
+  8     GET .../savings   history + the survey's margins  → best vs worst per month, "you would have saved X"   404 if no month in range has history
   9     recommend(comparison, trend?, savings?, language) → best_provider, headline, explanation, timing_tip
   -     POST .../log(comparison, rpw_id)  users/{uid}/transfers  → feeds Financial Identity   422 if rpw_id not comparable/ranked
 cron (every 1 to 2 hours): refresh_rates → rates_cache + rates_history (daily map + hourly point)
@@ -87,7 +87,7 @@ These are the contracts the built step offers. Their owners decide the details.
 
 - **Trends and best day (steps 4 and 7, NF-P2-015).** Built: see "Trends and best day" below.
 - **Savings and recommendation inputs.** NF-P2-022 reads the same daily series (`RateRepository.get_history`, `trends.daily_rates`). NF-P2-016 can pass `best_day` (or `best_day_reason`) to the prompt as its `timing_tip`; it must not claim a best day when `best_day` is null.
-- **Savings (step 8, NF-P2-022).** Uses the history and the survey's margins; the cost model above is the same function (`engine._terms`) and should be reused, not copied.
+- **Savings (step 8, NF-P2-022, built).** `GET /api/v1/remittance/savings?corridor_id=&amount=&months=` (1 to 12, default 12). The best and worst comparable service, and their cost as a percentage of `amount`, come from `calculate_comparison` (the survey's own median rate is used; a fixed `amount` ranks the same whatever the rate is, so no live-rate read is needed). Each of the last `months` **full** calendar months (the current, in-progress month is never included) is priced at that month's average mid-market rate from `rates_history`/`trends.daily_rates`; `total_savings` is the sum, over those months, of what the best service would have paid out minus what the worst one would have. `months_used` is less than `months` when the history does not reach back that far; `404` when no month in range has any history at all. Reuses the cost model (`engine._terms`, via `calculate_comparison`) rather than recomputing it.
 - **Recommendation (step 9, NF-P2-016, built).** `POST /api/v1/remittance/recommend` takes the unmodified body of `/compare` as `comparison`, the body of `/trends` as an optional `trend`, and `target_language`. `recommend.v1` (classification tier) writes `headline`, `explanation` and, when `trend.best_day` was given, `timing_tip`, directly in the worker's language. Only the top-ranked comparable provider's fields and the summary numbers are sent to the model, trimmed from the full comparison (`recommender._comparison_json`); `note`, `network_coverage` and the survey block are not.
 - **The recommended provider is never taken from Gemini.** `recommended_rpw_id` / `recommended_firm` are always `comparison.summary.best_rpw_id` / `best_firm`, the same values step 6 already computed. Gemini's own `best_provider` field is only cross-checked against them, case- and space-insensitively; a mismatch is `RecommendationIncompleteError` (502), since there is no radar-flag data yet (NF-P3-022) that would make a different choice legitimate. When that data exists, this check has to become a lookup that permits the second-ranked provider when the top one is flagged, and the prompt's own instruction for that case is already written into `recommend.v1`.
 - **`timing_tip` is forced to `null` whenever `trend` is missing or has no `best_day`**, whatever Gemini wrote, the same reasoning as never trusting a fact the model was not given data to compute.

@@ -18,6 +18,7 @@ from app.schemas.remittance_compare import (
 )
 from app.schemas.remittance_log import TransferLogRequest, TransferLogResponse
 from app.schemas.remittance_recommend import RemittanceRecommendation, RemittanceRecommendRequest
+from app.schemas.remittance_savings import RemittanceSavings
 from app.schemas.remittance_trends import RemittanceTrends, TrendDays
 from app.schemas.user import AuthenticatedUser
 from app.services.remittance.engine import (
@@ -30,6 +31,7 @@ from app.services.remittance.recommender import (
     RecommendationIncompleteError,
     generate_recommendation,
 )
+from app.services.remittance.savings import MAX_MONTHS, MIN_MONTHS, get_savings
 from app.services.remittance.trends import HistoryNotFoundError, get_trends
 
 router = APIRouter(prefix="/remittance", tags=["remittance"])
@@ -111,6 +113,61 @@ async def remittance_trends(
     """
     try:
         return await get_trends(corridor_id, days, rates, datetime.now(UTC).date())
+    except HistoryNotFoundError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"No rate history is available yet for {corridor_id}.",
+        ) from exc
+
+
+_SAVINGS_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    404: {"description": "No prices, or no rate history, are loaded for this corridor yet"},
+    422: {"description": "Unknown corridor, or an amount outside the range that can be compared"},
+    429: {"description": "Too many requests (default 60 a minute); see Retry-After"},
+}
+
+
+@router.get(
+    "/savings",
+    response_model=RemittanceSavings,
+    responses=_SAVINGS_ERROR_RESPONSES,
+    summary="What choosing the best service, instead of the worst, would have been worth",
+)
+async def remittance_savings(
+    corridor_id: Annotated[CorridorId, Query(description="For example SG-PH")],
+    amount: Annotated[
+        float, Query(gt=0, description="Amount to send, in the corridor's sending currency.")
+    ],
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    corridors: Annotated[CorridorRepository, Depends(get_corridor_repository)],
+    rates: Annotated[RateRepository, Depends(get_rate_repository)],
+    months: Annotated[
+        int,
+        Query(ge=MIN_MONTHS, le=MAX_MONTHS, description="Full months to look back over, 1 to 12."),
+    ] = MAX_MONTHS,
+) -> RemittanceSavings:
+    """The "you would have saved $X" figure: best service against worst, over real history. Step 8.
+
+    Send the `corridor_id` and `amount` exactly as for `/compare`; the best and worst comparable
+    service, and their cost as a percentage of the amount, are the same `/compare` would rank.
+    Each of the last `months` full calendar months (today's own, in-progress month is never
+    included) is then priced at that month's average mid-market rate from `/trends`'s own
+    history. `months_used` is less than `months` when the history does not go back that far.
+    No Gemini call, so only the API-wide rate limit applies.
+    """
+    try:
+        return await get_savings(corridor_id, amount, months, corridors, rates, datetime.now(UTC))
+    except CorridorNotFoundError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"No prices are available yet for {corridor_id}.",
+        ) from exc
+    except AmountOutOfRangeError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"Enter an amount between {exc.minimum:,.2f} and {exc.maximum:,.2f} {exc.currency}.",
+        ) from exc
     except HistoryNotFoundError as exc:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
