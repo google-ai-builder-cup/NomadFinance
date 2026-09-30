@@ -20,6 +20,7 @@ from app.repositories.complaint_template_repo import (
 )
 from app.repositories.contract_repo import ContractRepository, get_contract_repository
 from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
+from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.contract import ReportLanguage
 from app.schemas.contract_pipeline import (
@@ -110,8 +111,9 @@ def get_pipeline_deps(
     users: Annotated[UserRepository, Depends(get_user_repository)],
     laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
     templates: Annotated[ComplaintTemplateRepository, Depends(get_complaint_template_repository)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
 ) -> PipelineDeps:
-    return PipelineDeps(gemini, contracts, users, laws, templates)
+    return PipelineDeps(gemini, contracts, users, laws, templates, radar)
 
 
 @router.post(

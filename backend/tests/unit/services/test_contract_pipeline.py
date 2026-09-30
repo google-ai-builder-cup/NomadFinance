@@ -25,6 +25,7 @@ from app.services.contract.upload import upload_contract
 from tests.fixtures.pipeline_fakes import (
     FakeContracts,
     FakeLaws,
+    FakeRadar,
     FakeTemplates,
     FakeUsers,
     Steps,
@@ -66,8 +67,15 @@ def users() -> FakeUsers:
 
 
 @pytest.fixture
-def deps(contracts: FakeContracts, users: FakeUsers, laws: FakeLaws) -> PipelineDeps:
-    return PipelineDeps(GEMINI, contracts, users, laws, FakeTemplates())  # type: ignore[arg-type]
+def radar() -> FakeRadar:
+    return FakeRadar()
+
+
+@pytest.fixture
+def deps(
+    contracts: FakeContracts, users: FakeUsers, laws: FakeLaws, radar: FakeRadar
+) -> PipelineDeps:
+    return PipelineDeps(GEMINI, contracts, users, laws, FakeTemplates(), radar)  # type: ignore[arg-type]
 
 
 async def _upload(contracts: FakeContracts, data: bytes = FILE) -> str:
@@ -393,6 +401,48 @@ async def test_no_complaint_is_written_without_danger(
 
     assert steps.calls["complaint"] == 0
     assert "complaint" not in contracts.steps
+
+
+async def test_a_danger_clause_creates_a_radar_signal(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, radar: FakeRadar
+) -> None:
+    contract_id = await _upload(contracts)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert len(radar.reports) == 1
+    report = next(iter(radar.reports.values()))
+    assert (report.entity_name, report.violation_type) == ("Tan", "passport_retention")
+    assert report.source == "contract_signal"
+
+
+async def test_no_radar_signal_without_danger(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, radar: FakeRadar
+) -> None:
+    steps.comparison = _comparison("caution")
+    contract_id = await _upload(contracts)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert radar.reports == {}
+
+
+async def test_a_radar_write_failure_never_breaks_the_worker_s_report(
+    steps: Steps,
+    contracts: FakeContracts,
+    deps: PipelineDeps,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def boom(*args: object, **kwargs: object) -> list[str]:
+        raise RuntimeError("radar_reports is unreachable")
+
+    monkeypatch.setattr(pipeline, "create_radar_signals", boom)
+    contract_id = await _upload(contracts)
+
+    result = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert result.status == "completed"
+    assert contracts.reports[(UID, contract_id, "en")]["complaint"] is not None
 
 
 async def test_a_second_analysis_at_the_same_time_is_refused(
