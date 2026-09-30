@@ -9,12 +9,14 @@ from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.corridor_repo import CorridorRepository, get_corridor_repository
+from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.schemas.remittance_compare import (
     CorridorId,
     RemittanceCompareRequest,
     RemittanceComparison,
 )
+from app.schemas.remittance_log import TransferLogRequest, TransferLogResponse
 from app.schemas.remittance_recommend import RemittanceRecommendation, RemittanceRecommendRequest
 from app.schemas.remittance_trends import RemittanceTrends, TrendDays
 from app.schemas.user import AuthenticatedUser
@@ -23,6 +25,7 @@ from app.services.remittance.engine import (
     CorridorNotFoundError,
     compare_remittance,
 )
+from app.services.remittance.logger import ProviderNotInComparisonError, log_transfer
 from app.services.remittance.recommender import (
     RecommendationIncompleteError,
     generate_recommendation,
@@ -153,4 +156,41 @@ async def recommend_remittance_option(
         raise HTTPException(
             status.HTTP_502_BAD_GATEWAY,
             "The AI service returned an unusable answer. Please try again.",
+        ) from exc
+
+
+_LOG_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    422: {"description": "Invalid body, or rpw_id is not a comparable, ranked provider"},
+    429: {"description": "Too many requests (default 60 a minute); see Retry-After"},
+}
+
+
+@router.post(
+    "/log",
+    status_code=status.HTTP_201_CREATED,
+    response_model=TransferLogResponse,
+    responses=_LOG_ERROR_RESPONSES,
+    summary="Log a transfer the worker actually sent",
+)
+async def log_remittance_transfer(
+    body: TransferLogRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    transfers: Annotated[FibRepository, Depends(get_fib_repository)],
+) -> TransferLogResponse:
+    """Store a completed transfer under `users/{uid}/transfers`, feeding Financial Identity.
+
+    Send the unmodified body of `/remittance/compare` as `comparison`, plus the `rpw_id` of the
+    service the worker actually used (and optionally `entry_date`, `notes`). Every amount
+    stored is read from that provider's own row in the comparison, never typed freely by the
+    client — the same reasoning `/remittance/recommend` uses to never trust a provider name
+    Gemini wrote over the comparison's own top-ranked one. No Gemini call, so only the
+    API-wide rate limit applies.
+    """
+    try:
+        return await log_transfer(user.uid, body, transfers, datetime.now(UTC))
+    except ProviderNotInComparisonError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "rpw_id is not a comparable, ranked provider of the comparison sent.",
         ) from exc

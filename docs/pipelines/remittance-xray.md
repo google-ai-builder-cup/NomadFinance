@@ -18,7 +18,7 @@ Each step's owner adds its section below when the step is built.
 | 8 | Historical savings against the worker's choice | NF-P2-022 (Devam) | none | not yet named | Not started |
 | 9 | Recommendation, in the worker's language | NF-P2-016 (Pranjal) | classification | `services/remittance/recommender.py`, `remittance/recommend.v1` | Built |
 | 10 | Translate | folded into step 9 | | `recommend.v1` writes in the worker's language directly, saving one call | Not needed |
-| - | Log a transfer | NF-P2-017 (Aditya) | none | `services/remittance/logger.py` | Not started |
+| - | Log a transfer | NF-P2-017 (Aditya) | none | `services/remittance/logger.py` | Built |
 | - | Refresh the rates (cron) | NF-P1-019 (Devam) | none | `services/remittance/rates.py` | Built |
 
 Steps 1 to 6 are one request, `POST /api/v1/remittance/compare` (`docs/api/endpoints.md`). It makes no Gemini call, so the comparison table loads fast and does not spend the Gemini quota that Contract Shield shares (D-58). Step 9, `POST /api/v1/remittance/recommend`, is a separate stateless call taking the unmodified body of `/compare` (and optionally `/trends`): the only remittance step that calls Gemini, on the classification tier, its own quota bucket from Contract Shield's reasoning tier (ADR-002).
@@ -36,7 +36,7 @@ POST /api/v1/remittance/compare   {corridor_id, amount}
   4, 7  GET .../trends    rates_history/{pair}.daily      → series, summary, best weekday
   8     GET .../savings   history + the survey's margins  → "you would have saved X"
   9     recommend(comparison, trend?, savings?, language) → best_provider, headline, explanation, timing_tip
-  -     POST .../log      users/{uid}/transfers           → feeds Financial Identity
+  -     POST .../log(comparison, rpw_id)  users/{uid}/transfers  → feeds Financial Identity   422 if rpw_id not comparable/ranked
 cron (every 1 to 2 hours): refresh_rates → rates_cache + rates_history (daily map + hourly point)
 backfill (once, data-scripts): Frankfurter ECB daily rates → rates_history/{pair}.daily
 ```
@@ -92,7 +92,7 @@ These are the contracts the built step offers. Their owners decide the details.
 - **The recommended provider is never taken from Gemini.** `recommended_rpw_id` / `recommended_firm` are always `comparison.summary.best_rpw_id` / `best_firm`, the same values step 6 already computed. Gemini's own `best_provider` field is only cross-checked against them, case- and space-insensitively; a mismatch is `RecommendationIncompleteError` (502), since there is no radar-flag data yet (NF-P3-022) that would make a different choice legitimate. When that data exists, this check has to become a lookup that permits the second-ranked provider when the top one is flagged, and the prompt's own instruction for that case is already written into `recommend.v1`.
 - **`timing_tip` is forced to `null` whenever `trend` is missing or has no `best_day`**, whatever Gemini wrote, the same reasoning as never trusting a fact the model was not given data to compute.
 - **Radar flags (NF-P3-022).** A `flagged` field per firm can be added to `ProviderResult` when `radar_entities/` exists.
-- **Transfer log (NF-P2-017).** A logged transfer can carry `corridor_id`, `rpw_id`, `firm`, the amount, `fee`, `total_cost_pct` and `rate.rate` from the comparison the worker chose from.
+- **Transfer log (NF-P2-017, built).** `POST /api/v1/remittance/log` takes the unmodified `/compare` body as `comparison` and the `rpw_id` of the service the worker actually used (plus optional `entry_date`, `notes`). Every stored figure (`provider_name`, `send_amount`, `receive_amount`, `fee`, `cost_pct`, `mid_market_rate`) is read from that provider's own row in `comparison`, never typed freely — the same reasoning step 9 uses to never trust a provider name Gemini wrote. Writes `users/{uid}/transfers/{id}` (`docs/data-model/collections/fib.md`), the entry that feeds Financial Identity. An `rpw_id` that is not one of `comparison`'s comparable, ranked providers is a `422`.
 - **Frontend (NF-P2-018, NF-P2-019).** `speed_order` sorts the speed column; `estimated` and `rate.stale` need a visible note; `survey.attribution` must be on screen.
 - **Form and page (NF-P2-018, built).** `/remittance` (`pages/remittance/RemittanceCompare.tsx`) shows `components/remittance/CorridorPicker.tsx`:
   - the worker's own corridor is pre-selected from the profile
