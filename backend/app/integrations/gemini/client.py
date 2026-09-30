@@ -20,6 +20,7 @@ from tenacity import (
 )
 
 from app.config import Settings, get_settings
+from app.integrations.gemini.embeddings import embed_text
 from app.integrations.gemini.errors import (
     GeminiRateLimitError,
     GeminiRequestError,
@@ -125,6 +126,19 @@ class GeminiClient:
             attempts=retrying.statistics.get("attempt_number", 1),
         )
         return _parse(response, response_model, model)
+
+    async def embed_text(self, text: str, *, operation: str) -> list[float]:
+        """Embed `text` as one normalized 768-number vector (`gemini_model_embedding`).
+
+        Same error contract as `generate_structured`; see `embeddings.embed_text`.
+        """
+        return await embed_text(
+            self._sdk,
+            self._settings,
+            text,
+            operation=operation,
+            max_backoff_seconds=self._max_backoff_seconds,
+        )
 
     async def _call(
         self,
