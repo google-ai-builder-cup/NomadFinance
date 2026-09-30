@@ -376,6 +376,27 @@
         "note": "These services pay out in a different currency than {{receiveCurrency}}, so they can't be ranked by what your family receives.",
         "row": "{{firm}}: fee {{fee}}, pays out in {{currency}}"
       }
+    },
+    "trend": {
+      "heading": "Rate history",
+      "periodLabel": "Time period",
+      "period": {
+        "month": "1M",
+        "quarter": "3M",
+        "halfYear": "6M",
+        "year": "1Y"
+      },
+      "change": "{{pct}} from {{from}} to {{to}}",
+      "tableDate": "Date",
+      "tableRate": "Exchange rate",
+      "bestDay": "{{weekday}} tends to be the best day to send: about {{pct}} better than the week's average.",
+      "noBestDay": {
+        "notEnoughHistory": "Not enough history yet to say which day is usually best.",
+        "noClearPattern": "No day is reliably better than another for this corridor."
+      },
+      "empty": "No rate history yet for this period.",
+      "notLoaded": "Rate history for this corridor isn't available yet.",
+      "loadError": "We couldn't load the rate history."
     }
   },
   "errors": {

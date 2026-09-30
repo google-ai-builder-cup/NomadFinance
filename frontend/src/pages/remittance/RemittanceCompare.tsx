@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompareRemittance } from "@/hooks/useRemittance";
 import { useUserProfile } from "@/hooks/useUser";
@@ -10,6 +11,9 @@ import i18n from "@/lib/i18n";
 import type { RemittanceComparison } from "@/types/remittance";
 import { CORRIDORS, compareFailure, defaultCorridor } from "@/utils/corridors";
 import { countryName, formatMoney } from "@/utils/format";
+
+// recharts is a sizeable chunk (D-45): loaded only once a comparison exists to show it for.
+const TrendChart = lazy(() => import("@/components/remittance/TrendChart"));
 
 function formatDate(isoDate: string, language: string): string {
   try {
@@ -151,6 +155,9 @@ export default function RemittanceCompare() {
         <>
           <ComparisonSummaryCard comparison={compare.data} />
           <ComparisonTable comparison={compare.data} />
+          <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
+            <TrendChart comparison={compare.data} />
+          </Suspense>
         </>
       )}
     </div>

@@ -376,6 +376,27 @@
         "note": "Layanan ini membayar keluarga Anda dalam mata uang selain {{receiveCurrency}}, sehingga tidak dapat diperingkat berdasarkan jumlah yang diterima.",
         "row": "{{firm}}: biaya {{fee}}, dibayarkan dalam {{currency}}"
       }
+    },
+    "trend": {
+      "heading": "Riwayat kurs",
+      "periodLabel": "Periode waktu",
+      "period": {
+        "month": "1B",
+        "quarter": "3B",
+        "halfYear": "6B",
+        "year": "1T"
+      },
+      "change": "{{pct}} dari {{from}} hingga {{to}}",
+      "tableDate": "Tanggal",
+      "tableRate": "Kurs",
+      "bestDay": "{{weekday}} biasanya hari terbaik untuk mengirim: sekitar {{pct}} lebih baik dari rata-rata minggu itu.",
+      "noBestDay": {
+        "notEnoughHistory": "Belum ada cukup riwayat untuk mengatakan hari mana yang biasanya terbaik.",
+        "noClearPattern": "Tidak ada hari yang secara konsisten lebih baik dari yang lain untuk koridor ini."
+      },
+      "empty": "Belum ada riwayat kurs untuk periode ini.",
+      "notLoaded": "Riwayat kurs untuk koridor ini belum tersedia.",
+      "loadError": "Kami tidak dapat memuat riwayat kurs."
     }
   },
   "errors": {
