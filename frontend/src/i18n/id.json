@@ -356,6 +356,26 @@
       "staleRate": "Kurs mungkin sudah tidak terbaru, jadi jumlahnya adalah perkiraan.",
       "estimated": "Jumlah ini di luar jumlah yang disurvei Bank Dunia, jadi sebagian harga adalah perkiraan.",
       "survey": "Biaya dan kurs disurvei oleh Bank Dunia dari {{from}} sampai {{to}}."
+    },
+    "table": {
+      "heading": "Perbandingan setiap layanan",
+      "caption": "Setiap layanan yang disurvei untuk koridor dan jumlah ini. Pilih kolom untuk mengurutkannya.",
+      "columns": {
+        "provider": "Layanan",
+        "speed": "Kecepatan",
+        "fee": "Biaya",
+        "totalCost": "Total biaya",
+        "receives": "Keluarga Anda menerima"
+      },
+      "bestBadge": "Terbaik",
+      "vsBest": "{{amount}} lebih sedikit daripada yang terbaik",
+      "estimatedTag": "Perkiraan",
+      "rankSr": "Peringkat {{rank}} dari {{count}} berdasarkan jumlah yang diterima keluarga Anda",
+      "notComparable": {
+        "heading": "Dibayar dalam mata uang lain",
+        "note": "Layanan ini membayar keluarga Anda dalam mata uang selain {{receiveCurrency}}, sehingga tidak dapat diperingkat berdasarkan jumlah yang diterima.",
+        "row": "{{firm}}: biaya {{fee}}, dibayarkan dalam {{currency}}"
+      }
     }
   },
   "errors": {
