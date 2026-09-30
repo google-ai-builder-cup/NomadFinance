@@ -106,9 +106,9 @@ The running profile of one operator, agency or employer. The id is the slug of t
 | `incident_count` | number | yes | Distinct clusters (unique incidents) |
 | `violation_counts` | map | yes | Reports per `violation_type` |
 | `first_reported_at`, `last_reported_at` | timestamp | yes | |
-| `community_rating` | number or null | yes | 0 to 5, higher is safer. `null` until there are enough reports. The formula belongs to NF-P3-003. |
-| `risk_level` | string | yes | `low`, `medium`, `high` |
-| `flagged` | boolean | yes | `true` when the entity crosses the warning threshold; drives the "Community flagged" badges (NF-P3-022, NF-P3-023) |
+| `community_rating` | number or null | yes | 0 to 5, higher is safer. `null` below 2 incidents (not enough signal for a number); otherwise `max(0, 5 − 0.5 × incident_count)`, rounded to 1 decimal (NF-P3-003, `services/radar/aggregation.py`) |
+| `risk_level` | string | yes | `low` below 2 incidents, `medium` at 2 to 4, `high` at 5 or more (NF-P3-003) |
+| `flagged` | boolean | yes | `true` at 2 or more incidents — a pattern, not a single unverified report; drives the "Community flagged" badges (NF-P3-022, NF-P3-023) |
 | `updated_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
 
@@ -129,7 +129,7 @@ The running profile of one operator, agency or employer. The id is the slug of t
   "violation_counts": { "hidden_fees": 3 },
   "first_reported_at": "2026-09-20T09:00:00Z",
   "last_reported_at": "2026-09-27T05:41:00Z",
-  "community_rating": 2.5,
+  "community_rating": 4.0,
   "risk_level": "medium",
   "flagged": true,
   "updated_at": "2026-09-27T05:41:02Z",

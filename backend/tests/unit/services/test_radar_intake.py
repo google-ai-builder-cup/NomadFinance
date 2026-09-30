@@ -9,7 +9,7 @@ from google.api_core.exceptions import FailedPrecondition
 from app.config import Settings
 from app.integrations.gemini import GeminiClient, GeminiUnavailableError
 from app.repositories.radar_repo import RadarRepository, SimilarReport
-from app.schemas.radar import RadarReport
+from app.schemas.radar import RadarEntity, RadarReport
 from app.schemas.radar_report import (
     ExtractedEntity,
     RadarReportRequest,
@@ -118,6 +118,7 @@ class FakeRadarRepo:
         self.embeddings: list[tuple[str, list[float], dict[str, Any]]] = []
         self.similar = similar or []
         self.cluster_ids = {"r_old": "r_first"}
+        self.entities: dict[str, dict[str, Any]] = {}
 
     def find_similar(self, embedding: list[float], corridor_id: str, limit: int) -> Any:
         if isinstance(self.similar, Exception):
@@ -135,6 +136,12 @@ class FakeRadarRepo:
 
     def create_report(self, report_id: str, report: RadarReport) -> None:
         self.created.append((report_id, report))
+
+    def get_entity(self, slug: str) -> dict[str, Any] | None:
+        return self.entities.get(slug)
+
+    def set_entity(self, entity: RadarEntity) -> None:
+        self.entities[entity.slug] = entity.model_dump()
 
 
 def _settings() -> Settings:
@@ -469,3 +476,58 @@ async def test_report_without_a_corridor_is_not_searched() -> None:
     )
 
     assert radar.created[0][1].cluster_id == "r_test01"
+
+
+async def test_a_new_incident_updates_the_entitys_profile() -> None:
+    radar = FakeRadarRepo()
+
+    await _submit(radar)
+
+    entity = radar.entities["example-remit"]
+    assert (entity["report_count"], entity["incident_count"]) == (1, 1)
+    assert entity["flagged"] is False  # one incident is not yet a pattern
+
+
+async def test_joining_an_existing_cluster_counts_a_report_but_not_a_new_incident() -> None:
+    radar = FakeRadarRepo([SimilarReport("r_old", "example-remit", 0.08)])
+    radar.entities["example-remit"] = RadarEntity(
+        name="Example Remit",
+        slug="example-remit",
+        entity_type="money_transfer_operator",
+        report_count=1,
+        incident_count=1,
+        first_reported_at=NOW,
+        last_reported_at=NOW,
+        risk_level="low",
+        flagged=False,
+        updated_at=NOW,
+    ).model_dump()
+
+    await _submit(radar)
+
+    entity = radar.entities["example-remit"]
+    assert (entity["report_count"], entity["incident_count"]) == (2, 1)  # same incident, +1 report
+    assert entity["flagged"] is False
+
+
+async def test_a_second_distinct_incident_flags_the_entity() -> None:
+    radar = FakeRadarRepo()
+    radar.entities["example-remit"] = RadarEntity(
+        name="Example Remit",
+        slug="example-remit",
+        entity_type="money_transfer_operator",
+        report_count=1,
+        incident_count=1,
+        first_reported_at=NOW,
+        last_reported_at=NOW,
+        risk_level="low",
+        flagged=False,
+        updated_at=NOW,
+    ).model_dump()
+
+    await _submit(radar)  # no similar neighbour queued: starts its own, second, cluster
+
+    entity = radar.entities["example-remit"]
+    assert (entity["report_count"], entity["incident_count"]) == (2, 2)
+    assert entity["flagged"] is True
+    assert entity["community_rating"] == 4.0

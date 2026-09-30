@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
+from typing import Any
 
 from google.cloud.firestore import CollectionReference
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -10,9 +11,10 @@ from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
 
 from app.repositories.base import FirestoreRepository, get_firestore_client
-from app.schemas.radar import RadarReport
+from app.schemas.radar import RadarEntity, RadarReport
 
 EMBEDDINGS_COLLECTION = "report_embeddings"
+ENTITIES_COLLECTION = "radar_entities"
 
 
 @dataclass(frozen=True)
@@ -27,8 +29,8 @@ class SimilarReport:
 class RadarRepository(FirestoreRepository):
     """radar_reports/{id} (docs/data-model/collections/radar.md).
 
-    Reports are written here (NF-P2-021, NF-P3-001); NF-P3-002 adds the similar-report search
-    over `report_embeddings/{id}`. Entity aggregation (NF-P3-003) adds its own methods later.
+    Reports are written here (NF-P2-021, NF-P3-001); NF-P3-002 added the similar-report search
+    over `report_embeddings/{id}`; NF-P3-003 adds the `radar_entities/{slug}` methods below.
     """
 
     collection_name = "radar_reports"
@@ -106,6 +108,22 @@ class RadarRepository(FirestoreRepository):
         if corridor_id is not None:
             data["corridor_id"] = corridor_id
         self._embeddings.document(report_id).set(data)
+
+    @property
+    def _entities(self) -> CollectionReference:
+        return self._client.collection(ENTITIES_COLLECTION)
+
+    def get_entity(self, slug: str) -> dict[str, Any] | None:
+        """The stored profile of one entity, or None if it has no reports yet."""
+        snapshot = self._entities.document(slug).get()
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def set_entity(self, entity: RadarEntity) -> None:
+        """Overwrite `radar_entities/{entity.slug}` with the freshly recomputed profile."""
+        # Not mode="json": the three timestamps must stay real datetimes (Firestore Timestamp,
+        # same reasoning as create_report), and community_rating's null is meaningful, not
+        # an absent field, so this does not exclude_none either.
+        self._entities.document(entity.slug).set(entity.model_dump())
 
 
 @lru_cache
