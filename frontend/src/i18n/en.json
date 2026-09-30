@@ -416,6 +416,104 @@
       "loadError": "We couldn't load the savings figures."
     }
   },
+  "radar": {
+    "violation": {
+      "hidden_fees": "Hidden fees",
+      "exchange_rate_markup": "Unfair exchange rate",
+      "illegal_recruitment_fee": "Illegal recruitment fee",
+      "wage_theft": "Unpaid or stolen wages",
+      "illegal_deduction": "Illegal deduction from pay",
+      "contract_substitution": "Contract changed after signing",
+      "passport_retention": "Passport kept by employer or agent",
+      "unlicensed_operator": "Unlicensed operator",
+      "other": "Other problem"
+    },
+    "report": {
+      "title": "Report a problem",
+      "subtitle": "Tell us about a money transfer service, recruitment agency or employer that cheated you. Other workers will be warned.",
+      "stepOf": "Step {{current}} of {{total}}",
+      "steps": {
+        "who": "Who is it about?",
+        "where": "Where did it happen?",
+        "what": "What happened?",
+        "review": "Check and send"
+      },
+      "who": {
+        "typeLabel": "Who are you reporting?",
+        "types": {
+          "money_transfer_operator": "Money transfer service",
+          "recruitment_agency": "Recruitment agency",
+          "employer": "Employer"
+        },
+        "hints": {
+          "money_transfer_operator": "The shop or app you send money home with",
+          "recruitment_agency": "The agent or agency that found you the job",
+          "employer": "The company or person you work for"
+        },
+        "nameLabel": "Name of the business",
+        "nameHint": "Use the name on the receipt, contract or sign."
+      },
+      "where": {
+        "corridorLabel": "Which money route was it?",
+        "hostLabel": "Country where you work",
+        "choose": "Choose…"
+      },
+      "what": {
+        "label": "What happened?",
+        "hint": "Say what was done and when. Do not write names of people, phone numbers or addresses.",
+        "languageLabel": "Language you wrote in"
+      },
+      "evidence": {
+        "label": "Photos or documents (optional)",
+        "add": "Add photos or files",
+        "hint": "A receipt, screenshot or photo helps. Up to 5 files, 10 MB each.",
+        "remove": "Remove {{name}}",
+        "errors": {
+          "tooLarge": "This file is larger than 10 MB. Choose a smaller file.",
+          "badType": "Add a PDF or a photo (PNG, JPEG, WebP or HEIC).",
+          "tooMany": "You can add up to 5 files.",
+          "generic": "This file could not be used. Try a different one."
+        }
+      },
+      "review": {
+        "about": "About",
+        "where": "Where",
+        "what": "What happened"
+      },
+      "privacy": "Your name and account are not shown with your report.",
+      "next": "Next",
+      "back": "Back",
+      "submit": "Send report",
+      "submitting": "Sending…",
+      "profileLoadError": "We could not load your profile. Please try again.",
+      "validation": {
+        "typeRequired": "Choose who you are reporting.",
+        "nameRequired": "Write the name of the business.",
+        "locationRequired": "Choose where it happened.",
+        "descriptionShort": "Write at least {{min}} characters about what happened."
+      },
+      "errors": {
+        "rejected": "Your report could not be accepted. Check what you wrote and try again.",
+        "entityUnknown": "We could not tell who this report is about. Write the name of the business.",
+        "locationUnknown": "We could not tell where this happened. Choose the money route or country.",
+        "spam": "This does not look like a real report. Please describe what happened.",
+        "abusive": "This report cannot be published as written. Remove any threats or abusive words.",
+        "personalData": "Please remove personal details (names of people, phone numbers, addresses) and try again.",
+        "aiBusy": "The AI service is busy right now. Please try again in a minute.",
+        "aiSlow": "The AI service took too long to answer. Please try again."
+      },
+      "done": {
+        "title": "Thank you. Your report was received.",
+        "subtitle": "It will help warn other workers. We check reports before they count.",
+        "about": "About",
+        "violation": "Type of problem",
+        "summary": "Summary",
+        "evidenceAttached": "Files attached: {{n}}",
+        "evidenceFailed": "Files that could not be attached: {{n}}. Your report was still saved.",
+        "another": "Report something else"
+      }
+    }
+  },
   "errors": {
     "boundaryTitle": "Something went wrong",
     "boundaryDescription": "This page stopped working. Your saved information is safe. Try again, or go back to the home page.",

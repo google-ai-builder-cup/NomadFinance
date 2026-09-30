@@ -416,6 +416,104 @@
       "loadError": "Kami tidak dapat memuat angka penghematan."
     }
   },
+  "radar": {
+    "violation": {
+      "hidden_fees": "Biaya tersembunyi",
+      "exchange_rate_markup": "Kurs tukar tidak adil",
+      "illegal_recruitment_fee": "Biaya perekrutan ilegal",
+      "wage_theft": "Gaji tidak dibayar",
+      "illegal_deduction": "Potongan gaji ilegal",
+      "contract_substitution": "Kontrak diubah setelah ditandatangani",
+      "passport_retention": "Paspor ditahan majikan atau agen",
+      "unlicensed_operator": "Operator tanpa izin",
+      "other": "Masalah lain"
+    },
+    "report": {
+      "title": "Laporkan masalah",
+      "subtitle": "Ceritakan tentang layanan kirim uang, agen perekrutan, atau majikan yang menipu Anda. Pekerja lain akan diperingatkan.",
+      "stepOf": "Langkah {{current}} dari {{total}}",
+      "steps": {
+        "who": "Tentang siapa?",
+        "where": "Di mana kejadiannya?",
+        "what": "Apa yang terjadi?",
+        "review": "Periksa dan kirim"
+      },
+      "who": {
+        "typeLabel": "Siapa yang Anda laporkan?",
+        "types": {
+          "money_transfer_operator": "Layanan kirim uang",
+          "recruitment_agency": "Agen perekrutan",
+          "employer": "Majikan"
+        },
+        "hints": {
+          "money_transfer_operator": "Toko atau aplikasi yang Anda pakai untuk kirim uang ke rumah",
+          "recruitment_agency": "Agen atau agensi yang mencarikan Anda pekerjaan",
+          "employer": "Perusahaan atau orang tempat Anda bekerja"
+        },
+        "nameLabel": "Nama usaha",
+        "nameHint": "Pakai nama yang tertulis di kwitansi, kontrak, atau papan nama."
+      },
+      "where": {
+        "corridorLabel": "Jalur kirim uang yang mana?",
+        "hostLabel": "Negara tempat Anda bekerja",
+        "choose": "Pilih…"
+      },
+      "what": {
+        "label": "Apa yang terjadi?",
+        "hint": "Ceritakan apa yang dilakukan dan kapan. Jangan tulis nama orang, nomor telepon, atau alamat.",
+        "languageLabel": "Bahasa yang Anda pakai"
+      },
+      "evidence": {
+        "label": "Foto atau dokumen (boleh dikosongkan)",
+        "add": "Tambah foto atau berkas",
+        "hint": "Kwitansi, tangkapan layar, atau foto sangat membantu. Maksimal 5 berkas, masing-masing 10 MB.",
+        "remove": "Hapus {{name}}",
+        "errors": {
+          "tooLarge": "Berkas ini lebih besar dari 10 MB. Pilih berkas yang lebih kecil.",
+          "badType": "Tambahkan PDF atau foto (PNG, JPEG, WebP, atau HEIC).",
+          "tooMany": "Anda bisa menambah sampai 5 berkas.",
+          "generic": "Berkas ini tidak bisa dipakai. Coba berkas lain."
+        }
+      },
+      "review": {
+        "about": "Tentang",
+        "where": "Di mana",
+        "what": "Apa yang terjadi"
+      },
+      "privacy": "Nama dan akun Anda tidak ditampilkan bersama laporan.",
+      "next": "Lanjut",
+      "back": "Kembali",
+      "submit": "Kirim laporan",
+      "submitting": "Mengirim…",
+      "profileLoadError": "Kami tidak bisa memuat profil Anda. Silakan coba lagi.",
+      "validation": {
+        "typeRequired": "Pilih siapa yang Anda laporkan.",
+        "nameRequired": "Tulis nama usahanya.",
+        "locationRequired": "Pilih di mana kejadiannya.",
+        "descriptionShort": "Tulis minimal {{min}} karakter tentang apa yang terjadi."
+      },
+      "errors": {
+        "rejected": "Laporan Anda tidak bisa diterima. Periksa tulisan Anda dan coba lagi.",
+        "entityUnknown": "Kami tidak tahu laporan ini tentang siapa. Tulis nama usahanya.",
+        "locationUnknown": "Kami tidak tahu di mana kejadiannya. Pilih jalur kirim uang atau negara.",
+        "spam": "Ini tidak tampak seperti laporan sungguhan. Silakan ceritakan apa yang terjadi.",
+        "abusive": "Laporan ini tidak bisa dipublikasikan seperti tertulis. Hapus ancaman atau kata kasar.",
+        "personalData": "Hapus data pribadi (nama orang, nomor telepon, alamat) lalu coba lagi.",
+        "aiBusy": "Layanan AI sedang sibuk. Silakan coba lagi satu menit lagi.",
+        "aiSlow": "Layanan AI terlalu lama menjawab. Silakan coba lagi."
+      },
+      "done": {
+        "title": "Terima kasih. Laporan Anda sudah kami terima.",
+        "subtitle": "Ini membantu memperingatkan pekerja lain. Kami memeriksa laporan sebelum dihitung.",
+        "about": "Tentang",
+        "violation": "Jenis masalah",
+        "summary": "Ringkasan",
+        "evidenceAttached": "Berkas terlampir: {{n}}",
+        "evidenceFailed": "Berkas yang gagal dilampirkan: {{n}}. Laporan Anda tetap tersimpan.",
+        "another": "Laporkan hal lain"
+      }
+    }
+  },
   "errors": {
     "boundaryTitle": "Terjadi kesalahan",
     "boundaryDescription": "Halaman ini berhenti berfungsi. Informasi yang sudah Anda simpan tetap aman. Coba lagi, atau kembali ke beranda.",
