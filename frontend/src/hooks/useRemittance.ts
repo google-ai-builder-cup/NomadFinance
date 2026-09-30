@@ -2,9 +2,18 @@ import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-quer
 
 import { trackRemittanceCompared } from "@/lib/analytics";
 import { ApiError } from "@/services/apiClient";
-import { compareRemittance, getRemittanceTrends } from "@/services/remittanceService";
+import {
+  compareRemittance,
+  getRemittanceSavings,
+  getRemittanceTrends,
+} from "@/services/remittanceService";
 import type { CorridorId } from "@/types/enums";
-import type { RemittanceCompareRequest, RemittanceTrends, TrendDays } from "@/types/remittance";
+import type {
+  RemittanceCompareRequest,
+  RemittanceSavings,
+  RemittanceTrends,
+  TrendDays,
+} from "@/types/remittance";
 
 /**
  * Compare the services of a corridor for one amount. A mutation, not a query: the worker
@@ -35,6 +44,28 @@ export function useRemittanceTrends(
     queryKey: ["remittanceTrends", corridorId, days] as const,
     queryFn: () => getRemittanceTrends(corridorId as CorridorId, days),
     enabled: corridorId !== null,
+    retry: (failureCount, error) =>
+      !(error instanceof ApiError && error.status === 404) && failureCount < 1,
+  });
+}
+
+/**
+ * What the best service, instead of the worst, would have been worth over the last `months`
+ * (NF-P2-022, NF-P2-023's "you would have saved $X" hero moment). A query, cached per
+ * corridor, amount and period.
+ *
+ * A 404 (no prices or no history stored yet) is not retried: the callout's own empty state
+ * handles it, same as `useRemittanceTrends`.
+ */
+export function useRemittanceSavings(
+  corridorId: CorridorId | null,
+  amount: number | null,
+  months: number
+): UseQueryResult<RemittanceSavings> {
+  return useQuery({
+    queryKey: ["remittanceSavings", corridorId, amount, months] as const,
+    queryFn: () => getRemittanceSavings(corridorId as CorridorId, amount as number, months),
+    enabled: corridorId !== null && amount !== null,
     retry: (failureCount, error) =>
       !(error instanceof ApiError && error.status === 404) && failureCount < 1,
   });

@@ -138,3 +138,40 @@ export interface RemittanceTrends {
   weekdays: WeekdayStat[];
   providers: string[];
 }
+
+// Full months `GET /remittance/savings` accepts, matching the backend's MIN_MONTHS/MAX_MONTHS.
+export const MIN_SAVINGS_MONTHS = 1;
+export const MAX_SAVINGS_MONTHS = 12;
+
+/** What sending `amount` would have cost in one full calendar month, best vs worst service. */
+export interface MonthlySavings {
+  /** Calendar month, YYYY-MM. */
+  month: string;
+  average_rate: number;
+  best_receives: number;
+  worst_receives: number;
+  /** best_receives minus worst_receives. */
+  savings: number;
+}
+
+/** Response of `GET /remittance/savings` (NF-P2-022): the "you would have saved $X" figure. */
+export interface RemittanceSavings {
+  corridor_id: CorridorId;
+  send_amount: number;
+  send_currency: string;
+  receive_currency: string;
+  months_requested: number;
+  /** Less than months_requested when the history does not go back that far. */
+  months_used: number;
+  best_rpw_id: number;
+  best_firm: string;
+  worst_rpw_id: number;
+  worst_firm: string;
+  total_best_receives: number;
+  total_worst_receives: number;
+  /** What sending with best_firm instead of worst_firm would have been worth over the period. */
+  total_savings: number;
+  /** Oldest first. */
+  months: MonthlySavings[];
+  survey: SurveyInfo;
+}

@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useRef } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
+import SavingsCallout from "@/components/remittance/SavingsCallout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompareRemittance } from "@/hooks/useRemittance";
@@ -154,6 +155,7 @@ export default function RemittanceCompare() {
       {compare.data && !compare.isPending && (
         <>
           <ComparisonSummaryCard comparison={compare.data} />
+          <SavingsCallout comparison={compare.data} />
           <ComparisonTable comparison={compare.data} />
           <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
             <TrendChart comparison={compare.data} />

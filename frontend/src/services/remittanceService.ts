@@ -3,6 +3,7 @@ import type { CorridorId } from "@/types/enums";
 import type {
   RemittanceCompareRequest,
   RemittanceComparison,
+  RemittanceSavings,
   RemittanceTrends,
   TrendDays,
 } from "@/types/remittance";
@@ -33,4 +34,23 @@ export async function getRemittanceTrends(
   const query = new URLSearchParams({ corridor_id: corridorId, days: String(days) });
   const response = await apiRequest(`/api/v1/remittance/trends?${query}`);
   return (await response.json()) as RemittanceTrends;
+}
+
+/**
+ * What choosing the best service, instead of the worst, would have been worth over real
+ * history: the "you would have saved $X" figure (`GET /api/v1/remittance/savings`,
+ * NF-P2-022). No AI call.
+ */
+export async function getRemittanceSavings(
+  corridorId: CorridorId,
+  amount: number,
+  months: number
+): Promise<RemittanceSavings> {
+  const query = new URLSearchParams({
+    corridor_id: corridorId,
+    amount: String(amount),
+    months: String(months),
+  });
+  const response = await apiRequest(`/api/v1/remittance/savings?${query}`);
+  return (await response.json()) as RemittanceSavings;
 }
