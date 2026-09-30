@@ -15,8 +15,10 @@ from app.schemas.radar_report import (
     RadarEvidenceResponse,
     RadarReportRequest,
     RadarReportResponse,
+    RadarReportSummary,
 )
 from app.schemas.user import AuthenticatedUser
+from app.services.radar.entity_reports import list_entity_reports
 from app.services.radar.evidence import (
     MAX_EVIDENCE_FILES,
     NotTheReporterError,
@@ -38,6 +40,10 @@ router = APIRouter(prefix="/radar", tags=["radar"])
 
 # Firestore's auto ids: 20 letters and digits. Anything else cannot be a report of ours.
 ReportId = Annotated[str, Path(pattern=r"^[A-Za-z0-9]{20}$", description="The report's id.")]
+# python-slugify's own output shape: lowercase words joined by single hyphens.
+EntitySlug = Annotated[
+    str, Path(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$", description="The entity's slug.")
+]
 
 _REPORT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     401: {"description": "Missing or invalid Firebase ID token"},
@@ -100,6 +106,29 @@ async def report(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             "Please remove personal details (names, phone numbers, addresses) and try again.",
         ) from exc
+
+
+@router.get(
+    "/entities/{slug}/reports",
+    response_model=list[RadarReportSummary],
+    responses={401: {"description": "Missing or invalid Firebase ID token"}},
+    summary="Every report about one business, newest first",
+)
+async def entity_reports(
+    slug: EntitySlug,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+) -> list[RadarReportSummary]:
+    """The individual reports behind one `radar_entities/{slug}` profile.
+
+    The profile itself (name, `report_count`, `community_rating`, `risk_level`, `flagged`)
+    is client-readable straight from Firestore (`firestore.rules`) and holds no personal
+    data; `radar_reports` isn't, so this is how the entity profile page gets its report
+    list. `reporter_hash` and the classification internals are never included. An unknown
+    slug and an entity with no reports both answer an empty list — the two look the same
+    from here.
+    """
+    return await list_entity_reports(slug, radar)
 
 
 async def _read_evidence_upload(file: UploadFile, settings: Settings) -> tuple[bytes, str]:

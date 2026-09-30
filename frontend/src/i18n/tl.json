@@ -532,7 +532,34 @@
       "rating": "Rating ng komunidad: {{rating}} / 5",
       "loadError": "Hindi namin ma-load ang datos ng mapa. Pakisubukang muli.",
       "emptyTitle": "Wala pang ulat",
-      "emptyDescription": "Kapag may nag-report ng negosyo, lalabas ito rito. Puwede kang maging una."
+      "emptyDescription": "Kapag may nag-report ng negosyo, lalabas ito rito. Puwede kang maging una.",
+      "viewProfile": "Tingnan ang profile ng negosyo"
+    },
+    "entity": {
+      "back": "Bumalik sa mapa",
+      "loadError": "Hindi namin ma-load ang profile ng negosyong ito. Pakisubukang muli.",
+      "notFound": "Hindi namin mahanap ang negosyong ito.",
+      "risk": {
+        "low": "Mababang panganib",
+        "medium": "Katamtamang panganib",
+        "high": "Mataas na panganib"
+      },
+      "flagged": "Na-flag ng komunidad",
+      "reportsLabel": "Mga ulat",
+      "incidentsLabel": "Magkakahiwalay na insidente",
+      "ratingLabel": "Rating ng komunidad",
+      "ratingValue": "{{rating}} / 5",
+      "notRated": "Wala pang sapat na ulat para ma-rate",
+      "corridorsLabel": "Mga ruta ng padala",
+      "countriesLabel": "Mga bansa",
+      "reportsHeading": "Mga ulat",
+      "reportsLoadError": "Hindi namin ma-load ang mga ulat para sa negosyong ito. Pakisubukang muli.",
+      "noReports": "Wala pang maipakitang indibidwal na ulat.",
+      "reportSource": {
+        "user": "Iniulat ng isang manggagawa",
+        "contract_signal": "Natukoy habang sinusuri ang isang kontrata",
+        "seed": "Demo data"
+      }
     }
   },
   "errors": {

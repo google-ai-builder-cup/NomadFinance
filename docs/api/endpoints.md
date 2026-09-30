@@ -37,6 +37,7 @@ must say so explicitly in their own doc section below.
 | GET | `/api/v1/remittance/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-022 |
 | POST | `/api/v1/radar/report` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P3-001 |
 | POST | `/api/v1/radar/report/{report_id}/evidence` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-004 |
+| GET | `/api/v1/radar/entities/{slug}/reports` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-008 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
@@ -1052,6 +1053,59 @@ Attaches a photo or screenshot to a report the caller filed themselves. A separa
 | 415 | `Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).` | Any other file type |
 | 422 | `Already has the maximum of 5 attachments.` | The report is already at the cap |
 | 422 | FastAPI validation list | No `file` field, or `report_id` doesn't look like a Firestore auto id |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+## `GET /api/v1/radar/entities/{slug}/reports`
+
+The individual reports behind one `radar_entities/{slug}` profile, newest first (NF-P3-008's entity profile page). The profile itself (name, `report_count`, `community_rating`, `risk_level`, `flagged`) is client-readable straight from Firestore (`firestore.rules`) and holds no personal data; `radar_reports` isn't, so this is how the profile page gets its report list. No Gemini call, so only the API-wide rate limit applies.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Path:** `slug` — a `radar_entities` document id (lowercase words joined by hyphens, e.g. `example-remit`)
+- **Response `200`:** `list[RadarReportSummary]` (`app/schemas/radar_report.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `report_id` | string | Id of `radar_reports/{report_id}` |
+| `violation_type` | string | One of the 9 violation types |
+| `description` | string | The reporter's own words (`contract_signal` reports: built from the flagged clauses' explanations) |
+| `summary` | string or null | One neutral English sentence (NF-P3-001's classification step). Null for `contract_signal`/`seed`, which have no free text to summarize |
+| `language` | string | Language of `description` |
+| `corridor_id`, `host_country` | | At least one is set |
+| `source` | `user` / `contract_signal` / `seed` | Where the report came from |
+| `created_at` | timestamp | |
+
+Never included: `reporter_hash`, `entity_slug`/`entity_type`/`entity_name` (redundant — every report in the list is about the same entity), or `validation` (spam score, category confidence, model — backend-only).
+
+**An unknown slug and an entity with no reports both answer `200` with an empty list** — indistinguishable from a query over `radar_reports` alone, and there is nothing sensitive in the distinction. No 404.
+
+Example:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/radar/entities/example-remit/reports
+```
+
+```json
+[
+  {
+    "report_id": "aBc123XyZ0123456789A",
+    "violation_type": "hidden_fees",
+    "description": "They showed one rate and gave me a worse one at the counter.",
+    "summary": "Operator showed one rate and charged a worse one at the counter.",
+    "language": "en",
+    "corridor_id": "SG-IN",
+    "host_country": null,
+    "source": "user",
+    "created_at": "2026-09-27T05:41:00Z"
+  }
+]
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list | `slug` isn't lowercase-words-and-hyphens shaped |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---

@@ -532,7 +532,34 @@
       "rating": "Community rating: {{rating}} / 5",
       "loadError": "We could not load the map data. Please try again.",
       "emptyTitle": "No reports yet",
-      "emptyDescription": "When workers report a business, it will show up here. You can be the first."
+      "emptyDescription": "When workers report a business, it will show up here. You can be the first.",
+      "viewProfile": "View business profile"
+    },
+    "entity": {
+      "back": "Back to map",
+      "loadError": "We could not load this business profile. Please try again.",
+      "notFound": "We could not find this business.",
+      "risk": {
+        "low": "Low risk",
+        "medium": "Medium risk",
+        "high": "High risk"
+      },
+      "flagged": "Community flagged",
+      "reportsLabel": "Reports",
+      "incidentsLabel": "Separate incidents",
+      "ratingLabel": "Community rating",
+      "ratingValue": "{{rating}} / 5",
+      "notRated": "Not enough reports yet to be rated",
+      "corridorsLabel": "Money routes",
+      "countriesLabel": "Countries",
+      "reportsHeading": "Reports",
+      "reportsLoadError": "We could not load the reports for this business. Please try again.",
+      "noReports": "No individual reports could be shown yet.",
+      "reportSource": {
+        "user": "Reported by a worker",
+        "contract_signal": "Found during a contract review",
+        "seed": "Demo data"
+      }
     }
   },
   "errors": {

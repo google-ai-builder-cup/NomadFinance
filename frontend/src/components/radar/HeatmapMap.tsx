@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import { Link } from "react-router-dom";
 
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
@@ -110,6 +111,12 @@ export default function HeatmapMap({ corridors, markers }: HeatmapMapProps) {
                     <p>{t("radar.heatmap.rating", { rating: entity.community_rating })}</p>
                   )}
                   {violation && <p>{t(`radar.violation.${violation}`)}</p>}
+                  <Link
+                    to={`/radar/entity/${entity.slug}`}
+                    className="font-medium text-primary underline"
+                  >
+                    {t("radar.heatmap.viewProfile")}
+                  </Link>
                 </div>
               </Popup>
             </Marker>

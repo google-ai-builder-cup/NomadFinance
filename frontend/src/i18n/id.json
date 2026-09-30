@@ -532,7 +532,34 @@
       "rating": "Peringkat komunitas: {{rating}} / 5",
       "loadError": "Kami tidak bisa memuat data peta. Silakan coba lagi.",
       "emptyTitle": "Belum ada laporan",
-      "emptyDescription": "Saat pekerja melaporkan sebuah usaha, usaha itu akan muncul di sini. Anda bisa jadi yang pertama."
+      "emptyDescription": "Saat pekerja melaporkan sebuah usaha, usaha itu akan muncul di sini. Anda bisa jadi yang pertama.",
+      "viewProfile": "Lihat profil usaha"
+    },
+    "entity": {
+      "back": "Kembali ke peta",
+      "loadError": "Kami tidak bisa memuat profil usaha ini. Silakan coba lagi.",
+      "notFound": "Kami tidak menemukan usaha ini.",
+      "risk": {
+        "low": "Risiko rendah",
+        "medium": "Risiko sedang",
+        "high": "Risiko tinggi"
+      },
+      "flagged": "Ditandai komunitas",
+      "reportsLabel": "Laporan",
+      "incidentsLabel": "Kejadian terpisah",
+      "ratingLabel": "Peringkat komunitas",
+      "ratingValue": "{{rating}} / 5",
+      "notRated": "Belum cukup laporan untuk diberi peringkat",
+      "corridorsLabel": "Jalur kirim uang",
+      "countriesLabel": "Negara",
+      "reportsHeading": "Laporan",
+      "reportsLoadError": "Kami tidak bisa memuat laporan untuk usaha ini. Silakan coba lagi.",
+      "noReports": "Belum ada laporan perorangan yang bisa ditampilkan.",
+      "reportSource": {
+        "user": "Dilaporkan oleh pekerja",
+        "contract_signal": "Ditemukan saat pemeriksaan kontrak",
+        "seed": "Data demo"
+      }
     }
   },
   "errors": {

@@ -7,6 +7,7 @@ import type {
   RadarEvidenceResponse,
   RadarReportRequest,
   RadarReportResponse,
+  RadarReportSummary,
 } from "@/types/radar";
 
 /**
@@ -43,4 +44,14 @@ export async function listRadarEntities(): Promise<RadarEntityProfile[]> {
     ...(entity.data() as Omit<RadarEntityProfile, "slug">),
     slug: entity.id,
   }));
+}
+
+/**
+ * The individual reports behind one entity's profile (`GET /api/v1/radar/entities/{slug}/reports`).
+ * Unlike `radar_entities`, `radar_reports` is not client-readable (firestore.rules), so this
+ * goes through the backend, which also strips `reporter_hash` and the classification internals.
+ */
+export async function getEntityReports(slug: string): Promise<RadarReportSummary[]> {
+  const response = await apiRequest(`/api/v1/radar/entities/${slug}/reports`);
+  return (await response.json()) as RadarReportSummary[];
 }
