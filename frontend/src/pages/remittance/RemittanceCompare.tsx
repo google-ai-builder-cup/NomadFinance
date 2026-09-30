@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompareRemittance } from "@/hooks/useRemittance";
@@ -146,8 +147,12 @@ export default function RemittanceCompare() {
         onSubmit={(request) => compare.mutate(request)}
       />
 
-      {/* TODO(Aditya): the table of every service goes under the summary NF-P2-019 */}
-      {compare.data && !compare.isPending && <ComparisonSummaryCard comparison={compare.data} />}
+      {compare.data && !compare.isPending && (
+        <>
+          <ComparisonSummaryCard comparison={compare.data} />
+          <ComparisonTable comparison={compare.data} />
+        </>
+      )}
     </div>
   );
 }

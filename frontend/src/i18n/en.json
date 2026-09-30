@@ -356,6 +356,26 @@
       "staleRate": "The exchange rate may be out of date, so the amounts are estimates.",
       "estimated": "This amount is outside the amounts the World Bank priced, so some prices are estimates.",
       "survey": "Fees and rates surveyed by the World Bank from {{from}} to {{to}}."
+    },
+    "table": {
+      "heading": "Every service compared",
+      "caption": "Every surveyed service for this corridor and amount. Choose a column to sort by it.",
+      "columns": {
+        "provider": "Service",
+        "speed": "Speed",
+        "fee": "Fee",
+        "totalCost": "Total cost",
+        "receives": "Your family receives"
+      },
+      "bestBadge": "Best",
+      "vsBest": "{{amount}} less than the best",
+      "estimatedTag": "Estimated",
+      "rankSr": "Ranked {{rank}} of {{count}} by what your family receives",
+      "notComparable": {
+        "heading": "Paid in another currency",
+        "note": "These services pay out in a different currency than {{receiveCurrency}}, so they can't be ranked by what your family receives.",
+        "row": "{{firm}}: fee {{fee}}, pays out in {{currency}}"
+      }
     }
   },
   "errors": {

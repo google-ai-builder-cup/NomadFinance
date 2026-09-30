@@ -356,6 +356,26 @@
       "staleRate": "Maaaring luma na ang palitan, kaya tantiya lang ang mga halaga.",
       "estimated": "Wala ang halagang ito sa mga halagang sinuri ng World Bank, kaya tantiya ang ilang presyo.",
       "survey": "Mga bayad at palitang sinuri ng World Bank mula {{from}} hanggang {{to}}."
+    },
+    "table": {
+      "heading": "Paghahambing ng bawat serbisyo",
+      "caption": "Bawat serbisyong sinuri para sa rutang ito at halagang ito. Pumili ng column para ayusin dito.",
+      "columns": {
+        "provider": "Serbisyo",
+        "speed": "Bilis",
+        "fee": "Bayad",
+        "totalCost": "Kabuuang gastos",
+        "receives": "Matatanggap ng pamilya mo"
+      },
+      "bestBadge": "Pinakamagaling",
+      "vsBest": "{{amount}} na mas kaunti kaysa sa pinakamagaling",
+      "estimatedTag": "Tantiya",
+      "rankSr": "Ika-{{rank}} sa {{count}}, batay sa matatanggap ng iyong pamilya",
+      "notComparable": {
+        "heading": "Nagbabayad sa ibang currency",
+        "note": "Nagbabayad ang mga serbisyong ito sa ibang currency kaysa {{receiveCurrency}}, kaya hindi sila maaaring ihanay ayon sa matatanggap ng iyong pamilya.",
+        "row": "{{firm}}: bayad na {{fee}}, nagbabayad sa {{currency}}"
+      }
     }
   },
   "errors": {
