@@ -24,6 +24,7 @@ from app.integrations.gemini import (
 from app.repositories.complaint_template_repo import ComplaintTemplateRepository
 from app.repositories.contract_repo import ContractRepository
 from app.repositories.labor_law_repo import LaborLawRepository
+from app.repositories.radar_repo import RadarRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.contract import ContractBlock, HostCountryCode, JobTypeId, ReportLanguage
 from app.schemas.contract_complaint import ContractFacts
@@ -49,6 +50,7 @@ from app.services.contract.report_store import (
     stored_analysis,
     translate_and_store,
 )
+from app.services.cross_pillar.contract_to_radar import create_radar_signals
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +83,7 @@ class PipelineDeps:
     users: UserRepository
     laws: LaborLawRepository
     templates: ComplaintTemplateRepository
+    radar: RadarRepository
 
 
 # --- fallbacks (D-55) -------------------------------------------------------------------
@@ -227,6 +230,15 @@ async def analyze_contract(
             complaint, letter_pending = await write_letter(
                 host, comparison.clauses, facts, language, deps.templates, deps.gemini
             )
+            # A background signal to Exploitation Radar (NF-P2-021): never lets a Firestore
+            # hiccup here cost the worker their own report, so it is never awaited for its
+            # result and never re-raised.
+            try:
+                await create_radar_signals(
+                    host, detected.document_kind, comparison.clauses, facts, deps.radar
+                )
+            except Exception:
+                logger.warning("pipeline_radar_signal_failed", exc_info=True)
 
         clauses = [TranslatedClause.model_validate(c.model_dump()) for c in comparison.clauses]
         source = build_report(

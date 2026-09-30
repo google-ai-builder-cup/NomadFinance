@@ -111,6 +111,21 @@ class FakeTemplates:
         return None
 
 
+class FakeRadar:
+    """RadarRepository in memory: every write kept, in order (NF-P2-021)."""
+
+    def __init__(self) -> None:
+        self.reports: dict[str, Any] = {}
+        self._next = 0
+
+    def new_report_id(self) -> str:
+        self._next += 1
+        return f"R{self._next:019d}"
+
+    def create_report(self, report_id: str, report: Any) -> None:
+        self.reports[report_id] = report
+
+
 # --- the Gemini steps -------------------------------------------------------------------
 
 

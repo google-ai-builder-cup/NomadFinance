@@ -18,7 +18,14 @@ from app.schemas.user import AuthenticatedUser
 from app.services.contract import letter, pipeline, report_store, upload
 from app.services.contract.extractor import NotADocumentError
 from app.services.contract.pipeline import PipelineDeps
-from tests.fixtures.pipeline_fakes import FakeContracts, FakeLaws, FakeTemplates, FakeUsers, Steps
+from tests.fixtures.pipeline_fakes import (
+    FakeContracts,
+    FakeLaws,
+    FakeRadar,
+    FakeTemplates,
+    FakeUsers,
+    Steps,
+)
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "contracts"
 PDF = (FIXTURES / "sample_contract_sg.pdf").read_bytes()
@@ -49,6 +56,7 @@ def app(steps: Steps, contracts: FakeContracts) -> FastAPI:
         FakeUsers({"host_country": "SG", "preferred_language": "hi"}),  # type: ignore[arg-type]
         FakeLaws(),  # type: ignore[arg-type]
         FakeTemplates(),  # type: ignore[arg-type]
+        FakeRadar(),  # type: ignore[arg-type]
     )
     app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="worker-1")
     app.dependency_overrides[get_pipeline_deps] = lambda: deps

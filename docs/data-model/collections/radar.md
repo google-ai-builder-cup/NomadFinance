@@ -12,7 +12,7 @@ radar_alerts/{corridor}/current/{alertId}  an alert on a corridor
 
 ## `radar_reports/{id}`
 
-Written only after a report passes validation (spam and duplicate checks, NF-P3-001). Rejected spam is answered with an error and **not stored**.
+A worker's own report (`source: "user"`) is written only after it passes validation (spam and duplicate checks, NF-P3-001); rejected spam is answered with an error and **not stored**. A `contract_signal` report (NF-P2-021) is written directly: the category is already a checked fact from Contract Shield's own comparison step, not free text that needs checking.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
@@ -28,7 +28,7 @@ Written only after a report passes validation (spam and duplicate checks, NF-P3-
 | `source` | string | yes | `user`, `contract_signal` (Contract Shield, NF-P2-021) or `seed` (demo data, NF-P3-005) |
 | `reporter_hash` | string | for `user` | HMAC-SHA-256 of the reporter's uid with a secret kept in Secret Manager. **Never the uid.** Absent for `contract_signal` and `seed`. Used to limit repeat reports and abuse. |
 | `evidence_paths` | array of string | no | Cloud Storage paths of optional attachments |
-| `validation` | map | yes | `{ "spam_score": number, "category_confidence": number, "model": string }` from the classification tier |
+| `validation` | map | yes | `{ "spam_score": number, "category_confidence": number, "model": string }` from the classification tier. For `contract_signal` there is no free text to check and no model call: fixed values that say so (`spam_score: 0`, `category_confidence: 1`, `model: "contract_shield"`), never invented Gemini output |
 | `created_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
 

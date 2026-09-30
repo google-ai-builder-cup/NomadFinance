@@ -1,0 +1,58 @@
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+# Same values on radar_entities and every radar_reports document (docs/data-model/
+# collections/radar.md). Contract Shield (NF-P2-021) only ever produces "employer" or
+# "recruitment_agency"; "money_transfer_operator" comes from a worker's own report (NF-P3-001).
+RadarEntityType = Literal["money_transfer_operator", "recruitment_agency", "employer"]
+
+RadarViolationType = Literal[
+    "hidden_fees",
+    "exchange_rate_markup",
+    "illegal_recruitment_fee",
+    "wage_theft",
+    "illegal_deduction",
+    "contract_substitution",
+    "passport_retention",
+    "unlicensed_operator",
+    "other",
+]
+
+RadarReportSource = Literal["user", "contract_signal", "seed"]
+
+
+class RadarValidation(BaseModel):
+    """Classification-tier output for a worker's own report (NF-P3-001).
+
+    A `contract_signal` report has no free text to check, so this is filled with fixed
+    values that say so (`services/cross_pillar/contract_to_radar.py`), not a model's guess.
+    """
+
+    spam_score: float = Field(ge=0, le=1)
+    category_confidence: float = Field(ge=0, le=1)
+    model: str
+
+
+class RadarReport(BaseModel):
+    """`radar_reports/{id}` (docs/data-model/collections/radar.md). Backend-only; no client
+    ever reads or writes this directly."""
+
+    entity_type: RadarEntityType
+    entity_name: str
+    entity_slug: str
+    violation_type: RadarViolationType
+    corridor_id: str | None = None
+    host_country: str | None = None
+    description: str
+    language: str
+    cluster_id: str
+    source: RadarReportSource
+    reporter_hash: str | None = None
+    evidence_paths: list[str] = Field(default_factory=list)
+    validation: RadarValidation
+    created_at: datetime
+    schema_version: int = 1
