@@ -512,6 +512,27 @@
         "evidenceFailed": "Berkas yang gagal dilampirkan: {{n}}. Laporan Anda tetap tersimpan.",
         "another": "Laporkan hal lain"
       }
+    },
+    "heatmap": {
+      "mapLabel": "Peta jalur kirim uang dan usaha yang dilaporkan",
+      "title": "Exploitation Radar",
+      "subtitle": "Lihat jalur kirim uang dan usaha yang dilaporkan pekerja. Garis lebih tebal dan lebih merah berarti lebih banyak laporan.",
+      "report": "Laporkan masalah",
+      "filterLabel": "Tampilkan",
+      "filterAll": "Semua jenis",
+      "legend": "Warna peta",
+      "level": {
+        "0": "Tidak ada laporan",
+        "1": "Sedikit laporan",
+        "2": "Beberapa laporan",
+        "3": "Paling banyak laporan"
+      },
+      "byCorridor": "Menurut jalur kirim uang",
+      "reports": "Laporan: {{n}}",
+      "rating": "Peringkat komunitas: {{rating}} / 5",
+      "loadError": "Kami tidak bisa memuat data peta. Silakan coba lagi.",
+      "emptyTitle": "Belum ada laporan",
+      "emptyDescription": "Saat pekerja melaporkan sebuah usaha, usaha itu akan muncul di sini. Anda bisa jadi yang pertama."
     }
   },
   "errors": {

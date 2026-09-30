@@ -512,6 +512,27 @@
         "evidenceFailed": "Files that could not be attached: {{n}}. Your report was still saved.",
         "another": "Report something else"
       }
+    },
+    "heatmap": {
+      "mapLabel": "Map of reported money routes and businesses",
+      "title": "Exploitation Radar",
+      "subtitle": "See which money routes and businesses workers have reported. Thicker, redder lines mean more reports.",
+      "report": "Report a problem",
+      "filterLabel": "Show",
+      "filterAll": "All types",
+      "legend": "Map colours",
+      "level": {
+        "0": "No reports",
+        "1": "Few reports",
+        "2": "Some reports",
+        "3": "Most reports"
+      },
+      "byCorridor": "By money route",
+      "reports": "Reports: {{n}}",
+      "rating": "Community rating: {{rating}} / 5",
+      "loadError": "We could not load the map data. Please try again.",
+      "emptyTitle": "No reports yet",
+      "emptyDescription": "When workers report a business, it will show up here. You can be the first."
     }
   },
   "errors": {

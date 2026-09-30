@@ -512,6 +512,27 @@
         "evidenceFailed": "Mga file na hindi naidagdag: {{n}}. Nase-save pa rin ang ulat mo.",
         "another": "Mag-ulat ng iba pa"
       }
+    },
+    "heatmap": {
+      "mapLabel": "Mapa ng mga na-report na ruta ng padala at negosyo",
+      "title": "Exploitation Radar",
+      "subtitle": "Tingnan kung aling mga ruta ng padala at negosyo ang na-report ng mga manggagawa. Mas makapal at mas pula ang linya, mas maraming ulat.",
+      "report": "Mag-ulat ng problema",
+      "filterLabel": "Ipakita",
+      "filterAll": "Lahat ng uri",
+      "legend": "Mga kulay sa mapa",
+      "level": {
+        "0": "Walang ulat",
+        "1": "Kaunting ulat",
+        "2": "May ilang ulat",
+        "3": "Pinakamaraming ulat"
+      },
+      "byCorridor": "Ayon sa ruta ng padala",
+      "reports": "Mga ulat: {{n}}",
+      "rating": "Rating ng komunidad: {{rating}} / 5",
+      "loadError": "Hindi namin ma-load ang datos ng mapa. Pakisubukang muli.",
+      "emptyTitle": "Wala pang ulat",
+      "emptyDescription": "Kapag may nag-report ng negosyo, lalabas ito rito. Puwede kang maging una."
     }
   },
   "errors": {

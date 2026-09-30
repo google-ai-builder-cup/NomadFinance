@@ -12,14 +12,16 @@ import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
 import Profile from "@/pages/Profile";
+import RadarHeatmap from "@/pages/radar/RadarHeatmap";
 import RadarReport from "@/pages/radar/RadarReport";
 import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
-// Contract Shield (NF-P2-009) and Remittance X-Ray (NF-P2-018) have theirs; the rest wait their turn.
+// Contract Shield (NF-P2-009), Remittance X-Ray (NF-P2-018) and Exploitation Radar (NF-P3-007) have theirs; the rest wait their turn.
 const PILLAR_PAGES: Readonly<Record<string, JSX.Element>> = {
   "/contract": <ContractUpload />,
+  "/radar": <RadarHeatmap />,
   "/remittance": <RemittanceCompare />,
 };
 
@@ -52,6 +54,7 @@ export const router = createBrowserRouter([
                     children: [
                       { path: "/dashboard", element: <Dashboard /> },
                       { path: "/profile", element: <Profile /> },
+                      { path: "/radar/heatmap", element: <RadarHeatmap /> },
                       { path: "/radar/report", element: <RadarReport /> },
                       ...pillarRoutes,
                     ],

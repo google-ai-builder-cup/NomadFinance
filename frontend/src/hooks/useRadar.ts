@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
-import { submitReport, uploadEvidence } from "@/services/radarService";
+import { listRadarEntities, submitReport, uploadEvidence } from "@/services/radarService";
 import type { RadarReportRequest, RadarReportResponse } from "@/types/radar";
 
 export interface SubmitReportArgs {
@@ -38,5 +38,14 @@ export function useSubmitReport() {
     meta: { inlineError: true },
     // A repeat could store the same report twice.
     retry: false,
+  });
+}
+
+/** Every business profile, for the heatmap. Aggregates change a few times a day at most. */
+export function useRadarEntities() {
+  return useQuery({
+    queryKey: ["radar", "entities"],
+    queryFn: listRadarEntities,
+    staleTime: 60_000,
   });
 }
