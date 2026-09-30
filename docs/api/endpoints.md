@@ -35,6 +35,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/remittance/recommend` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-016 |
 | POST | `/api/v1/remittance/log` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-017 |
 | GET | `/api/v1/remittance/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-022 |
+| POST | `/api/v1/radar/report` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P3-001 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -950,6 +951,79 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 401 | see Authentication | No or invalid token |
 | 422 | FastAPI validation list, or `rpw_id is not a comparable, ranked provider of the comparison sent.` | `comparison`/`rpw_id` missing, `comparison.providers` over 60 entries, or `rpw_id` not a comparable ranked provider of `comparison` |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
+
+## `POST /api/v1/radar/report`
+
+A worker reports a money transfer operator, recruitment agency or employer. Steps 2 to 4 and 7 of the Exploitation Radar pipeline (NF-P3-001, `docs/mermaid/exploitation-radar-pipeline.mmd`): extract who and where it's about (extraction tier, prompt `radar/extract_entity.v1`), screen for spam/abuse/personal data and classify the violation (classification tier, prompts `radar/validate.v1` and `radar/categorize.v1`), then store `radar_reports/{id}`. Steps 5 to 6 (embedding, clustering) are NF-P3-002 and not built yet: every report here starts its own cluster. Steps 8 to 9 (`radar_entities` aggregation, community rating) are NF-P3-003. App Check / reCAPTCHA enforcement on this endpoint is wired separately (NF-P3-025).
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `entity_type` | `money_transfer_operator` / `recruitment_agency` / `employer`, optional | From the submission form (NF-P3-006), if it collected one |
+| `entity_name` | string, optional (≤200 chars) | As the worker wrote it |
+| `corridor_id` | `SG-PH` / `SG-IN` / `AU-IN` / `MY-ID` / `JP-PH` / `AU-PH`, optional | For an operator or agency |
+| `host_country` | `SG` / `KR` / `MY` / `JP` / `HK` / `AU`, optional | For an employer |
+| `description` | string, required (10 to 2,000 chars) | What happened, in the worker's own words |
+| `language` | `en` / `hi` / `tl` / `id` / `ne` / `bn`, required | Language of `description` |
+
+All four identifying fields are optional: whatever is left blank, step 2 fills in from `description` itself. A value sent here wins over what step 2 extracts on its own. **`violation_type` is not accepted here** — it is always classified fresh from the text (step 4), never a worker's own pick.
+
+- **Response `201`:** `RadarReportResponse` (`app/schemas/radar_report.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `report_id` | string | Id of `radar_reports/{report_id}` — also its `cluster_id` (no clustering yet, NF-P3-002) |
+| `entity_type`, `entity_name` | | The entity actually reported (form value, or step 2's) |
+| `violation_type` | string | Step 4's classification — one of the 9 violation types |
+| `corridor_id`, `host_country` | | The entity actually reported (form value, or step 2's); at least one is set |
+| `description` | string | As sent |
+| `summary` | string | One neutral English sentence from step 4, for the worker's own confirmation screen. Not stored on the report itself — NF-P3-004 (alert cron) has its own use for it |
+| `created_at` | timestamp | |
+
+Example (illustrative — not a real Gemini call):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"entity_type": "money_transfer_operator", "entity_name": "Example Remit",
+       "corridor_id": "SG-IN",
+       "description": "They showed one rate and gave me a worse one at the counter.",
+       "language": "en"}' \
+  http://127.0.0.1:8080/api/v1/radar/report
+```
+
+```json
+{
+  "report_id": "r_01",
+  "entity_type": "money_transfer_operator",
+  "entity_name": "Example Remit",
+  "violation_type": "hidden_fees",
+  "corridor_id": "SG-IN",
+  "host_country": null,
+  "description": "They showed one rate and gave me a worse one at the counter.",
+  "summary": "Operator showed one rate and charged a worse one at the counter.",
+  "created_at": "2026-09-30T05:41:00Z"
+}
+```
+
+**Anonymity.** `reporter_hash` (HMAC-SHA-256 of the uid, `RADAR_REPORTER_HASH_SECRET`) is stored, never returned to any client and never the uid itself; see "Kept on purpose" under `DELETE /api/v1/users/me` below.
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list | Missing/too-short/too-long `description`, missing or unsupported `language`, or an unknown `corridor_id`/`host_country`/`entity_type` |
+| 422 | `Could not tell who this report is about. Add a business name.` | Neither the form nor step 2 named a business |
+| 422 | `Could not tell where this happened. Add a corridor or the country you work in.` | Neither the form nor step 2 gave a corridor or host country |
+| 422 | `This doesn't look like a real report. Please describe what happened.` | Step 3's spam score was at or above the threshold. Not stored |
+| 422 | `This report cannot be published as written. Remove any threats or abusive language.` | Step 3 found threats, hate speech or sexual content. Not stored |
+| 422 | `Please remove personal details (names, phone numbers, addresses) and try again.` | Step 3 found personal data in the free text. Not stored |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
+| 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
 
 ---
 
