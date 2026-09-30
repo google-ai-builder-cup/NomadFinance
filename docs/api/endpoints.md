@@ -956,7 +956,7 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 
 ## `POST /api/v1/radar/report`
 
-A worker reports a money transfer operator, recruitment agency or employer. Steps 2 to 4 and 7 of the Exploitation Radar pipeline (NF-P3-001, `docs/mermaid/exploitation-radar-pipeline.mmd`): extract who and where it's about (extraction tier, prompt `radar/extract_entity.v1`), screen for spam/abuse/personal data and classify the violation (classification tier, prompts `radar/validate.v1` and `radar/categorize.v1`), then store `radar_reports/{id}`. Steps 5 to 6 (embedding, clustering) are NF-P3-002 and not built yet: every report here starts its own cluster. Steps 8 to 9 (`radar_entities` aggregation, community rating) are NF-P3-003. App Check / reCAPTCHA enforcement on this endpoint is wired separately (NF-P3-025).
+A worker reports a money transfer operator, recruitment agency or employer. Steps 2 to 7 of the Exploitation Radar pipeline (NF-P3-001 and NF-P3-002, `docs/mermaid/exploitation-radar-pipeline.mmd`): extract who and where it's about (extraction tier, prompt `radar/extract_entity.v1`), screen for spam/abuse/personal data and classify the violation (classification tier, prompts `radar/validate.v1` and `radar/categorize.v1`), then store `radar_reports/{id}`. Steps 5 to 6 embed the description (`gemini-embedding-001`, 768 numbers) and search `report_embeddings` for a near-duplicate report on the same business and corridor; a match joins that report's cluster, otherwise the report starts its own. If embedding or the search fails, the report is still stored as its own cluster. Steps 8 to 9 (`radar_entities` aggregation, community rating) are NF-P3-003. App Check / reCAPTCHA enforcement on this endpoint is wired separately (NF-P3-025).
 
 - **Auth:** `Authorization: Bearer <firebase-id-token>` required
 - **Request body (JSON):**
@@ -976,7 +976,7 @@ All four identifying fields are optional: whatever is left blank, step 2 fills i
 
 | Field | Type | Description |
 |---|---|---|
-| `report_id` | string | Id of `radar_reports/{report_id}` — also its `cluster_id` (no clustering yet, NF-P3-002) |
+| `report_id` | string | Id of `radar_reports/{report_id}` — also its `cluster_id` when it starts a new cluster; a near-duplicate joins an earlier report's cluster, so the two ids can differ |
 | `entity_type`, `entity_name` | | The entity actually reported (form value, or step 2's) |
 | `violation_type` | string | Step 4's classification — one of the 9 violation types |
 | `corridor_id`, `host_country` | | The entity actually reported (form value, or step 2's); at least one is set |

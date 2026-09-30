@@ -4,10 +4,11 @@ from datetime import UTC, datetime
 from typing import Any, cast
 
 import pytest
+from google.api_core.exceptions import FailedPrecondition
 
 from app.config import Settings
-from app.integrations.gemini import GeminiClient
-from app.repositories.radar_repo import RadarRepository
+from app.integrations.gemini import GeminiClient, GeminiUnavailableError
+from app.repositories.radar_repo import RadarRepository, SimilarReport
 from app.schemas.radar import RadarReport
 from app.schemas.radar_report import (
     ExtractedEntity,
@@ -73,6 +74,9 @@ def _classification(**over: Any) -> ViolationClassification:
     return ViolationClassification.model_validate(values | over)
 
 
+VECTOR = [0.6, 0.8]
+
+
 class FakeGemini:
     """Answers `generate_structured` by the response model requested, in the fixed order
     the pipeline calls them (extract, screen, classify)."""
@@ -80,6 +84,12 @@ class FakeGemini:
     def __init__(self, **outcomes: Any) -> None:
         self.outcomes = outcomes
         self.calls: list[dict[str, Any]] = []
+
+    async def embed_text(self, text: str, *, operation: str) -> list[float]:
+        outcome = self.outcomes.get("embedding", VECTOR)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return cast(list[float], outcome)
 
     async def generate_structured(self, **kwargs: Any) -> Any:
         self.calls.append(kwargs)
@@ -103,8 +113,22 @@ def _gemini(
 
 
 class FakeRadarRepo:
-    def __init__(self) -> None:
+    def __init__(self, similar: list[SimilarReport] | Exception | None = None) -> None:
         self.created: list[tuple[str, RadarReport]] = []
+        self.embeddings: list[tuple[str, list[float], dict[str, Any]]] = []
+        self.similar = similar or []
+        self.cluster_ids = {"r_old": "r_first"}
+
+    def find_similar(self, embedding: list[float], corridor_id: str, limit: int) -> Any:
+        if isinstance(self.similar, Exception):
+            raise self.similar
+        return self.similar
+
+    def get_cluster_id(self, report_id: str) -> str | None:
+        return self.cluster_ids.get(report_id)
+
+    def create_embedding(self, report_id: str, embedding: list[float], **kwargs: Any) -> None:
+        self.embeddings.append((report_id, embedding, kwargs))
 
     def new_report_id(self) -> str:
         return "r_test01"
@@ -137,7 +161,7 @@ async def test_stores_the_report_with_a_new_cluster_and_a_keyed_reporter_hash() 
     assert result.report_id == "r_test01"
     report_id, stored = radar.created[0]
     assert report_id == "r_test01"
-    assert stored.cluster_id == "r_test01"  # starts its own cluster: no clustering yet (NF-P3-002)
+    assert stored.cluster_id == "r_test01"  # nothing similar stored yet
     assert stored.source == "user"
     assert stored.reporter_hash is not None
     assert stored.reporter_hash != "worker-uid"  # never the uid itself
@@ -355,3 +379,93 @@ async def test_gemini_failures_are_left_for_the_api_error_handlers() -> None:
             _settings(),
             NOW,
         )
+
+
+async def _submit(radar: FakeRadarRepo, gemini: FakeGemini | None = None) -> RadarReport:
+    await submit_report(
+        "worker-uid",
+        _request(),
+        cast(GeminiClient, gemini or _gemini()),
+        cast(RadarRepository, radar),
+        _settings(),
+        NOW,
+    )
+    return radar.created[0][1]
+
+
+async def test_stores_the_embedding_under_the_report_id() -> None:
+    radar = FakeRadarRepo()
+
+    await _submit(radar)
+
+    report_id, vector, meta = radar.embeddings[0]
+    assert (report_id, vector) == ("r_test01", VECTOR)
+    assert meta["corridor_id"] == "SG-IN"
+    assert meta["entity_slug"] == "example-remit"
+    assert meta["model"] == "gemini-embedding-001"
+
+
+async def test_joins_the_cluster_of_a_near_duplicate_on_the_same_business() -> None:
+    radar = FakeRadarRepo([SimilarReport("r_old", "example-remit", 0.08)])
+
+    stored = await _submit(radar)
+
+    assert stored.cluster_id == "r_first"
+
+
+@pytest.mark.parametrize(
+    "neighbour",
+    [
+        SimilarReport("r_old", "example-remit", 0.4),  # too different
+        SimilarReport("r_old", "other-remit", 0.01),  # same story, different business
+        SimilarReport("r_gone", "example-remit", 0.01),  # report deleted since
+    ],
+)
+async def test_starts_its_own_cluster_when_no_neighbour_qualifies(neighbour: SimilarReport) -> None:
+    stored = await _submit(FakeRadarRepo([neighbour]))
+
+    assert stored.cluster_id == "r_test01"
+
+
+async def test_a_later_qualifying_neighbour_is_still_found() -> None:
+    radar = FakeRadarRepo(
+        [SimilarReport("r_x", "other-remit", 0.01), SimilarReport("r_old", "example-remit", 0.1)]
+    )
+
+    assert (await _submit(radar)).cluster_id == "r_first"
+
+
+async def test_embedding_outage_still_stores_the_report_without_a_vector() -> None:
+    gemini = _gemini()
+    gemini.outcomes["embedding"] = GeminiUnavailableError("down")
+    radar = FakeRadarRepo([SimilarReport("r_old", "example-remit", 0.01)])
+
+    stored = await _submit(radar, gemini)
+
+    assert stored.cluster_id == "r_test01"
+    assert radar.embeddings == []
+
+
+async def test_search_failure_still_stores_the_report() -> None:
+    radar = FakeRadarRepo(FailedPrecondition("no matching index"))
+
+    stored = await _submit(radar)
+
+    assert stored.cluster_id == "r_test01"
+    assert len(radar.embeddings) == 1
+
+
+async def test_report_without_a_corridor_is_not_searched() -> None:
+    radar = FakeRadarRepo(FailedPrecondition("must not be called"))
+    gemini = _gemini(extracted=_extracted(corridor_id=None, host_country="SG"))
+
+    await submit_report(
+        "worker-uid",
+        _request(corridor_id=None, host_country="SG"),
+        cast(GeminiClient, gemini),
+        cast(RadarRepository, radar),
+        _settings(),
+        NOW,
+    )
+
+    assert radar.created[0][1].cluster_id == "r_test01"

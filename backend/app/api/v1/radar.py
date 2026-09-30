@@ -48,7 +48,7 @@ async def report(
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     radar: Annotated[RadarRepository, Depends(get_radar_repository)],
 ) -> RadarReportResponse:
-    """Steps 2 to 4 and 7 of the radar pipeline: extract, screen, classify, store.
+    """Steps 2 to 7 of the radar pipeline: extract, screen, classify, embed, cluster, store.
 
     `entity_type`, `entity_name`, `corridor_id` and `host_country` are optional: send
     whatever the submission form collected, and Gemini fills in the rest from

@@ -53,6 +53,9 @@ class FakeGemini:
         }
         self.calls: list[dict[str, Any]] = []
 
+    async def embed_text(self, text: str, *, operation: str) -> list[float]:
+        return [0.6, 0.8]
+
     async def generate_structured(self, **kwargs: Any) -> Any:
         self.calls.append(kwargs)
         outcome = self.outcomes[kwargs["response_model"].__name__]
@@ -67,6 +70,12 @@ class FakeRadarRepo:
 
     def new_report_id(self) -> str:
         return "r_test01"
+
+    def find_similar(self, embedding: list[float], corridor_id: str, limit: int) -> list[Any]:
+        return []
+
+    def create_embedding(self, report_id: str, embedding: list[float], **kwargs: Any) -> None:
+        pass
 
     def create_report(self, report_id: str, report: RadarReport) -> None:
         self.created.append((report_id, report))

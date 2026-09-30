@@ -61,6 +61,8 @@ class Settings(BaseSettings):
     gemini_model_reasoning: str = "gemini-3.5-flash"
     gemini_model_extraction: str = "gemini-3.5-flash-lite"
     gemini_model_classification: str = "gemini-3.1-flash-lite"
+    # Not a tier: embeddings are a separate endpoint (ADR-002; text-embedding-004 is shut down).
+    gemini_model_embedding: str = "gemini-embedding-001"
     gemini_timeout_seconds: float = Field(default=30.0, gt=0)
     # PDF contract extraction writes out the whole document: about 2.6 s per page (NF-P2-001),
     # so a 20-page PDF needs about 55 s. 3 attempts x 90 s + backoff stay under Cloud Run's

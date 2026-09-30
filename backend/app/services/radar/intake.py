@@ -1,10 +1,8 @@
 """Exploitation Radar report submission (NF-P3-001): steps 2 to 4 and 7 of the pipeline
 (docs/mermaid/exploitation-radar-pipeline.mmd).
 
-Steps 5 to 6 (embedding, similarity clustering, NF-P3-002) and 8 to 9 (radar_entities risk
-profile and community rating, NF-P3-003) are not built yet: every report here starts its own
-cluster (`cluster_id` equal to its own id), the same fallback
-`services/cross_pillar/contract_to_radar.py` already uses for the same reason.
+Steps 5 to 6 (embedding and similarity clustering) live in `clustering.py` (NF-P3-002).
+Steps 8 to 9 (radar_entities risk profile and community rating, NF-P3-003) are not built yet.
 """
 
 from __future__ import annotations
@@ -14,6 +12,7 @@ import logging
 from datetime import datetime
 
 from fastapi.concurrency import run_in_threadpool
+from google.api_core.exceptions import GoogleAPICallError
 
 from app.config import Settings
 from app.integrations.gemini import GeminiClient, ModelTier, model_for
@@ -30,6 +29,7 @@ from app.schemas.radar_report import (
     ViolationClassification,
 )
 from app.schemas.remittance_compare import CorridorId
+from app.services.radar.clustering import embed_report, find_cluster
 from app.utils.hashing import hash_reporter
 from app.utils.slugs import slugify
 
@@ -205,6 +205,30 @@ def _resolve_location(
     return corridor_id, host_country
 
 
+async def _store_embedding(
+    radar: RadarRepository,
+    report_id: str,
+    embedding: list[float],
+    report: RadarReport,
+    settings: Settings,
+) -> None:
+    # After the report: the report is what the worker submitted, the vector only helps
+    # cluster later ones. A failed write costs one future match, not the report.
+    try:
+        await run_in_threadpool(
+            radar.create_embedding,
+            report_id,
+            embedding,
+            model=settings.gemini_model_embedding,
+            corridor_id=report.corridor_id,
+            entity_type=report.entity_type,
+            entity_slug=report.entity_slug,
+            created_at=report.created_at,
+        )
+    except GoogleAPICallError:
+        logger.exception("radar_embedding_store_failed report_id=%s", report_id)
+
+
 async def submit_report(
     uid: str,
     request: RadarReportRequest,
@@ -213,7 +237,7 @@ async def submit_report(
     settings: Settings,
     now: datetime,
 ) -> RadarReportResponse:
-    """Run steps 2 to 4 and store the report. Cross-pillar Pillar 3 entry point.
+    """Run steps 2 to 7 and store the report. Cross-pillar Pillar 3 entry point.
 
     Raises:
         EntityUnknownError: No business named, by the form or by step 2.
@@ -242,6 +266,8 @@ async def submit_report(
     )
 
     report_id = radar.new_report_id()
+    embedding = await embed_report(request.description, gemini)
+    cluster_id = await find_cluster(embedding, corridor_id, entity_slug, report_id, radar)
     report = RadarReport(
         entity_type=entity_type,
         entity_name=entity_name,
@@ -251,7 +277,7 @@ async def submit_report(
         host_country=host_country,
         description=request.description,
         language=request.language,
-        cluster_id=report_id,
+        cluster_id=cluster_id,
         source="user",
         reporter_hash=hash_reporter(uid, settings.radar_reporter_hash_secret.get_secret_value()),
         validation=RadarValidation(
@@ -262,6 +288,8 @@ async def submit_report(
         created_at=now,
     )
     await run_in_threadpool(radar.create_report, report_id, report)
+    if embedding is not None:
+        await _store_embedding(radar, report_id, embedding, report, settings)
     logger.info(
         "radar_report_created slug=%s violation=%s corridor=%s country=%s",
         entity_slug,
