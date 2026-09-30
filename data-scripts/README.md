@@ -108,3 +108,17 @@ python -m src.loaders.frankfurter_backfill             # last 365 days, all six 
 Options: `--days 365` (1 to 3650), `--end YYYY-MM-DD` (default today UTC), `--only SGD_PHP AUD_INR`. Needs internet access to `api.frankfurter.dev`, and the same Firestore identity as the loaders above.
 
 Full steps and results: [`docs/runbooks/NF-P2-015-remittance-trends.md`](../docs/runbooks/NF-P2-015-remittance-trends.md).
+
+## Radar demo data (NF-P3-005)
+18 synthetic worker reports in `data/seed/radar-reports/seed_reports.json` covering all six corridors and all six host countries, about 8 invented businesses. The loader writes `radar_reports/seed_NN` (marked `source: "seed"`) and works out each business's `radar_entities/{slug}` profile with the backend's rating rules, so the heatmap, badges and alert cron have data. Alerts are made by the cron, not here.
+
+```bash
+python -m src.validators.radar_seed        # check the file
+python -m src.loaders.radar_seed --dry-run # validate and show the profiles, no Firestore access
+python -m src.loaders.radar_seed           # write (also run by scripts/seed_demo.sh)
+```
+
+Timestamps are set from the moment the loader runs, so run it shortly before a demo. Writing again replaces the same ids (no duplicates) and removes seed reports that were taken out of the file. A profile is left alone if a real worker report exists for that business. Same Firestore identity as the other loaders. No embeddings are written.
+
+Full steps and limits: [`docs/runbooks/NF-P3-005-radar-seed-data.md`](../docs/runbooks/NF-P3-005-radar-seed-data.md).
+

@@ -8,6 +8,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 LABOR_LAWS_DIR = DATA_DIR / "source" / "labor-laws"
 COMPLAINT_TEMPLATES_DIR = DATA_DIR / "source" / "complaint-templates"
+RADAR_SEED_FILE = DATA_DIR / "seed" / "radar-reports" / "seed_reports.json"
 
 RPW_SOURCE_FILE = DATA_DIR / "source" / "rpw_dataset_2011_2025_q1.xlsx"
 RPW_OUTPUT_FILE = DATA_DIR / "processed" / "rpw_corridors.json"
