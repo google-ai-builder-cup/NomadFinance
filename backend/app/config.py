@@ -85,6 +85,10 @@ class Settings(BaseSettings):
     # Deleting an account cannot be undone, so it needs a sign-in this recent (seconds).
     account_deletion_max_login_age_seconds: int = Field(default=300, gt=0)
 
+    # HMAC key for `radar_reports.reporter_hash` (NF-P3-001, radar.md). Local: any random
+    # string. Prod: Secret Manager `radar-reporter-hash-secret`.
+    radar_reporter_hash_secret: SecretStr
+
     # Uploads are sent to Gemini inline, which caps a whole request at about 20 MB.
     # 10 MB covers multi-page phone scans and leaves room for the prompt.
     upload_max_bytes: int = Field(default=10 * 1024 * 1024, gt=0)

@@ -11,6 +11,7 @@ os.environ.setdefault("APP_ENV", "local")
 # Live tests read the real key from .env.local; an env var would shadow it.
 if os.environ.get("RUN_LIVE_GEMINI") != "1":
     os.environ.setdefault("GEMINI_API_KEY", "test-key")
+os.environ.setdefault("RADAR_REPORTER_HASH_SECRET", "test-reporter-hash-secret")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
