@@ -56,3 +56,19 @@ export interface ReportDraft {
   language: LanguageCode | null;
   files: File[];
 }
+
+/** `radar_entities/{slug}` as the heatmap reads it (docs/data-model/collections/radar.md). */
+export interface RadarEntityProfile {
+  slug: string;
+  name: string;
+  entity_type: EntityType;
+  corridors: CorridorId[];
+  host_countries: HostCountry[];
+  report_count: number;
+  incident_count: number;
+  violation_counts: Partial<Record<ViolationType, number>>;
+  /** Null until the business has enough incidents to be rated. */
+  community_rating: number | null;
+  risk_level: "low" | "medium" | "high";
+  flagged: boolean;
+}

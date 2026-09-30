@@ -1,5 +1,13 @@
+import { collection, getDocs } from "firebase/firestore";
+
+import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
-import type { RadarEvidenceResponse, RadarReportRequest, RadarReportResponse } from "@/types/radar";
+import type {
+  RadarEntityProfile,
+  RadarEvidenceResponse,
+  RadarReportRequest,
+  RadarReportResponse,
+} from "@/types/radar";
 
 /**
  * Send a report (`POST /api/v1/radar/report`). The backend screens it, works out the
@@ -23,4 +31,16 @@ export async function uploadEvidence(reportId: string, file: File): Promise<Rada
     body,
   });
   return (await response.json()) as RadarEvidenceResponse;
+}
+
+/**
+ * Every business profile (`radar_entities`), straight from Firestore: signed-in users may
+ * read it (firestore.rules) and it holds no personal data. The heatmap totals it per corridor.
+ */
+export async function listRadarEntities(): Promise<RadarEntityProfile[]> {
+  const snapshot = await getDocs(collection(db, "radar_entities"));
+  return snapshot.docs.map((entity) => ({
+    ...(entity.data() as Omit<RadarEntityProfile, "slug">),
+    slug: entity.id,
+  }));
 }
