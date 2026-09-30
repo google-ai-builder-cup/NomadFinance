@@ -33,6 +33,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/remittance/compare` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-014 |
 | GET | `/api/v1/remittance/trends` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-015 |
 | POST | `/api/v1/remittance/recommend` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-016 |
+| POST | `/api/v1/remittance/log` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-017 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -812,6 +813,71 @@ The headline reads "Send with InstaReM: your family will get 2907.3 PHP more."
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
 | 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no headline or explanation, or named a provider other than the top-ranked one |
 | 503 / 504 | see Error format | Gemini busy or timed out |
+
+---
+
+## `POST /api/v1/remittance/log`
+
+Stores a transfer the worker actually sent, under `users/{uid}/transfers/{id}` — the entry that links Remittance X-Ray to Financial Identity (NF-P2-017, `docs/pipelines/remittance-xray.md`, `docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide budget applies.
+
+**Every stored amount is read from the comparison's own chosen provider, never typed freely by the client.** `comparison` is the unmodified response of `POST /remittance/compare`; `rpw_id` names which of its providers the worker actually used. `provider_name`, `send_amount`, `receive_amount`, `fee`, `cost_pct` and `mid_market_rate` are all copied from that provider's row and `comparison`'s own fields — the same reasoning `/remittance/recommend` uses to never trust a provider name Gemini wrote over the comparison's own top-ranked one (D-58-adjacent, not an ADR). A `rpw_id` that does not match a comparable, ranked provider (for example one that pays out in another currency, or was never on the ranked list) is a `422`, since there is no `recipient_receives` to log for it.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Request body (JSON):**
+
+| Field | Type | Description |
+|---|---|---|
+| `comparison` | object, required | The unmodified response of `POST /remittance/compare`, at most 60 providers |
+| `rpw_id` | integer, required | The service the worker actually used, from `comparison.providers[].rpw_id` |
+| `entry_date` | `YYYY-MM-DD`, optional | The day the transfer was sent. Defaults to today (UTC) |
+| `notes` | string, optional (≤500 chars) | Free text from the worker. Blank or whitespace-only is stored as `null` |
+
+- **Response `201`:** `TransferLogResponse` (`app/schemas/remittance_log.py`)
+
+| Field | Type | Description |
+|---|---|---|
+| `transfer_id` | string | Id of `users/{uid}/transfers/{transfer_id}` |
+| `corridor_id`, `provider_rpw_id`, `provider_name` | | Copied from `comparison` and the chosen provider |
+| `send_amount`, `send_currency` | | `comparison.send_amount` / `send_currency` |
+| `receive_amount`, `receive_currency` | | The chosen provider's `recipient_receives` / `comparison.receive_currency` |
+| `fee` | number | The chosen provider's fee, in `send_currency` |
+| `mid_market_rate` | number | `comparison.rate.rate`, the live rate every provider was compared against |
+| `cost_pct` | number | The chosen provider's `total_cost_pct` |
+| `entry_date`, `notes` | | Same as the request |
+
+Example:
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"comparison": <the /compare response above>, "rpw_id": 521250759}' \
+  http://127.0.0.1:8080/api/v1/remittance/log
+```
+
+```json
+{
+  "transfer_id": "aBc123XyZ0123456789A",
+  "corridor_id": "SG-PH",
+  "provider_rpw_id": 521250759,
+  "provider_name": "InstaReM",
+  "send_amount": 500.0,
+  "send_currency": "SGD",
+  "receive_amount": 24274.33,
+  "receive_currency": "PHP",
+  "fee": 3.3,
+  "mid_market_rate": 43.2,
+  "cost_pct": 0.73,
+  "entry_date": "2026-09-30",
+  "notes": null
+}
+```
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 422 | FastAPI validation list, or `rpw_id is not a comparable, ranked provider of the comparison sent.` | `comparison`/`rpw_id` missing, `comparison.providers` over 60 entries, or `rpw_id` not a comparable ranked provider of `comparison` |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---
 
