@@ -66,9 +66,18 @@ class RadarReportResponse(BaseModel):
     description: str
     summary: str = Field(
         description="One neutral English sentence from step 4, for the confirmation screen. "
-        "Not stored on the report itself; NF-P3-004 (alert cron) has its own use for it."
+        "Also stored on the report itself (NF-P3-004). The alert cron generates its own, "
+        "separate, alert-level summary from facts aggregated across multiple reports — it "
+        "does not reuse this one."
     )
     created_at: datetime
+
+
+class RadarEvidenceResponse(BaseModel):
+    """Response of `POST /api/v1/radar/report/{report_id}/evidence` (NF-P3-004)."""
+
+    report_id: str
+    evidence_paths: list[str] = Field(description="Every attachment on the report so far.")
 
 
 class ExtractedEntity(BaseModel):

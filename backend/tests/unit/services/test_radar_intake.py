@@ -175,6 +175,7 @@ async def test_stores_the_report_with_a_new_cluster_and_a_keyed_reporter_hash() 
     assert stored.validation.spam_score == 0.02
     assert stored.validation.category_confidence == 0.91
     assert stored.violation_type == "hidden_fees"  # step 4's answer, not a worker pick
+    assert stored.summary == _classification().summary  # NF-P3-004: persisted, not just returned
 
 
 async def test_reporter_hash_is_keyed_by_the_configured_secret() -> None:

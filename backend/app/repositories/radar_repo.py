@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import lru_cache
 from typing import Any
 
-from google.cloud.firestore import CollectionReference
+from google.cloud.firestore import ArrayUnion, CollectionReference
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
 from google.cloud.firestore_v1.vector import Vector
@@ -52,6 +52,13 @@ class RadarRepository(FirestoreRepository):
         # Not mode="json": created_at must stay a real datetime, so the Firestore SDK stores
         # it as a Timestamp (sortable, TTL-eligible), the same as every other repository here.
         self.document(report_id).set(report.model_dump(exclude_none=True))
+
+    def add_evidence_path(self, report_id: str, path: str) -> None:
+        """Append one Cloud Storage path to an existing report's `evidence_paths`
+        (`services/radar/evidence.py`, NF-P3-004). The caller checks the 5-file cap and
+        ownership first; this just writes.
+        """
+        self.document(report_id).update({"evidence_paths": ArrayUnion([path])})
 
     @property
     def _embeddings(self) -> CollectionReference:

@@ -1,8 +1,12 @@
 # Cloud Scheduler job: refresh the six corridor FX rates (NF-P1-019).
 #
-# Create (once):   gcloud scheduler jobs create http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml
-# Apply a change:  gcloud scheduler jobs update http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml
+# Create (once):   gcloud scheduler jobs create http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml --headers=Content-Type=application/json
+# Apply a change:  gcloud scheduler jobs update http refresh-rates --flags-file=infra/cloud-scheduler/refresh-rates.yaml --update-headers=Content-Type=application/json
 # Run now:         gcloud scheduler jobs run refresh-rates --project nomadfinance-prod --location asia-south1
+#
+# The Content-Type header is set by scheduler-deploy.yml, not here: `create` and `update`
+# need different flag names for it (--headers vs --update-headers), so one flags-file used
+# by both commands can't carry it without breaking one of them.
 #
 # To change how often it runs, edit --schedule only (cron syntax, UTC), then "Apply a change".
 #   every 2 hours: "0 */2 * * *"     every hour: "0 * * * *"     every 6 hours: "0 */6 * * *"
@@ -18,7 +22,6 @@
 --http-method: POST
 # Google's front end rejects a POST without Content-Length (411); an empty JSON body avoids it.
 --message-body: "{}"
---headers: Content-Type=application/json
 # The endpoint accepts only an OIDC token for this service account and audience; they must
 # match CRON_SERVICE_ACCOUNT and CRON_AUDIENCE on the Cloud Run service (deploy_manual.sh).
 --oidc-service-account-email: nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com

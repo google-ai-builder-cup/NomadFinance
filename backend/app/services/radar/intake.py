@@ -282,6 +282,7 @@ async def submit_report(
         cluster_id=cluster_id,
         source="user",
         reporter_hash=hash_reporter(uid, settings.radar_reporter_hash_secret.get_secret_value()),
+        summary=classification.summary,
         validation=RadarValidation(
             spam_score=screen.spam_score,
             category_confidence=classification.category_confidence,

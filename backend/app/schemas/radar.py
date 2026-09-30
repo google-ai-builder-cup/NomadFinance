@@ -55,6 +55,11 @@ class RadarReport(BaseModel):
     source: RadarReportSource
     reporter_hash: str | None = None
     evidence_paths: list[str] = Field(default_factory=list)
+    summary: str | None = Field(
+        default=None,
+        description="One neutral English sentence from step 4's classification (NF-P3-001). "
+        "None for contract_signal/seed reports, which have no free text to summarize.",
+    )
     validation: RadarValidation
     created_at: datetime
     schema_version: int = 1

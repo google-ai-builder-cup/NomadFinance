@@ -36,6 +36,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/remittance/log` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-017 |
 | GET | `/api/v1/remittance/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P2-022 |
 | POST | `/api/v1/radar/report` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P3-001 |
+| POST | `/api/v1/radar/report/{report_id}/evidence` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-004 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
@@ -982,7 +983,7 @@ All four identifying fields are optional: whatever is left blank, step 2 fills i
 | `violation_type` | string | Step 4's classification — one of the 9 violation types |
 | `corridor_id`, `host_country` | | The entity actually reported (form value, or step 2's); at least one is set |
 | `description` | string | As sent |
-| `summary` | string | One neutral English sentence from step 4, for the worker's own confirmation screen. Not stored on the report itself — NF-P3-004 (alert cron) has its own use for it |
+| `summary` | string | One neutral English sentence from step 4, for the worker's own confirmation screen. Also stored on the report (`radar_reports.summary`, NF-P3-004). The alert cron generates its own separate, alert-level summary from facts aggregated across multiple reports — it never reuses this one |
 | `created_at` | timestamp | |
 
 Example (illustrative — not a real Gemini call):
@@ -1025,6 +1026,33 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 422 | `Please remove personal details (names, phone numbers, addresses) and try again.` | Step 3 found personal data in the free text. Not stored |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
 | 502 / 503 / 504 / 500 | see Error format above | Gemini failure |
+
+## `POST /api/v1/radar/report/{report_id}/evidence`
+
+Attaches a photo or screenshot to a report the caller filed themselves. A separate call from `POST /radar/report`, not a field on it (NF-P3-004): `radar-evidence/{report_id}/` needs a real report id first, and a worker may want to attach evidence after the fact without resubmitting the whole report. No Gemini call — only the API-wide rate limit applies.
+
+**Ownership, without a stored uid-to-report mapping.** The caller's uid is re-hashed (`RADAR_REPORTER_HASH_SECRET`, the same HMAC `POST /radar/report` uses for `reporter_hash`) and compared to the report's own stored `reporter_hash`. A `contract_signal` or `seed` report has no `reporter_hash` at all — nobody can attach evidence to one, and the endpoint answers `404` rather than `403` so it doesn't confirm whether the id exists.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Path:** `report_id` — the id from `POST /radar/report`'s own response
+- **Request:** `multipart/form-data`, field `file`. Same checks as `/contracts/extract`: PDF, PNG, JPEG, WebP or HEIC, up to 10 MB (`UPLOAD_MAX_BYTES`), type read from the bytes, never the client's filename or `Content-Type` header
+- **Response `201`:** `RadarEvidenceResponse` (`app/schemas/radar_report.py`): `report_id`, `evidence_paths` (every attachment on the report so far, including this one)
+- **Storage:** `radar-evidence/{report_id}/{a fresh id}.{ext}` — never the client's own filename. `storage.rules` denies all browser access to this folder; only the backend ever reads or writes it
+- **Limit:** at most 5 attachments per report (not calibrated to anything, just a round number)
+
+- **Errors:**
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 400 | `The uploaded file is empty.` | Zero-byte file |
+| 401 | see Authentication | No, invalid, expired or revoked token |
+| 403 | `This report wasn't filed by you.` | The caller's uid doesn't hash to the report's `reporter_hash` |
+| 404 | `No such report.` | No report with this id, or it has no `reporter_hash` to check ownership against (`contract_signal`/`seed`) |
+| 413 | `The request is larger than 10 MB.` / `The file is larger than 10 MB.` | Whole request over the limit (refused before reading) / file part over `UPLOAD_MAX_BYTES` |
+| 415 | `Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).` | Any other file type |
+| 422 | `Already has the maximum of 5 attachments.` | The report is already at the cap |
+| 422 | FastAPI validation list | No `file` field, or `report_id` doesn't look like a Firestore auto id |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---
 

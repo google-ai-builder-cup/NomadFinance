@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Any
 
 from firebase_admin import storage  # type: ignore[import-untyped]
@@ -46,3 +47,33 @@ class UserFileStore:
                     continue
                 deleted += 1
         return deleted
+
+
+class RadarEvidenceStore:
+    """Uploads report attachments to `radar-evidence/{report_id}/` (NF-P3-004).
+
+    Not uid-scoped like `UserFileStore`: a report is anonymous (`reporter_hash`, never a
+    uid), so evidence is filed by report id, never by who filed it. `storage.rules` denies
+    all browser access to this folder; only the backend ever reads or writes it.
+    """
+
+    def __init__(self, bucket: Any | None = None) -> None:
+        self._bucket = bucket
+
+    def _get_bucket(self) -> Any:
+        if self._bucket is None:
+            self._bucket = storage.bucket(
+                get_settings().firebase_storage_bucket, app=get_firebase_app()
+            )
+        return self._bucket
+
+    def upload(self, report_id: str, filename: str, data: bytes, content_type: str) -> str:
+        """Write one file under `radar-evidence/{report_id}/{filename}`; return its path."""
+        path = f"radar-evidence/{report_id}/{filename}"
+        self._get_bucket().blob(path).upload_from_string(data, content_type=content_type)
+        return path
+
+
+@lru_cache
+def get_radar_evidence_store() -> RadarEvidenceStore:
+    return RadarEvidenceStore()

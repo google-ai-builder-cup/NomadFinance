@@ -3,15 +3,27 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, File, HTTPException, Path, UploadFile, status
 
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
+from app.integrations.cloud_storage import RadarEvidenceStore, get_radar_evidence_store
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
-from app.schemas.radar_report import RadarReportRequest, RadarReportResponse
+from app.schemas.radar_report import (
+    RadarEvidenceResponse,
+    RadarReportRequest,
+    RadarReportResponse,
+)
 from app.schemas.user import AuthenticatedUser
+from app.services.radar.evidence import (
+    MAX_EVIDENCE_FILES,
+    NotTheReporterError,
+    ReportNotFoundError,
+    TooMuchEvidenceError,
+    add_evidence,
+)
 from app.services.radar.intake import (
     AbusiveContentError,
     EntityUnknownError,
@@ -20,8 +32,12 @@ from app.services.radar.intake import (
     SpamDetectedError,
     submit_report,
 )
+from app.utils.validators import sniff_document_mime_type
 
 router = APIRouter(prefix="/radar", tags=["radar"])
+
+# Firestore's auto ids: 20 letters and digits. Anything else cannot be a report of ours.
+ReportId = Annotated[str, Path(pattern=r"^[A-Za-z0-9]{20}$", description="The report's id.")]
 
 _REPORT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     401: {"description": "Missing or invalid Firebase ID token"},
@@ -83,4 +99,80 @@ async def report(
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             "Please remove personal details (names, phone numbers, addresses) and try again.",
+        ) from exc
+
+
+async def _read_evidence_upload(file: UploadFile, settings: Settings) -> tuple[bytes, str]:
+    """The uploaded bytes and their real type, or the HTTP error for a file we cannot take."""
+    # Read one byte past the limit so an oversized file is detected without loading all of it.
+    data = await file.read(settings.upload_max_bytes + 1)
+    if not data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "The uploaded file is empty.")
+    if len(data) > settings.upload_max_bytes:
+        limit_mb = settings.upload_max_bytes // (1024 * 1024)
+        raise HTTPException(
+            status.HTTP_413_CONTENT_TOO_LARGE, f"The file is larger than {limit_mb} MB."
+        )
+    mime_type = sniff_document_mime_type(data)
+    if mime_type is None:
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
+        )
+    return data, mime_type
+
+
+_EVIDENCE_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    403: {"description": "This report wasn't filed by you"},
+    404: {"description": "No such report, or it has no reporter to check ownership against"},
+    413: {"description": "File larger than the upload limit (default 10 MB)"},
+    415: {"description": "Not a PDF, PNG, JPEG, WebP or HEIC/HEIF file"},
+    422: {"description": f"Already has the maximum of {MAX_EVIDENCE_FILES} attachments"},
+    429: {"description": "Too many requests. Please wait a minute and try again."},
+}
+
+
+@router.post(
+    "/report/{report_id}/evidence",
+    status_code=status.HTTP_201_CREATED,
+    response_model=RadarEvidenceResponse,
+    responses=_EVIDENCE_RESPONSES,
+    summary="Attach a photo or screenshot to a report you filed",
+)
+async def report_evidence(
+    report_id: ReportId,
+    file: Annotated[UploadFile, File(description="Evidence as PDF, PNG, JPEG, WebP or HEIC")],
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+    store: Annotated[RadarEvidenceStore, Depends(get_radar_evidence_store)],
+) -> RadarEvidenceResponse:
+    """Add one attachment to a report you filed yourself (`POST /radar/report`).
+
+    A separate call, not a field on the report itself: it needs the report's own id first,
+    and lets you attach evidence after the fact. Only the worker who filed the report can
+    add to it — checked by re-hashing your uid, never by storing who filed what. At most 5
+    attachments per report. A `contract_signal` or `seed` report (no `reporter_hash`) always
+    answers 404: there is no worker to check ownership against.
+    """
+    data, content_type = await _read_evidence_upload(file, settings)
+    try:
+        return await add_evidence(
+            user.uid,
+            report_id,
+            content_type,
+            data,
+            radar,
+            store,
+            settings.radar_reporter_hash_secret.get_secret_value(),
+        )
+    except ReportNotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No such report.") from exc
+    except NotTheReporterError as exc:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This report wasn't filed by you.") from exc
+    except TooMuchEvidenceError as exc:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            f"Already has the maximum of {MAX_EVIDENCE_FILES} attachments.",
         ) from exc

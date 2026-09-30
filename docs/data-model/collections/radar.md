@@ -27,8 +27,9 @@ A worker's own report (`source: "user"`) is written only after it passes validat
 | `cluster_id` | string | yes | Id of the first report in its similarity cluster. Equal to its own id when it starts a new cluster. Counts unique incidents. |
 | `source` | string | yes | `user`, `contract_signal` (Contract Shield, NF-P2-021) or `seed` (demo data, NF-P3-005) |
 | `reporter_hash` | string | for `user` | HMAC-SHA-256 of the reporter's uid with a secret kept in Secret Manager. **Never the uid.** Absent for `contract_signal` and `seed`. Used to limit repeat reports and abuse. |
-| `evidence_paths` | array of string | no | Cloud Storage paths of optional attachments |
+| `evidence_paths` | array of string | no | Cloud Storage paths of optional attachments (`radar-evidence/{id}/`), added after the report itself via `POST /radar/report/{report_id}/evidence` (NF-P3-004). At most 5. |
 | `validation` | map | yes | `{ "spam_score": number, "category_confidence": number, "model": string }` from the classification tier. For `contract_signal` there is no free text to check and no model call: fixed values that say so (`spam_score: 0`, `category_confidence: 1`, `model: "contract_shield"`), never invented Gemini output |
+| `summary` | string | for `user` | One neutral English sentence from step 4's classification (NF-P3-001). Absent for `contract_signal` and `seed` (no free text to summarize). Not what NF-P3-004's alert cron shows — that's a separate, alert-level summary generated from facts aggregated across multiple reports, never this per-report one |
 | `created_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
 
@@ -47,6 +48,7 @@ A worker's own report (`source: "user"`) is written only after it passes validat
   "source": "user",
   "reporter_hash": "3b5d5c3712955042212316173ccf37be3b5d5c3712955042212316173ccf37be",
   "validation": { "spam_score": 0.02, "category_confidence": 0.91, "model": "gemini-3.1-flash-lite" },
+  "summary": "Operator showed one rate and charged a worse one at the counter.",
   "created_at": "2026-09-27T05:41:00Z",
   "schema_version": 1
 }

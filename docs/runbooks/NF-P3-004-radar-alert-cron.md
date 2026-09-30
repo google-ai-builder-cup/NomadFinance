@@ -6,6 +6,8 @@ Originally assigned to Devam; picked up because he wasn't available.
 
 `POST /api/v1/internal/aggregate-radar`, called by Cloud Scheduler every 6 hours: the AGG subgraph of the Exploitation Radar pipeline. For each of the 6 corridors, detects a *surge* — a business reported noticeably more in the last 7 days than in the 7 days before that — writes `radar_alerts/{corridor}/current/{alertId}`, expires alerts past their `expires_at`, and for each freshly created alert writes a `users/{uid}/notifications/{id}` in every subscribed worker's own language plus an FCM push.
 
+Also covers two items pulled forward into this task at your explicit request: NF-P3-001's per-report `summary` now persists on `radar_reports` (previously response-only), and evidence-photo upload (`radar_reports.evidence_paths`, unowned by any task until now) got its backend half — a new endpoint to attach a photo or screenshot to an already-filed report. Frontend upload UI (NF-P3-006) is explicitly out of that scope; see Decisions.
+
 Depends on NF-P3-003 (done) loosely, not by code reuse: surge detection reads raw `radar_reports` directly for their timestamps, since `radar_entities`'s running totals have no time window.
 
 ## Files
@@ -22,10 +24,19 @@ Depends on NF-P3-003 (done) loosely, not by code reuse: surge detection reads ra
 | `backend/app/services/radar/notify.py` (new) | Subscriber matching, per-language text generation, notification write + FCM fan-out |
 | `backend/app/api/v1/internal.py` | `POST /internal/aggregate-radar` |
 | `infra/cloud-scheduler/radar-aggregation.yaml` (was an empty stub) | The Cloud Scheduler job config, mirroring `refresh-rates.yaml` |
-| `docs/api/endpoints.md` | New endpoint's row and section |
-| 4 new test files | Unit tests for surge detection, alert lifecycle, notification fan-out; one integration test |
+| `docs/api/endpoints.md` | New endpoints' rows and sections |
+| `backend/app/schemas/radar.py` | `RadarReport.summary` (new, optional) |
+| `backend/app/services/radar/intake.py` | Persists `classification.summary` onto the stored report (was response-only) |
+| `backend/app/schemas/radar_report.py` | `RadarEvidenceResponse`; updated the now-stale "not stored" note on `RadarReportResponse.summary` |
+| `backend/app/integrations/cloud_storage.py` | `RadarEvidenceStore` — uploads to `radar-evidence/{report_id}/`, alongside the existing uid-scoped `UserFileStore` |
+| `backend/app/repositories/radar_repo.py` | `add_evidence_path` |
+| `backend/app/services/radar/evidence.py` (new) | Ownership check (via `reporter_hash`, never a stored uid), the 5-file cap, upload orchestration |
+| `backend/app/api/v1/radar.py` | `POST /radar/report/{report_id}/evidence` |
+| `docs/data-model/collections/radar.md` | `summary` and `evidence_paths` fields documented, formula placeholder resolved, example updated |
+| `.github/workflows/scheduler-deploy.yml`, `infra/cloud-scheduler/{refresh-rates,radar-aggregation}.yaml` | Fixed a real, unrelated CI failure this task's push surfaced — see "The CI fix" below |
+| 6 new test files | Surge detection, alert lifecycle, notification fan-out, evidence upload (unit + integration), one endpoint integration test |
 
-`docs/data-model/firestore-schema.md`'s access matrix and required-index table already anticipated this task exactly (`radar_alerts`/`radar_entities` client-read-only, and the `radar_reports` `corridor_id`+`created_at` composite index credited to "NF-P3-004") — no doc changes needed there.
+`docs/data-model/firestore-schema.md`'s access matrix and required-index table already anticipated the alert-cron half of this task exactly (`radar_alerts`/`radar_entities` client-read-only, and the `radar_reports` `corridor_id`+`created_at` composite index credited to "NF-P3-004"). `storage.rules` already denied all browser access to `radar-evidence/` — confirmed, no change needed there for the evidence endpoint either.
 
 ## Decisions
 
@@ -39,21 +50,33 @@ This task's one-line description hides a lot of unspecified surface — same sit
 6. **`user_repo.py` was documented as read-only from the backend.** Removing an FCM token Firebase reports invalid is a narrow, real exception: a fact about delivery, not an edit to the worker's own choices. The docstring now says so explicitly rather than quietly breaking its own stated contract.
 7. **The endpoint always answers 200.** Unlike `/refresh-rates` (which answers 503 so Cloud Scheduler retries a partial failure), a bad corridor or a bad recipient here is caught and logged inside `run_aggregation` itself — retrying the *whole* run would re-detect the same surges (harmless, dedup catches it) but also re-attempt notifying everyone who already succeeded (not harmless: duplicate pushes). Failure isolation happens per-corridor and per-recipient instead.
 8. **Employer-type entities get no alerts.** `radar_alerts` is keyed by corridor only (`radar_alerts/{corridor}`), matching the design doc's own remittance-corridor framing ("3 workers in your corridor reported..."); an employer only ever has a `host_country`, not a `corridor_id`.
+9. **The per-report `summary` (pulled forward from NF-P3-001) is a plain, additive schema field, not a cache of anything the alert cron reads.** It exists for a future consumer (a report list, NF-P3-008's entity profile page) to show one line instead of the full `description`. The alert cron's own notification text is generated fresh, from facts aggregated across *multiple* reports — a single report's summary was never going to fit that job, which is exactly why the original NF-P3-001 "noticed, not fixed" note was based on a wrong assumption about what NF-P3-004 would need.
+10. **Evidence upload is a separate endpoint, not a field on `POST /radar/report`, and not a change to it at all.** `radar-evidence/{report_id}/` needs a real report id before anything can be filed under it, and switching the existing JSON endpoint to `multipart/form-data` to carry a file inline would have been a breaking change to an already-shipped, already-tested contract for no real benefit — a worker can just as easily attach evidence in a second call right after filing, or later.
+11. **Evidence ownership is checked by re-hashing the caller's uid and comparing it to the report's stored `reporter_hash`** — never a stored uid-to-report mapping, which radar's whole anonymity model is built to avoid. A `contract_signal`/`seed` report (no `reporter_hash`) always answers `404`, not `403`: there is no worker to check ownership against, and `404` doesn't confirm to a prober whether a given id exists versus simply isn't theirs.
+12. **Evidence upload is explicitly backend-only in this task**, per your direct choice: no frontend photo picker. NF-P3-006 (the multi-step submission form) remains its own separate, unowned task.
+13. **The original file's own filename is never trusted or kept** — same reasoning as contract uploads: the real MIME type is sniffed from the bytes, and the stored filename is a fresh random id plus the extension that type implies, never anything the client sent.
+
+## The CI fix
+
+Filling in `radar-aggregation.yaml` triggered `scheduler-deploy.yml` (an existing, pre-existing-to-this-task workflow) on push to `main`, which loops over every `infra/cloud-scheduler/*.yaml` and creates a job that doesn't exist yet or updates one that does. Creating `radar-aggregation` succeeded; updating the *pre-existing* `refresh-rates` job (NF-P1-019) in the same run failed: `gcloud scheduler jobs update http` doesn't accept `--headers`, only `--update-headers` — a flag-name asymmetry with `create` that `refresh-rates.yaml` had carried, latent, since NF-P1-019, and that copying its pattern gave `radar-aggregation.yaml` too. Fixed by moving the (identical, for every job) `Content-Type` header out of the per-job yaml files entirely and into `scheduler-deploy.yml`, which now passes the correct flag name per subcommand. Confirmed with the real `gcloud ... --help` output for both subcommands before writing the fix, not guessed from the error message alone.
 
 ## Verified results (2026-10-01)
 
 | Check | Result |
 |---|---|
 | `ruff check .`, `black --check .` | Clean |
-| `mypy --strict app/services/` | Clean (37 files) |
-| `mypy app/` (whole app, informational) | Clean (123 files) |
-| `pytest` (full suite) | 721 passed (31 new), 51 skipped (pre-existing live-Gemini tests) — up from 690 before this task |
+| `mypy --strict app/services/` | Clean (38 files) |
+| `mypy app/` (whole app, informational) | Clean (124 files) |
+| `pytest` (full suite) | 745 passed (55 new), 51 skipped (pre-existing live-Gemini tests) — up from 690 before this task |
 | New: `test_radar_alerts.py` (15) | `_detect_surges` (threshold, baseline comparison, most-reported violation type, independence across entities), severity bands, dedup, expiry + header recompute, one corridor's index failure not stopping the other five |
 | New: `test_radar_notify.py` (14) | Both subscriber cohorts (default vs explicit, never double-counted, an opt-out honored, a narrower explicit choice overriding the default), one Gemini call per language not per subscriber, a failed language not retried per subscriber, FCM token kept vs removed, `notified_at` only set after an actual send, tag-injection escaping |
 | New: `test_internal_aggregate_radar.py` (2) | A quiet run's response shape, hidden from `/openapi.json` (auth itself already covered by the existing `refresh-rates` test file, reused via the same override-the-dependency pattern it established) |
+| New: `test_radar_evidence.py` (12, unit) | Upload + record, extension mapping for all 6 accepted types, the cap enforced before uploading, ownership (missing report, no-`reporter_hash` report, wrong uid), a second attachment from the real reporter |
+| New: `test_radar_evidence.py` (12, integration) | The full endpoint: 201 happy path, 401/403/404/413/415/422, path-shape validation, hidden-field wiring, OpenAPI documented |
+| Extended: `test_radar_intake.py` (+1) | `summary` is now persisted on the stored report, not just returned |
 | Banned-word scan across every changed file | Clean, no matches |
 
-**No live Gemini or FCM call was made** — same reasoning as NF-P3-001: didn't want to spend real quota, or send a real push to a real device, without asking first.
+**No live Gemini or FCM call was made** — same reasoning as NF-P3-001: didn't want to spend real quota, or send a real push to a real device, without asking first. The evidence endpoint makes no Gemini call at all, so this only applies to the alert-cron half.
 
 ## Manual test steps
 
@@ -89,6 +112,13 @@ curl -s -X POST -H "Authorization: Bearer $CRON_TOKEN" http://127.0.0.1:8080/api
 # 4. If a test user has notification_prefs.radar_corridors including "SG-IN" (or matching
 #    host/home with no prefs at all) and an fcm_token, check users/{uid}/notifications for
 #    a new radar_alert document in their preferred_language.
+
+# 5. Evidence: attach a photo to the first report above, using the same worker's token.
+curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+  -F "file=@photo.jpg;type=image/jpeg" \
+  "http://127.0.0.1:8080/api/v1/radar/report/<report_id from step 1>/evidence"
+# Expect 201 with evidence_paths: ["radar-evidence/<report_id>/<random>.jpg"]. Retrying with
+# a DIFFERENT worker's token against the same report_id should come back 403.
 ```
 
 ## Troubleshooting
@@ -99,10 +129,12 @@ curl -s -X POST -H "Authorization: Bearer $CRON_TOKEN" http://127.0.0.1:8080/api
 | A worker never gets notified despite matching their corridor | Check `notification_prefs.radar_alerts` isn't explicitly `false`, and that `radar_corridors` (if set at all) actually includes the corridor — an explicit, narrower choice always wins over the host/home default |
 | The same surge alerts every 6 hours instead of once | Check `get_active_alert` — an `active` alert for that `(corridor, entity_slug)` should short-circuit; if `status` was ever set to something other than `"active"`/`"expired"` by hand, dedup silently stops working |
 | FCM push never arrives but the notification doc was written | Check `fcm_tokens` isn't empty, and check for `fcm_send_failed` in the logs — a non-`UnregisteredError` failure (quota, transient) is logged but the token is deliberately kept, not removed |
+| Evidence upload always 404s even for a real report | Check the report's `source` — `contract_signal` and `seed` reports have no `reporter_hash`, so there is nothing to check ownership against, by design |
+| Evidence upload 403s for the worker who actually filed the report | Check `RADAR_REPORTER_HASH_SECRET` hasn't changed since the report was filed — a changed secret makes every existing `reporter_hash` unverifiable, the same failure mode as NF-P3-001's own hash |
 
 ## Definition of Done
 
-**Backend Endpoint**
+**Backend Endpoint — `/internal/aggregate-radar`**
 - [x] Endpoint defined in FastAPI with a Pydantic response model (no request body, matching `/refresh-rates`)
 - [x] Auth: Cloud Scheduler OIDC only, reusing the existing shared dependency; marked clearly as internal, hidden from `/docs`
 - [x] Structured logging (`radar_aggregation` summary line; per-failure `radar_surge_detection_failed`/`radar_alert_text_failed`/`fcm_send_failed`)
@@ -110,6 +142,15 @@ curl -s -X POST -H "Authorization: Bearer $CRON_TOKEN" http://127.0.0.1:8080/api
 - [ ] Manual test via Swagger — not run live (hidden from `/docs` by design; no Gemini/FCM spend without asking first; exact `curl` steps above)
 - [x] `docs/api/endpoints.md` updated
 - [x] Rate limiting — exempt by design, same as every `/internal/*` endpoint (Cloud Scheduler only, never a browser)
+
+**Backend Endpoint — `/radar/report/{report_id}/evidence`**
+- [x] Endpoint defined in FastAPI with Pydantic request/response models
+- [x] Firebase Auth token verification, plus an ownership check beyond just "signed in" (decision 11)
+- [x] Structured logging — nothing extra needed; the base request-logging middleware already covers it, no Gemini call to log usage for
+- [x] Error handling with specific HTTP status codes (400/401/403/404/413/415/422/429)
+- [ ] Manual test via Swagger — not run live (needs a real report id from a prior live call; exact `curl` steps above)
+- [x] `docs/api/endpoints.md` updated
+- [x] Rate limiting applied (API-wide only, no Gemini call)
 
 **Gemini Pipeline Step**
 - [x] Correct tier (classification, for short notification text)
@@ -135,3 +176,5 @@ PR title: `feat: exploitation radar alert cron job (NF-P3-004)`
 
 - Employer-type entities (host-country only, no corridor) never generate alerts — not a gap this task introduced; `radar_alerts` is corridor-keyed by its own documented shape.
 - No corridor-level rate limit on how many alerts one corridor can generate per run — six corridors, a handful of surges expected at prototype scale, not worth building a cap for yet.
+- No frontend for evidence upload — NF-P3-006 (the multi-step submission form) remains its own unowned task; the backend endpoint is ready for it whenever it's built.
+- No frontend surface shows a report's `summary` yet either — same situation, waiting on whichever task first builds a report list or detail view (NF-P3-008 is the likely candidate).

@@ -31,6 +31,10 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
 
       # One job per file, named after it. An empty file is a placeholder for a later task.
+      # Every job wants the same Content-Type header (the endpoints all take an empty JSON
+      # body); it's set here rather than in each file because gcloud names the flag
+      # differently for create (--headers) and update (--update-headers), and one
+      # flags-file shared by both commands can't carry a flag name that only one accepts.
       - name: Create or update the jobs
         run: |
           for file in infra/cloud-scheduler/*.yaml; do
@@ -41,10 +45,10 @@ jobs:
             name="$(basename "$file" .yaml)"
             if gcloud scheduler jobs describe "$name" --project nomadfinance-prod --location asia-south1 > /dev/null 2>&1; then
               echo "update $name"
-              gcloud scheduler jobs update http "$name" --flags-file="$file"
+              gcloud scheduler jobs update http "$name" --flags-file="$file" --update-headers=Content-Type=application/json
             else
               echo "create $name"
-              gcloud scheduler jobs create http "$name" --flags-file="$file"
+              gcloud scheduler jobs create http "$name" --flags-file="$file" --headers=Content-Type=application/json
             fi
           done
 
