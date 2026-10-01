@@ -125,6 +125,12 @@ class Settings(BaseSettings):
     # Endpoints that call Gemini share one free-tier quota across all users.
     rate_limit_ai: str = "10/minute"
 
+    # Anti-abuse for POST /radar/report (NF-P3-025). Defaults off: enforcing before the
+    # frontend has a real reCAPTCHA v3 site key configured would reject every real
+    # submission, not just bots. Flip to true only once a deployed domain's key is wired
+    # through (docs/runbooks/NF-P3-025-radar-app-check.md, "Before this works in production").
+    app_check_enabled: bool = False
+
     @model_validator(mode="after")
     def _require_cron_auth_when_deployed(self) -> Settings:
         if self.app_env != "local" and not (self.cron_service_account and self.cron_audience):

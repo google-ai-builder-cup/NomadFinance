@@ -967,9 +967,9 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 
 ## `POST /api/v1/radar/report`
 
-A worker reports a money transfer operator, recruitment agency or employer. Steps 2 to 7 of the Exploitation Radar pipeline (NF-P3-001 and NF-P3-002, `docs/mermaid/exploitation-radar-pipeline.mmd`): extract who and where it's about (extraction tier, prompt `radar/extract_entity.v1`), screen for spam/abuse/personal data and classify the violation (classification tier, prompts `radar/validate.v1` and `radar/categorize.v1`), then store `radar_reports/{id}`. Steps 5 to 6 embed the description (`gemini-embedding-001`, 768 numbers) and search `report_embeddings` for a near-duplicate report on the same business and corridor; a match joins that report's cluster, otherwise the report starts its own. If embedding or the search fails, the report is still stored as its own cluster. Steps 8 to 9 (`radar_entities` aggregation, community rating) are NF-P3-003. App Check / reCAPTCHA enforcement on this endpoint is wired separately (NF-P3-025).
+A worker reports a money transfer operator, recruitment agency or employer. Steps 2 to 7 of the Exploitation Radar pipeline (NF-P3-001 and NF-P3-002, `docs/mermaid/exploitation-radar-pipeline.mmd`): extract who and where it's about (extraction tier, prompt `radar/extract_entity.v1`), screen for spam/abuse/personal data and classify the violation (classification tier, prompts `radar/validate.v1` and `radar/categorize.v1`), then store `radar_reports/{id}`. Steps 5 to 6 embed the description (`gemini-embedding-001`, 768 numbers) and search `report_embeddings` for a near-duplicate report on the same business and corridor; a match joins that report's cluster, otherwise the report starts its own. If embedding or the search fails, the report is still stored as its own cluster. Steps 8 to 9 (`radar_entities` aggregation, community rating) are NF-P3-003.
 
-- **Auth:** `Authorization: Bearer <firebase-id-token>` required
+- **Auth:** `Authorization: Bearer <firebase-id-token>` required, plus a Firebase App Check token (`X-Firebase-AppCheck` header) when `APP_CHECK_ENABLED=true` (NF-P3-025; off by default — see that task's runbook for when it turns on). The two are checked separately: a missing or invalid App Check token is a 403, distinct from a 401 on the Firebase Auth token.
 - **Request body (JSON):**
 
 | Field | Type | Description |
@@ -1026,7 +1026,8 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 
 | Status | `detail` | Cause |
 |---|---|---|
-| 401 | see Authentication | No or invalid token |
+| 401 | see Authentication | No or invalid Firebase Auth token |
+| 403 | `Missing App Check token` / `Invalid App Check token` | Only when `APP_CHECK_ENABLED=true` (NF-P3-025) |
 | 422 | FastAPI validation list | Missing/too-short/too-long `description`, missing or unsupported `language`, or an unknown `corridor_id`/`host_country`/`entity_type` |
 | 422 | `Could not tell who this report is about. Add a business name.` | Neither the form nor step 2 named a business |
 | 422 | `Could not tell where this happened. Add a corridor or the country you work in.` | Neither the form nor step 2 gave a corridor or host country |

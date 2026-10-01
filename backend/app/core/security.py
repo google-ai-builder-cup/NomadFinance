@@ -4,10 +4,12 @@ from functools import lru_cache
 from typing import Any
 
 import firebase_admin  # type: ignore[import-untyped]
+from firebase_admin import app_check as firebase_app_check
 from firebase_admin import auth as firebase_auth
 from google.auth import exceptions as google_auth_exceptions
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
+from jwt import PyJWKClientError
 
 from app.config import get_settings
 
@@ -55,6 +57,29 @@ def verify_id_token(id_token: str) -> dict[str, Any]:
         raise InvalidTokenError("Could not verify token signature") from exc
     except (firebase_auth.InvalidIdTokenError, ValueError) as exc:
         raise InvalidTokenError("Invalid authentication token") from exc
+
+
+def verify_app_check_token(token: str) -> dict[str, Any]:
+    """Verify a Firebase App Check token and return its decoded claims (NF-P3-025).
+
+    Every rejection the library raises for a bad token (expired, wrong signature, wrong
+    project, malformed headers — see `firebase_admin.app_check`'s own source) surfaces as a
+    plain `ValueError`, so there is nothing more specific to catch than that.
+
+    Raises:
+        InvalidTokenError: The token is missing, malformed, expired, or for another project.
+        TokenVerificationUnavailableError: App Check's signing keys couldn't be fetched.
+    """
+    try:
+        return firebase_app_check.verify_token(  # type: ignore[no-any-return]
+            token, app=get_firebase_app()
+        )
+    except PyJWKClientError as exc:
+        raise TokenVerificationUnavailableError(
+            "Could not verify App Check token signature"
+        ) from exc
+    except ValueError as exc:
+        raise InvalidTokenError("Invalid App Check token") from exc
 
 
 def verify_google_oidc_token(token: str, audience: str) -> dict[str, Any]:

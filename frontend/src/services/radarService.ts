@@ -1,5 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 
+import { appCheckHeader } from "@/lib/appCheck";
 import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
 import type {
@@ -13,11 +14,16 @@ import type {
 /**
  * Send a report (`POST /api/v1/radar/report`). The backend screens it, works out the
  * violation type and stores it; usually 3 to 15 s because several AI steps run.
+ *
+ * Carries an App Check token when one is configured here (NF-P3-025) — the one request this
+ * app attaches it to, since this is the one public-facing submission form worth protecting
+ * from scripted abuse. `appCheckHeader()` resolves to `{}` when it isn't configured, so this
+ * is exactly today's request shape until a site key is wired through.
  */
 export async function submitReport(body: RadarReportRequest): Promise<RadarReportResponse> {
   const response = await apiRequest("/api/v1/radar/report", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await appCheckHeader()) },
     body: JSON.stringify(body),
   });
   return (await response.json()) as RadarReportResponse;

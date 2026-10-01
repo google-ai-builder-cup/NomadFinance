@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Path, UploadFile, s
 
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, verify_app_check
 from app.integrations.cloud_storage import RadarEvidenceStore, get_radar_evidence_store
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
@@ -47,6 +47,7 @@ EntitySlug = Annotated[
 
 _REPORT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     401: {"description": "Missing or invalid Firebase ID token"},
+    403: {"description": "Missing or invalid App Check token (only when enforcement is on)"},
     422: {"description": "Failed screening, or no entity/location in the form or the report"},
     429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
     502: {"description": "Gemini returned an unusable answer"},
@@ -61,7 +62,7 @@ _REPORT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
     response_model=RadarReportResponse,
     responses=_REPORT_ERROR_RESPONSES,
     summary="Report a money transfer operator, recruitment agency or employer",
-    dependencies=[Depends(limit_ai_calls)],
+    dependencies=[Depends(verify_app_check), Depends(limit_ai_calls)],
 )
 async def report(
     body: RadarReportRequest,
@@ -76,8 +77,10 @@ async def report(
     whatever the submission form collected, and Gemini fills in the rest from
     `description`. `violation_type` is not accepted here — it is always classified fresh
     from the report text (step 4), never a worker's own pick. A report that fails screening
-    (spam, abusive content, or personal data) is refused with 422 and never stored; App
-    Check / reCAPTCHA enforcement is wired separately (NF-P3-025).
+    (spam, abusive content, or personal data) is refused with 422 and never stored.
+    App Check enforcement (NF-P3-025) runs first, ahead of the AI-call rate limit, so a
+    scripted caller is rejected before it costs any of that shared budget; off by default
+    until `APP_CHECK_ENABLED=true` (see that task's runbook).
     """
     try:
         return await submit_report(user.uid, body, gemini, radar, settings, datetime.now(UTC))

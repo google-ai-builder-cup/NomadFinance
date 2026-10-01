@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, Header, HTTPException, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -11,6 +12,7 @@ from app.core.logging import bind_user
 from app.core.security import (
     InvalidTokenError,
     TokenVerificationUnavailableError,
+    verify_app_check_token,
     verify_google_oidc_token,
     verify_id_token,
 )
@@ -59,6 +61,33 @@ async def get_current_user(
         picture=claims.get("picture"),
         auth_time=claims.get("auth_time"),
     )
+
+
+async def verify_app_check(
+    token: Annotated[str | None, Header(alias="X-Firebase-AppCheck")] = None,
+    settings: Settings = Depends(get_settings),  # noqa: B008
+) -> None:
+    """Reject a call that isn't from a verified instance of the app (NF-P3-025).
+
+    Add `Depends(verify_app_check)` to an endpoint worth protecting from scripted abuse,
+    distinct from `get_current_user`: App Check attests to the calling app, not the signed-in
+    person. Off by default (`Settings.app_check_enabled`) until a real reCAPTCHA v3 site key
+    is wired through the frontend for a deployed domain — enforcing before then would reject
+    every real submission, not just bots (see the NF-P3-025 runbook, "Before this works in
+    production").
+    """
+    if not settings.app_check_enabled:
+        return
+    if token is None:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Missing App Check token")
+    try:
+        await run_in_threadpool(verify_app_check_token, token)
+    except InvalidTokenError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    except TokenVerificationUnavailableError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
+        ) from exc
 
 
 async def require_cloud_scheduler(
