@@ -109,6 +109,20 @@ Options: `--days 365` (1 to 3650), `--end YYYY-MM-DD` (default today UTC), `--on
 
 Full steps and results: [`docs/runbooks/NF-P2-015-remittance-trends.md`](../docs/runbooks/NF-P2-015-remittance-trends.md).
 
+## Demo user history (NF-P3-015)
+Fictional demo workers in `data/seed/users/*.json` (empty files are skipped until their task fills them). `priya_sg_domestic.json` is Priya, a domestic worker in Singapore who sends money to India: 9 income, 6 transfers, 12 bills and 4 savings entries over 6 months. The loader writes them to `users/{uid}/income|transfers|bills|savings/demo_*`, and `users/{uid}` only if it does not exist yet. It does not create a Firebase Auth user and does not write `financial_profile`: the weekly job computes that.
+
+```bash
+python -m src.validators.demo_user                  # check the files
+python -m src.loaders.seed --dry-run                # validate and count, no Firestore access
+python -m src.loaders.seed                          # write (also run by scripts/seed_demo.sh)
+python -m src.loaders.seed --only priya_sg_domestic --uid <firebase uid>   # for a real sign-in account
+```
+
+Dates are `months_ago` and `day` in the file, turned into real dates when the loader runs, so the history always ends today; an entry that would fall after today is left out and the next run adds it. Writing again replaces the same `demo_*` ids, deletes `demo_*` entries removed from the file, and never touches an entry with another id. The default uid is `uid_priya_demo`, which nobody can sign in as: use `--uid` with the uid of the account that shows the demo (Firebase console → Authentication → Users). Then run `gcloud scheduler jobs run fib-recompute` to build the profile and report text. Same Firestore identity as the other loaders.
+
+Full steps, the story in the data and limits: [`docs/runbooks/NF-P3-015-fib-demo-user.md`](../docs/runbooks/NF-P3-015-fib-demo-user.md).
+
 ## Radar demo data (NF-P3-005)
 18 synthetic worker reports in `data/seed/radar-reports/seed_reports.json` covering all six corridors and all six host countries, about 8 invented businesses. The loader writes `radar_reports/seed_NN` (marked `source: "seed"`) and works out each business's `radar_entities/{slug}` profile with the backend's rating rules, so the heatmap, badges and alert cron have data. Alerts are made by the cron, not here.
 

@@ -1,0 +1,398 @@
+{
+  "_comment": "NF-P3-015. Fictional demo worker: Priya, domestic worker in Singapore, sends money to India. Dates are months_ago/day, relative to the day the loader runs. Provider fees and rates follow the World Bank RPW SG-IN survey (2025 Q1); everything else is invented.",
+  "uid": "uid_priya_demo",
+  "user": {
+    "home_country": "IN",
+    "host_country": "SG",
+    "job_type": "domestic_worker",
+    "preferred_language": "hi"
+  },
+  "income": [
+    {
+      "id": "demo_i_01",
+      "months_ago": 5,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    },
+    {
+      "id": "demo_i_02",
+      "months_ago": 4,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    },
+    {
+      "id": "demo_i_03",
+      "months_ago": 4,
+      "day": 18,
+      "amount": 90,
+      "currency": "SGD",
+      "category": "overtime",
+      "employer_name": "Example Household",
+      "notes": "Extra hours on Sundays"
+    },
+    {
+      "id": "demo_i_04",
+      "months_ago": 3,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    },
+    {
+      "id": "demo_i_05",
+      "months_ago": 3,
+      "day": 20,
+      "amount": 150,
+      "currency": "SGD",
+      "category": "bonus",
+      "employer_name": "Example Household",
+      "notes": "Festival bonus"
+    },
+    {
+      "id": "demo_i_06",
+      "months_ago": 2,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    },
+    {
+      "id": "demo_i_07",
+      "months_ago": 2,
+      "day": 18,
+      "amount": 90,
+      "currency": "SGD",
+      "category": "overtime",
+      "employer_name": "Example Household",
+      "notes": "Extra hours on Sundays"
+    },
+    {
+      "id": "demo_i_08",
+      "months_ago": 1,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    },
+    {
+      "id": "demo_i_09",
+      "months_ago": 0,
+      "day": 1,
+      "amount": 650,
+      "currency": "SGD",
+      "category": "salary",
+      "employer_name": "Example Household"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "demo_t_01",
+      "months_ago": 5,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Ample Transfer",
+      "provider_rpw_id": 521253376,
+      "send_amount": 450,
+      "send_currency": "SGD",
+      "receive_amount": 28092.4,
+      "receive_currency": "INR",
+      "fee": 5.0,
+      "mid_market_rate": 64.1,
+      "cost_pct": 2.61
+    },
+    {
+      "id": "demo_t_02",
+      "months_ago": 4,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Ample Transfer",
+      "provider_rpw_id": 521253376,
+      "send_amount": 450,
+      "send_currency": "SGD",
+      "receive_amount": 28180.05,
+      "receive_currency": "INR",
+      "fee": 5.0,
+      "mid_market_rate": 64.3,
+      "cost_pct": 2.61
+    },
+    {
+      "id": "demo_t_03",
+      "months_ago": 3,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Ample Transfer",
+      "provider_rpw_id": 521253376,
+      "send_amount": 480,
+      "send_currency": "SGD",
+      "receive_amount": 30220.17,
+      "receive_currency": "INR",
+      "fee": 5.0,
+      "mid_market_rate": 64.6,
+      "cost_pct": 2.54
+    },
+    {
+      "id": "demo_t_04",
+      "months_ago": 2,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Wise",
+      "provider_rpw_id": 521250336,
+      "send_amount": 450,
+      "send_currency": "SGD",
+      "receive_amount": 28971.64,
+      "receive_currency": "INR",
+      "fee": 3.69,
+      "mid_market_rate": 64.9,
+      "cost_pct": 0.8,
+      "notes": "Switched after comparing in Remittance X-Ray"
+    },
+    {
+      "id": "demo_t_05",
+      "months_ago": 1,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Wise",
+      "provider_rpw_id": 521250336,
+      "send_amount": 500,
+      "send_currency": "SGD",
+      "receive_amount": 32316.61,
+      "receive_currency": "INR",
+      "fee": 3.69,
+      "mid_market_rate": 65.1,
+      "cost_pct": 0.72
+    },
+    {
+      "id": "demo_t_06",
+      "months_ago": 0,
+      "day": 3,
+      "corridor_id": "SG-IN",
+      "provider_name": "Wise",
+      "provider_rpw_id": 521250336,
+      "send_amount": 450,
+      "send_currency": "SGD",
+      "receive_amount": 29016.28,
+      "receive_currency": "INR",
+      "fee": 3.69,
+      "mid_market_rate": 65.0,
+      "cost_pct": 0.8
+    }
+  ],
+  "bills": [
+    {
+      "months_ago": 5,
+      "day": 8,
+      "amount": 38.5,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97,
+      "id": "demo_b_01"
+    },
+    {
+      "months_ago": 5,
+      "day": 12,
+      "amount": 30,
+      "currency": "SGD",
+      "vendor": "Example Transit",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95,
+      "id": "demo_b_02"
+    },
+    {
+      "months_ago": 4,
+      "day": 8,
+      "amount": 38.5,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97,
+      "id": "demo_b_03"
+    },
+    {
+      "months_ago": 4,
+      "day": 12,
+      "amount": 28.5,
+      "currency": "SGD",
+      "vendor": "Example Transit",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95,
+      "id": "demo_b_04"
+    },
+    {
+      "months_ago": 3,
+      "day": 8,
+      "amount": 38.5,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": false,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97,
+      "id": "demo_b_05"
+    },
+    {
+      "months_ago": 3,
+      "day": 12,
+      "amount": 32,
+      "currency": "SGD",
+      "vendor": "Example Transit",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95,
+      "id": "demo_b_06"
+    },
+    {
+      "months_ago": 2,
+      "day": 8,
+      "amount": 41.2,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97,
+      "id": "demo_b_07"
+    },
+    {
+      "months_ago": 2,
+      "day": 12,
+      "amount": 30,
+      "currency": "SGD",
+      "vendor": "Example Transit",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95,
+      "id": "demo_b_08"
+    },
+    {
+      "months_ago": 2,
+      "day": 15,
+      "amount": 45,
+      "currency": "SGD",
+      "vendor": "Example Family Clinic",
+      "paid": true,
+      "category": "medical",
+      "category_source": "user",
+      "source": "manual",
+      "notes": "Flu visit",
+      "id": "demo_b_09"
+    },
+    {
+      "months_ago": 1,
+      "day": 8,
+      "amount": 38.5,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "bill_ocr",
+      "category_confidence": 0.97,
+      "bill_day": 5,
+      "extraction": {
+        "confidence": 0.94,
+        "model": "gemini-3.5-flash-lite",
+        "prompt_version": 1
+      },
+      "id": "demo_b_10"
+    },
+    {
+      "months_ago": 1,
+      "day": 12,
+      "amount": 35,
+      "currency": "SGD",
+      "vendor": "Example Transit",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95,
+      "id": "demo_b_11"
+    },
+    {
+      "months_ago": 0,
+      "day": 8,
+      "amount": 38.5,
+      "currency": "SGD",
+      "vendor": "Example Telecom",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "bill_ocr",
+      "category_confidence": 0.97,
+      "bill_day": 5,
+      "extraction": {
+        "confidence": 0.94,
+        "model": "gemini-3.5-flash-lite",
+        "prompt_version": 1
+      },
+      "id": "demo_b_12"
+    }
+  ],
+  "savings": [
+    {
+      "id": "demo_s_01",
+      "months_ago": 5,
+      "day": 4,
+      "amount": 200,
+      "currency": "SGD",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_02",
+      "months_ago": 3,
+      "day": 4,
+      "amount": 200,
+      "currency": "SGD",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_03",
+      "months_ago": 2,
+      "day": 22,
+      "amount": 80,
+      "currency": "SGD",
+      "direction": "withdrawal",
+      "account_type": "bank",
+      "notes": "Phone repair"
+    },
+    {
+      "id": "demo_s_04",
+      "months_ago": 1,
+      "day": 4,
+      "amount": 150,
+      "currency": "SGD",
+      "direction": "deposit",
+      "account_type": "bank"
+    }
+  ]
+}
