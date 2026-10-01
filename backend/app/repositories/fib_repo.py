@@ -61,6 +61,30 @@ class FibRepository:
         """Merge `fields` into an existing entry; raises NotFound if it is gone."""
         self._entry(uid, kind, entry_id).update(fields | {"updated_at": SERVER_TIMESTAMP})
 
+    def save_profile(self, uid: str, profile: dict[str, Any]) -> None:
+        """Overwrite `users/{uid}/financial_profile/current`: one document per user, never
+        appended to (fib.md).
+
+        `latest_export` is not the recompute's to change (the PDF export, NF-P3-014, writes
+        it into this same document), so it is carried over instead of being wiped.
+        """
+        current = self.get_profile(uid) or {}
+        carried = {key: current[key] for key in ("latest_export",) if key in current}
+        self._profile(uid).set(profile | carried | {"schema_version": SCHEMA_VERSION})
+
+    def get_profile(self, uid: str) -> dict[str, Any] | None:
+        snapshot = self._profile(uid).get()
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def _profile(self, uid: str) -> DocumentReference:
+        document: DocumentReference = (
+            self._client.collection("users")
+            .document(uid)
+            .collection("financial_profile")
+            .document("current")
+        )
+        return document
+
 
 @lru_cache
 def get_fib_repository() -> FibRepository:

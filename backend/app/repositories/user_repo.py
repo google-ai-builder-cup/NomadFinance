@@ -23,6 +23,13 @@ class UserRepository(FirestoreRepository):
         """The profile, or an empty dict before onboarding has created it."""
         return self.get(uid) or {}
 
+    def list_user_ids(self) -> list[str]:
+        """Every user id, for the weekly Financial Identity recompute (NF-P3-013).
+
+        `select([])` reads the document ids only, not the profiles.
+        """
+        return [doc.id for doc in self.collection.select([]).stream()]
+
     def by_host_and_home(self, host_country: str, home_country: str) -> list[tuple[str, Any]]:
         """Profiles for one (host, home) pair, for a corridor's default-subscribed cohort
         (`host_and_home`, `utils/corridors.py`). Equality-only, no composite index needed."""

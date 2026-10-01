@@ -45,6 +45,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
+| POST | `/api/v1/internal/recompute-fib-profiles` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-013 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
 ## Error format
@@ -1264,6 +1265,19 @@ Called only by the Cloud Scheduler job `radar-aggregation` (every 6 hours). Hidd
 - **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
 - **Response `200`:** `AggregateRadarResponse` (`app/schemas/radar_alert.py`): `corridors_scanned` (always 6), `alerts_created`, `alerts_expired`, `notifications_sent`, `completed_at`.
 - **Always 200.** A failure on one corridor (for example a missing Firestore index) or one recipient (a Gemini failure for one language, a dead FCM token) is caught and logged inside the run itself, never left to make Cloud Scheduler retry the whole thing.
+- **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured.
+
+---
+
+## `POST /api/v1/internal/recompute-fib-profiles` (internal)
+
+Called only by the Cloud Scheduler job `fib-recompute` (Sundays 02:00 UTC). Hidden from the OpenAPI docs. The weekly recompute of the Financial Identity pipeline (NF-P3-013, `docs/mermaid/financial-identity-pipeline.mmd`): for each user with income, transfer, bill or savings entries in the last 12 months it computes the four metrics, has the reasoning tier write the report text in the worker's `preferred_language` (prompt `fib/synthesize_narrative.v1`), and overwrites `users/{uid}/financial_profile/current`. Details and formulas: `docs/runbooks/NF-P3-013-fib-weekly-recompute.md`.
+
+- **Auth:** `Authorization: Bearer <Google-signed OIDC token>` for `CRON_SERVICE_ACCOUNT` with audience `CRON_AUDIENCE`, the same as `/internal/refresh-rates`. Firebase user tokens are rejected.
+- **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
+- **Response `200`:** `RecomputeResponse` (`app/schemas/fib_profile.py`): `users_seen`, `recomputed` (profiles written), `skipped_no_data` (no activity in the period, or none a metric could use; nothing written), `failed` (the previous profile was kept), `completed_at`.
+- **Always 200.** A failure for one user (the narrative call timing out, a Firestore error, an entry that does not match its schema) is caught and logged inside the run with a hashed user id. That user keeps last week's profile and the others still run; a retry would run, and pay for, every other user again.
+- **Run time:** one reasoning-tier call per user, 3 users at a time. Measured 15 to 24 s per call (2026-10-01), so about 100 users fit in Cloud Run's 900 s request timeout.
 - **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured.
 
 ---

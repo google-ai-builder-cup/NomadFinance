@@ -79,6 +79,10 @@ class Settings(BaseSettings):
     # The complaint letter (NF-P2-006, reasoning tier) is written twice, once per language,
     # and the reasoning tier spends 13 to 23 s thinking even on short prompts (D-08).
     gemini_complaint_timeout_seconds: float = Field(default=60.0, gt=0)
+    # The Financial Identity narrative (NF-P3-013, reasoning tier) took 21 to 40 s in the
+    # NF-P1-029 live check (D-08). It runs in the weekly cron, not a user request, so there is
+    # no 300 s Cloud Run request limit to fit under, only the scheduler's own deadline.
+    gemini_narrative_timeout_seconds: float = Field(default=90.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
     # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted
