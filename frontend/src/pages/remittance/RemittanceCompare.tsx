@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
@@ -6,11 +6,13 @@ import CorridorPicker from "@/components/remittance/CorridorPicker";
 import SavingsCallout from "@/components/remittance/SavingsCallout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/hooks/useI18n";
-import { useCompareRemittance } from "@/hooks/useRemittance";
+import { useCompareRemittance, useLogTransfer } from "@/hooks/useRemittance";
+import { toast } from "@/hooks/useToast";
 import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
-import type { RemittanceComparison } from "@/types/remittance";
+import type { ProviderResult, RemittanceComparison } from "@/types/remittance";
 import { CORRIDORS, compareFailure, defaultCorridor } from "@/utils/corridors";
+import { errorMessageKey } from "@/utils/errors";
 import { countryName, formatMoney } from "@/utils/format";
 
 // recharts is a sizeable chunk (D-45): loaded only once a comparison exists to show it for.
@@ -125,9 +127,37 @@ export default function RemittanceCompare() {
   const { t } = useI18n();
   const profile = useUserProfile();
   const compare = useCompareRemittance();
+  const logTransfer = useLogTransfer();
+  const [loggedRpwIds, setLoggedRpwIds] = useState<ReadonlySet<number>>(new Set());
+  // Tracks which comparison `loggedRpwIds` belongs to, so a new one (new amount or corridor)
+  // starts with nothing logged against it, even if some of the same rpw_ids show up again.
+  const [loggedFor, setLoggedFor] = useState<RemittanceComparison | null>(null);
+  if (compare.data && compare.data !== loggedFor) {
+    setLoggedFor(compare.data);
+    setLoggedRpwIds(new Set());
+  }
 
   if (profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+  }
+
+  function handleLog(provider: ProviderResult) {
+    const comparison = compare.data;
+    if (!comparison) {
+      return;
+    }
+    logTransfer.mutate(
+      { comparison, rpwId: provider.rpw_id },
+      {
+        onSuccess: () => {
+          setLoggedRpwIds((current) => new Set(current).add(provider.rpw_id));
+          toast({ messageKey: "remittance.table.logAction.toastSuccess" });
+        },
+        onError: (error) => {
+          toast({ messageKey: errorMessageKey(error), variant: "error" });
+        },
+      }
+    );
   }
 
   const language = i18n.resolvedLanguage ?? "en";
@@ -156,7 +186,12 @@ export default function RemittanceCompare() {
         <>
           <ComparisonSummaryCard comparison={compare.data} />
           <SavingsCallout comparison={compare.data} />
-          <ComparisonTable comparison={compare.data} />
+          <ComparisonTable
+            comparison={compare.data}
+            onLog={handleLog}
+            pendingRpwId={logTransfer.isPending ? (logTransfer.variables?.rpwId ?? null) : null}
+            loggedRpwIds={loggedRpwIds}
+          />
           <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
             <TrendChart comparison={compare.data} />
           </Suspense>

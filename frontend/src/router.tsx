@@ -8,6 +8,7 @@ import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import ComingSoon from "@/pages/ComingSoon";
 import ContractUpload from "@/pages/contract/ContractUpload";
 import Dashboard from "@/pages/Dashboard";
+import FIBLogActivity from "@/pages/fib/FIBLogActivity";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
 import Onboarding from "@/pages/Onboarding";
@@ -20,11 +21,13 @@ import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
-// Contract Shield (NF-P2-009), Remittance X-Ray (NF-P2-018) and Exploitation Radar (NF-P3-007) have theirs; the rest wait their turn.
+// Contract Shield (NF-P2-009), Remittance X-Ray (NF-P2-018), Exploitation Radar (NF-P3-007) and
+// the Financial Identity Builder's log (NF-P3-016) have theirs; its dashboard still waits its turn.
 const PILLAR_PAGES: Readonly<Record<string, JSX.Element>> = {
   "/contract": <ContractUpload />,
   "/radar": <RadarHeatmap />,
   "/remittance": <RemittanceCompare />,
+  "/identity": <FIBLogActivity />,
 };
 
 const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({

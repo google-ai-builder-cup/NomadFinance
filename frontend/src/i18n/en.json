@@ -389,6 +389,12 @@
         "heading": "Paid in another currency",
         "note": "These services pay out in a different currency than {{receiveCurrency}}, so they can't be ranked by what your family receives.",
         "row": "{{firm}}: fee {{fee}}, pays out in {{currency}}"
+      },
+      "logAction": {
+        "useThis": "I used this",
+        "logging": "Logging…",
+        "logged": "Logged",
+        "toastSuccess": "Transfer logged."
       }
     },
     "trend": {
@@ -590,5 +596,99 @@
   "toast": {
     "region": "Notifications",
     "dismiss": "Dismiss"
+  },
+  "fib": {
+    "log": {
+      "title": "Log your money",
+      "subtitle": "Keep a record of what you earn, send home, pay out and save. It builds your Financial Identity.",
+      "tabsLabel": "Activity type",
+      "tabs": {
+        "income": "Income",
+        "transfer": "Transfer",
+        "bill": "Bill",
+        "savings": "Savings"
+      },
+      "submit": "Log it",
+      "submitting": "Logging…",
+      "success": "Logged.",
+      "fields": {
+        "amount": "Amount",
+        "currency": "Currency",
+        "category": "Category",
+        "chooseCategory": "Choose…",
+        "employerName": "Employer (optional)",
+        "entryDate": "Date",
+        "notes": "Notes (optional)",
+        "direction": "Direction",
+        "accountType": "Where you keep it (optional)",
+        "chooseAccountType": "Choose…",
+        "vendor": "Who billed you (optional)",
+        "billDate": "Date on the bill (optional)",
+        "paid": "I have paid this bill"
+      },
+      "errors": {
+        "categoryRequired": "Choose a category.",
+        "amount": {
+          "empty": "Enter an amount.",
+          "invalid": "Enter a valid amount.",
+          "decimals": "Too many decimal places for this currency."
+        }
+      },
+      "transfer": {
+        "explainer": "A transfer is logged automatically when you use a service from Remittance X-Ray. Compare your corridor there, then tell us which one you used.",
+        "cta": "Go to Remittance X-Ray"
+      }
+    },
+    "categories": {
+      "income": {
+        "salary": "Salary",
+        "overtime": "Overtime",
+        "bonus": "Bonus",
+        "other_income": "Other income"
+      },
+      "bill": {
+        "rent": "Rent",
+        "utilities": "Utilities",
+        "phone_internet": "Phone & internet",
+        "transport": "Transport",
+        "food": "Food",
+        "medical": "Medical",
+        "other_expense": "Other expense"
+      }
+    },
+    "savingsDirections": {
+      "deposit": "Money in",
+      "withdrawal": "Money out"
+    },
+    "accountTypes": {
+      "cash": "Cash",
+      "bank": "Bank account",
+      "mobile_wallet": "Mobile wallet",
+      "other": "Other"
+    },
+    "bill": {
+      "modeLabel": "How to add this bill",
+      "modes": {
+        "photo": "Photo",
+        "manual": "Type it in"
+      },
+      "scan": {
+        "dropzoneLabel": "Add a photo or PDF of the bill",
+        "dropzoneHint": "PDF, PNG, JPEG, WebP or HEIC, up to 10 MB.",
+        "takePhoto": "Take a photo",
+        "remove": "Remove this photo",
+        "submit": "Read and log this bill",
+        "submitting": "Reading the bill…",
+        "errors": {
+          "tooLarge": "This file is larger than 10 MB.",
+          "badType": "Use a PDF, PNG, JPEG, WebP or HEIC file.",
+          "generic": "That file could not be used. Try another one.",
+          "notABill": "No bill found. Upload a clear photo or PDF of the bill or receipt.",
+          "unreadable": "The amount or currency could not be read. Take a clearer photo with the whole bill in view, or enter it by hand.",
+          "aiBusy": "Our reader is busy right now. Try again in a moment.",
+          "aiSlow": "That took too long. Try again, or enter it by hand."
+        }
+      }
+    }
   }
 }

@@ -5,6 +5,8 @@ import type {
   RemittanceComparison,
   RemittanceSavings,
   RemittanceTrends,
+  TransferLogRequest,
+  TransferLogResponse,
   TrendDays,
 } from "@/types/remittance";
 
@@ -53,4 +55,17 @@ export async function getRemittanceSavings(
   });
   const response = await apiRequest(`/api/v1/remittance/savings?${query}`);
   return (await response.json()) as RemittanceSavings;
+}
+
+/**
+ * Log the transfer the worker actually sent (`POST /api/v1/remittance/log`, NF-P2-017). Feeds
+ * the Financial Identity Builder's `transfers` collection. No AI call.
+ */
+export async function logTransfer(body: TransferLogRequest): Promise<TransferLogResponse> {
+  const response = await apiRequest("/api/v1/remittance/log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return (await response.json()) as TransferLogResponse;
 }
