@@ -41,6 +41,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/income` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/fib/bill` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/fib/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
+| POST | `/api/v1/fib/bill/scan` | Firebase ID token | 10/min per user (AI calls) | NF-P3-011 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
@@ -1115,7 +1116,7 @@ curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/radar/ent
 
 ## `POST /api/v1/fib/income`, `POST /api/v1/fib/bill`, `POST /api/v1/fib/savings`
 
-Manual Financial Identity Builder activity logging (NF-P3-010): `users/{uid}/income`, `users/{uid}/bills`, `users/{uid}/savings` — the same pattern `POST /remittance/log` (NF-P2-017) already established for `users/{uid}/transfers`, the fourth entry type in the same activity log (`docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide rate limit applies. A bill photo read by Gemini Vision is a separate endpoint (NF-P3-011, not built yet), writing into the same `bills` collection.
+Manual Financial Identity Builder activity logging (NF-P3-010): `users/{uid}/income`, `users/{uid}/bills`, `users/{uid}/savings` — the same pattern `POST /remittance/log` (NF-P2-017) already established for `users/{uid}/transfers`, the fourth entry type in the same activity log (`docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide rate limit applies. A bill photo read by Gemini Vision is a separate endpoint, `POST /api/v1/fib/bill/scan` (NF-P3-011, below), writing into the same `bills` collection.
 
 Every entry's `category` (income, bills) is always `category_source: "user"` here, whatever the worker chose or left blank — Flash-Lite categorization of uncategorized entries (NF-P3-012) is its own, later step over the same collections.
 
@@ -1158,6 +1159,55 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | 401 | see Authentication | No or invalid token |
 | 422 | FastAPI validation list | Missing a required field (`category` for income, `paid` for a bill, `direction` for savings), a non-positive `amount`, or `currency` not 3 uppercase letters |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+---
+
+## `POST /api/v1/fib/bill/scan`
+
+Reads a photo or PDF of a bill with Gemini Vision (extraction tier) and stores it as `users/{uid}/bills/{id}` with `source: "bill_ocr"` (NF-P3-011). Step 2a of the Financial Identity pipeline. Manual entry stays `POST /fib/bill`.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>`
+- **Request:** `multipart/form-data`, one field `file` (PDF, PNG, JPEG, WebP or HEIC/HEIF, up to 10 MB). The type is detected from the content, not the filename.
+- **Response `201`:** `BillScanResponse` (`app/schemas/fib.py`): everything `POST /fib/bill` returns, plus `image_path` (Cloud Storage path of the photo, `null` if the upload failed), `confidence` (0 to 1, for amount and currency together) and `paid_assumed` (`true` when the bill did not say whether it was paid, so `paid` is `false` by default).
+- **What is stored:** `amount`, `currency`, `vendor`, `bill_date`, `paid`, `image_path`, `extraction` (`confidence`, `model`, `prompt_version`), and the suggested `category` with `category_source: "model"`. `category_confidence` is not set here: Gemini's one confidence is for amount and currency, so Flash-Lite (NF-P3-012) sets it when it categorizes. `entry_date` is the bill's date when it shows as paid, otherwise today.
+- **Nothing is stored** unless the file is a bill with a readable amount and a 3-letter currency. A date Gemini misreads is dropped, not stored.
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 400 | `The uploaded file is empty.` | Zero bytes |
+| 401 | see Authentication | No or invalid token |
+| 413 | `The file is larger than 10 MB.` | Over `UPLOAD_MAX_BYTES` |
+| 415 | `Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).` | Content is not one of those types |
+| 422 | `No bill found. Upload a clear photo or PDF of the bill or receipt.` | Not a bill, invoice or receipt |
+| 422 | `The amount or currency could not be read. ...` | A bill, but amount or currency unreadable |
+| 422 | FastAPI validation list | No `file` field |
+| 429 | see Rate limits | Over 10 AI calls a minute |
+| 502 / 503 / 504 | Gemini error text | Unusable answer / busy or out of quota / timed out |
+
+Example (bash; in PowerShell use `curl.exe`):
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" -F "file=@bill.jpg" http://127.0.0.1:8080/api/v1/fib/bill/scan
+```
+
+```json
+{
+  "entry_id": "aBc123XyZ0123456789A",
+  "entry_date": "2026-09-20",
+  "amount": 38.5,
+  "currency": "SGD",
+  "vendor": "Example Telecom",
+  "bill_date": "2026-09-20",
+  "paid": true,
+  "category": "phone_internet",
+  "category_source": "model",
+  "notes": null,
+  "created_at": "2026-10-01T09:30:00Z",
+  "image_path": "bills/uid_priya_demo/aBc123XyZ0123456789A/bill.jpg",
+  "confidence": 0.94,
+  "paid_assumed": false
+}
+```
 
 ---
 

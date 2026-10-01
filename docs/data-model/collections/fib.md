@@ -118,6 +118,8 @@ Created manually, or from a bill photo read by Gemini Vision (NF-P3-011).
 
 `entry_date` is the day the bill was paid, or the day it was logged if unpaid.
 
+A bill from `POST /fib/bill/scan` (`source: bill_ocr`) is stored with the category Gemini suggested and `category_source: model`, but without `category_confidence`: the confidence in `extraction` covers amount and currency only. NF-P3-012 sets `category_confidence` when it categorizes.
+
 **Example** — `users/uid_priya_demo/bills/b_01`
 
 ```json

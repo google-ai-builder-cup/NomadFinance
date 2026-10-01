@@ -122,3 +122,33 @@ class SavingsLogResponse(BaseModel):
     account_type: AccountType | None
     notes: str | None
     created_at: datetime
+
+
+class ExtractedBill(BaseModel):
+    """What Gemini Vision reads from a bill photo (NF-P3-011); also its `response_schema`.
+
+    Dates are strings, not `date`: a misread date must not fail the whole schema and discard
+    a good amount. The service parses `bill_date` and drops it when it is not valid.
+    Field descriptions are sent to Gemini as part of the schema.
+    """
+
+    is_bill: bool = Field(description="False for anything that is not a bill, invoice or receipt.")
+    amount: float | None = Field(default=None, description="Final total, no symbols or separators.")
+    currency: str | None = Field(default=None, description="ISO 4217 code, e.g. SGD.")
+    vendor: str | None = Field(default=None, description="Issuer of the bill, as written.")
+    bill_date: str | None = Field(default=None, description="Bill or payment date, YYYY-MM-DD.")
+    paid: bool | None = Field(default=None, description="True if shown as paid, null if unclear.")
+    category: BillCategory | None = None
+    confidence: float = Field(ge=0, le=1, description="Confidence in amount and currency together.")
+
+
+class BillScanResponse(BillLogResponse):
+    """Response of `POST /api/v1/fib/bill/scan`: the entry stored from the photo."""
+
+    image_path: str | None = Field(
+        description="Cloud Storage path of the photo; null if it could not be stored."
+    )
+    confidence: float = Field(description="How sure Gemini is of `amount` and `currency`, 0 to 1.")
+    paid_assumed: bool = Field(
+        description="True when the bill did not say if it was paid; `paid` is then false."
+    )
