@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 import type { HostCountry, JobType, LanguageCode } from "@/types/enums";
 
 export type Legibility = "good" | "partial" | "poor";
@@ -64,6 +66,21 @@ export interface ContractAnalysis {
   report_languages: LanguageCode[];
   /** The letter failed for a passing reason; analyze again to write only it. */
   complaint_pending: boolean;
+}
+
+/**
+ * `users/{uid}/contracts/{contractId}`'s light fields, read straight from Firestore for the
+ * home dashboard's recent-contracts widget (NF-P3-019) — never the heavy per-language report.
+ * `health_score`/`risk_level` are present once `status` is `completed`, absent otherwise
+ * (contracts.md: "when completed").
+ */
+export interface ContractSummary {
+  id: string;
+  status: "uploaded" | "processing" | "completed" | "failed";
+  title: string | null;
+  health_score?: number;
+  risk_level?: ClauseRisk;
+  created_at: Timestamp;
 }
 
 /** One clause of a stored report (`reports/{lang}.clauses`, contracts.md). */

@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   analyzeContract,
   getContractReport,
+  listRecentContracts,
   switchReportLanguage,
   uploadContract,
   watchContractProgress,
@@ -187,4 +188,16 @@ export function useContractReport(
 ) {
   const { user } = useAuth();
   return useQuery(reportQueryOptions({ uid: user?.uid, contractId, language, storedLanguages }));
+}
+
+/** The worker's most recent contracts, newest first, for the home dashboard (NF-P3-019). */
+export function useRecentContracts(max: number) {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: ["recentContracts", uid, max] as const,
+    queryFn: () => listRecentContracts(uid ?? "", max),
+    enabled: uid !== undefined,
+    staleTime: 30_000,
+  });
 }

@@ -1,4 +1,14 @@
-import { doc, getDoc, onSnapshot, type Unsubscribe } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  type Unsubscribe,
+} from "firebase/firestore";
 
 import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
@@ -6,6 +16,7 @@ import type {
   AnalyzeRequest,
   ContractAnalysis,
   ContractReport,
+  ContractSummary,
   ContractUploadResponse,
 } from "@/types/contract";
 import type { LanguageCode } from "@/types/enums";
@@ -86,4 +97,18 @@ export async function switchReportLanguage(
     method: "POST",
   });
   return (await response.json()) as ContractReport;
+}
+
+/**
+ * The worker's most recent contracts, newest first, for the home dashboard's recent-contracts
+ * widget (NF-P3-019). Light fields only (never a `reports/{language}` document) — straight
+ * from Firestore, same access as `getContractReport`.
+ */
+export async function listRecentContracts(uid: string, max: number): Promise<ContractSummary[]> {
+  const snapshot = await getDocs(
+    query(collection(db, "users", uid, "contracts"), orderBy("created_at", "desc"), limit(max))
+  );
+  return snapshot.docs.map(
+    (document) => ({ id: document.id, ...document.data() }) as ContractSummary
+  );
 }

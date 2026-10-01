@@ -64,7 +64,34 @@
     "greeting": "স্বাগতম, {{name}}",
     "greetingGeneric": "NomadFinance-এ স্বাগতম",
     "subtitle": "আজ আপনি কী পরীক্ষা করতে চান তা বেছে নিন।",
-    "pillarsHeading": "আপনার টুলস"
+    "pillarsHeading": "আপনার টুলস",
+    "widgets": {
+      "loadError": "এটি লোড করা যায়নি।",
+      "contract": {
+        "open": "Contract Shield খুলুন",
+        "empty": "শুরু করতে একটি চুক্তি আপলোড করুন।",
+        "untitled": "শিরোনামহীন চুক্তি",
+        "status": {
+          "uploaded": "আপলোড হয়েছে",
+          "processing": "পরীক্ষা করা হচ্ছে…",
+          "completed": "পরীক্ষা করা হয়েছে",
+          "failed": "পরীক্ষা করা যায়নি"
+        }
+      },
+      "remittance": {
+        "open": "হার তুলনা করুন",
+        "description": "{{from}} থেকে {{to}}-এ টাকা পাঠাতে আসলে কত খরচ হয় দেখুন।"
+      },
+      "radar": {
+        "open": "Exploitation Radar খুলুন",
+        "empty": "এখনও কোনো সতর্কতা নেই।",
+        "unread": "{{count}}টি অপঠিত"
+      },
+      "identity": {
+        "open": "Financial Identity খুলুন",
+        "empty": "আপনার স্কোর তৈরি শুরু করতে কার্যকলাপ লগ করুন।"
+      }
+    }
   },
   "nav": {
     "primary": "প্রধান নেভিগেশন",

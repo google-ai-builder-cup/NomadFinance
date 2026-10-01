@@ -64,7 +64,34 @@
     "greeting": "Maligayang pagdating, {{name}}",
     "greetingGeneric": "Maligayang pagdating sa NomadFinance",
     "subtitle": "Piliin kung ano ang gusto mong tingnan ngayon.",
-    "pillarsHeading": "Iyong mga tool"
+    "pillarsHeading": "Iyong mga tool",
+    "widgets": {
+      "loadError": "Hindi ito na-load.",
+      "contract": {
+        "open": "Buksan ang Contract Shield",
+        "empty": "Mag-upload ng kontrata para magsimula.",
+        "untitled": "Walang pamagat na kontrata",
+        "status": {
+          "uploaded": "Na-upload",
+          "processing": "Sinusuri…",
+          "completed": "Nasuri na",
+          "failed": "Hindi nasuri"
+        }
+      },
+      "remittance": {
+        "open": "Ikumpara ang mga rate",
+        "description": "Tingnan kung magkano talaga ang gastos sa pagpapadala ng pera mula sa {{from}} papuntang {{to}}."
+      },
+      "radar": {
+        "open": "Buksan ang Exploitation Radar",
+        "empty": "Wala pang alerto.",
+        "unread": "{{count}} hindi pa nababasa"
+      },
+      "identity": {
+        "open": "Buksan ang Financial Identity",
+        "empty": "Mag-log ng aktibidad para simulan ang iyong score."
+      }
+    }
   },
   "nav": {
     "primary": "Pangunahing navigation",

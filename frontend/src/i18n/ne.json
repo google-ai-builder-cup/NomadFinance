@@ -64,7 +64,34 @@
     "greeting": "स्वागत छ, {{name}}",
     "greetingGeneric": "NomadFinance मा स्वागत छ",
     "subtitle": "आज तपाईं के जाँच्न चाहनुहुन्छ छान्नुहोस्।",
-    "pillarsHeading": "तपाईंका उपकरणहरू"
+    "pillarsHeading": "तपाईंका उपकरणहरू",
+    "widgets": {
+      "loadError": "यो लोड हुन सकेन।",
+      "contract": {
+        "open": "Contract Shield खोल्नुहोस्",
+        "empty": "सुरु गर्न एउटा सम्झौता अपलोड गर्नुहोस्।",
+        "untitled": "शीर्षकविहीन सम्झौता",
+        "status": {
+          "uploaded": "अपलोड भयो",
+          "processing": "जाँचिँदैछ…",
+          "completed": "जाँचियो",
+          "failed": "जाँच हुन सकेन"
+        }
+      },
+      "remittance": {
+        "open": "दरहरू तुलना गर्नुहोस्",
+        "description": "{{from}} बाट {{to}} मा पैसा पठाउन वास्तवमा कति खर्च लाग्छ हेर्नुहोस्।"
+      },
+      "radar": {
+        "open": "Exploitation Radar खोल्नुहोस्",
+        "empty": "अहिलेसम्म कुनै अलर्ट छैन।",
+        "unread": "{{count}} नपढिएको"
+      },
+      "identity": {
+        "open": "Financial Identity खोल्नुहोस्",
+        "empty": "आफ्नो स्कोर बनाउन सुरु गर्न गतिविधि लग गर्नुहोस्।"
+      }
+    }
   },
   "nav": {
     "primary": "मुख्य नेभिगेसन",

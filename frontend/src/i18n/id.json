@@ -64,7 +64,34 @@
     "greeting": "Selamat datang, {{name}}",
     "greetingGeneric": "Selamat datang di NomadFinance",
     "subtitle": "Pilih apa yang ingin Anda periksa hari ini.",
-    "pillarsHeading": "Alat Anda"
+    "pillarsHeading": "Alat Anda",
+    "widgets": {
+      "loadError": "Ini tidak dapat dimuat.",
+      "contract": {
+        "open": "Buka Contract Shield",
+        "empty": "Unggah kontrak untuk memulai.",
+        "untitled": "Kontrak tanpa judul",
+        "status": {
+          "uploaded": "Diunggah",
+          "processing": "Memeriksa…",
+          "completed": "Diperiksa",
+          "failed": "Gagal diperiksa"
+        }
+      },
+      "remittance": {
+        "open": "Bandingkan tarif",
+        "description": "Lihat berapa biaya sebenarnya untuk mengirim uang dari {{from}} ke {{to}}."
+      },
+      "radar": {
+        "open": "Buka Exploitation Radar",
+        "empty": "Belum ada peringatan.",
+        "unread": "{{count}} belum dibaca"
+      },
+      "identity": {
+        "open": "Buka Financial Identity",
+        "empty": "Catat aktivitas untuk mulai membangun skor Anda."
+      }
+    }
   },
   "nav": {
     "primary": "Navigasi utama",

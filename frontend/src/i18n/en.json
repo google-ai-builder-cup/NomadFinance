@@ -64,7 +64,34 @@
     "greeting": "Welcome, {{name}}",
     "greetingGeneric": "Welcome to NomadFinance",
     "subtitle": "Choose what you want to check today.",
-    "pillarsHeading": "Your tools"
+    "pillarsHeading": "Your tools",
+    "widgets": {
+      "loadError": "Could not load this.",
+      "contract": {
+        "open": "Open Contract Shield",
+        "empty": "Upload a contract to get started.",
+        "untitled": "Untitled contract",
+        "status": {
+          "uploaded": "Uploaded",
+          "processing": "Checking…",
+          "completed": "Checked",
+          "failed": "Couldn't check"
+        }
+      },
+      "remittance": {
+        "open": "Compare rates",
+        "description": "See what it really costs to send money from {{from}} to {{to}}."
+      },
+      "radar": {
+        "open": "Open Exploitation Radar",
+        "empty": "No alerts yet.",
+        "unread": "{{count}} unread"
+      },
+      "identity": {
+        "open": "Open Financial Identity",
+        "empty": "Log activity to start building your score."
+      }
+    }
   },
   "nav": {
     "primary": "Main navigation",
