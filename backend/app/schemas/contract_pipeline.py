@@ -27,6 +27,10 @@ PipelineErrorCode = Literal[
 ]
 
 
+# Why a complaint letter is still pending (letter.py); the app words each one.
+LetterPendingReason = Literal["ai_daily_limit", "ai_busy", "ai_failed", "no_template"]
+
+
 class ContractUploadResponse(BaseModel):
     """Response of `POST /api/v1/contracts` (NF-P2-007): the stored contract after step 1."""
 
@@ -77,6 +81,12 @@ class ContractAnalysis(BaseModel):
     complaint_pending: bool = Field(
         default=False,
         description="The letter failed for a passing reason; analyze again to write only it.",
+    )
+    complaint_pending_reason: LetterPendingReason | None = Field(
+        default=None,
+        description="Why the letter is pending: `ai_daily_limit` (the AI service's daily quota "
+        "is used up: tomorrow), `ai_busy` (overloaded or slow: minutes), `ai_failed` (an "
+        "unusable answer), `no_template` (the country's template is not loaded).",
     )
 
 

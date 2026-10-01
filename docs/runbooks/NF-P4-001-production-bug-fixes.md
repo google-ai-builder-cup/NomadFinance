@@ -19,13 +19,24 @@ A test with a new user on the production site found four bugs, and a review list
 
 No new package, no new environment variable, no security-rule change. One shared-file change is proposed, not made (D-68).
 
+### Follow-up the same day: why a letter is pending
+
+In production, pressing **Write the letter** answered "could not be written yet. Please try again in a few minutes." The logs showed `pipeline_letter_pending reason=GeminiRateLimitError` after `429 RESOURCE_EXHAUSTED ... exceeded your current quota` on `gemini-3.5-flash`: the free tier's **daily** quota was used up, so "a few minutes" was wrong.
+
+- `GeminiRateLimitError.daily` is read from the quota id in the 429's details (`...PerDay...`); only the quota ids are read, never the rest of the response.
+- The letter step returns a reason (`ai_daily_limit`, `ai_busy`, `ai_failed`, `no_template`), stored on the contract as `complaint_pending_reason` and returned by analyze.
+- The report's letter box words each reason ("used up today's limit … try again tomorrow", "busy … a few minutes", …) in the six languages.
+
+Fix for the quota itself: wait for the reset (midnight Pacific, 07:00 UTC) or enable billing on the Gemini key (D-58, D-13).
+
 ## Files
 
 | File | Change |
 |---|---|
 | `backend/app/repositories/radar_repo.py` | `reports_since(since)`: one range on `created_at`; `flagged_entities(type)` |
 | `backend/app/services/radar/alerts.py` | One read for all corridors; `_on_corridor` (route, or host country); a failed read still expires alerts |
-| `backend/app/services/contract/letter.py`, `pipeline.py` | Missing template → pending; `letter_missing` catches letters lost under the old rule |
+| `backend/app/services/contract/letter.py`, `pipeline.py`, `report_store.py`, `schemas/contract_pipeline.py` | Missing template → pending; `letter_missing` catches letters lost under the old rule; `complaint_pending_reason` |
+| `backend/app/integrations/gemini/errors.py`, `client.py` | `GeminiRateLimitError.daily` from the 429's quota id |
 | `backend/app/services/cross_pillar/contract_to_fib.py`, `repositories/fib_repo.py` | `contract_ref`; one contract salary per month; `delete_entry` |
 | `backend/app/services/fib/profile_builder.py` | `_contract_income_once_a_month`: repairs old contract income when read |
 | `backend/app/services/cross_pillar/radar_to_remittance.py` (was empty) | Flags providers from `radar_entities` (slug and aliases) |
@@ -37,9 +48,9 @@ No new package, no new environment variable, no security-rule change. One shared
 | `frontend/src/components/remittance/RecommendationCard.tsx` (new), `pages/remittance/RemittanceCompare.tsx` | "Get advice" |
 | `frontend/src/components/fib/CategorizeEntriesCard.tsx` (new), `utils/pendingCategories.ts` (new), `pages/fib/FIBDashboard.tsx` | "Sort my bills" |
 | `frontend/src/pages/contract/ContractList.tsx`, `ContractReport.tsx` (were empty), `router.tsx`, `ContractUpload.tsx`, `components/dashboard/RecentContractsWidget.tsx` | Contract history |
-| `frontend/src/components/contract/ReportCard.tsx` | "Write the letter" when a letter is missing |
+| `frontend/src/components/contract/ReportCard.tsx`, `utils/letterPending.ts` (new) | "Write the letter" when a letter is missing, with the reason it is still pending |
 | `frontend/src/services/*`, `hooks/*`, `types/*` | Reads and calls for the above |
-| `frontend/src/i18n/{6 languages}.json` | 35 strings |
+| `frontend/src/i18n/{6 languages}.json` | 39 strings |
 | `frontend/firestore.indexes.json` | The two composite indexes the code needs |
 | `docs/...` | `firestore-schema.md` (indexes), `radar.md`, `contracts.md`, `fib.md`, `endpoints.md`, `contract-shield.md`, `remittance-xray.md`, NF-P3-004 and NF-P2-007 runbooks (superseded decisions), `deferred-items.md` (D-67 to D-71) |
 
@@ -168,10 +179,10 @@ Old contracts: open each from **Contracts → Past checks** and press **Write th
 | Check | Result |
 |---|---|
 | Backend `ruff check .`, `black --check .`, `mypy app` | Pass |
-| Backend `pytest -q` (with and without Google credentials) | 947 passed, 66 skipped |
+| Backend `pytest -q` (with and without Google credentials) | 955 passed, 66 skipped (8 added for the pending reasons) |
 | Repository tests on a cleared emulator | 19 passed (they fail on an emulator still holding live test data, which they read) |
 | Frontend `tsc -b`, `pnpm lint`, `prettier --check` | Pass |
-| Frontend `vitest run src`, `pnpm build` | 191 passed (20 files); build passes |
+| Frontend `vitest run src`, `pnpm build` | 196 passed (21 files); build passes |
 | A test can fail | With the host-country rule removed from `_on_corridor`, exactly `test_reports_naming_only_a_host_country_count_on_each_of_its_corridors` failed; the old letter test ("missing template is final") failed against the new rule before it was rewritten |
 
 **Production evidence before the fix** (read-only: Cloud Run logs and one Firestore listing): every alert run since 2026-09-30 logged `radar_surge_detection_failed` on all six corridors and `created=0`; the decoded index request in the error asks for `corridor_id` ASC, `created_at` ASC, `__name__` ASC; trends returned 3–4 points for every period; `complaint_templates` had no documents while `labor_laws` had all six countries; letters logged `reason=no_template`.
@@ -200,7 +211,8 @@ Old contracts: open each from **Contracts → Past checks** and press **Write th
 | Alerts page still empty after the deploy | No business has 2+ reports on one route in 7 days, or the job has not run yet: force it (step 4) and read its log line. `radar_reports_read_failed` means Firestore was unreachable for that run |
 | `radar_surge_detection_failed` after the deploy | The old revision is still serving: check the backend deploy workflow finished |
 | Chart note "Rate history starts on …" in production | The backfill has not run (step 4) |
-| "Write the letter" stays with "could not be written yet" | Gemini busy, or the templates still not loaded (logs: `pipeline_letter_pending reason=...`) |
+| "Write the letter" says "used up today's limit" | Gemini free-tier daily quota (429). Wait for 07:00 UTC or enable billing on the key |
+| "Write the letter" says "busy" or "not available yet" | Gemini overloaded, or the templates not loaded (logs: `pipeline_letter_pending reason=...`) |
 | No verified employment after a contract check | The profile is rebuilt weekly; force `fib-recompute` (step 4). Only an employment contract with a stated salary counts |
 | "Get advice" says the AI service is busy | Gemini 503/429 (D-58); try again in a minute |
 
@@ -218,7 +230,7 @@ Old contracts: open each from **Contracts → Past checks** and press **Write th
 - [x] shadcn/ui and Tailwind
 - [x] Mobile: the reopened report and letter were checked at phone width
 - [x] Loading and error states on every new card and page
-- [x] i18n: 35 strings in 6 languages
+- [x] i18n: 39 strings in 6 languages
 - [x] Accessibility: headings, `aria-live` on new results, `role="alert"` errors
 - [ ] Screenshots in the PR: yours to add
 - [ ] Slow 3G: not run

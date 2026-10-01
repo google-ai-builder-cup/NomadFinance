@@ -372,7 +372,13 @@
         "body": "Lumalabag sa batas ang kontratang ito, pero hindi pa naisusulat ang liham ng reklamo nito.",
         "stillPending": "Hindi pa naisulat ang liham. Pakisubukan ulit pagkalipas ng ilang minuto.",
         "action": "Isulat ang liham",
-        "writing": "Isinusulat…"
+        "writing": "Isinusulat…",
+        "reason": {
+          "ai_daily_limit": "Naubos na ng AI service ang limitasyon nito para sa araw na ito, kaya hindi maisusulat ang liham ngayon. Pakisubukan ulit bukas.",
+          "ai_busy": "Abala ang AI service ngayon. Pakisubukan ulit pagkalipas ng ilang minuto.",
+          "ai_failed": "Nagbigay ang AI service ng sagot na hindi namin magamit. Pakisubukan ulit.",
+          "no_template": "Wala pang liham ng reklamo para sa bansang ito. Pakisubukan ulit mamaya."
+        }
       }
     },
     "history": {

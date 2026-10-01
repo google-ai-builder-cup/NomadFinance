@@ -5,6 +5,7 @@ import type {
   ContractAnalysis,
   PipelineErrorCode,
   PipelineStep,
+  LetterPendingReason,
 } from "@/types/contract";
 import type { HostCountry, JobType, LanguageCode } from "@/types/enums";
 import { errorMessageKey } from "@/utils/errors";
@@ -38,6 +39,7 @@ export interface ContractProgressDoc {
   clause_counts?: ClauseCounts;
   report_languages?: LanguageCode[];
   complaint_pending?: boolean;
+  complaint_pending_reason?: LetterPendingReason | null;
 }
 
 /** Where the page is: sending the file, waiting for the analysis, or stopped by an error. */
@@ -183,5 +185,6 @@ export function analysisFromDoc(
     report_language: reportLanguage,
     report_languages: doc.report_languages ?? [],
     complaint_pending: doc.complaint_pending ?? false,
+    complaint_pending_reason: doc.complaint_pending ? (doc.complaint_pending_reason ?? null) : null,
   };
 }

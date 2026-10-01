@@ -169,10 +169,12 @@ async def analyze_contract(
         if reused.complaint_pending or await letter_missing(
             contracts, uid, contract_id, reused.clause_counts.danger
         ):
-            written = await add_pending_letter(
+            reason = await add_pending_letter(
                 contracts, deps.templates, deps.gemini, uid, contract_id, contract, language
             )
-            return reused.model_copy(update={"complaint_pending": not written})
+            return reused.model_copy(
+                update={"complaint_pending": reason is not None, "complaint_pending_reason": reason}
+            )
         return reused
     if not await run_in_threadpool(contracts.claim_for_analysis, uid, contract_id, STALE_ANALYSIS):
         raise AnalysisInProgressError(contract_id)
@@ -238,10 +240,10 @@ async def analyze_contract(
         except Exception:
             logger.warning("pipeline_fib_income_failed", exc_info=True)
 
-        complaint, letter_pending = None, False
+        complaint, letter_reason = None, None
         if comparison.clause_counts.danger:
             await enter("complaint")
-            complaint, letter_pending = await write_letter(
+            complaint, letter_reason = await write_letter(
                 host, comparison.clauses, facts, language, deps.templates, deps.gemini
             )
             # A background signal to Exploitation Radar (NF-P2-021): never lets a Firestore
@@ -269,7 +271,8 @@ async def analyze_contract(
             "prompt_versions": current_prompt_versions(),
             "models": model_ids(),
             # None removes the field: only a passing failure leaves the letter pending.
-            "complaint_pending": True if letter_pending else None,
+            "complaint_pending": True if letter_reason else None,
+            "complaint_pending_reason": letter_reason,
         }
         if language != SOURCE_LANGUAGE:
             await enter("translate", **analysis_fields)

@@ -372,7 +372,13 @@
         "body": "This contract breaks the law, but its complaint letter has not been written yet.",
         "stillPending": "The letter could not be written yet. Please try again in a few minutes.",
         "action": "Write the letter",
-        "writing": "Writing…"
+        "writing": "Writing…",
+        "reason": {
+          "ai_daily_limit": "The AI service has used up today's limit, so the letter cannot be written today. Please try again tomorrow.",
+          "ai_busy": "The AI service is busy right now. Please try again in a few minutes.",
+          "ai_failed": "The AI service gave an answer we could not use. Please try again.",
+          "no_template": "Complaint letters for this country are not available yet. Please try again later."
+        }
       }
     },
     "history": {

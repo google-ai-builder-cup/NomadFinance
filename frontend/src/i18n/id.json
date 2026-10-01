@@ -372,7 +372,13 @@
         "body": "Kontrak ini melanggar hukum, tetapi surat pengaduannya belum ditulis.",
         "stillPending": "Surat belum bisa ditulis. Silakan coba lagi dalam beberapa menit.",
         "action": "Tulis suratnya",
-        "writing": "Menulis…"
+        "writing": "Menulis…",
+        "reason": {
+          "ai_daily_limit": "Layanan AI sudah mencapai batas hari ini, jadi surat tidak bisa ditulis hari ini. Silakan coba lagi besok.",
+          "ai_busy": "Layanan AI sedang sibuk. Silakan coba lagi dalam beberapa menit.",
+          "ai_failed": "Layanan AI memberi jawaban yang tidak bisa kami gunakan. Silakan coba lagi.",
+          "no_template": "Surat pengaduan untuk negara ini belum tersedia. Silakan coba lagi nanti."
+        }
       }
     },
     "history": {

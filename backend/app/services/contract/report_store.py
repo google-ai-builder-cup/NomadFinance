@@ -186,6 +186,9 @@ def stored_analysis(
         report_language=language,
         report_languages=cast(list[ReportLanguage], languages),
         complaint_pending=bool(contract.get("complaint_pending")),
+        complaint_pending_reason=(
+            contract.get("complaint_pending_reason") if contract.get("complaint_pending") else None
+        ),
     )
 
 

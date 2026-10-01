@@ -558,6 +558,7 @@ The endpoints above run one step each and store nothing. These three run the who
   - `host_country`, `job_type`, `health_score`, `risk_level`, `clause_counts`
   - `report_language`, `report_languages` (alphabetically sorted — not source-language-first; e.g. `["bn", "en"]`, not `["en", "bn"]`)
   - `complaint_pending`: the letter failed for a passing reason; call analyze again to write only the letter
+  - `complaint_pending_reason`: why, while `complaint_pending` is true, else `null`: `ai_daily_limit` (Gemini's daily quota is used up: comes back tomorrow), `ai_busy` (overloaded, per-minute limit or timeout: minutes), `ai_failed` (an unusable answer), `no_template` (the host country's template is not loaded in that Firestore)
 - **Stored:**
   - the contract's `detected`, `extracted`, `host_country`, `job_type`, scores, `law_version`, `prompt_versions`, `models`
   - `reports/en`: the analysis in English, with the complaint letter when a term is danger

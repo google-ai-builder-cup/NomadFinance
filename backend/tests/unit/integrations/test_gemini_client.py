@@ -220,3 +220,49 @@ async def test_logs_token_usage(caplog: pytest.LogCaptureFixture) -> None:
     assert fields["total_tokens"] == 19
     assert fields["attempts"] == 2
     assert any(r.getMessage().startswith("gemini_retry") for r in caplog.records)
+
+
+def _quota_error(quota_id: str) -> genai_errors.APIError:
+    return genai_errors.ClientError(
+        429,
+        {
+            "error": {
+                "code": 429,
+                "message": "You exceeded your current quota",
+                "status": "RESOURCE_EXHAUSTED",
+                "details": [
+                    {
+                        "@type": "type.googleapis.com/google.rpc.QuotaFailure",
+                        "violations": [{"quotaId": quota_id}],
+                    }
+                ],
+            }
+        },
+    )
+
+
+@pytest.mark.parametrize(
+    ("quota_id", "daily"),
+    [
+        ("GenerateRequestsPerDayPerProjectPerModel-FreeTier", True),
+        ("GenerateRequestsPerMinutePerProjectPerModel-FreeTier", False),
+    ],
+)
+async def test_a_rate_limit_says_whether_the_daily_quota_ran_out(
+    quota_id: str, daily: bool
+) -> None:
+    client, _ = make_client([_quota_error(quota_id)], gemini_max_attempts=1)
+
+    with pytest.raises(GeminiRateLimitError) as raised:
+        await generate(client)
+    assert raised.value.daily is daily
+
+
+async def test_a_rate_limit_without_quota_details_is_not_daily() -> None:
+    client, _ = make_client(
+        [api_error(genai_errors.ClientError, 429, "RESOURCE_EXHAUSTED")], gemini_max_attempts=1
+    )
+
+    with pytest.raises(GeminiRateLimitError) as raised:
+        await generate(client)
+    assert raised.value.daily is False

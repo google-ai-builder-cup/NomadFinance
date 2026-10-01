@@ -66,7 +66,16 @@ export interface ContractAnalysis {
   report_languages: LanguageCode[];
   /** The letter failed for a passing reason; analyze again to write only it. */
   complaint_pending: boolean;
+  /** Why it is pending; absent from a backend older than 2026-10-01. */
+  complaint_pending_reason?: LetterPendingReason | null;
 }
+
+/**
+ * Why a complaint letter is still pending (backend `LetterPendingReason`): the AI service's
+ * daily quota is used up (tomorrow), it is busy (minutes), it gave an unusable answer, or the
+ * country's template is not loaded.
+ */
+export type LetterPendingReason = "ai_daily_limit" | "ai_busy" | "ai_failed" | "no_template";
 
 /**
  * `users/{uid}/contracts/{contractId}`'s light fields, read straight from Firestore for the

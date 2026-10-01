@@ -10,6 +10,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import type { ClauseRisk, ContractAnalysis, ContractReport } from "@/types/contract";
 import { RISK_BADGE_CLASSES } from "@/utils/contractRisk";
+import { letterPendingKey } from "@/utils/letterPending";
 import { requestFailureKey } from "@/utils/pipelineProgress";
 
 export interface ReportCardProps {
@@ -33,7 +34,14 @@ function opensByDefault(risk: ClauseRisk): boolean {
 function MissingLetter({ analysis }: { analysis: ContractAnalysis }) {
   const { t } = useI18n();
   const write = useWriteMissingLetter();
-  const stillPending = write.isSuccess && write.data.complaint_pending;
+  // The latest try's reason, else the one stored from the check itself.
+  const pending = write.isSuccess
+    ? write.data.complaint_pending
+      ? { reason: write.data.complaint_pending_reason }
+      : null
+    : analysis.complaint_pending
+      ? { reason: analysis.complaint_pending_reason }
+      : null;
 
   return (
     <section
@@ -43,11 +51,12 @@ function MissingLetter({ analysis }: { analysis: ContractAnalysis }) {
       <h2 id="contract-missing-letter" className="font-semibold">
         {t("contract.complaint.missing.title")}
       </h2>
-      <p className="text-sm text-muted-foreground">
-        {stillPending
-          ? t("contract.complaint.missing.stillPending")
-          : t("contract.complaint.missing.body")}
-      </p>
+      <p className="text-sm text-muted-foreground">{t("contract.complaint.missing.body")}</p>
+      {pending && (
+        <p className="text-sm" aria-live="polite">
+          {t(letterPendingKey(pending.reason))}
+        </p>
+      )}
       {write.isError && (
         <p role="alert" className="text-sm text-destructive">
           {t(requestFailureKey(write.error))}

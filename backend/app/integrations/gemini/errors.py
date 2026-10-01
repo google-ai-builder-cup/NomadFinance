@@ -14,7 +14,15 @@ class GeminiRequestError(GeminiError):
 
 
 class GeminiRateLimitError(GeminiError):
-    """Quota or rate limit hit (HTTP 429) and still hit after all retries."""
+    """Quota or rate limit hit (HTTP 429) and still hit after all retries.
+
+    `daily` is True when the exhausted quota is a per-day one (it comes back tomorrow, not
+    in a minute), read from the quota id Google sends with the 429.
+    """
+
+    def __init__(self, message: str, *, daily: bool = False) -> None:
+        super().__init__(message)
+        self.daily = daily
 
 
 class GeminiUnavailableError(GeminiError):

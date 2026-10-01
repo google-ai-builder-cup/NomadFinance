@@ -16,13 +16,19 @@ from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
 
-from app.integrations.gemini import GeminiClient, GeminiError
+from app.integrations.gemini import (
+    GeminiClient,
+    GeminiError,
+    GeminiRateLimitError,
+    GeminiTimeoutError,
+    GeminiUnavailableError,
+)
 from app.repositories.complaint_template_repo import ComplaintTemplateRepository
 from app.repositories.contract_repo import ContractRepository
 from app.schemas.contract import HostCountryCode, ReportLanguage
 from app.schemas.contract_compare import ComparedClause
 from app.schemas.contract_complaint import ContractComplaint, ContractFacts
-from app.schemas.contract_pipeline import ContractReport
+from app.schemas.contract_pipeline import ContractReport, LetterPendingReason
 from app.services.contract.complaint import (
     ComplaintIncompleteError,
     ComplaintTemplateNotFoundError,
@@ -39,16 +45,23 @@ async def write_letter(
     language: ReportLanguage,
     templates: ComplaintTemplateRepository,
     gemini: GeminiClient,
-) -> tuple[ContractComplaint | None, bool]:
-    """The complaint letter, and whether it is still pending (worth trying again later)."""
+) -> tuple[ContractComplaint | None, LetterPendingReason | None]:
+    """The complaint letter, or why it is still pending (worth trying again later)."""
     try:
-        return await generate_complaint(host, clauses, facts, language, templates, gemini), False
+        return await generate_complaint(host, clauses, facts, language, templates, gemini), None
     except ComplaintTemplateNotFoundError:
+        reason: LetterPendingReason = "no_template"
         logger.warning("pipeline_letter_pending reason=no_template country=%s", host)
-        return None, True
+    except GeminiRateLimitError as exc:
+        reason = "ai_daily_limit" if exc.daily else "ai_busy"
+        logger.warning("pipeline_letter_pending reason=%s", reason)
+    except (GeminiUnavailableError, GeminiTimeoutError):
+        reason = "ai_busy"
+        logger.warning("pipeline_letter_pending reason=ai_busy")
     except (GeminiError, ComplaintIncompleteError) as exc:
-        logger.warning("pipeline_letter_pending reason=%s", type(exc).__name__)
-        return None, True
+        reason = "ai_failed"
+        logger.warning("pipeline_letter_pending reason=ai_failed error=%s", type(exc).__name__)
+    return None, reason
 
 
 async def add_pending_letter(
@@ -59,23 +72,30 @@ async def add_pending_letter(
     contract_id: str,
     contract: dict[str, Any],
     language: ReportLanguage,
-) -> bool:
+) -> LetterPendingReason | None:
     """Write the letter an earlier failure left out and add it to every stored report.
 
     Returns:
-        True when the letter was written.
+        None when the letter was written, else why it is still pending (also stored on the
+        contract, so a reopened report can say why).
     """
     stored = await run_in_threadpool(contracts.get_report, uid, contract_id, "en")
     if stored is None:
-        return False
+        return "ai_failed"
     source = ContractReport.model_validate(stored)
     clauses = [ComparedClause.model_validate(clause.model_dump()) for clause in source.clauses]
     facts = ContractFacts.model_validate(contract.get("extracted") or {})
-    letter, pending = await write_letter(
+    letter, reason = await write_letter(
         contract["host_country"], clauses, facts, language, templates, gemini
     )
-    if pending:
-        return False
+    if reason is not None:
+        await run_in_threadpool(
+            contracts.update,
+            uid,
+            contract_id,
+            {"complaint_pending": True, "complaint_pending_reason": reason},
+        )
+        return reason
     complaint = letter.model_dump(mode="json") if letter is not None else None
     for report_language in contract.get("report_languages", []):
         report = await run_in_threadpool(contracts.get_report, uid, contract_id, report_language)
@@ -83,8 +103,13 @@ async def add_pending_letter(
             await run_in_threadpool(
                 contracts.save_report, uid, contract_id, report | {"complaint": complaint}
             )
-    await run_in_threadpool(contracts.update, uid, contract_id, {"complaint_pending": None})
-    return True
+    await run_in_threadpool(
+        contracts.update,
+        uid,
+        contract_id,
+        {"complaint_pending": None, "complaint_pending_reason": None},
+    )
+    return None
 
 
 async def letter_missing(

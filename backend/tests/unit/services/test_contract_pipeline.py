@@ -4,7 +4,13 @@ from typing import cast
 
 import pytest
 
-from app.integrations.gemini import GeminiClient, GeminiUnavailableError
+from app.integrations.gemini import (
+    GeminiClient,
+    GeminiRateLimitError,
+    GeminiResponseError,
+    GeminiTimeoutError,
+    GeminiUnavailableError,
+)
 from app.schemas.contract_pipeline import AnalyzeRequest
 from app.services.contract import letter, pipeline, report_store, upload
 from app.services.contract.complaint import ComplaintTemplateNotFoundError
@@ -360,13 +366,16 @@ async def test_a_missing_complaint_template_keeps_the_report_and_the_letter_pend
     result = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
 
     assert (result.status, result.complaint_pending) == ("completed", True)
+    assert result.complaint_pending_reason == "no_template"
     assert contracts.reports[(UID, contract_id, "en")]["complaint"] is None
     del steps.fail["complaint"]
 
     again = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
 
     assert (again.cached, again.complaint_pending) == (True, False)
+    assert again.complaint_pending_reason is None
     assert contracts.reports[(UID, contract_id, "en")]["complaint"] is not None
+    assert "complaint_pending_reason" not in contracts.contracts[(UID, contract_id)]
 
 
 async def test_a_letter_missing_under_the_old_rule_is_written_on_the_next_analyze(
@@ -586,3 +595,28 @@ async def test_ensure_report_needs_a_current_analysis(
         await ensure_report(contracts, laws, GEMINI, UID, contract_id, "hi")  # type: ignore[arg-type]
     with pytest.raises(ContractNotFoundError):
         await ensure_report(contracts, laws, GEMINI, UID, "C0000000000000000404", "hi")  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("failure", "reason"),
+    [
+        (GeminiRateLimitError("429", daily=True), "ai_daily_limit"),
+        (GeminiRateLimitError("429"), "ai_busy"),
+        (GeminiUnavailableError("503"), "ai_busy"),
+        (GeminiTimeoutError("slow"), "ai_busy"),
+        (GeminiResponseError("bad answer"), "ai_failed"),
+    ],
+)
+async def test_a_pending_letter_says_why_and_the_next_try_updates_it(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, failure: Exception, reason: str
+) -> None:
+    steps.fail["complaint"] = failure
+    contract_id = await _upload(contracts)
+
+    first = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+    steps.fail["complaint"] = GeminiRateLimitError("429", daily=True)
+    again = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert (first.complaint_pending, first.complaint_pending_reason) == (True, reason)
+    assert (again.complaint_pending, again.complaint_pending_reason) == (True, "ai_daily_limit")
+    assert contracts.contracts[(UID, contract_id)]["complaint_pending_reason"] == "ai_daily_limit"

@@ -159,12 +159,29 @@ class GeminiClient:
             # Only the code/status/message are kept: the raw response JSON can echo prompt data.
             detail = f"{model}: {exc.code} {exc.status} {exc.message}"
             if exc.code == 429:
-                raise GeminiRateLimitError(detail) from exc
+                raise GeminiRateLimitError(detail, daily=is_daily_quota(exc.details)) from exc
             raise GeminiRequestError(detail) from exc
         except genai_errors.ServerError as exc:
             raise GeminiUnavailableError(f"{model}: {exc.code} {exc.status} {exc.message}") from exc
         except httpx.TransportError as exc:
             raise GeminiUnavailableError(f"{model}: network error ({type(exc).__name__})") from exc
+
+
+def is_daily_quota(details: object) -> bool:
+    """Whether a 429's details name a per-day quota (a `quotaId` such as
+    "GenerateRequestsPerDayPerProjectPerModel-FreeTier"). Only quota ids are read: the rest of
+    the response can echo prompt data."""
+    pending: list[object] = [details]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, dict):
+            for key, value in item.items():
+                if key == "quotaId" and isinstance(value, str) and "PerDay" in value:
+                    return True
+                pending.append(value)
+        elif isinstance(item, list):
+            pending.extend(item)
+    return False
 
 
 def _parse(
