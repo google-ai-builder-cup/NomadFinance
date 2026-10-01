@@ -19,6 +19,7 @@ from app.repositories.complaint_template_repo import (
     get_complaint_template_repository,
 )
 from app.repositories.contract_repo import ContractRepository, get_contract_repository
+from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
@@ -112,8 +113,9 @@ def get_pipeline_deps(
     laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
     templates: Annotated[ComplaintTemplateRepository, Depends(get_complaint_template_repository)],
     radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
 ) -> PipelineDeps:
-    return PipelineDeps(gemini, contracts, users, laws, templates, radar)
+    return PipelineDeps(gemini, contracts, users, laws, templates, radar, fib)
 
 
 @router.post(

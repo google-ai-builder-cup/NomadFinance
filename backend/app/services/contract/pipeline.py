@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
 from fastapi.concurrency import run_in_threadpool
@@ -23,6 +23,7 @@ from app.integrations.gemini import (
 )
 from app.repositories.complaint_template_repo import ComplaintTemplateRepository
 from app.repositories.contract_repo import ContractRepository
+from app.repositories.fib_repo import FibRepository
 from app.repositories.labor_law_repo import LaborLawRepository
 from app.repositories.radar_repo import RadarRepository
 from app.repositories.user_repo import UserRepository
@@ -50,6 +51,7 @@ from app.services.contract.report_store import (
     stored_analysis,
     translate_and_store,
 )
+from app.services.cross_pillar.contract_to_fib import log_contract_income
 from app.services.cross_pillar.contract_to_radar import create_radar_signals
 
 logger = logging.getLogger(__name__)
@@ -84,6 +86,7 @@ class PipelineDeps:
     laws: LaborLawRepository
     templates: ComplaintTemplateRepository
     radar: RadarRepository
+    fib: FibRepository
 
 
 # --- fallbacks (D-55) -------------------------------------------------------------------
@@ -223,6 +226,15 @@ async def analyze_contract(
             raise PipelineStopError("compare", "not_employment_contract") from exc
         except NoTermsError as exc:
             raise PipelineStopError("compare", "no_terms") from exc
+
+        # Financial Identity Builder (NF-P3-024): never lets a Firestore hiccup here cost the
+        # worker their own report, the same resilience as the radar signal below.
+        try:
+            await log_contract_income(
+                uid, contract_id, detected.document_kind, facts, deps.fib, datetime.now(UTC)
+            )
+        except Exception:
+            logger.warning("pipeline_fib_income_failed", exc_info=True)
 
         complaint, letter_pending = None, False
         if comparison.clause_counts.danger:

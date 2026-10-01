@@ -126,6 +126,16 @@ class FakeRadar:
         self.reports[report_id] = report
 
 
+class FakeFib:
+    """FibRepository in memory (NF-P3-024 only needs `save_entry`)."""
+
+    def __init__(self) -> None:
+        self.docs: dict[str, dict[str, Any]] = {}
+
+    def save_entry(self, uid: str, kind: str, entry_id: str, data: dict[str, Any]) -> None:
+        self.docs[f"{uid}/{kind}/{entry_id}"] = copy.deepcopy(data)
+
+
 # --- the Gemini steps -------------------------------------------------------------------
 
 
