@@ -424,6 +424,10 @@
         "toastSuccess": "Transfer tercatat."
       }
     },
+    "flagged": {
+      "label": "Ditandai komunitas",
+      "detail": "Ditandai komunitas: {{number}} laporan pekerja tentang {{firm}}. Lihat detail."
+    },
     "trend": {
       "heading": "Riwayat kurs",
       "periodLabel": "Periode waktu",

@@ -424,6 +424,10 @@
         "toastSuccess": "Transfer logged."
       }
     },
+    "flagged": {
+      "label": "Community flagged",
+      "detail": "Community flagged: {{number}} worker reports about {{firm}}. View details."
+    },
     "trend": {
       "heading": "Rate history",
       "periodLabel": "Time period",

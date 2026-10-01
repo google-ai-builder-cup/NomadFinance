@@ -424,6 +424,10 @@
         "toastSuccess": "Na-log ang padala."
       }
     },
+    "flagged": {
+      "label": "Na-flag ng komunidad",
+      "detail": "Na-flag ng komunidad: {{number}} ulat ng mga manggagawa tungkol sa {{firm}}. Tingnan ang detalye."
+    },
     "trend": {
       "heading": "Kasaysayan ng palitan",
       "periodLabel": "Tagal ng panahon",
