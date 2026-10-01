@@ -76,6 +76,22 @@ def test_pdf_carries_the_clauses_in_plain_text(contract: Any) -> None:
         assert f"({issue.clause}. ".encode() in data
 
 
+def test_a_checkout_with_crlf_line_endings_still_matches_and_uploads_the_same_bytes(
+    tmp_path: Path,
+) -> None:
+    shutil.copytree(SEED_CONTRACTS_DIR, tmp_path / "c")
+    for pdf in (tmp_path / "c").glob("*.pdf"):
+        pdf.write_bytes(
+            sample_contract_pdf.read_pdf(pdf).replace(b"\n", b"\r\n")
+        )  # what autocrlf does
+
+    assert sample_contract_pdf.build(tmp_path / "c" / "source", tmp_path / "c", check=True) == []
+    bucket = _Bucket()
+    upload_all(bucket, load(tmp_path / "c"), tmp_path / "c")
+    committed = sample_contract_pdf.read_pdf(SEED_CONTRACTS_DIR / "sg_domestic_worker.pdf")
+    assert bucket.store[PREFIX + "sg_domestic_worker.pdf"].data == committed
+
+
 def test_text_outside_windows_1252_is_rejected() -> None:
     with pytest.raises(UnicodeEncodeError):
         sample_contract_pdf.render_pdf("# Title\n\nPay: ₹500", "Title")

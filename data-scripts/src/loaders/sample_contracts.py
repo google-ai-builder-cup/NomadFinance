@@ -28,6 +28,7 @@ from pydantic import ValidationError
 
 from src.config import SEED_CONTRACTS_DIR
 from src.firestore_client import get_firebase_app
+from src.loaders.sample_contract_pdf import read_pdf
 from src.validators.sample_contract import Manifest, SampleContract, load
 
 log = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ def upload_all(bucket: Any, manifest: Manifest, directory: Path) -> tuple[int, i
     for contract in manifest.contracts:
         name = PREFIX + contract.file
         wanted.add(name)
-        data = (directory / contract.file).read_bytes()
+        data = read_pdf(directory / contract.file)
         meta = object_metadata(contract)
         blob = bucket.get_blob(name)
         if blob is not None and blob.md5_hash == _md5(data) and (blob.metadata or {}) == meta:

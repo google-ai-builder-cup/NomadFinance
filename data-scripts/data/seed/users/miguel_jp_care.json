@@ -1,0 +1,439 @@
+{
+  "_comment": "NF-P3-021. Fictional demo worker: Miguel, care worker in Saitama, sends money to the Philippines. Dates are months_ago/day, relative to the day the loader runs. Salary figure follows his sample contract (NF-P3-020) net of its dormitory and support-fee deductions; DCOM Money Express fees and rates follow the World Bank RPW JP-PH survey (2025 Q1); Kapitan Padala is the invented operator flagged in the radar seed; everything else is invented.",
+  "uid": "uid_miguel_demo",
+  "user": {
+    "home_country": "PH",
+    "host_country": "JP",
+    "job_type": "care_worker",
+    "preferred_language": "tl"
+  },
+  "income": [
+    {
+      "id": "demo_i_01",
+      "months_ago": 5,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd.",
+      "notes": "Net pay, after dormitory and support-fee deductions"
+    },
+    {
+      "id": "demo_i_02",
+      "months_ago": 4,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd."
+    },
+    {
+      "id": "demo_i_03",
+      "months_ago": 3,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd."
+    },
+    {
+      "id": "demo_i_04",
+      "months_ago": 2,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd."
+    },
+    {
+      "id": "demo_i_05",
+      "months_ago": 1,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd."
+    },
+    {
+      "id": "demo_i_06",
+      "months_ago": 0,
+      "day": 25,
+      "amount": 152000,
+      "currency": "JPY",
+      "category": "salary",
+      "employer_name": "Sakura Gardens Care Co., Ltd."
+    },
+    {
+      "id": "demo_i_07",
+      "months_ago": 4,
+      "day": 25,
+      "amount": 18000,
+      "currency": "JPY",
+      "category": "overtime",
+      "employer_name": "Sakura Gardens Care Co., Ltd.",
+      "notes": "Night shifts"
+    },
+    {
+      "id": "demo_i_08",
+      "months_ago": 2,
+      "day": 25,
+      "amount": 24000,
+      "currency": "JPY",
+      "category": "overtime",
+      "employer_name": "Sakura Gardens Care Co., Ltd.",
+      "notes": "Night shifts"
+    },
+    {
+      "id": "demo_i_09",
+      "months_ago": 1,
+      "day": 25,
+      "amount": 21000,
+      "currency": "JPY",
+      "category": "overtime",
+      "employer_name": "Sakura Gardens Care Co., Ltd.",
+      "notes": "Night shifts"
+    },
+    {
+      "id": "demo_i_10",
+      "months_ago": 3,
+      "day": 12,
+      "amount": 30000,
+      "currency": "JPY",
+      "category": "bonus",
+      "employer_name": "Sakura Gardens Care Co., Ltd.",
+      "notes": "Attendance bonus"
+    }
+  ],
+  "transfers": [
+    {
+      "id": "demo_t_01",
+      "months_ago": 5,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "Kapitan Padala",
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 21228.96,
+      "receive_currency": "PHP",
+      "fee": 1500.0,
+      "mid_market_rate": 0.376,
+      "cost_pct": 5.9
+    },
+    {
+      "id": "demo_t_02",
+      "months_ago": 4,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "Kapitan Padala",
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 21301.98,
+      "receive_currency": "PHP",
+      "fee": 1500.0,
+      "mid_market_rate": 0.3785,
+      "cost_pct": 6.2
+    },
+    {
+      "id": "demo_t_03",
+      "months_ago": 3,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "Kapitan Padala",
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 21308.04,
+      "receive_currency": "PHP",
+      "fee": 1500.0,
+      "mid_market_rate": 0.377,
+      "cost_pct": 5.8
+    },
+    {
+      "id": "demo_t_04",
+      "months_ago": 2,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "DCOM Money Express",
+      "provider_rpw_id": 521253120,
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 22349.88,
+      "receive_currency": "PHP",
+      "fee": 1000.0,
+      "mid_market_rate": 0.3801,
+      "cost_pct": 2.0,
+      "notes": "Switched after the community warning in Exploitation Radar"
+    },
+    {
+      "id": "demo_t_05",
+      "months_ago": 1,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "DCOM Money Express",
+      "provider_rpw_id": 521253120,
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 22296.96,
+      "receive_currency": "PHP",
+      "fee": 1000.0,
+      "mid_market_rate": 0.3792,
+      "cost_pct": 2.0
+    },
+    {
+      "id": "demo_t_06",
+      "months_ago": 0,
+      "day": 26,
+      "corridor_id": "JP-PH",
+      "provider_name": "DCOM Money Express",
+      "provider_rpw_id": 521253120,
+      "send_amount": 60000,
+      "send_currency": "JPY",
+      "receive_amount": 22243.19,
+      "receive_currency": "PHP",
+      "fee": 1000.0,
+      "mid_market_rate": 0.3779,
+      "cost_pct": 1.9
+    }
+  ],
+  "bills": [
+    {
+      "id": "demo_b_01",
+      "months_ago": 5,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_02",
+      "months_ago": 4,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_03",
+      "months_ago": 3,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_04",
+      "months_ago": 2,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_05",
+      "months_ago": 1,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_06",
+      "months_ago": 0,
+      "day": 5,
+      "amount": 3800,
+      "currency": "JPY",
+      "vendor": "Example Mobile",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "bill_ocr",
+      "category_confidence": 0.97,
+      "bill_day": 3,
+      "extraction": {
+        "confidence": 0.93,
+        "model": "gemini-3.5-flash-lite",
+        "prompt_version": 1
+      }
+    },
+    {
+      "id": "demo_b_07",
+      "months_ago": 5,
+      "day": 3,
+      "amount": 6000,
+      "currency": "JPY",
+      "vendor": "Example Rail",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95
+    },
+    {
+      "id": "demo_b_08",
+      "months_ago": 4,
+      "day": 3,
+      "amount": 6000,
+      "currency": "JPY",
+      "vendor": "Example Rail",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95
+    },
+    {
+      "id": "demo_b_09",
+      "months_ago": 3,
+      "day": 3,
+      "amount": 6000,
+      "currency": "JPY",
+      "vendor": "Example Rail",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95
+    },
+    {
+      "id": "demo_b_10",
+      "months_ago": 2,
+      "day": 3,
+      "amount": 6000,
+      "currency": "JPY",
+      "vendor": "Example Rail",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95
+    },
+    {
+      "id": "demo_b_11",
+      "months_ago": 1,
+      "day": 3,
+      "amount": 6000,
+      "currency": "JPY",
+      "vendor": "Example Rail",
+      "paid": false,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.95
+    },
+    {
+      "id": "demo_b_12",
+      "months_ago": 3,
+      "day": 17,
+      "amount": 2400,
+      "currency": "JPY",
+      "vendor": "Urawa Family Clinic",
+      "paid": true,
+      "category": "medical",
+      "category_source": "user",
+      "source": "manual"
+    },
+    {
+      "id": "demo_b_13",
+      "months_ago": 2,
+      "day": 9,
+      "amount": 4500,
+      "currency": "JPY",
+      "vendor": "Language school",
+      "paid": true,
+      "category": "other_expense",
+      "category_source": "user",
+      "source": "manual",
+      "notes": "Japanese study books for the care-worker exam"
+    }
+  ],
+  "savings": [
+    {
+      "id": "demo_s_01",
+      "months_ago": 5,
+      "day": 27,
+      "amount": 35000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_02",
+      "months_ago": 4,
+      "day": 27,
+      "amount": 35000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_03",
+      "months_ago": 3,
+      "day": 27,
+      "amount": 35000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_04",
+      "months_ago": 2,
+      "day": 27,
+      "amount": 35000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_05",
+      "months_ago": 1,
+      "day": 27,
+      "amount": 35000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_06",
+      "months_ago": 0,
+      "day": 27,
+      "amount": 30000,
+      "currency": "JPY",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_07",
+      "months_ago": 2,
+      "day": 20,
+      "amount": 25000,
+      "currency": "JPY",
+      "direction": "withdrawal",
+      "account_type": "bank",
+      "notes": "Residence card renewal fee"
+    }
+  ]
+}

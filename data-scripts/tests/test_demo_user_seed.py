@@ -143,10 +143,13 @@ def test_one_bill_is_unpaid_and_both_entry_paths_appear(priya: UserSeed) -> None
     assert {b.category_source for b in priya.bills} == {"model", "user"}
 
 
-def test_the_other_demo_files_are_still_empty_stubs() -> None:
-    blanks = {p.stem for p in seed_files() if is_blank(p)}
-
-    assert blanks == {"miguel_jp_care", "rajesh_kr_manufacturing"}
+def test_all_three_demo_files_are_filled_in() -> None:
+    assert {p.stem for p in seed_files()} == {
+        "priya_sg_domestic",
+        "rajesh_kr_manufacturing",
+        "miguel_jp_care",
+    }
+    assert not [p for p in seed_files() if is_blank(p)]
 
 
 # --- dates ----------------------------------------------------------------------------
@@ -369,7 +372,8 @@ def test_main_dry_run_never_touches_firestore(
         assert main(["--dry-run"]) == 0
 
     assert "[dry-run] priya_sg_domestic.json -> users/uid_priya_demo" in caplog.text
-    assert "miguel_jp_care.json: empty, skipped" in caplog.text
+    assert "[dry-run] miguel_jp_care.json -> users/uid_miguel_demo" in caplog.text
+    assert "[dry-run] rajesh_kr_manufacturing.json -> users/uid_rajesh_demo" in caplog.text
 
 
 def test_main_writes_under_a_chosen_uid(monkeypatch: pytest.MonkeyPatch) -> None:

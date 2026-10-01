@@ -174,6 +174,12 @@ def title_of(text: str) -> str:
     return first[2:].strip()
 
 
+def read_pdf(path: Path) -> bytes:
+    """The PDF's bytes as built. On Windows, git's autocrlf can turn the line feeds of these
+    all-ASCII files into CRLF at checkout, which shifts the xref offsets; undo that."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def build(source_dir: Path, out_dir: Path, *, check: bool = False) -> list[str]:
     """Write (or with check=True, only compare) every PDF; returns the stems that differ."""
     stale: list[str] = []
@@ -181,7 +187,7 @@ def build(source_dir: Path, out_dir: Path, *, check: bool = False) -> list[str]:
         text = source.read_text(encoding="utf-8")
         data = render_pdf(text, title_of(text))
         target = out_dir / f"{source.stem}.pdf"
-        if target.exists() and target.read_bytes() == data:
+        if target.exists() and read_pdf(target) == data:
             continue
         stale.append(source.stem)
         if not check:
