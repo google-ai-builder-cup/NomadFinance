@@ -43,6 +43,8 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/fib/bill/scan` | Firebase ID token | 10/min per user (AI calls) | NF-P3-011 |
 | POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
+| POST | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
+| GET | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | POST | `/api/v1/internal/recompute-fib-profiles` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-013 |
@@ -1243,6 +1245,44 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/f
   ],
   "skipped": 0,
   "remaining": 0
+}
+```
+
+---
+
+## `POST /api/v1/fib/report/export`, `GET /api/v1/fib/report/export`
+
+The portable Financial Identity report as a PDF (NF-P3-014), made with weasyprint from the worker's current `users/{uid}/financial_profile/current`. It does not recompute the profile (that is the weekly job, NF-P3-013); the PDF prints the date the profile was computed. No Gemini call, so only the API-wide rate limit applies.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>`
+- **`POST`** — body (optional): `holder_name` (up to 100 characters; blank is ignored). It is printed on the PDF only and never stored. Renders the PDF, stores it at `exports/{uid}/financial-identity-{timestamp}.pdf`, sets `latest_export` on the profile, deletes the previous export (a worker has at most one PDF), and returns `201`.
+- **`GET`** — a fresh signed link to the latest export without rendering it again (links are made on request and never stored). `200`, same response shape.
+- **Response:** `ExportReportResponse` (`app/schemas/fib_export.py`): `download_url` (a V4 signed link; anyone who has it can download the PDF), `expires_at`, `created_at` (when the PDF was made), `language`, `filename`. The link lasts `EXPORT_URL_EXPIRY_MINUTES` (default 1440, 24 hours) and downloads the file as `financial-identity-report.pdf`.
+- **Content:** title, period, months of records, reporting currency, dates; entry counts; the four metric scores as bars (`Not enough records` for a metric with no score); the narrative; verified employment (employer and salary) when the profile has it; a disclaimer. The overall score is left out on purpose (it is an average of this project's own formulas and could be read as a credit score). No uid, email or phone.
+- **Language:** the profile narrative's (`en`, `hi`, `tl`, `id`, `ne`, `bn`); the headings and disclaimer come from `app/services/fib/report_labels.py`.
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 404 | `No Financial Identity profile yet. It is computed weekly from your logged activity.` | `POST` before the first weekly recompute |
+| 404 | `No report has been exported yet.` | `GET` before any export |
+| 422 | FastAPI validation list | `holder_name` longer than 100 characters |
+| 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
+
+Example (bash; in PowerShell use `curl.exe`):
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"holder_name": "Priya Sharma"}' http://127.0.0.1:8080/api/v1/fib/report/export
+```
+
+```json
+{
+  "download_url": "https://storage.googleapis.com/nomadfinance-prod.firebasestorage.app/exports/uid_priya_demo/financial-identity-20261002T093015Z.pdf?X-Goog-Algorithm=...",
+  "expires_at": "2026-10-03T09:30:15Z",
+  "created_at": "2026-10-02T09:30:15Z",
+  "language": "hi",
+  "filename": "financial-identity-report.pdf"
 }
 ```
 

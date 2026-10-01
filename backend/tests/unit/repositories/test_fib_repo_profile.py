@@ -63,3 +63,13 @@ def test_list_user_ids_reads_ids_only() -> None:
 
     assert UserRepository(client).list_user_ids() == ["u1", "u2"]
     client.collection.return_value.select.assert_called_once_with([])
+
+
+def test_the_latest_export_is_set_on_the_profile_without_touching_the_rest() -> None:
+    client = MagicMock()
+    export = {"storage_path": "exports/u1/financial-identity-20261002T093015Z.pdf"}
+
+    FibRepository(client).set_latest_export("u1", export)
+
+    _profile_document(client).update.assert_called_once_with({"latest_export": export})
+    _profile_document(client).set.assert_not_called()

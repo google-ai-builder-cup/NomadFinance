@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from functools import lru_cache
 from typing import Any
 
 from firebase_admin import storage  # type: ignore[import-untyped]
 from google.api_core.exceptions import NotFound
+from google.auth.transport import requests as google_requests
+from google.oauth2 import service_account
 
 from app.config import get_settings
 from app.core.security import get_firebase_app
@@ -111,3 +114,80 @@ class BillImageStore:
 @lru_cache
 def get_bill_image_store() -> BillImageStore:
     return BillImageStore()
+
+
+class ExportStore:
+    """Stores the exported Financial Identity PDFs under `exports/{uid}/` (NF-P3-014).
+
+    The folder is one of `USER_FILE_FOLDERS`: `storage.rules` lets the owner read it and
+    account deletion removes it. A download link for someone else (a lender) is a signed URL.
+    """
+
+    def __init__(self, bucket: Any | None = None) -> None:
+        self._bucket = bucket
+
+    def _get_bucket(self) -> Any:
+        if self._bucket is None:
+            self._bucket = storage.bucket(
+                get_settings().firebase_storage_bucket, app=get_firebase_app()
+            )
+        return self._bucket
+
+    @staticmethod
+    def _check(uid: str, path: str) -> None:
+        # A uid with a slash, or a path outside the user's folder, would reach another
+        # user's files.
+        if not uid or "/" in uid or not path.startswith(f"exports/{uid}/") or ".." in path:
+            raise ValueError("Not a valid export path")
+
+    def upload(self, uid: str, filename: str, data: bytes) -> str:
+        """Write the PDF as `exports/{uid}/{filename}`; return its path."""
+        path = f"exports/{uid}/{filename}"
+        self._check(uid, path)
+        self._get_bucket().blob(path).upload_from_string(data, content_type="application/pdf")
+        return path
+
+    def delete(self, uid: str, path: str) -> None:
+        """Remove one export; a file that is already gone is not an error."""
+        self._check(uid, path)
+        try:
+            self._get_bucket().blob(path).delete()
+        except NotFound:
+            return
+
+    def signed_url(self, uid: str, path: str, expires: timedelta, download_name: str) -> str:
+        """A V4 signed GET link that downloads the file as `download_name`.
+
+        Cloud Run has no private key, so the link is signed through IAM as the service
+        account itself (it needs `roles/iam.serviceAccountTokenCreator` on itself). A key file
+        used locally signs directly.
+        """
+        self._check(uid, path)
+        credentials = get_firebase_app().credential.get_credential()
+        signing: dict[str, Any]
+        if isinstance(credentials, service_account.Credentials):
+            signing = {"credentials": credentials}
+        else:
+            if not credentials.valid:
+                credentials.refresh(google_requests.Request())
+            signing = {
+                "service_account_email": credentials.service_account_email,
+                "access_token": credentials.token,
+            }
+        return str(
+            self._get_bucket()
+            .blob(path)
+            .generate_signed_url(
+                version="v4",
+                expiration=expires,
+                method="GET",
+                response_type="application/pdf",
+                response_disposition=f'attachment; filename="{download_name}"',
+                **signing,
+            )
+        )
+
+
+@lru_cache
+def get_export_store() -> ExportStore:
+    return ExportStore()

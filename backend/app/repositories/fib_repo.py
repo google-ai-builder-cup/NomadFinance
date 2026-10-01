@@ -72,6 +72,10 @@ class FibRepository:
         carried = {key: current[key] for key in ("latest_export",) if key in current}
         self._profile(uid).set(profile | carried | {"schema_version": SCHEMA_VERSION})
 
+    def set_latest_export(self, uid: str, export: dict[str, Any]) -> None:
+        """Record the newest PDF on the profile; raises NotFound if there is no profile."""
+        self._profile(uid).update({"latest_export": export})
+
     def get_profile(self, uid: str) -> dict[str, Any] | None:
         snapshot = self._profile(uid).get()
         return snapshot.to_dict() if snapshot.exists else None

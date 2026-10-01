@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -9,7 +9,12 @@ from app.api.v1.contract_analysis import read_contract_upload
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
 from app.dependencies import get_current_user
-from app.integrations.cloud_storage import BillImageStore, get_bill_image_store
+from app.integrations.cloud_storage import (
+    BillImageStore,
+    ExportStore,
+    get_bill_image_store,
+    get_export_store,
+)
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.schemas.fib import (
@@ -22,8 +27,15 @@ from app.schemas.fib import (
     SavingsLogRequest,
     SavingsLogResponse,
 )
+from app.schemas.fib_export import ExportReportRequest, ExportReportResponse
 from app.schemas.user import AuthenticatedUser
 from app.services.fib.categorizer import categorize_pending
+from app.services.fib.exporter import (
+    NoExportError,
+    NoProfileError,
+    export_report,
+    latest_report_link,
+)
 from app.services.fib.logger import log_bill, log_income, log_savings
 from app.services.fib.ocr import BillUnreadableError, NotABillError, scan_bill
 
@@ -168,3 +180,73 @@ async def categorize_entries(
     nothing is pending makes no Gemini call.
     """
     return await categorize_pending(user.uid, gemini, fib)
+
+
+_EXPORT_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    404: {"description": "No profile to export yet, or nothing exported yet"},
+    422: {"description": "Invalid body"},
+    429: {"description": "Too many requests. Please wait a minute and try again."},
+}
+
+
+@router.post(
+    "/report/export",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ExportReportResponse,
+    responses=_EXPORT_ERROR_RESPONSES,
+    summary="Export your Financial Identity report as a PDF",
+)
+async def export_financial_report(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+    store: Annotated[ExportStore, Depends(get_export_store)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    body: ExportReportRequest | None = None,
+) -> ExportReportResponse:
+    """Make a PDF of your current Financial Identity profile and return a signed download link.
+
+    The PDF is the profile as last computed (weekly); it shows that date. It is written in the
+    language of the profile's report text. `holder_name` is optional, printed on the PDF only
+    and never stored. A new export replaces the previous PDF. The link works for
+    `EXPORT_URL_EXPIRY_MINUTES` (default 24 hours) and gives the PDF to anyone who has it.
+    """
+    try:
+        return await export_report(
+            user.uid,
+            body.holder_name if body else None,
+            fib,
+            store,
+            datetime.now(UTC),
+            timedelta(minutes=settings.export_url_expiry_minutes),
+        )
+    except NoProfileError as exc:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "No Financial Identity profile yet. It is computed weekly from your logged activity.",
+        ) from exc
+
+
+@router.get(
+    "/report/export",
+    response_model=ExportReportResponse,
+    responses=_EXPORT_ERROR_RESPONSES,
+    summary="Get a new download link for your latest exported report",
+)
+async def latest_financial_report(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+    store: Annotated[ExportStore, Depends(get_export_store)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> ExportReportResponse:
+    """A fresh signed link to the PDF you exported last, without making it again."""
+    try:
+        return await latest_report_link(
+            user.uid,
+            fib,
+            store,
+            datetime.now(UTC),
+            timedelta(minutes=settings.export_url_expiry_minutes),
+        )
+    except NoExportError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No report has been exported yet.") from exc

@@ -84,13 +84,15 @@ async def read_bill(data: bytes, mime_type: str, gemini: GeminiClient) -> Extrac
     timeout = (
         get_settings().gemini_extraction_timeout_seconds if mime_type == "application/pdf" else None
     )
+    # Annotated: with Pillow installed (weasyprint pulls it in) mypy would infer list[object].
+    contents: list[types.PartUnion] = [
+        types.Part.from_bytes(data=data, mime_type=mime_type),
+        EXTRACT_BILL_PROMPT.render_user(),
+    ]
     return await gemini.generate_structured(
         operation=EXTRACT_BILL_PROMPT.key,
         tier=ModelTier.EXTRACTION,
-        contents=[
-            types.Part.from_bytes(data=data, mime_type=mime_type),
-            EXTRACT_BILL_PROMPT.render_user(),
-        ],
+        contents=contents,
         response_model=ExtractedBill,
         system_instruction=EXTRACT_BILL_PROMPT.system,
         timeout_seconds=timeout,

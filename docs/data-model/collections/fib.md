@@ -182,7 +182,7 @@ The result of the weekly recompute (NF-P3-013). There is exactly one document pe
 | `overall_score` | number | yes | 0 to 100. The plain average of the metrics whose `score` is not `null`. |
 | `narrative` | map | yes | `{ "language": "en", "text": "...", "model": "..." }`: the report text from the reasoning tier |
 | `verified_employment` | array of map | no | From analysed contracts: `{ "employer_name", "salary_amount", "salary_currency", "contract_ref" }` |
-| `latest_export` | map | no | The last PDF (NF-P3-014): `{ "storage_path": "...", "created_at": ... }`. Download links are signed URLs made on request, never stored. The recompute carries this field over when it overwrites the document. |
+| `latest_export` | map | no | The last PDF (NF-P3-014): `{ "storage_path": "...", "created_at": ... }`. Download links are signed URLs made on request, never stored. The recompute carries this field over when it overwrites the document. Written by `POST /fib/report/export`, which also deletes the file the previous `storage_path` pointed to. |
 | `prompt_versions` | map | yes | Prompt versions used |
 | `computed_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
