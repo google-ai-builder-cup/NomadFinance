@@ -24,6 +24,7 @@ from app.services.contract.translator import TranslationIncompleteError
 from app.services.contract.upload import upload_contract
 from tests.fixtures.pipeline_fakes import (
     FakeContracts,
+    FakeFib,
     FakeLaws,
     FakeRadar,
     FakeTemplates,
@@ -72,10 +73,15 @@ def radar() -> FakeRadar:
 
 
 @pytest.fixture
+def fib() -> FakeFib:
+    return FakeFib()
+
+
+@pytest.fixture
 def deps(
-    contracts: FakeContracts, users: FakeUsers, laws: FakeLaws, radar: FakeRadar
+    contracts: FakeContracts, users: FakeUsers, laws: FakeLaws, radar: FakeRadar, fib: FakeFib
 ) -> PipelineDeps:
-    return PipelineDeps(GEMINI, contracts, users, laws, FakeTemplates(), radar)  # type: ignore[arg-type]
+    return PipelineDeps(GEMINI, contracts, users, laws, FakeTemplates(), radar, fib)  # type: ignore[arg-type]
 
 
 async def _upload(contracts: FakeContracts, data: bytes = FILE) -> str:
@@ -437,6 +443,75 @@ async def test_a_radar_write_failure_never_breaks_the_worker_s_report(
         raise RuntimeError("radar_reports is unreachable")
 
     monkeypatch.setattr(pipeline, "create_radar_signals", boom)
+    contract_id = await _upload(contracts)
+
+    result = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert result.status == "completed"
+    assert contracts.reports[(UID, contract_id, "en")]["complaint"] is not None
+
+
+# --- Financial Identity income (NF-P3-024) -----------------------------------------------
+
+
+async def test_an_employment_contract_logs_verified_income(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, fib: FakeFib
+) -> None:
+    contract_id = await _upload(contracts)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    stored = fib.docs[f"{UID}/income/contract_{contract_id}"]
+    assert stored["amount"] == 650
+    assert stored["verified"] is True
+    assert stored["source"] == "contract"
+
+
+async def test_no_salary_detected_logs_no_income(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, fib: FakeFib
+) -> None:
+    steps.detected = _detected(salary_amount=None, salary_currency=None)
+    contract_id = await _upload(contracts)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert fib.docs == {}
+
+
+async def test_a_recruitment_agreement_with_a_salary_figure_logs_no_income(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, fib: FakeFib
+) -> None:
+    steps.detected = _detected(document_kind="recruitment_agreement")
+    contract_id = await _upload(contracts)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert fib.docs == {}
+
+
+async def test_re_analysing_the_same_contract_updates_not_duplicates_the_income_entry(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, laws: FakeLaws, fib: FakeFib
+) -> None:
+    contract_id = await _upload(contracts)
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+    steps.detected = _detected(salary_amount=700)
+
+    await analyze_contract(UID, contract_id, AnalyzeRequest(host_country="MY"), deps)
+
+    assert len(fib.docs) == 1
+    assert fib.docs[f"{UID}/income/contract_{contract_id}"]["amount"] == 700
+
+
+async def test_a_fib_write_failure_never_breaks_the_worker_s_report(
+    steps: Steps,
+    contracts: FakeContracts,
+    deps: PipelineDeps,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def boom(*args: object, **kwargs: object) -> str | None:
+        raise RuntimeError("financial_profile is unreachable")
+
+    monkeypatch.setattr(pipeline, "log_contract_income", boom)
     contract_id = await _upload(contracts)
 
     result = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)

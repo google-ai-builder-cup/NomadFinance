@@ -20,6 +20,7 @@ from app.services.contract.extractor import NotADocumentError
 from app.services.contract.pipeline import PipelineDeps
 from tests.fixtures.pipeline_fakes import (
     FakeContracts,
+    FakeFib,
     FakeLaws,
     FakeRadar,
     FakeTemplates,
@@ -57,6 +58,7 @@ def app(steps: Steps, contracts: FakeContracts) -> FastAPI:
         FakeLaws(),  # type: ignore[arg-type]
         FakeTemplates(),  # type: ignore[arg-type]
         FakeRadar(),  # type: ignore[arg-type]
+        FakeFib(),  # type: ignore[arg-type]
     )
     app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="worker-1")
     app.dependency_overrides[get_pipeline_deps] = lambda: deps
