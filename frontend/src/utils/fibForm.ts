@@ -21,6 +21,11 @@ export const LOGGABLE_CURRENCIES: readonly string[] = Array.from(
 // The yen and the won have no minor unit.
 const ZERO_DECIMAL_CURRENCIES = new Set(["JPY", "KRW"]);
 
+/** Decimal places `currency` uses, for `formatMoney` and amount parsing alike. */
+export function currencyDecimals(currency: string): number {
+  return ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
+}
+
 export type AmountProblem = "empty" | "invalid" | "decimals";
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
@@ -31,7 +36,7 @@ export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: A
  * currency allows.
  */
 export function parseAmount(text: string, currency: string): AmountCheck {
-  const decimals = ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
+  const decimals = currencyDecimals(currency);
   const raw = text.replace(/[\s']/g, "");
   if (raw === "") {
     return { ok: false, problem: "empty" };

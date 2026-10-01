@@ -1,10 +1,17 @@
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+
+import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
 import type {
+  BillEntry,
   BillLogRequest,
   BillLogResponse,
   BillScanResponse,
+  FinancialProfile,
+  IncomeEntry,
   IncomeLogRequest,
   IncomeLogResponse,
+  SavingsEntry,
   SavingsLogRequest,
   SavingsLogResponse,
 } from "@/types/fib";
@@ -48,4 +55,42 @@ export async function logSavings(body: SavingsLogRequest): Promise<SavingsLogRes
     body: JSON.stringify(body),
   });
   return (await response.json()) as SavingsLogResponse;
+}
+
+/**
+ * `users/{uid}/financial_profile/current` (NF-P3-013's weekly recompute), straight from
+ * Firestore: the owner may read it (firestore.rules) and the backend writes it, not this app.
+ * Null when the cron has never found this worker enough activity to score (fib.md: it writes
+ * nothing at all for a worker with no scoreable entries, not a zeroed document).
+ */
+export async function getFinancialProfile(uid: string): Promise<FinancialProfile | null> {
+  const snapshot = await getDoc(doc(db, "users", uid, "financial_profile", "current"));
+  return snapshot.exists() ? (snapshot.data() as FinancialProfile) : null;
+}
+
+async function listEntries<T>(
+  uid: string,
+  kind: "income" | "bills" | "savings",
+  sinceIsoDate: string
+): Promise<T[]> {
+  const snapshot = await getDocs(
+    query(collection(db, "users", uid, kind), where("entry_date", ">=", sinceIsoDate))
+  );
+  return snapshot.docs.map((document) => ({ id: document.id, ...document.data() }) as T);
+}
+
+/** Income entries on or after `sinceIsoDate` (`YYYY-MM-DD`), for the timeline dashboard
+ * (NF-P3-017). Straight from Firestore, same access as `getFinancialProfile`. */
+export function listIncomeEntries(uid: string, sinceIsoDate: string): Promise<IncomeEntry[]> {
+  return listEntries<IncomeEntry>(uid, "income", sinceIsoDate);
+}
+
+/** Bill entries on or after `sinceIsoDate`, for the timeline dashboard. */
+export function listBillEntries(uid: string, sinceIsoDate: string): Promise<BillEntry[]> {
+  return listEntries<BillEntry>(uid, "bills", sinceIsoDate);
+}
+
+/** Savings entries on or after `sinceIsoDate`, for the timeline dashboard. */
+export function listSavingsEntries(uid: string, sinceIsoDate: string): Promise<SavingsEntry[]> {
+  return listEntries<SavingsEntry>(uid, "savings", sinceIsoDate);
 }
