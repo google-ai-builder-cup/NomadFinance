@@ -3,10 +3,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useContractParties } from "@/hooks/useContract";
 import {
   getEntityReports,
+  listActiveRouteAlerts,
   listRadarEntities,
   submitReport,
   uploadEvidence,
 } from "@/services/radarService";
+import type { CorridorId } from "@/types/enums";
 import type { RadarEntityProfile, RadarReportRequest, RadarReportResponse } from "@/types/radar";
 import { type FlaggedParty, findFlaggedParties } from "@/utils/flaggedParties";
 import { findFlaggedEntity } from "@/utils/flaggedProviders";
@@ -111,4 +113,14 @@ export function useFlaggedParties(contractId: string): FlaggedParty[] {
   const parties = useContractParties(contractId);
   const entities = useRadarEntities();
   return parties.data === undefined ? [] : findFlaggedParties(parties.data, entities.data ?? []);
+}
+
+/** The alerts still active on the worker's routes (`alertRoutes`), newest first. */
+export function useRouteAlerts(corridors: readonly CorridorId[]) {
+  return useQuery({
+    queryKey: ["routeAlerts", [...corridors]] as const,
+    queryFn: () => listActiveRouteAlerts(corridors),
+    enabled: corridors.length > 0,
+    staleTime: 60_000,
+  });
 }

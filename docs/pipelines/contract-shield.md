@@ -170,7 +170,8 @@ POST /contracts/{id}/analyze (optional choices)      pipeline.py
   step 2 detect      → country / job / language: choice > detected > profile (D-55)
   step 3 law         → labor_laws/{country}
   step 4 compare     → clauses, score
-  step 6 complaint   → letter.py: only when a term is danger; a passing failure = complaint_pending
+  step 6 complaint   → letter.py: only when a term is danger; a passing failure (Gemini, or the
+                      template not loaded) = complaint_pending; the report page offers "Write the letter"
   store reports/en, then the analysis fields on the contract
   step 5 translate   → reports/{worker language} when it isn't English
   status completed; on any failure: status failed, error {step, code}, then the HTTP error

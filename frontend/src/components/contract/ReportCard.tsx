@@ -5,10 +5,12 @@ import ComplaintPreview from "@/components/contract/ComplaintPreview";
 import FlaggedParties from "@/components/contract/FlaggedParties";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { useWriteMissingLetter } from "@/hooks/useContract";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import type { ClauseRisk, ContractAnalysis, ContractReport } from "@/types/contract";
 import { RISK_BADGE_CLASSES } from "@/utils/contractRisk";
+import { requestFailureKey } from "@/utils/pipelineProgress";
 
 export interface ReportCardProps {
   /** Score, risk level and counts (`POST .../analyze`, or rebuilt from the contract document). */
@@ -21,6 +23,43 @@ export interface ReportCardProps {
 // clause starts closed; anything worth a flag starts open.
 function opensByDefault(risk: ClauseRisk): boolean {
   return risk !== "safe";
+}
+
+/**
+ * An unlawful clause but no complaint letter yet: the AI service failed when it was due, or
+ * (before the fix for this) the letter templates were not loaded. Writing it again reuses
+ * the stored analysis, so it costs one AI call, not a new check.
+ */
+function MissingLetter({ analysis }: { analysis: ContractAnalysis }) {
+  const { t } = useI18n();
+  const write = useWriteMissingLetter();
+  const stillPending = write.isSuccess && write.data.complaint_pending;
+
+  return (
+    <section
+      aria-labelledby="contract-missing-letter"
+      className="space-y-3 rounded-lg border border-dashed p-4"
+    >
+      <h2 id="contract-missing-letter" className="font-semibold">
+        {t("contract.complaint.missing.title")}
+      </h2>
+      <p className="text-sm text-muted-foreground">
+        {stillPending
+          ? t("contract.complaint.missing.stillPending")
+          : t("contract.complaint.missing.body")}
+      </p>
+      {write.isError && (
+        <p role="alert" className="text-sm text-destructive">
+          {t(requestFailureKey(write.error))}
+        </p>
+      )}
+      <Button size="sm" onClick={() => write.mutate(analysis)} disabled={write.isPending}>
+        {write.isPending
+          ? t("contract.complaint.missing.writing")
+          : t("contract.complaint.missing.action")}
+      </Button>
+    </section>
+  );
 }
 
 /**
@@ -126,7 +165,11 @@ export default function ReportCard({ analysis, report }: ReportCardProps) {
         </section>
       )}
 
-      {report.complaint && <ComplaintPreview complaint={report.complaint} />}
+      {report.complaint ? (
+        <ComplaintPreview complaint={report.complaint} />
+      ) : (
+        analysis.clause_counts.danger > 0 && <MissingLetter analysis={analysis} />
+      )}
     </div>
   );
 }

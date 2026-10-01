@@ -1,4 +1,4 @@
-import type { CorridorId } from "@/types/enums";
+import type { CorridorId, LanguageCode } from "@/types/enums";
 
 /** Body of `POST /api/v1/remittance/compare`. `amount` is in the corridor's sending currency. */
 export interface RemittanceCompareRequest {
@@ -60,6 +60,12 @@ export interface ProviderResult {
   recipient_receives: number | null;
   lost_to_costs: number | null;
   less_than_best: number | null;
+  /**
+   * Workers reported it on the Exploitation Radar. It keeps its rank; advice passes over it.
+   * Optional: a response from a backend older than the flag simply has none.
+   */
+  flagged?: boolean;
+  flag_report_count?: number | null;
 }
 
 export interface ComparisonSummary {
@@ -206,4 +212,28 @@ export interface RemittanceSavings {
   /** Oldest first. */
   months: MonthlySavings[];
   survey: SurveyInfo;
+}
+
+/** Body of `POST /api/v1/remittance/recommend` (NF-P2-016). */
+export interface RemittanceRecommendRequest {
+  /** The unmodified response of `/remittance/compare`. */
+  comparison: RemittanceComparison;
+  /** The response of `/remittance/trends`, for the timing tip. */
+  trend?: RemittanceTrends | null;
+  target_language: LanguageCode;
+}
+
+/**
+ * Response of `POST /api/v1/remittance/recommend`. `recommended_firm` is the best-ranked
+ * provider workers have not flagged, chosen by the backend; the texts are in
+ * `target_language`.
+ */
+export interface RemittanceRecommendation {
+  corridor_id: CorridorId;
+  target_language: LanguageCode;
+  recommended_rpw_id: number;
+  recommended_firm: string;
+  headline: string;
+  explanation: string;
+  timing_tip: string | null;
 }

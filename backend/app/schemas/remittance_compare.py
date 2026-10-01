@@ -148,6 +148,14 @@ class ProviderResult(BaseModel):
     less_than_best: float | None = Field(
         description="What the best service gives the recipient over this one; 0 for rank 1."
     )
+    flagged: bool = Field(
+        default=False,
+        description="Workers have reported this service (Exploitation Radar): warn before "
+        "choosing it. It keeps its rank; the recommendation passes over it.",
+    )
+    flag_report_count: int | None = Field(
+        default=None, description="Reports behind the flag; null when not flagged."
+    )
 
 
 class ComparisonSummary(BaseModel):

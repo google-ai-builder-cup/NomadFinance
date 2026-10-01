@@ -1,14 +1,16 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 import { appCheckHeader } from "@/lib/appCheck";
 import { db } from "@/lib/firebase";
 import { apiRequest } from "@/services/apiClient";
+import type { CorridorId } from "@/types/enums";
 import type {
   RadarEntityProfile,
   RadarEvidenceResponse,
   RadarReportRequest,
   RadarReportResponse,
   RadarReportSummary,
+  RouteAlert,
 } from "@/types/radar";
 
 /**
@@ -60,4 +62,29 @@ export async function listRadarEntities(): Promise<RadarEntityProfile[]> {
 export async function getEntityReports(slug: string): Promise<RadarReportSummary[]> {
   const response = await apiRequest(`/api/v1/radar/entities/${slug}/reports`);
   return (await response.json()) as RadarReportSummary[];
+}
+
+/**
+ * The alerts still active on these routes, newest first (`radar_alerts/{corridor}/current`,
+ * readable by any signed-in user). Read directly rather than only through the worker's
+ * notifications: a notification is written once, when an alert is created, so a worker who
+ * joins or picks a route later would otherwise never see an alert that is still running.
+ */
+export async function listActiveRouteAlerts(
+  corridors: readonly CorridorId[]
+): Promise<RouteAlert[]> {
+  const perRoute = await Promise.all(
+    corridors.map(async (corridorId) => {
+      const snapshot = await getDocs(
+        query(
+          collection(db, "radar_alerts", corridorId, "current"),
+          where("status", "==", "active")
+        )
+      );
+      return snapshot.docs.map(
+        (alert) => ({ ...(alert.data() as Omit<RouteAlert, "id">), id: alert.id }) as RouteAlert
+      );
+    })
+  );
+  return perRoute.flat().sort((a, b) => b.created_at.toMillis() - a.created_at.toMillis());
 }

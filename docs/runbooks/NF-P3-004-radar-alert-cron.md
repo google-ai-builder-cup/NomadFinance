@@ -49,7 +49,7 @@ This task's one-line description hides a lot of unspecified surface — same sit
 5. **Subscriber matching has two cohorts** (`users.md`: "missing means all on for the user's own corridor"): explicit (`notification_prefs.radar_corridors` names the corridor) and default (no `notification_prefs` at all, or prefs that never narrowed to specific corridors, and the worker's own `host_country`+`home_country` happen to form this corridor). Two of onboarding's five home-country options (Nepal, Bangladesh) aren't in any of the 6 corridors, so those workers simply have no default corridor. `utils/corridors.py` is a plain 6-entry lookup table, not string-parsing `corridor_id`, so it doesn't depend on the id's own format staying "HOST-HOME".
 6. **`user_repo.py` was documented as read-only from the backend.** Removing an FCM token Firebase reports invalid is a narrow, real exception: a fact about delivery, not an edit to the worker's own choices. The docstring now says so explicitly rather than quietly breaking its own stated contract.
 7. **The endpoint always answers 200.** Unlike `/refresh-rates` (which answers 503 so Cloud Scheduler retries a partial failure), a bad corridor or a bad recipient here is caught and logged inside `run_aggregation` itself — retrying the *whole* run would re-detect the same surges (harmless, dedup catches it) but also re-attempt notifying everyone who already succeeded (not harmless: duplicate pushes). Failure isolation happens per-corridor and per-recipient instead.
-8. **Employer-type entities get no alerts.** `radar_alerts` is keyed by corridor only (`radar_alerts/{corridor}`), matching the design doc's own remittance-corridor framing ("3 workers in your corridor reported..."); an employer only ever has a `host_country`, not a `corridor_id`.
+8. **Superseded on 2026-10-01 (NF-P4-001-production-bug-fixes.md): employer reports now alert on every route from their host country.** Original decision: **Employer-type entities get no alerts.** `radar_alerts` is keyed by corridor only (`radar_alerts/{corridor}`), matching the design doc's own remittance-corridor framing ("3 workers in your corridor reported..."); an employer only ever has a `host_country`, not a `corridor_id`.
 9. **The per-report `summary` (pulled forward from NF-P3-001) is a plain, additive schema field, not a cache of anything the alert cron reads.** It exists for a future consumer (a report list, NF-P3-008's entity profile page) to show one line instead of the full `description`. The alert cron's own notification text is generated fresh, from facts aggregated across *multiple* reports — a single report's summary was never going to fit that job, which is exactly why the original NF-P3-001 "noticed, not fixed" note was based on a wrong assumption about what NF-P3-004 would need.
 10. **Evidence upload is a separate endpoint, not a field on `POST /radar/report`, and not a change to it at all.** `radar-evidence/{report_id}/` needs a real report id before anything can be filed under it, and switching the existing JSON endpoint to `multipart/form-data` to carry a file inline would have been a breaking change to an already-shipped, already-tested contract for no real benefit — a worker can just as easily attach evidence in a second call right after filing, or later.
 11. **Evidence ownership is checked by re-hashing the caller's uid and comparing it to the report's stored `reporter_hash`** — never a stored uid-to-report mapping, which radar's whole anonymity model is built to avoid. A `contract_signal`/`seed` report (no `reporter_hash`) always answers `404`, not `403`: there is no worker to check ownership against, and `404` doesn't confirm to a prober whether a given id exists versus simply isn't theirs.
@@ -80,14 +80,7 @@ Filling in `radar-aggregation.yaml` triggered `scheduler-deploy.yml` (an existin
 
 ## Manual test steps
 
-**The composite index must exist before this runs against real Firestore** (staging/prod, or a non-empty local emulator), or `reports_since` fails with `FailedPrecondition` on every corridor (caught and logged, not fatal, but nothing will ever alert). Same situation as NF-P3-002's vector index:
-
-```bash
-gcloud firestore indexes composite create --project nomadfinance-prod \
-  --collection-group=radar_reports --query-scope=COLLECTION \
-  --field-config=field-path=corridor_id,order=ascending \
-  --field-config=field-path=created_at,order=descending
-```
+**No composite index is needed any more** (2026-10-01, NF-P4-001-production-bug-fixes.md). The per-corridor query needed `corridor_id` asc + `created_at` **asc**; the index above (and in `firestore-schema.md`) said desc, so in production every run failed on every corridor and no alert was ever created. `reports_since` is now one `created_at` range over all corridors.
 
 Then, with the emulators running and `backend/.env.local` set up (same as every other task this session):
 

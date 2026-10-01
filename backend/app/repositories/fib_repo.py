@@ -55,6 +55,9 @@ class FibRepository:
         """Every entry of one kind as `(id, data)`. A user's log is a few dozen entries."""
         return [(doc.id, doc.to_dict() or {}) for doc in self._entries(uid, kind).stream()]
 
+    def delete_entry(self, uid: str, kind: EntryKind, entry_id: str) -> None:
+        self._entry(uid, kind, entry_id).delete()
+
     def update_entry(
         self, uid: str, kind: EntryKind, entry_id: str, fields: dict[str, Any]
     ) -> None:

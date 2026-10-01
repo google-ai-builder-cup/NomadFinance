@@ -3,6 +3,8 @@ import type { CorridorId } from "@/types/enums";
 import type {
   RemittanceCompareRequest,
   RemittanceComparison,
+  RemittanceRecommendation,
+  RemittanceRecommendRequest,
   RemittanceSavings,
   RemittanceTrends,
   TransferLogRequest,
@@ -68,4 +70,20 @@ export async function logTransfer(body: TransferLogRequest): Promise<TransferLog
     body: JSON.stringify(body),
   });
   return (await response.json()) as TransferLogResponse;
+}
+
+/**
+ * A short recommendation in the worker's language (`POST /api/v1/remittance/recommend`,
+ * NF-P2-016). One Gemini call: usually a few seconds, and counted in the AI budget (10 a
+ * minute per worker).
+ */
+export async function recommendRemittance(
+  body: RemittanceRecommendRequest
+): Promise<RemittanceRecommendation> {
+  const response = await apiRequest("/api/v1/remittance/recommend", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return (await response.json()) as RemittanceRecommendation;
 }

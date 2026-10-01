@@ -64,7 +64,7 @@ By team decision, this task gained the missing piece of Contract Shield (D-53): 
    - A different country or job chosen by the worker runs the analysis again.
 5. **Order inside analyze:** detect → law → compare → complaint → store `reports/en` and the analysis → translate. The analysis is stored before translating, so a failed translation only needs the translation again.
 6. **Stops with codes the app can show:** `poor_legibility`, `country_unknown`, `not_employment_contract`, `no_law_data`, `no_terms`, and the Gemini codes.
-7. **Letter pending instead of lost** (added after the live run, see Verified results). A country without a template is final: no letter.
+7. *(2026-10-01, NF-P4-001-production-bug-fixes.md: a missing template is now pending too: all six countries have one, so it means "not loaded yet", which is what happened in production.)* **Letter pending instead of lost** (added after the live run, see Verified results). A country without a template is final: no letter.
 8. **One analysis at a time per contract.** A Firestore transaction claims it (409 for a second request); after 16 minutes an abandoned claim is taken over.
 9. **Worker's copy of the letter:** written once, in the analysis language, and carried unchanged into other languages. Its `worker_language` field says which language that is. A copy per language would cost a reasoning call per switch. `contracts.md` is updated to match.
 10. **`is_source` now means "the English report the analysis wrote",** because the comparison writes in English. The data model said "the contract's own language".

@@ -2,9 +2,10 @@
 (docs/mermaid/exploitation-radar-pipeline.mmd) — detect surges, write and expire alerts.
 
 Runs every 6 hours (infra/cloud-scheduler/radar-aggregation.yaml). Reads raw `radar_reports`
-directly rather than NF-P3-003's `radar_entities`: entity aggregation keeps running totals,
-never a time-windowed count, and a surge is inherently about a recent window versus its own
-baseline. Who gets told about a freshly created alert, and in what words, is `notify.py`.
+(one date-range read for all corridors) rather than NF-P3-003's `radar_entities`: entity
+aggregation keeps running totals, never a time-windowed count, and a surge is inherently
+about a recent window versus its own baseline. Who gets told about a freshly created alert,
+and in what words, is `notify.py`.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ from app.schemas.radar_alert import (
 )
 from app.schemas.remittance_compare import CorridorId
 from app.services.radar.notify import notify_new_alert
+from app.utils.corridors import host_and_home
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +85,20 @@ def _detect_surges(
     return surges
 
 
+def _on_corridor(report: RadarReport, corridor_id: str) -> bool:
+    """Whether a report counts toward this corridor's surges.
+
+    A report on a route counts on that route. A report that names only a host country (an
+    employer, or a Contract Shield signal, which never knows the route) concerns every
+    worker there, so it counts on each corridor from that country.
+    """
+    if report.corridor_id is not None:
+        return report.corridor_id == corridor_id
+    return report.host_country == host_and_home(corridor_id)[0]
+
+
 async def _process_corridor(
-    corridor_id: str, radar: RadarRepository, now: datetime
+    corridor_id: str, all_reports: list[RadarReport], radar: RadarRepository, now: datetime
 ) -> tuple[list[tuple[str, RadarAlert]], int]:
     """Detect surges and expire stale alerts on one corridor.
 
@@ -92,10 +106,7 @@ async def _process_corridor(
         Newly created (alert_id, RadarAlert) pairs, and how many alerts were expired.
     """
     window_start = now - timedelta(days=WINDOW_DAYS)
-    baseline_start = now - timedelta(days=WINDOW_DAYS + BASELINE_DAYS)
-
-    raw_reports = await run_in_threadpool(radar.reports_since, corridor_id, baseline_start)
-    reports = [RadarReport.model_validate(raw) for raw in raw_reports]
+    reports = [r for r in all_reports if _on_corridor(r, corridor_id)]
     window_reports = [r for r in reports if r.created_at >= window_start]
     baseline_reports = [r for r in reports if r.created_at < window_start]
 
@@ -146,12 +157,21 @@ async def run_aggregation(
     alerts_expired = 0
     notifications_sent = 0
 
+    baseline_start = now - timedelta(days=WINDOW_DAYS + BASELINE_DAYS)
+    try:
+        raw_reports = await run_in_threadpool(radar.reports_since, baseline_start)
+    except GoogleAPICallError:
+        # Without the reports no surge can be found, but expiring old alerts still works.
+        logger.exception("radar_reports_read_failed")
+        raw_reports = []
+    reports = [RadarReport.model_validate(raw) for raw in raw_reports]
+
     for corridor_id in corridors:
         try:
-            created, expired = await _process_corridor(corridor_id, radar, now)
+            created, expired = await _process_corridor(corridor_id, reports, radar, now)
         except GoogleAPICallError:
-            # A missing composite index (FailedPrecondition) or a Firestore blip on one
-            # corridor must not stop the other five; the traceback keeps it visible in logs.
+            # A Firestore blip while reading or writing one corridor's alerts must not stop
+            # the other five; the traceback keeps it visible in the logs.
             logger.exception("radar_surge_detection_failed corridor=%s", corridor_id)
             continue
         alerts_expired += expired
@@ -160,8 +180,9 @@ async def run_aggregation(
             notifications_sent += await notify_new_alert(alert_id, alert, radar, users, gemini, now)
 
     logger.info(
-        "radar_aggregation corridors=%d created=%d expired=%d notified=%d",
+        "radar_aggregation corridors=%d reports=%d created=%d expired=%d notified=%d",
         len(corridors),
+        len(reports),
         alerts_created,
         alerts_expired,
         notifications_sent,

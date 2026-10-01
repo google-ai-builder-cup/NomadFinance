@@ -139,6 +139,16 @@ class RadarRepository(FirestoreRepository):
         snapshot = self._entities.document(slug).get()
         return snapshot.to_dict() if snapshot.exists else None
 
+    def flagged_entities(self, entity_type: str) -> list[dict[str, Any]]:
+        """Every flagged profile of one type (NF-P3-022's providers to warn about).
+
+        Two equality filters, which Firestore serves from its single-field indexes.
+        """
+        query = self._entities.where(filter=FieldFilter("flagged", "==", True)).where(
+            filter=FieldFilter("entity_type", "==", entity_type)
+        )
+        return [data for doc in query.stream() if (data := doc.to_dict()) is not None]
+
     def set_entity(self, entity: RadarEntity) -> None:
         """Overwrite `radar_entities/{entity.slug}` with the freshly recomputed profile."""
         # Not mode="json": the three timestamps must stay real datetimes (Firestore Timestamp,
@@ -146,15 +156,15 @@ class RadarRepository(FirestoreRepository):
         # an absent field, so this does not exclude_none either.
         self._entities.document(entity.slug).set(entity.model_dump())
 
-    def reports_since(self, corridor_id: str, since: datetime) -> list[dict[str, Any]]:
-        """Every report on one corridor created at or after `since`, for surge detection.
+    def reports_since(self, since: datetime) -> list[dict[str, Any]]:
+        """Every report created at or after `since`, on any corridor, for surge detection.
 
-        Needs the composite index `corridor_id` asc + `created_at` desc
-        (docs/data-model/firestore-schema.md); without it Firestore rejects the query.
+        One range filter on `created_at` only, which Firestore's automatic single-field index
+        serves: no composite index to forget (the per-corridor query this replaced needed one
+        that was never created, so the alert job failed on every corridor). The job splits
+        the reports per corridor itself; two weeks of reports is a small read.
         """
-        query = self.collection.where(filter=FieldFilter("corridor_id", "==", corridor_id)).where(
-            filter=FieldFilter("created_at", ">=", since)
-        )
+        query = self.collection.where(filter=FieldFilter("created_at", ">=", since))
         return [data for doc in query.stream() if (data := doc.to_dict()) is not None]
 
     @property

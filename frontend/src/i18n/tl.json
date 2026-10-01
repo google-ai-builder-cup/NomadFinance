@@ -366,7 +366,25 @@
       "copied": "Nakopya ang sulat sa clipboard.",
       "copyFailed": "Hindi namin nakopya ang sulat. Paki-kopya na lang ito nang manu-mano.",
       "printBlocked": "Paki-allow ang pop-ups para sa site na ito, pagkatapos ay subukan ulit i-download.",
-      "whereToSend": "Saan ito ipapadala"
+      "whereToSend": "Saan ito ipapadala",
+      "missing": {
+        "title": "Liham ng reklamo",
+        "body": "Lumalabag sa batas ang kontratang ito, pero hindi pa naisusulat ang liham ng reklamo nito.",
+        "stillPending": "Hindi pa naisulat ang liham. Pakisubukan ulit pagkalipas ng ilang minuto.",
+        "action": "Isulat ang liham",
+        "writing": "Isinusulat…"
+      }
+    },
+    "history": {
+      "title": "Mga kontrata mo",
+      "subtitle": "Lahat ng kontratang nasuri mo. Buksan ang isa para makita ulit ang ulat nito.",
+      "link": "Mga nakaraang pagsusuri",
+      "checkNew": "Suriin ang kontrata",
+      "emptyTitle": "Wala pang kontrata",
+      "loadError": "Hindi namin ma-load ang mga kontrata mo. Pakisubukan ulit.",
+      "back": "Lahat ng kontrata mo",
+      "notFinished": "Hindi pa buong nasuri ang kontratang ito. Suriin ito ulit para makakita ng ulat.",
+      "notFound": "Hindi mahanap ang kontratang ito."
     }
   },
   "remittance": {
@@ -452,7 +470,8 @@
       },
       "empty": "Wala pang kasaysayan ng palitan para sa panahong ito.",
       "notLoaded": "Hindi pa available ang kasaysayan ng palitan para sa corridor na ito.",
-      "loadError": "Hindi namin na-load ang kasaysayan ng palitan."
+      "loadError": "Hindi namin na-load ang kasaysayan ng palitan.",
+      "shortHistory": "Nagsisimula ang kasaysayan ng palitan sa {{date}}, kaya ang mga araw mula noon lang ang ipinapakita ng panahong ito. Mapupunan ang mas mahahabang panahon habang naiipon ang mga palitan."
     },
     "savings": {
       "heading": "Sa nakalipas na {{months}} buwan",
@@ -460,6 +479,13 @@
       "shortHistory": "{{months}} buwan lang ng kasaysayan ng palitan ang kasalukuyang available.",
       "notLoaded": "Hindi pa available ang mga numero ng matitipid para sa corridor na ito.",
       "loadError": "Hindi namin na-load ang mga numero ng matitipid."
+    },
+    "advice": {
+      "title": "Payo para sa iyo",
+      "intro": "Kumuha ng maikling paliwanag ng paghahambing na ito sa wika mo.",
+      "ask": "Humingi ng payo",
+      "writing": "Isinusulat…",
+      "disclaimer": "Isinulat ng AI mula sa paghahambing sa itaas. Tiyakin ang presyo sa serbisyo bago ka magpadala."
     }
   },
   "radar": {
@@ -616,7 +642,21 @@
       "emptyDescription": "Kapag na-report nang ilang beses ang isang negosyo, makikita mo rito ang alerto.",
       "unread": "Hindi pa nabasa: {{title}}",
       "pushToast": "May bago kang alerto",
-      "pushToastAction": "Tingnan"
+      "pushToastAction": "Tingnan",
+      "feedTitle": "Mga abiso mo",
+      "route": {
+        "title": "Aktibo sa mga ruta mo",
+        "summary": "Ini-report nang {{number}} beses sa nakaraang {{days}} araw: {{violation}}",
+        "severity": {
+          "info": "Bantayan",
+          "warning": "Babala",
+          "critical": "Seryoso"
+        },
+        "routes": "Ipinapakita ang mga alerto para sa {{routes}}.",
+        "noRoutes": "Walang napiling ruta para sa mga alerto.",
+        "chooseRoutes": "Pumili ng mga ruta sa profile mo",
+        "none": "Walang negosyong paulit-ulit na ini-report sa mga ruta mo ngayon."
+      }
     }
   },
   "errors": {
@@ -792,6 +832,13 @@
         "verifiedEmployment": "Beripikadong trabaho",
         "disclaimer": "Hindi ito credit score at hindi ito sinuri laban sa mga rekord ng bangko. Buod ito ng aktibidad na in-log ng manggagawa mismo."
       }
+    },
+    "categorize": {
+      "title": "Ayusin ang mga bayarin mo",
+      "pending": "Mga bayaring walang kategorya: {{number}}. Ayusin ang mga ito nang awtomatiko para makita kung saan napupunta ang pera mo.",
+      "done": "Naayos: {{sorted}}. Aayusin pa: {{left}}.",
+      "action": "Ayusin ang mga bayarin ko",
+      "working": "Inaayos…"
     }
   }
 }

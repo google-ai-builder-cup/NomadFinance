@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 import type { CorridorId, HostCountry, LanguageCode } from "@/types/enums";
 
 /** Same values as backend `RadarEntityType` (docs/data-model/collections/radar.md). */
@@ -89,4 +91,23 @@ export interface RadarEntityProfile {
   community_rating: number | null;
   risk_level: "low" | "medium" | "high";
   flagged: boolean;
+}
+
+/**
+ * `radar_alerts/{corridor}/current/{id}` (radar.md): a surge of reports about one business on
+ * one route, written by the alert job (NF-P3-004). Language-neutral: the page words it.
+ */
+export interface RouteAlert {
+  id: string;
+  corridor_id: CorridorId;
+  entity_slug: string;
+  entity_name: string;
+  violation_type: ViolationType;
+  window_days: number;
+  report_count: number;
+  baseline_count: number;
+  severity: "info" | "warning" | "critical";
+  status: "active" | "expired";
+  created_at: Timestamp;
+  expires_at: Timestamp;
 }

@@ -240,6 +240,28 @@ async def test_income_backed_by_a_contract_is_listed_and_flagged_to_the_prompt()
     assert "Example Household" not in gemini.calls[0]["contents"]
 
 
+async def test_contract_income_from_before_the_fix_is_repaired_when_read() -> None:
+    # Written without contract_ref, and two contracts checked in the same month.
+    data = _priya()
+    legacy = {"amount": 650, "currency": "SGD", "verified": True, "source": "contract"}
+    data["income"] += [
+        ("contract_c1", legacy | {"entry_date": "2026-09-02", "employer_name": "Old Draft"}),
+        ("contract_c2", legacy | {"entry_date": "2026-09-20", "employer_name": "Real Job"}),
+    ]
+    fib, gemini = FakeFib({"u1": data}), FakeGemini()
+
+    await _run(fib, FakeUsers({"u1": {"home_country": "IN"}}), gemini)
+
+    assert fib.saved["u1"]["verified_employment"] == [
+        {
+            "employer_name": "Real Job",
+            "salary_amount": 650,
+            "salary_currency": "SGD",
+            "contract_ref": "c2",
+        }
+    ]
+
+
 async def test_without_a_rate_to_the_home_currency_the_workers_own_currency_is_used() -> None:
     fib = FakeFib({"u1": _priya()})
     gemini = FakeGemini()

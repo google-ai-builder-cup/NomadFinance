@@ -13,7 +13,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | `contract/compare.v1` | Clause-by-clause check against the labor-law rules (NF-P2-004) | reasoning | `job_type`, `host_country_name`, `law_rules_json`, `contract_text` |
 | `contract/translate.v1` | Report into the worker's language (NF-P2-005, NF-P2-012) | classification | `target_language`, `report_json` |
 | `contract/complaint.v2` | Complaint letter from the authority template, for the authority and as a copy in the worker's language (NF-P2-006; v1 removed) | reasoning | `worker_language`, `template_json`, `violations_json`, `contract_facts_json` |
-| `remittance/recommend.v1` | Recommendation, written directly in the worker's language (NF-P2-016) | classification | `target_language`, `comparison_json` |
+| `remittance/recommend.v2` | Recommendation, written directly in the worker's language; passes over providers flagged on the Exploitation Radar (NF-P2-016; v1 removed) | classification | `target_language`, `comparison_json` |
 | `radar/extract_entity.v1` | Who and where a report is about (NF-P3-001) | extraction | `form_json`, `report_text` |
 | `radar/validate.v1` | Spam score, abuse, personal data (NF-P3-001) | classification | `entity_json`, `report_text` |
 | `radar/categorize.v1` | Violation type and a one-line English summary (NF-P3-001) | classification | `entity_json`, `report_text` |

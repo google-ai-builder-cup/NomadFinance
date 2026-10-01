@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import CategorizeEntriesCard from "@/components/fib/CategorizeEntriesCard";
 import CategoryBreakdown from "@/components/fib/CategoryBreakdown";
 import ScoreMeter from "@/components/fib/ScoreMeter";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,6 +70,7 @@ export default function FIBDashboard() {
       <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
         <FinancialTimeline income={income} bills={bills} currency={currency} />
       </Suspense>
+      <CategorizeEntriesCard bills={bills} />
       <CategoryBreakdown income={income} bills={bills} currency={currency} />
     </div>
   );

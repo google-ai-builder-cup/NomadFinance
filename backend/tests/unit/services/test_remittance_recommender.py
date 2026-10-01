@@ -270,7 +270,7 @@ async def test_calls_the_classification_tier_with_the_versioned_prompt() -> None
 
     call = fake.calls[0]
     assert RECOMMEND_PROMPT.key == "remittance.recommend"
-    assert RECOMMEND_PROMPT.version == 1
+    assert RECOMMEND_PROMPT.version == 2
     assert call["operation"] == "remittance.recommend"
     assert call["tier"] is ModelTier.CLASSIFICATION
     assert call["response_model"] is RecommendationAnswer
@@ -301,3 +301,66 @@ async def test_gemini_failures_are_left_for_the_api_error_handlers() -> None:
         await generate_recommendation(
             _sample_comparison(), None, "en", cast(GeminiClient, FakeGemini(Boom()))
         )
+
+
+# --- Radar flags (design doc cross-pillar flow: Radar -> Remittance) -----------------------
+
+
+def _flagged_comparison(*flagged: str) -> RemittanceComparison:
+    providers = [
+        _provider(521250759, "InstaReM", 1),
+        _provider(521250760, "Wise", 2, recipient_receives=24259.55, less_than_best=14.62),
+        _provider(521255281, "Maybank", 3, recipient_receives=21367.03, less_than_best=2907.14),
+    ]
+    return _comparison(
+        *(
+            (
+                p.model_copy(update={"flagged": True, "flag_report_count": 4})
+                if p.firm in flagged
+                else p
+            )
+            for p in providers
+        )
+    )
+
+
+async def test_a_flagged_top_provider_is_passed_over_for_the_next_unflagged_one() -> None:
+    fake = FakeGemini(_answer(best_provider="Wise"))
+
+    result = await generate_recommendation(
+        _flagged_comparison("InstaReM"), None, "en", cast(GeminiClient, fake)
+    )
+
+    assert (result.recommended_rpw_id, result.recommended_firm) == (521250760, "Wise")
+    sent = fake.calls[0]["contents"]
+    assert '"firm": "InstaReM"' in sent and '"flagged": true' in sent
+    assert '"flag_report_count": 4' in sent
+
+
+async def test_two_flagged_providers_at_the_top_lead_to_the_third() -> None:
+    fake = FakeGemini(_answer(best_provider="Maybank"))
+
+    result = await generate_recommendation(
+        _flagged_comparison("InstaReM", "Wise"), None, "en", cast(GeminiClient, fake)
+    )
+
+    assert result.recommended_firm == "Maybank"
+
+
+async def test_naming_the_flagged_top_provider_is_rejected() -> None:
+    fake = FakeGemini(_answer(best_provider="InstaReM"))
+
+    with pytest.raises(RecommendationIncompleteError, match="InstaReM"):
+        await generate_recommendation(
+            _flagged_comparison("InstaReM"), None, "en", cast(GeminiClient, fake)
+        )
+
+
+async def test_when_every_provider_is_flagged_the_top_ranked_one_is_recommended() -> None:
+    fake = FakeGemini(_answer())
+
+    result = await generate_recommendation(
+        _flagged_comparison("InstaReM", "Wise", "Maybank"), None, "en", cast(GeminiClient, fake)
+    )
+
+    assert result.recommended_firm == "InstaReM"

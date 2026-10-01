@@ -4,6 +4,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
 import FlaggedProviderBadge from "@/components/remittance/FlaggedProviderBadge";
+import RecommendationCard from "@/components/remittance/RecommendationCard";
 import SavingsCallout from "@/components/remittance/SavingsCallout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/hooks/useI18n";
@@ -126,6 +127,11 @@ function ComparisonSummaryCard({ comparison }: { comparison: RemittanceCompariso
   );
 }
 
+// A new comparison starts the advice card afresh; the same one keeps any advice already written.
+function compareKey(comparison: RemittanceComparison): string {
+  return `${comparison.corridor_id}/${comparison.send_amount}`;
+}
+
 /** Remittance X-Ray: choose a corridor and an amount, see what the services cost. */
 export default function RemittanceCompare() {
   const { t } = useI18n();
@@ -189,6 +195,7 @@ export default function RemittanceCompare() {
       {compare.data && !compare.isPending && (
         <>
           <ComparisonSummaryCard comparison={compare.data} />
+          <RecommendationCard key={compareKey(compare.data)} comparison={compare.data} />
           <SavingsCallout comparison={compare.data} />
           <ComparisonTable
             comparison={compare.data}

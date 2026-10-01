@@ -145,7 +145,9 @@ The running profile of one operator, agency or employer. The id is the slug of t
 
 The header document is `{ "corridor_id": "SG-IN", "active_count": 1, "updated_at": ... }`. It is what a corridor list reads to show a badge without loading the alerts.
 
-Each alert is language-neutral. The text a user sees is written into their own `notifications` document (see [users](users.md)), in their language.
+Each alert is language-neutral. The text a user sees is written into their own `notifications` document (see [users](users.md)), in their language, once, when the alert is created. The Alerts page also reads the active alerts of the worker's routes directly (signed-in users may read `radar_alerts`), so a worker who joins or picks a route later still sees them.
+
+**What counts on a corridor** (alert job, NF-P3-004, changed 2026-10-01): a report with a `corridor_id` counts on that route; a report with only a `host_country` (an employer, or a Contract Shield signal) counts on every corridor from that country, for example an SG employer on SG-PH and SG-IN.
 
 | Field | Type | Required | Description |
 |---|---|---|---|

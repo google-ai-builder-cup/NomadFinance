@@ -127,13 +127,24 @@ class FakeRadar:
 
 
 class FakeFib:
-    """FibRepository in memory (NF-P3-024 only needs `save_entry`)."""
+    """FibRepository in memory: what NF-P3-024's contract income needs."""
 
     def __init__(self) -> None:
         self.docs: dict[str, dict[str, Any]] = {}
 
     def save_entry(self, uid: str, kind: str, entry_id: str, data: dict[str, Any]) -> None:
         self.docs[f"{uid}/{kind}/{entry_id}"] = copy.deepcopy(data)
+
+    def list_entries(self, uid: str, kind: str) -> list[tuple[str, dict[str, Any]]]:
+        prefix = f"{uid}/{kind}/"
+        return [
+            (k[len(prefix) :], copy.deepcopy(v))
+            for k, v in self.docs.items()
+            if k.startswith(prefix)
+        ]
+
+    def delete_entry(self, uid: str, kind: str, entry_id: str) -> None:
+        self.docs.pop(f"{uid}/{kind}/{entry_id}", None)
 
 
 # --- the Gemini steps -------------------------------------------------------------------

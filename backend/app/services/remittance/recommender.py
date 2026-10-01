@@ -12,20 +12,35 @@ from app.utils.i18n import language_name
 
 # Loaded at import so a missing or malformed prompt file stops the app at startup. The
 # pipeline records RECOMMEND_PROMPT.key / .version wherever a recommendation is stored.
-RECOMMEND_PROMPT = load_prompt("remittance", "recommend", 1)
+RECOMMEND_PROMPT = load_prompt("remittance", "recommend", 2)
 
 
 class RecommendationIncompleteError(Exception):
-    """Gemini's answer is unusable: no text, or a provider not on the ranked list.
+    """Gemini's answer is unusable: no text, or a provider other than `recommended_provider`.
 
-    There is no radar-flag data yet (NF-P3-022), so the top-ranked comparable provider is
-    the only correct answer today; any other name is a wrong answer, not a legitimate
-    override, and is never shown to a worker.
+    That provider is decided here, from the ranking and the Radar flags, so any other name is
+    a wrong answer, not a legitimate override, and is never shown to a worker.
     """
 
 
+def recommended_provider(comparison: RemittanceComparison) -> ProviderResult:
+    """The highest-ranked comparable provider that workers have not flagged, or the
+    top-ranked one when every provider is flagged.
+
+    Raises:
+        RecommendationIncompleteError: The comparison has no ranked provider.
+    """
+    ranked = sorted(
+        (p for p in comparison.providers if p.comparable and p.rank is not None),
+        key=lambda p: p.rank or 0,
+    )
+    if not ranked:
+        raise RecommendationIncompleteError("the comparison has no ranked provider")
+    return next((p for p in ranked if not p.flagged), ranked[0])
+
+
 def _provider_json(provider: ProviderResult) -> dict[str, object]:
-    return {
+    data: dict[str, object] = {
         "rank": provider.rank,
         "firm": provider.firm,
         "fee": provider.fee,
@@ -34,7 +49,11 @@ def _provider_json(provider: ProviderResult) -> dict[str, object]:
         "total_cost_pct": provider.total_cost_pct,
         "recipient_receives": provider.recipient_receives,
         "speed": provider.speed,
+        "flagged": provider.flagged,
     }
+    if provider.flagged:
+        data["flag_report_count"] = provider.flag_report_count
+    return data
 
 
 def _comparison_json(comparison: RemittanceComparison, trend: RemittanceTrends | None) -> str:
@@ -76,16 +95,16 @@ def _check_answer(
     """Return the (rpw_id, firm) the recommendation is actually about, or raise.
 
     `answer.best_provider` is only ever cross-checked, never trusted: the recommended
-    service is always the comparison's own top-ranked one.
+    service is always `recommended_provider`.
     """
     if not answer.headline.strip() or not answer.explanation.strip():
         raise RecommendationIncompleteError("the answer has no headline or no explanation")
-    summary = comparison.summary
-    if answer.best_provider.strip().casefold() != summary.best_firm.strip().casefold():
+    expected = recommended_provider(comparison)
+    if answer.best_provider.strip().casefold() != expected.firm.strip().casefold():
         raise RecommendationIncompleteError(
-            f"the answer recommends {answer.best_provider!r}, not {summary.best_firm!r}"
+            f"the answer recommends {answer.best_provider!r}, not {expected.firm!r}"
         )
-    return summary.best_rpw_id, summary.best_firm
+    return expected.rpw_id, expected.firm
 
 
 def _timing_tip(answer: RecommendationAnswer, trend: RemittanceTrends | None) -> str | None:
@@ -110,13 +129,14 @@ async def generate_recommendation(
 
     Returns:
         `best_provider`, `headline` and `explanation` are written by Gemini in
-        `target_language`; `recommended_rpw_id` and `recommended_firm` are the comparison's
-        own top-ranked provider, never Gemini's. `timing_tip` is null unless `trend` had a
+        `target_language`; `recommended_rpw_id` and `recommended_firm` are
+        `recommended_provider` (the best-ranked one workers have not flagged), never
+        Gemini's. `timing_tip` is null unless `trend` had a
         `best_day` to report.
 
     Raises:
         RecommendationIncompleteError: The answer has no text, or names a provider other
-            than the top-ranked one.
+            than `recommended_provider`.
         GeminiError: Any Gemini failure, left for the API error handlers.
     """
     answer = await gemini.generate_structured(

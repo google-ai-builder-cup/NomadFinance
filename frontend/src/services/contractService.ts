@@ -135,3 +135,15 @@ export async function getContractParties(
     agency_name: nameOrNull(extracted.agency_name),
   };
 }
+
+/** A stored contract, enough to reopen its report: what the pipeline wrote on the document. */
+export type StoredContract = ContractProgressDoc & ContractSummary;
+
+/**
+ * One of the worker's contracts (`users/{uid}/contracts/{id}`), or null if it does not exist.
+ * For the contract history (reopening a past report); the owner may read it.
+ */
+export async function getContract(uid: string, contractId: string): Promise<StoredContract | null> {
+  const snapshot = await getDoc(doc(db, "users", uid, "contracts", contractId));
+  return snapshot.exists() ? ({ id: snapshot.id, ...snapshot.data() } as StoredContract) : null;
+}
