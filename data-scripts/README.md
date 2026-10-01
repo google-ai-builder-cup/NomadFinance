@@ -136,3 +136,18 @@ Timestamps are set from the moment the loader runs, so run it shortly before a d
 
 Full steps and limits: [`docs/runbooks/NF-P3-005-radar-seed-data.md`](../docs/runbooks/NF-P3-005-radar-seed-data.md).
 
+
+## Sample contracts (NF-P3-020)
+Six fictional employment contracts for the Contract Shield demo, one per host country, in `data/seed/contracts/`: `sg_domestic_worker` (fair), `kr_manufacturing_worker`, `hk_domestic_worker`, `au_working_holiday` (risky) and `my_plantation_worker`, `jp_care_worker` (mixed). Each is two pages and mixes sound clauses with breaches of that country's curated labor law; `manifest.json` lists what was planted. The texts are in `source/*.txt` and the PDFs are built from them (English only: the built-in PDF fonts have no CJK or Indic glyphs).
+
+```bash
+python -m src.validators.sample_contract            # check manifest, texts and PDFs
+python -m src.loaders.sample_contract_pdf           # rebuild the PDFs after editing a text
+python -m src.loaders.sample_contract_pdf --check   # fail if a PDF is out of date
+python -m src.loaders.sample_contracts --dry-run    # validate, no network access
+python -m src.loaders.sample_contracts              # upload (also run by scripts/seed_demo.sh)
+```
+
+The uploader writes `demo-samples/contracts/{file}.pdf` in the default bucket (`--bucket` or `FIREBASE_STORAGE_BUCKET` to change it). Browsers cannot read that folder (`storage.rules` only opens `contracts/`, `bills/` and `exports/` per user); download the files from the Firebase console or with `gcloud storage cp`, then upload them in the app like a worker would. Running again changes only what differs and deletes objects no longer in the manifest. Needs `gcloud auth application-default login`, or `STORAGE_EMULATOR_HOST` for an emulator.
+
+Full steps and the rehearsal guide: [`docs/runbooks/NF-P3-020-sample-contracts.md`](../docs/runbooks/NF-P3-020-sample-contracts.md).
