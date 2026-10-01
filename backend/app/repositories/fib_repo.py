@@ -51,6 +51,16 @@ class FibRepository:
         snapshot = self._entry(uid, kind, entry_id).get()
         return snapshot.to_dict() if snapshot.exists else None
 
+    def list_entries(self, uid: str, kind: EntryKind) -> list[tuple[str, dict[str, Any]]]:
+        """Every entry of one kind as `(id, data)`. A user's log is a few dozen entries."""
+        return [(doc.id, doc.to_dict() or {}) for doc in self._entries(uid, kind).stream()]
+
+    def update_entry(
+        self, uid: str, kind: EntryKind, entry_id: str, fields: dict[str, Any]
+    ) -> None:
+        """Merge `fields` into an existing entry; raises NotFound if it is gone."""
+        self._entry(uid, kind, entry_id).update(fields | {"updated_at": SERVER_TIMESTAMP})
+
 
 @lru_cache
 def get_fib_repository() -> FibRepository:
