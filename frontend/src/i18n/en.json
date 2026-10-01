@@ -287,6 +287,11 @@
       "reportLoadError": "We couldn't load the full report.",
       "reportMissing": "Your report isn't ready yet. Please try again in a moment."
     },
+    "flagged": {
+      "label": "Community flagged — {{number}} reports",
+      "detail": "{{name}}: community flagged, {{number}} worker reports. View details.",
+      "listLabel": "Community warnings about who this contract names"
+    },
     "progress": {
       "title": "Checking your contract",
       "subtitle": "This usually takes 1 to 2 minutes. You can keep this page open while we work.",

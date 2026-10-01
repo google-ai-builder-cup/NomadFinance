@@ -137,6 +137,15 @@ export interface ContractReport {
   schema_version: number;
 }
 
+/**
+ * Who the contract names, from `users/{uid}/contracts/{id}.extracted` (contracts.md): what
+ * Radar is checked against. Either may be absent when the contract names no one.
+ */
+export interface ContractParties {
+  employer_name: string | null;
+  agency_name: string | null;
+}
+
 /** The step on `users/{uid}/contracts/{id}.step` while it is analysed, and in `error.step`. */
 export type PipelineStep = "extract" | "detect" | "law" | "compare" | "complaint" | "translate";
 

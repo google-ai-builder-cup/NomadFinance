@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
   analyzeContract,
+  getContractParties,
   getContractReport,
   listRecentContracts,
   switchReportLanguage,
@@ -199,5 +200,16 @@ export function useRecentContracts(max: number) {
     queryFn: () => listRecentContracts(uid ?? "", max),
     enabled: uid !== undefined,
     staleTime: 30_000,
+  });
+}
+
+/** The employer and agency a contract names, for the Radar warnings (NF-P3-023). */
+export function useContractParties(contractId: string | null) {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: ["contractParties", uid, contractId] as const,
+    queryFn: () => getContractParties(uid ?? "", contractId ?? ""),
+    enabled: Boolean(uid && contractId),
   });
 }

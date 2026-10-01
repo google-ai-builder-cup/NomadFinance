@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import ClauseRow from "@/components/contract/ClauseRow";
 import ComplaintPreview from "@/components/contract/ComplaintPreview";
+import FlaggedParties from "@/components/contract/FlaggedParties";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { useI18n } from "@/hooks/useI18n";
@@ -70,6 +71,7 @@ export default function ReportCard({ analysis, report }: ReportCardProps) {
         >
           {t(`contract.result.riskLevel.${analysis.risk_level}`)}
         </div>
+        <FlaggedParties contractId={analysis.contract_id} />
         <dl className="grid grid-cols-3 gap-2 text-center text-sm">
           <div>
             <dt className="text-muted-foreground">{t("contract.result.counts.safe")}</dt>

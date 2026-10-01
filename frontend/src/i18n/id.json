@@ -287,6 +287,11 @@
       "reportLoadError": "Kami tidak dapat memuat laporan lengkap.",
       "reportMissing": "Laporan Anda belum siap. Coba lagi sebentar."
     },
+    "flagged": {
+      "label": "Ditandai komunitas — {{number}} laporan",
+      "detail": "{{name}}: ditandai komunitas, {{number}} laporan pekerja. Lihat detail.",
+      "listLabel": "Peringatan komunitas tentang pihak yang disebut dalam kontrak ini"
+    },
     "progress": {
       "title": "Memeriksa kontrak Anda",
       "subtitle": "Biasanya butuh 1 sampai 2 menit. Biarkan halaman ini tetap terbuka selama kami bekerja.",

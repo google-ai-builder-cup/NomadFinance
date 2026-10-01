@@ -15,6 +15,7 @@ import { apiRequest } from "@/services/apiClient";
 import type {
   AnalyzeRequest,
   ContractAnalysis,
+  ContractParties,
   ContractReport,
   ContractSummary,
   ContractUploadResponse,
@@ -111,4 +112,26 @@ export async function listRecentContracts(uid: string, max: number): Promise<Con
   return snapshot.docs.map(
     (document) => ({ id: document.id, ...document.data() }) as ContractSummary
   );
+}
+
+function nameOrNull(value: unknown): string | null {
+  return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+}
+
+/**
+ * The employer and agency the contract names (`extracted` on the contract document, written
+ * by the detect step), for the Radar warnings on the report card (NF-P3-023). Read from
+ * Firestore like the progress and the report: the owner may read it. Both null when the
+ * document or the field is missing.
+ */
+export async function getContractParties(
+  uid: string,
+  contractId: string
+): Promise<ContractParties> {
+  const snapshot = await getDoc(doc(db, "users", uid, "contracts", contractId));
+  const extracted = (snapshot.data()?.extracted ?? {}) as Record<string, unknown>;
+  return {
+    employer_name: nameOrNull(extracted.employer_name),
+    agency_name: nameOrNull(extracted.agency_name),
+  };
 }
