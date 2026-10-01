@@ -389,6 +389,12 @@
         "heading": "Nagbabayad sa ibang currency",
         "note": "Nagbabayad ang mga serbisyong ito sa ibang currency kaysa {{receiveCurrency}}, kaya hindi sila maaaring ihanay ayon sa matatanggap ng iyong pamilya.",
         "row": "{{firm}}: bayad na {{fee}}, nagbabayad sa {{currency}}"
+      },
+      "logAction": {
+        "useThis": "Ito ang ginamit ko",
+        "logging": "Nilo-log…",
+        "logged": "Na-log",
+        "toastSuccess": "Na-log ang padala."
       }
     },
     "trend": {
@@ -590,5 +596,99 @@
   "toast": {
     "region": "Mga abiso",
     "dismiss": "I-dismiss"
+  },
+  "fib": {
+    "log": {
+      "title": "I-log ang iyong pera",
+      "subtitle": "Itala ang iyong kinikita, ipinadala sa bahay, binayarang bill, at ipon. Ito ang bumubuo sa iyong Financial Identity.",
+      "tabsLabel": "Uri ng aktibidad",
+      "tabs": {
+        "income": "Kita",
+        "transfer": "Padala",
+        "bill": "Bayarin",
+        "savings": "Ipon"
+      },
+      "submit": "I-log",
+      "submitting": "Nilo-log…",
+      "success": "Na-log.",
+      "fields": {
+        "amount": "Halaga",
+        "currency": "Pera",
+        "category": "Kategorya",
+        "chooseCategory": "Pumili…",
+        "employerName": "Employer (opsyonal)",
+        "entryDate": "Petsa",
+        "notes": "Tala (opsyonal)",
+        "direction": "Direksyon",
+        "accountType": "Saan mo ito itinatago (opsyonal)",
+        "chooseAccountType": "Pumili…",
+        "vendor": "Sino ang nagsingil (opsyonal)",
+        "billDate": "Petsa sa bayarin (opsyonal)",
+        "paid": "Nabayaran ko na ang bayaring ito"
+      },
+      "errors": {
+        "categoryRequired": "Pumili ng kategorya.",
+        "amount": {
+          "empty": "Ilagay ang halaga.",
+          "invalid": "Ilagay ang tamang halaga.",
+          "decimals": "Masyadong marami ang decimal para sa pera na ito."
+        }
+      },
+      "transfer": {
+        "explainer": "Awtomatikong na-log ang padala kapag gumamit ka ng serbisyo mula sa Remittance X-Ray. I-compare muna ang iyong corridor diyan, tapos sabihin sa amin kung alin ang ginamit mo.",
+        "cta": "Pumunta sa Remittance X-Ray"
+      }
+    },
+    "categories": {
+      "income": {
+        "salary": "Sweldo",
+        "overtime": "Overtime",
+        "bonus": "Bonus",
+        "other_income": "Iba pang kita"
+      },
+      "bill": {
+        "rent": "Upa",
+        "utilities": "Kuryente/tubig",
+        "phone_internet": "Telepono at internet",
+        "transport": "Pamasahe",
+        "food": "Pagkain",
+        "medical": "Medikal",
+        "other_expense": "Iba pang gastos"
+      }
+    },
+    "savingsDirections": {
+      "deposit": "Idineposito",
+      "withdrawal": "Kinuha"
+    },
+    "accountTypes": {
+      "cash": "Cash",
+      "bank": "Bank account",
+      "mobile_wallet": "Mobile wallet",
+      "other": "Iba pa"
+    },
+    "bill": {
+      "modeLabel": "Paano idaragdag ang bayaring ito",
+      "modes": {
+        "photo": "Larawan",
+        "manual": "I-type"
+      },
+      "scan": {
+        "dropzoneLabel": "Magdagdag ng larawan o PDF ng bayarin",
+        "dropzoneHint": "PDF, PNG, JPEG, WebP o HEIC, hanggang 10 MB.",
+        "takePhoto": "Kumuha ng larawan",
+        "remove": "Alisin ang larawang ito",
+        "submit": "Basahin at i-log ang bayaring ito",
+        "submitting": "Binabasa ang bayarin…",
+        "errors": {
+          "tooLarge": "Mas malaki ang file sa 10 MB.",
+          "badType": "Gumamit ng PDF, PNG, JPEG, WebP o HEIC file.",
+          "generic": "Hindi magamit ang file na iyon. Subukan ang iba.",
+          "notABill": "Walang nahanap na bayarin. Mag-upload ng malinaw na larawan o PDF ng bayarin o resibo.",
+          "unreadable": "Hindi mabasa ang halaga o pera. Kumuha ng mas malinaw na larawan na nakikita ang buong bayarin, o i-type ito.",
+          "aiBusy": "Abala ngayon ang aming reader. Subukan ulit sandali.",
+          "aiSlow": "Tumagal nang masyado. Subukan ulit, o i-type ito."
+        }
+      }
+    }
   }
 }

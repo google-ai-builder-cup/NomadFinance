@@ -389,6 +389,12 @@
         "heading": "Dibayar dalam mata uang lain",
         "note": "Layanan ini membayar keluarga Anda dalam mata uang selain {{receiveCurrency}}, sehingga tidak dapat diperingkat berdasarkan jumlah yang diterima.",
         "row": "{{firm}}: biaya {{fee}}, dibayarkan dalam {{currency}}"
+      },
+      "logAction": {
+        "useThis": "Saya menggunakan ini",
+        "logging": "Mencatat…",
+        "logged": "Tercatat",
+        "toastSuccess": "Transfer tercatat."
       }
     },
     "trend": {
@@ -590,5 +596,99 @@
   "toast": {
     "region": "Notifikasi",
     "dismiss": "Tutup"
+  },
+  "fib": {
+    "log": {
+      "title": "Catat uang Anda",
+      "subtitle": "Simpan catatan penghasilan, uang yang dikirim ke rumah, tagihan yang dibayar, dan tabungan Anda. Ini membentuk Identitas Finansial Anda.",
+      "tabsLabel": "Jenis aktivitas",
+      "tabs": {
+        "income": "Penghasilan",
+        "transfer": "Transfer",
+        "bill": "Tagihan",
+        "savings": "Tabungan"
+      },
+      "submit": "Catat",
+      "submitting": "Mencatat…",
+      "success": "Tercatat.",
+      "fields": {
+        "amount": "Jumlah",
+        "currency": "Mata uang",
+        "category": "Kategori",
+        "chooseCategory": "Pilih…",
+        "employerName": "Pemberi kerja (opsional)",
+        "entryDate": "Tanggal",
+        "notes": "Catatan (opsional)",
+        "direction": "Arah",
+        "accountType": "Tempat Anda menyimpannya (opsional)",
+        "chooseAccountType": "Pilih…",
+        "vendor": "Siapa yang menagih (opsional)",
+        "billDate": "Tanggal pada tagihan (opsional)",
+        "paid": "Saya sudah membayar tagihan ini"
+      },
+      "errors": {
+        "categoryRequired": "Pilih kategori.",
+        "amount": {
+          "empty": "Masukkan jumlah.",
+          "invalid": "Masukkan jumlah yang valid.",
+          "decimals": "Terlalu banyak angka desimal untuk mata uang ini."
+        }
+      },
+      "transfer": {
+        "explainer": "Transfer otomatis tercatat saat Anda menggunakan layanan dari Remittance X-Ray. Bandingkan koridor Anda di sana, lalu beri tahu kami layanan mana yang Anda gunakan.",
+        "cta": "Buka Remittance X-Ray"
+      }
+    },
+    "categories": {
+      "income": {
+        "salary": "Gaji",
+        "overtime": "Lembur",
+        "bonus": "Bonus",
+        "other_income": "Penghasilan lain"
+      },
+      "bill": {
+        "rent": "Sewa",
+        "utilities": "Utilitas",
+        "phone_internet": "Telepon & internet",
+        "transport": "Transportasi",
+        "food": "Makanan",
+        "medical": "Kesehatan",
+        "other_expense": "Pengeluaran lain"
+      }
+    },
+    "savingsDirections": {
+      "deposit": "Uang masuk",
+      "withdrawal": "Uang keluar"
+    },
+    "accountTypes": {
+      "cash": "Tunai",
+      "bank": "Rekening bank",
+      "mobile_wallet": "Dompet digital",
+      "other": "Lainnya"
+    },
+    "bill": {
+      "modeLabel": "Cara menambahkan tagihan ini",
+      "modes": {
+        "photo": "Foto",
+        "manual": "Ketik manual"
+      },
+      "scan": {
+        "dropzoneLabel": "Tambahkan foto atau PDF tagihan",
+        "dropzoneHint": "PDF, PNG, JPEG, WebP, atau HEIC, hingga 10 MB.",
+        "takePhoto": "Ambil foto",
+        "remove": "Hapus foto ini",
+        "submit": "Baca dan catat tagihan ini",
+        "submitting": "Membaca tagihan…",
+        "errors": {
+          "tooLarge": "File ini lebih besar dari 10 MB.",
+          "badType": "Gunakan file PDF, PNG, JPEG, WebP, atau HEIC.",
+          "generic": "File itu tidak dapat digunakan. Coba file lain.",
+          "notABill": "Tagihan tidak ditemukan. Unggah foto atau PDF tagihan atau kuitansi yang jelas.",
+          "unreadable": "Jumlah atau mata uang tidak dapat dibaca. Ambil foto yang lebih jelas dengan seluruh tagihan terlihat, atau masukkan secara manual.",
+          "aiBusy": "Pembaca kami sedang sibuk. Coba lagi sebentar.",
+          "aiSlow": "Prosesnya terlalu lama. Coba lagi, atau masukkan secara manual."
+        }
+      }
+    }
   }
 }

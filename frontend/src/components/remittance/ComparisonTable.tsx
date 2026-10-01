@@ -16,6 +16,13 @@ import {
 
 export interface ComparisonTableProps {
   comparison: RemittanceComparison;
+  /** Logs the transfer with this provider (NF-P3-016's "I used this" action). Omitted hides
+   * the action entirely, e.g. while the worker's profile is still loading. */
+  onLog?: (provider: ProviderResult) => void;
+  /** `rpw_id` of the row whose log request is in flight; disables every row's button. */
+  pendingRpwId?: number | null;
+  /** Rows already logged this session: show a confirmation instead of the button. */
+  loggedRpwIds?: ReadonlySet<number>;
 }
 
 const COLUMNS: readonly { key: SortColumn; labelKey: string; align: "left" | "right" }[] = [
@@ -43,12 +50,18 @@ function ProviderRow({
   total,
   sendMoney,
   receiveMoney,
+  onLog,
+  pendingRpwId,
+  logged,
 }: {
   provider: ProviderResult;
   rank: number;
   total: number;
   sendMoney: (amount: number) => string;
   receiveMoney: (amount: number) => string;
+  onLog?: (provider: ProviderResult) => void;
+  pendingRpwId?: number | null;
+  logged: boolean;
 }) {
   const { t } = useI18n();
   const isBest = provider.rank === 1;
@@ -70,6 +83,25 @@ function ProviderRow({
         <p className="text-xs text-muted-foreground">
           {provider.payment_instrument} → {provider.pickup_method}
         </p>
+        {onLog &&
+          (logged ? (
+            <p className="mt-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              {t("remittance.table.logAction.logged")}
+            </p>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-1.5 h-7 px-2 text-xs"
+              disabled={pendingRpwId !== null && pendingRpwId !== undefined}
+              onClick={() => onLog(provider)}
+            >
+              {pendingRpwId === provider.rpw_id
+                ? t("remittance.table.logAction.logging")
+                : t("remittance.table.logAction.useThis")}
+            </Button>
+          ))}
       </td>
       <td className="px-3 py-3 text-right align-top tabular-nums">{provider.speed}</td>
       <td className="px-3 py-3 text-right align-top tabular-nums">
@@ -100,7 +132,12 @@ function ProviderRow({
 }
 
 /** Every surveyed service of a comparison, sortable, with the best one highlighted (NF-P2-019). */
-export default function ComparisonTable({ comparison }: ComparisonTableProps) {
+export default function ComparisonTable({
+  comparison,
+  onLog,
+  pendingRpwId = null,
+  loggedRpwIds,
+}: ComparisonTableProps) {
   const { t } = useI18n();
   const language = i18n.resolvedLanguage ?? "en";
   const [sort, setSort] = useState<SortState>({ column: "receives", direction: "desc" });
@@ -161,6 +198,9 @@ export default function ComparisonTable({ comparison }: ComparisonTableProps) {
                 total={comparableRows.length}
                 sendMoney={sendMoney}
                 receiveMoney={receiveMoney}
+                onLog={onLog}
+                pendingRpwId={pendingRpwId}
+                logged={loggedRpwIds?.has(provider.rpw_id) ?? false}
               />
             ))}
           </tbody>

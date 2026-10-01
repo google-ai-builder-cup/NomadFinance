@@ -139,6 +139,38 @@ export interface RemittanceTrends {
   providers: string[];
 }
 
+// Free text on a logged transfer, matching the backend's MAX_NOTES_CHARS (remittance_log.py).
+export const MAX_LOG_NOTES_CHARS = 500;
+
+/**
+ * Body of `POST /api/v1/remittance/log` (NF-P2-017). `comparison` is sent back exactly as
+ * `/remittance/compare` returned it: every stored amount is read from its `rpw_id` provider
+ * there, never typed freely by the client.
+ */
+export interface TransferLogRequest {
+  comparison: RemittanceComparison;
+  rpw_id: number;
+  entry_date?: string | null;
+  notes?: string | null;
+}
+
+/** Response of `POST /api/v1/remittance/log`: the stored transfer. */
+export interface TransferLogResponse {
+  transfer_id: string;
+  corridor_id: CorridorId;
+  provider_rpw_id: number;
+  provider_name: string;
+  send_amount: number;
+  send_currency: string;
+  receive_amount: number;
+  receive_currency: string;
+  fee: number;
+  mid_market_rate: number;
+  cost_pct: number;
+  entry_date: string;
+  notes: string | null;
+}
+
 // Full months `GET /remittance/savings` accepts, matching the backend's MIN_MONTHS/MAX_MONTHS.
 export const MIN_SAVINGS_MONTHS = 1;
 export const MAX_SAVINGS_MONTHS = 12;
