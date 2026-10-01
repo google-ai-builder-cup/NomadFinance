@@ -9,11 +9,14 @@ from fastapi.responses import JSONResponse
 from app.dependencies import require_cloud_scheduler
 from app.integrations.fx import FxRouter, get_fx_router
 from app.integrations.gemini import GeminiClient, get_gemini_client
+from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
+from app.schemas.fib_profile import RecomputeResponse
 from app.schemas.radar_alert import AggregateRadarResponse
 from app.schemas.remittance import RefreshRatesResponse
+from app.services.fib.profile_builder import recompute_all
 from app.services.radar.alerts import run_aggregation
 from app.services.remittance.rates import refresh_rates
 
@@ -55,3 +58,19 @@ async def aggregate_radar_endpoint(
     `run_aggregation` itself, never left to make Cloud Scheduler retry the whole run.
     """
     return await run_aggregation(radar, users, gemini, datetime.now(UTC))
+
+
+@router.post("/recompute-fib-profiles", response_model=RecomputeResponse, responses=_RESPONSES)
+async def recompute_fib_profiles_endpoint(
+    _caller: Annotated[str, Depends(require_cloud_scheduler)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    rates: Annotated[RateRepository, Depends(get_rate_repository)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> RecomputeResponse:
+    """Weekly Financial Identity recompute (NF-P3-013): metrics and narrative per user.
+
+    Always 200: a failure for one user is caught and logged inside `recompute_all`, and that
+    user keeps the previous profile. A retry would run (and pay for) every other user again.
+    """
+    return await recompute_all(gemini, fib, users, rates, datetime.now(UTC))

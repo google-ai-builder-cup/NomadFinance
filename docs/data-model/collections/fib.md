@@ -174,15 +174,15 @@ The result of the weekly recompute (NF-P3-013). There is exactly one document pe
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `reporting_currency` | string | yes | Currency all totals are expressed in (the user's home currency) |
-| `period_start`, `period_end` | string (date) | yes | The range the metrics cover |
+| `reporting_currency` | string | yes | Currency all totals are expressed in: the user's home currency, converted with the latest `rates_cache` rate. Where no rate exists (only the six corridor pairs are cached) it is the currency the worker uses most, and entries in other currencies are left out and counted in each metric's `detail.excluded_entries`. |
+| `period_start`, `period_end` | string (date) | yes | The range the metrics cover: the earliest entry in the window to the day of the recompute. The window is the current month and the 11 before it. |
 | `months_of_data` | number | yes | |
 | `entry_counts` | map | yes | Entries used: `{ "income": n, "transfers": n, "bills": n, "savings": n }` |
-| `metrics` | map | yes | The four design-doc metrics, each `{ "score": 0 to 100, "detail": {...} }`: `income_stability`, `savings_rate`, `remittance_consistency`, `bill_payment_reliability` |
-| `overall_score` | number | yes | 0 to 100. How the four combine belongs to NF-P3-013. |
+| `metrics` | map | yes | The four design-doc metrics, each `{ "score": 0 to 100 or null, "detail": {...} }`: `income_stability`, `savings_rate`, `remittance_consistency`, `bill_payment_reliability`. `score` is `null` (with `detail.reason`) when there is no data for it, never 0. Formulas and `detail` fields: `docs/runbooks/NF-P3-013-fib-weekly-recompute.md`. |
+| `overall_score` | number | yes | 0 to 100. The plain average of the metrics whose `score` is not `null`. |
 | `narrative` | map | yes | `{ "language": "en", "text": "...", "model": "..." }`: the report text from the reasoning tier |
 | `verified_employment` | array of map | no | From analysed contracts: `{ "employer_name", "salary_amount", "salary_currency", "contract_ref" }` |
-| `latest_export` | map | no | The last PDF (NF-P3-014): `{ "storage_path": "...", "created_at": ... }`. Download links are signed URLs made on request, never stored. |
+| `latest_export` | map | no | The last PDF (NF-P3-014): `{ "storage_path": "...", "created_at": ... }`. Download links are signed URLs made on request, never stored. The recompute carries this field over when it overwrites the document. |
 | `prompt_versions` | map | yes | Prompt versions used |
 | `computed_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
