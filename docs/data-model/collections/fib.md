@@ -120,6 +120,8 @@ Created manually, or from a bill photo read by Gemini Vision (NF-P3-011).
 
 A bill from `POST /fib/bill/scan` (`source: bill_ocr`) is stored with the category Gemini suggested and `category_source: model`, but without `category_confidence`: the confidence in `extraction` covers amount and currency only. NF-P3-012 sets `category_confidence` when it categorizes.
 
+`POST /fib/categorize` (NF-P3-012) fills `category`, `category_source: model` and `category_confidence` on income and bill entries that have no category, or whose model category has no confidence. It never changes `category_source: user`.
+
 **Example** — `users/uid_priya_demo/bills/b_01`
 
 ```json

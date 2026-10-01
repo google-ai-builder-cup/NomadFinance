@@ -152,3 +152,56 @@ class BillScanResponse(BillLogResponse):
     paid_assumed: bool = Field(
         description="True when the bill did not say if it was paid; `paid` is then false."
     )
+
+
+# One flat list of every category, not `IncomeCategory | BillCategory`: Gemini's response
+# schema handles a single enum better than a union of two. The service checks that the
+# category fits the entry's type.
+AnyCategory = Literal[
+    "salary",
+    "overtime",
+    "bonus",
+    "other_income",
+    "rent",
+    "utilities",
+    "phone_internet",
+    "transport",
+    "food",
+    "medical",
+    "other_expense",
+]
+
+
+class CategorizeResult(BaseModel):
+    """One entry's category as Gemini returns it (NF-P3-012)."""
+
+    id: str = Field(description="The entry id, copied exactly.")
+    category: AnyCategory
+    confidence: float = Field(ge=0, le=1)
+
+
+class CategorizeAnswer(BaseModel):
+    """Gemini's answer for one batch of entries; also its `response_schema`."""
+
+    results: list[CategorizeResult]
+
+
+class CategorizedEntry(BaseModel):
+    """An entry that got a category in this call."""
+
+    entry_id: str
+    entry_type: Literal["income", "bill"]
+    category: AnyCategory
+    confidence: float
+
+
+class FibCategorizeResponse(BaseModel):
+    """Response of `POST /api/v1/fib/categorize`."""
+
+    categorized: list[CategorizedEntry]
+    skipped: int = Field(
+        description="Entries Gemini gave no usable category for; still pending, retried next call."
+    )
+    remaining: int = Field(
+        description="Pending entries left for a later call because of the per-call limit."
+    )

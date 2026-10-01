@@ -42,6 +42,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/bill` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/fib/savings` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-010 |
 | POST | `/api/v1/fib/bill/scan` | Firebase ID token | 10/min per user (AI calls) | NF-P3-011 |
+| POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
@@ -1118,7 +1119,7 @@ curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/radar/ent
 
 Manual Financial Identity Builder activity logging (NF-P3-010): `users/{uid}/income`, `users/{uid}/bills`, `users/{uid}/savings` — the same pattern `POST /remittance/log` (NF-P2-017) already established for `users/{uid}/transfers`, the fourth entry type in the same activity log (`docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide rate limit applies. A bill photo read by Gemini Vision is a separate endpoint, `POST /api/v1/fib/bill/scan` (NF-P3-011, below), writing into the same `bills` collection.
 
-Every entry's `category` (income, bills) is always `category_source: "user"` here, whatever the worker chose or left blank — Flash-Lite categorization of uncategorized entries (NF-P3-012) is its own, later step over the same collections.
+Every entry's `category` (income, bills) is always `category_source: "user"` here, whatever the worker chose or left blank — Flash-Lite categorization of uncategorized entries is its own step, `POST /api/v1/fib/categorize` (NF-P3-012, below).
 
 - **Auth:** `Authorization: Bearer <firebase-id-token>` required for all three
 
@@ -1206,6 +1207,41 @@ curl -s -H "Authorization: Bearer $TOKEN" -F "file=@bill.jpg" http://127.0.0.1:8
   "image_path": "bills/uid_priya_demo/aBc123XyZ0123456789A/bill.jpg",
   "confidence": 0.94,
   "paid_assumed": false
+}
+```
+
+---
+
+## `POST /api/v1/fib/categorize`
+
+Gives a category and a confidence to the caller's income and bill entries that have no trusted one, with Gemini Flash-Lite (classification tier, prompt `fib/categorize.v1`) (NF-P3-012). Step 3 of the Financial Identity pipeline. Call it after logging entries; the weekly recompute (NF-P3-013) can use the same service before it computes metrics.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>`
+- **Request:** no body.
+- **Pending entries** are in `users/{uid}/income` and `users/{uid}/bills` with no `category`, or with `category_source: "model"` and no `category_confidence` (a bill photo's suggestion from `POST /fib/bill/scan`, categorized again here). A category the worker chose (`category_source: "user"`) is never changed.
+- **Writes** on each categorized entry: `category`, `category_source: "model"`, `category_confidence` (0 to 1, stored as Gemini returned it; no threshold is applied here).
+- **Limits:** 25 entries per Gemini call, at most 100 entries (4 calls) per request, oldest `entry_date` first. Calling again continues. With nothing pending there is no Gemini call.
+- **Response `200`:** `FibCategorizeResponse` (`app/schemas/fib.py`): `categorized` (a list of `entry_id`, `entry_type` `income` or `bill`, `category`, `confidence`), `skipped` (entries Gemini gave no usable answer for, such as a category that does not fit the type: they stay pending), `remaining` (pending entries left over by the 100 limit).
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 429 | see Rate limits | Over 10 AI calls a minute |
+| 502 / 503 / 504 | Gemini error text | Unusable answer / busy or out of quota / timed out. Batches already done stay written; call again to continue. |
+
+Example (bash; in PowerShell use `curl.exe`):
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/fib/categorize
+```
+
+```json
+{
+  "categorized": [
+    { "entry_id": "aBc123XyZ0123456789A", "entry_type": "bill", "category": "phone_internet", "confidence": 0.97 }
+  ],
+  "skipped": 0,
+  "remaining": 0
 }
 ```
 

@@ -16,12 +16,14 @@ from app.schemas.fib import (
     BillLogRequest,
     BillLogResponse,
     BillScanResponse,
+    FibCategorizeResponse,
     IncomeLogRequest,
     IncomeLogResponse,
     SavingsLogRequest,
     SavingsLogResponse,
 )
 from app.schemas.user import AuthenticatedUser
+from app.services.fib.categorizer import categorize_pending
 from app.services.fib.logger import log_bill, log_income, log_savings
 from app.services.fib.ocr import BillUnreadableError, NotABillError, scan_bill
 
@@ -135,3 +137,34 @@ async def scan_bill_photo(
             "The amount or currency could not be read. Take a clearer photo with the whole "
             "bill in view, or enter it by hand.",
         ) from exc
+
+
+_CATEGORIZE_ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
+    401: {"description": "Missing or invalid Firebase ID token"},
+    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    502: {"description": "Gemini returned an unusable answer"},
+    503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
+    504: {"description": "Gemini timed out"},
+}
+
+
+@router.post(
+    "/categorize",
+    response_model=FibCategorizeResponse,
+    responses=_CATEGORIZE_ERROR_RESPONSES,
+    summary="Categorize your uncategorized entries",
+    dependencies=[Depends(limit_ai_calls)],
+)
+async def categorize_entries(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+) -> FibCategorizeResponse:
+    """Give a category and a confidence to your income and bill entries that have none.
+
+    Pending means no category yet, or a category from a bill photo that has no confidence.
+    A category you chose yourself is never changed. At most 100 entries are handled per call,
+    oldest first; `remaining` says how many are left, and calling again continues. Calling when
+    nothing is pending makes no Gemini call.
+    """
+    return await categorize_pending(user.uid, gemini, fib)
