@@ -689,6 +689,44 @@
           "aiSlow": "Prosesnya terlalu lama. Coba lagi, atau masukkan secara manual."
         }
       }
+    },
+    "dashboard": {
+      "title": "Identitas Finansial Anda",
+      "subtitle": "Penghasilan, pengeluaran, dan tabungan Anda — membangun catatan portabel dari waktu ke waktu.",
+      "logActivity": "Catat aktivitas",
+      "loadError": "Aktivitas Anda tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
+      "scoreLoadError": "Skor Anda tidak dapat dimuat."
+    },
+    "score": {
+      "overall": "Skor keseluruhan",
+      "status": {
+        "good": "Baik",
+        "warning": "Cukup",
+        "critical": "Rendah"
+      },
+      "noData": "Belum cukup data",
+      "noProfile": "Skor Identitas Finansial Anda belum siap. Catat aktivitas selama beberapa minggu dan periksa kembali setelah pembaruan mingguan berikutnya.",
+      "logActivity": "Catat aktivitas",
+      "meterLabel": "{{label}}: {{score}} dari 100",
+      "metrics": {
+        "income_stability": "Stabilitas penghasilan",
+        "savings_rate": "Tingkat tabungan",
+        "remittance_consistency": "Mengirim uang ke rumah",
+        "bill_payment_reliability": "Membayar tagihan tepat waktu"
+      }
+    },
+    "timeline": {
+      "heading": "Penghasilan dan pengeluaran",
+      "income": "Penghasilan",
+      "expense": "Pengeluaran",
+      "empty": "Catat penghasilan dan tagihan untuk melihat grafik ini.",
+      "tableMonth": "Bulan"
+    },
+    "breakdown": {
+      "heading": "Dari mana datangnya, ke mana perginya",
+      "income": "Penghasilan menurut kategori",
+      "expenses": "Pengeluaran menurut kategori",
+      "empty": "Catat penghasilan atau tagihan untuk melihat rincian ini."
     }
   }
 }

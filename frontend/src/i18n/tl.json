@@ -689,6 +689,44 @@
           "aiSlow": "Tumagal nang masyado. Subukan ulit, o i-type ito."
         }
       }
+    },
+    "dashboard": {
+      "title": "Ang Iyong Financial Identity",
+      "subtitle": "Ang iyong kita, gastos, at ipon — bumubuo ng portable na rekord sa paglipas ng panahon.",
+      "logActivity": "I-log ang aktibidad",
+      "loadError": "Hindi na-load ang iyong aktibidad. Tingnan ang iyong koneksyon at subukan ulit.",
+      "scoreLoadError": "Hindi na-load ang iyong score."
+    },
+    "score": {
+      "overall": "Pangkalahatang score",
+      "status": {
+        "good": "Mabuti",
+        "warning": "Katamtaman",
+        "critical": "Mababa"
+      },
+      "noData": "Wala pang sapat na datos",
+      "noProfile": "Hindi pa handa ang iyong Financial Identity score. Mag-log ng ilang linggo ng aktibidad at bumalik pagkatapos ng susunod na lingguhang update.",
+      "logActivity": "I-log ang aktibidad",
+      "meterLabel": "{{label}}: {{score}} sa 100",
+      "metrics": {
+        "income_stability": "Katatagan ng kita",
+        "savings_rate": "Rate ng pag-iimpok",
+        "remittance_consistency": "Pagpapadala ng pera sa bahay",
+        "bill_payment_reliability": "Pagbabayad ng bayarin sa oras"
+      }
+    },
+    "timeline": {
+      "heading": "Kita at gastos",
+      "income": "Kita",
+      "expense": "Gastos",
+      "empty": "Mag-log ng kita at bayarin para makita ang chart na ito.",
+      "tableMonth": "Buwan"
+    },
+    "breakdown": {
+      "heading": "Saan nanggaling, saan napupunta",
+      "income": "Kita ayon sa kategorya",
+      "expenses": "Gastos ayon sa kategorya",
+      "empty": "Mag-log ng kita o bayarin para makita ang breakdown na ito."
     }
   }
 }

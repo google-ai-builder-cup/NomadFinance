@@ -8,6 +8,7 @@ import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import ComingSoon from "@/pages/ComingSoon";
 import ContractUpload from "@/pages/contract/ContractUpload";
 import Dashboard from "@/pages/Dashboard";
+import FIBDashboard from "@/pages/fib/FIBDashboard";
 import FIBLogActivity from "@/pages/fib/FIBLogActivity";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
@@ -21,13 +22,14 @@ import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
-// Contract Shield (NF-P2-009), Remittance X-Ray (NF-P2-018), Exploitation Radar (NF-P3-007) and
-// the Financial Identity Builder's log (NF-P3-016) have theirs; its dashboard still waits its turn.
+// Every pillar's primary route is its overview page, same as Remittance (`/remittance`,
+// compare) and Radar (`/radar`, the heatmap) — the Financial Identity Builder's is its
+// dashboard (NF-P3-017), with logging activity (NF-P3-016) moved to its own `/identity/log`.
 const PILLAR_PAGES: Readonly<Record<string, JSX.Element>> = {
   "/contract": <ContractUpload />,
   "/radar": <RadarHeatmap />,
   "/remittance": <RemittanceCompare />,
-  "/identity": <FIBLogActivity />,
+  "/identity": <FIBDashboard />,
 };
 
 const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({
@@ -63,6 +65,7 @@ export const router = createBrowserRouter([
                       { path: "/radar/report", element: <RadarReport /> },
                       { path: "/radar/entity/:slug", element: <RadarEntity /> },
                       { path: "/radar/alerts", element: <RadarAlerts /> },
+                      { path: "/identity/log", element: <FIBLogActivity /> },
                       ...pillarRoutes,
                     ],
                   },

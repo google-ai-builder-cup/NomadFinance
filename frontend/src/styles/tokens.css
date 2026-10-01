@@ -34,6 +34,23 @@
   --radius: 0.5rem;
 
   --brand-gold: 38 92% 50%;
+
+  /* Financial Identity dashboard chart colors (NF-P3-017). The brand teal (--primary) fails
+     the dataviz skill's categorical chroma/lightness gates outright when validated against
+     these exact surfaces, so these are its own reference 8-hue categorical order instead,
+     validated clean (all checks pass) against both this app's light and dark surfaces. Plain
+     hex, not an hsl triplet like the tokens above: referenced directly as `var(--chart-*)`,
+     never wrapped in `hsl()`. Fixed order, never cycled or reassigned per chart. */
+  --chart-income: #2a78d6;
+  --chart-expense: #eb6834;
+  --chart-cat-1: #2a78d6;
+  --chart-cat-2: #eb6834;
+  --chart-cat-3: #1baf7a;
+  --chart-cat-4: #eda100;
+  --chart-cat-5: #e87ba4;
+  --chart-cat-6: #008300;
+  --chart-cat-7: #4a3aa7;
+  --chart-cat-8: #e34948;
 }
 
 .dark {
@@ -66,4 +83,17 @@
   --ring: 193 70% 55%;
 
   --brand-gold: 38 92% 55%;
+
+  /* Same 8-hue order, stepped for the dark surface (own validator pass, not an automatic
+     flip of the light values). */
+  --chart-income: #3987e5;
+  --chart-expense: #d95926;
+  --chart-cat-1: #3987e5;
+  --chart-cat-2: #d95926;
+  --chart-cat-3: #199e70;
+  --chart-cat-4: #c98500;
+  --chart-cat-5: #d55181;
+  --chart-cat-6: #008300;
+  --chart-cat-7: #9085e9;
+  --chart-cat-8: #e66767;
 }

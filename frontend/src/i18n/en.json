@@ -689,6 +689,44 @@
           "aiSlow": "That took too long. Try again, or enter it by hand."
         }
       }
+    },
+    "dashboard": {
+      "title": "Your Financial Identity",
+      "subtitle": "Your income, spending and savings, building a portable record over time.",
+      "logActivity": "Log activity",
+      "loadError": "Could not load your activity. Check your connection and try again.",
+      "scoreLoadError": "Could not load your score."
+    },
+    "score": {
+      "overall": "Overall score",
+      "status": {
+        "good": "Good",
+        "warning": "Fair",
+        "critical": "Low"
+      },
+      "noData": "Not enough data yet",
+      "noProfile": "Your Financial Identity score isn't ready yet. Log a few weeks of activity and check back after your next weekly update.",
+      "logActivity": "Log activity",
+      "meterLabel": "{{label}}: {{score}} out of 100",
+      "metrics": {
+        "income_stability": "Income stability",
+        "savings_rate": "Savings rate",
+        "remittance_consistency": "Sending money home",
+        "bill_payment_reliability": "Paying bills on time"
+      }
+    },
+    "timeline": {
+      "heading": "Income and expenses",
+      "income": "Income",
+      "expense": "Expenses",
+      "empty": "Log some income and bills to see this chart.",
+      "tableMonth": "Month"
+    },
+    "breakdown": {
+      "heading": "Where it comes from, where it goes",
+      "income": "Income by category",
+      "expenses": "Expenses by category",
+      "empty": "Log some income or bills to see this breakdown."
     }
   }
 }

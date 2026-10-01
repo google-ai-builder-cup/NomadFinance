@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 // Mirrors backend/app/schemas/fib.py exactly: field names and literals here must match the
 // Pydantic models wire-for-wire.
 
@@ -105,4 +107,80 @@ export interface SavingsLogResponse {
   account_type: AccountType | null;
   notes: string | null;
   created_at: string;
+}
+
+// --- Read straight from Firestore (fib.md: "the owner reads all of these; only the backend
+// writes them") for the dashboard, NF-P3-017. Shapes match what `FibRepository.save_entry`
+// actually stores, not the log endpoints' JSON response: the id is the document id, not a
+// field, and timestamps are Firestore `Timestamp`, not ISO strings.
+
+export type EntrySource = "manual" | "remittance_log" | "bill_ocr" | "contract";
+
+export interface IncomeEntry {
+  id: string;
+  entry_date: string;
+  amount: number;
+  currency: string;
+  category: IncomeCategory;
+  category_source: CategorySource;
+  employer_name?: string;
+  verified: boolean;
+  source: EntrySource;
+  created_at: Timestamp;
+}
+
+export interface BillEntry {
+  id: string;
+  entry_date: string;
+  amount: number;
+  currency: string;
+  vendor?: string;
+  bill_date?: string;
+  paid: boolean;
+  category?: BillCategory;
+  category_source?: CategorySource;
+  source: EntrySource;
+  created_at: Timestamp;
+}
+
+export interface SavingsEntry {
+  id: string;
+  entry_date: string;
+  amount: number;
+  currency: string;
+  direction: SavingsDirection;
+  account_type?: AccountType;
+  source: EntrySource;
+  created_at: Timestamp;
+}
+
+export const METRIC_KEYS = [
+  "income_stability",
+  "savings_rate",
+  "remittance_consistency",
+  "bill_payment_reliability",
+] as const;
+export type MetricKey = (typeof METRIC_KEYS)[number];
+
+/** One scored metric of `financial_profile/current`. `detail` varies by metric (see
+ * `backend/app/services/fib/profile_metrics.py`); `score` is `null`, never 0, when there is
+ * no data for it yet. */
+export interface MetricResult {
+  score: number | null;
+  detail: Record<string, unknown>;
+}
+
+/** `users/{uid}/financial_profile/current` (NF-P3-013's weekly recompute). Does not exist at
+ * all for a worker with no scoreable activity in the last 12 months — the cron writes nothing,
+ * rather than a zeroed-out document. */
+export interface FinancialProfile {
+  reporting_currency: string;
+  period_start: string;
+  period_end: string;
+  months_of_data: number;
+  entry_counts: Record<"income" | "transfers" | "bills" | "savings", number>;
+  metrics: Record<MetricKey, MetricResult>;
+  overall_score: number;
+  narrative: { language: string; text: string; model: string };
+  computed_at: Timestamp;
 }
