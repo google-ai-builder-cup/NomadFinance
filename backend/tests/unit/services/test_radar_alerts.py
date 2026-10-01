@@ -118,18 +118,19 @@ class FakeRadar:
         self.created_alerts: list[tuple[str, str, RadarAlert]] = []
         self.notified: list[tuple[str, str, datetime]] = []
         self._next_id = 0
+        self.read_fails = False
         self.boom_corridors: set[str] = set()
+        self.since: list[datetime] = []
 
-    def reports_since(self, corridor_id: str, since: datetime) -> list[dict[str, Any]]:
-        if corridor_id in self.boom_corridors:
-            raise FailedPrecondition("no matching index")
-        return [
-            r.model_dump()
-            for r in self.reports
-            if r.corridor_id == corridor_id and r.created_at >= since
-        ]
+    def reports_since(self, since: datetime) -> list[dict[str, Any]]:
+        self.since.append(since)
+        if self.read_fails:
+            raise FailedPrecondition("the query requires an index")  # type: ignore[no-untyped-call]
+        return [r.model_dump() for r in self.reports if r.created_at >= since]
 
     def get_active_alert(self, corridor_id: str, entity_slug: str) -> dict[str, Any] | None:
+        if corridor_id in self.boom_corridors:
+            raise FailedPrecondition("firestore blip")  # type: ignore[no-untyped-call]
         for _id, alert in self.active_alerts.get(corridor_id, []):
             if alert["entity_slug"] == entity_slug:
                 return alert
@@ -144,6 +145,8 @@ class FakeRadar:
         self.active_alerts.setdefault(corridor_id, []).append((alert_id, alert.model_dump()))
 
     def list_active_alerts(self, corridor_id: str) -> list[tuple[str, dict[str, Any]]]:
+        if corridor_id in self.boom_corridors:
+            raise FailedPrecondition("firestore blip")  # type: ignore[no-untyped-call]
         return list(self.active_alerts.get(corridor_id, []))
 
     def expire_alert(self, corridor_id: str, alert_id: str) -> None:
@@ -253,7 +256,7 @@ async def test_an_alert_past_its_expiry_is_marked_expired() -> None:
     assert radar.headers["SG-IN"].active_count == 0
 
 
-async def test_one_corridors_index_failure_does_not_stop_the_others() -> None:
+async def test_one_corridors_firestore_failure_does_not_stop_the_others() -> None:
     radar = FakeRadar([_report(corridor_id="AU-IN"), _report(corridor_id="AU-IN")])
     radar.boom_corridors = {"SG-IN"}
 
@@ -266,3 +269,88 @@ async def test_one_corridors_index_failure_does_not_stop_the_others() -> None:
 
     assert result.corridors_scanned == 6
     assert result.alerts_created == 1  # AU-IN's surge still went through
+
+
+async def test_all_corridors_share_one_read_of_two_weeks_of_reports() -> None:
+    radar = FakeRadar([_report(), _report()])
+
+    await run_aggregation(
+        cast(RadarRepository, radar),
+        cast(UserRepository, FakeUsers()),
+        cast(GeminiClient, FakeGemini()),
+        NOW,
+    )
+
+    assert radar.since == [NOW - timedelta(days=2 * WINDOW_DAYS)]
+
+
+async def test_reports_naming_only_a_host_country_count_on_each_of_its_corridors() -> None:
+    # An employer, or a Contract Shield signal: a country, never a route.
+    employer = {
+        "entity_type": "employer",
+        "entity_name": "Bayfront Residence",
+        "entity_slug": "bayfront-residence",
+        "corridor_id": None,
+        "host_country": "SG",
+        "source": "contract_signal",
+    }
+    radar = FakeRadar([_report(**employer), _report(**employer), _report(**employer)])
+
+    result = await run_aggregation(
+        cast(RadarRepository, radar),
+        cast(UserRepository, FakeUsers()),
+        cast(GeminiClient, FakeGemini()),
+        NOW,
+    )
+
+    assert result.alerts_created == 2
+    assert sorted(c for c, _, _ in radar.created_alerts) == ["SG-IN", "SG-PH"]
+    assert {a.report_count for _, _, a in radar.created_alerts} == {3}
+
+
+async def test_a_report_on_a_route_counts_only_on_that_route() -> None:
+    radar = FakeRadar(
+        [_report(corridor_id="SG-PH", host_country="SG"), _report(corridor_id="SG-PH")]
+    )
+
+    result = await run_aggregation(
+        cast(RadarRepository, radar),
+        cast(UserRepository, FakeUsers()),
+        cast(GeminiClient, FakeGemini()),
+        NOW,
+    )
+
+    assert [c for c, _, _ in radar.created_alerts] == ["SG-PH"]
+    assert result.alerts_created == 1
+
+
+async def test_a_failed_report_read_still_expires_old_alerts() -> None:
+    radar = FakeRadar([_report(), _report()])
+    radar.read_fails = True
+    radar.active_alerts["SG-IN"] = [
+        (
+            "old",
+            RadarAlert(
+                corridor_id="SG-IN",
+                entity_slug="example-remit",
+                entity_name="Example Remit",
+                violation_type="hidden_fees",
+                window_days=WINDOW_DAYS,
+                report_count=2,
+                baseline_count=0,
+                severity="info",
+                status="active",
+                created_at=NOW - timedelta(days=10),
+                expires_at=NOW - timedelta(days=1),
+            ).model_dump(),
+        )
+    ]
+
+    result = await run_aggregation(
+        cast(RadarRepository, radar),
+        cast(UserRepository, FakeUsers()),
+        cast(GeminiClient, FakeGemini()),
+        NOW,
+    )
+
+    assert (result.alerts_created, result.alerts_expired) == (0, 1)

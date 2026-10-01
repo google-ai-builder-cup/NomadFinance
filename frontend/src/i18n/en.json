@@ -366,7 +366,25 @@
       "copied": "Letter copied to clipboard.",
       "copyFailed": "We couldn't copy the letter. Please copy it by hand.",
       "printBlocked": "Please allow pop-ups for this site, then try downloading again.",
-      "whereToSend": "Where to send it"
+      "whereToSend": "Where to send it",
+      "missing": {
+        "title": "Complaint letter",
+        "body": "This contract breaks the law, but its complaint letter has not been written yet.",
+        "stillPending": "The letter could not be written yet. Please try again in a few minutes.",
+        "action": "Write the letter",
+        "writing": "Writing…"
+      }
+    },
+    "history": {
+      "title": "Your contracts",
+      "subtitle": "Every contract you have checked. Open one to see its report again.",
+      "link": "Past checks",
+      "checkNew": "Check a contract",
+      "emptyTitle": "No contracts yet",
+      "loadError": "We could not load your contracts. Please try again.",
+      "back": "All your contracts",
+      "notFinished": "This contract has not been fully checked. Check it again to see a report.",
+      "notFound": "This contract could not be found."
     }
   },
   "remittance": {
@@ -452,7 +470,8 @@
       },
       "empty": "No rate history yet for this period.",
       "notLoaded": "Rate history for this corridor isn't available yet.",
-      "loadError": "We couldn't load the rate history."
+      "loadError": "We couldn't load the rate history.",
+      "shortHistory": "Rate history starts on {{date}}, so this period shows only the days since then. Longer periods fill in as rates are collected."
     },
     "savings": {
       "heading": "Over the last {{months}} months",
@@ -460,6 +479,13 @@
       "shortHistory": "Only {{months}} months of rate history are available so far.",
       "notLoaded": "Savings figures for this corridor aren't available yet.",
       "loadError": "We couldn't load the savings figures."
+    },
+    "advice": {
+      "title": "Advice for you",
+      "intro": "Get a short explanation of this comparison in your language.",
+      "ask": "Get advice",
+      "writing": "Writing…",
+      "disclaimer": "Written by AI from the comparison above. Check the price with the service before you send."
     }
   },
   "radar": {
@@ -616,7 +642,21 @@
       "emptyDescription": "When a business is reported several times, you will see an alert here.",
       "unread": "Unread: {{title}}",
       "pushToast": "You have a new alert",
-      "pushToastAction": "View"
+      "pushToastAction": "View",
+      "feedTitle": "Your notifications",
+      "route": {
+        "title": "Active on your routes",
+        "summary": "Reported {{number}} times in the last {{days}} days: {{violation}}",
+        "severity": {
+          "info": "Watch",
+          "warning": "Warning",
+          "critical": "Serious"
+        },
+        "routes": "Showing alerts for {{routes}}.",
+        "noRoutes": "No route is chosen for alerts.",
+        "chooseRoutes": "Choose routes in your profile",
+        "none": "No business is being reported again and again on your routes right now."
+      }
     }
   },
   "errors": {
@@ -792,6 +832,13 @@
         "verifiedEmployment": "Verified employment",
         "disclaimer": "This is not a credit score and has not been checked against bank records. It summarizes activity the worker logged themselves."
       }
+    },
+    "categorize": {
+      "title": "Sort your bills",
+      "pending": "Bills without a category: {{number}}. Sort them automatically to see where your money goes.",
+      "done": "Sorted: {{sorted}}. Still to sort: {{left}}.",
+      "action": "Sort my bills",
+      "working": "Sorting…"
     }
   }
 }

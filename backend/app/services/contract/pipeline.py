@@ -38,7 +38,7 @@ from app.schemas.contract_pipeline import (
 from app.schemas.contract_translate import TranslatedClause
 from app.services.contract.comparator import NotComparableError, NoTermsError, compare_contract
 from app.services.contract.detector import detect_contract
-from app.services.contract.letter import add_pending_letter, write_letter
+from app.services.contract.letter import add_pending_letter, letter_missing, write_letter
 from app.services.contract.rag import LaborLawNotFoundError, get_labor_law_context
 from app.services.contract.report_store import (
     SOURCE_LANGUAGE,
@@ -166,7 +166,9 @@ async def analyze_contract(
         language,
     )
     if reused is not None:
-        if reused.complaint_pending:
+        if reused.complaint_pending or await letter_missing(
+            contracts, uid, contract_id, reused.clause_counts.danger
+        ):
             written = await add_pending_letter(
                 contracts, deps.templates, deps.gemini, uid, contract_id, contract, language
             )

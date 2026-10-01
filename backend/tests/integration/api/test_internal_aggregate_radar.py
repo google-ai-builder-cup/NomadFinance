@@ -18,7 +18,7 @@ CRON_SA = "nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com"
 
 
 class FakeRadar:
-    def reports_since(self, corridor_id: str, since: Any) -> list[dict[str, Any]]:
+    def reports_since(self, since: Any) -> list[dict[str, Any]]:
         return []
 
     def get_active_alert(self, corridor_id: str, entity_slug: str) -> None:

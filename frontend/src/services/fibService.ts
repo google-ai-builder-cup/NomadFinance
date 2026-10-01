@@ -9,6 +9,7 @@ import type {
   BillScanResponse,
   ExportReportRequest,
   ExportReportResponse,
+  FibCategorizeResponse,
   FinancialProfile,
   IncomeEntry,
   IncomeLogRequest,
@@ -118,4 +119,14 @@ export async function exportReport(body: ExportReportRequest): Promise<ExportRep
 export async function getLatestReport(): Promise<ExportReportResponse> {
   const response = await apiRequest("/api/v1/fib/report/export");
   return (await response.json()) as ExportReportResponse;
+}
+
+/**
+ * Give a category to the bills that have none, or only a photo's unconfirmed guess
+ * (`POST /api/v1/fib/categorize`). One AI call per batch; a category the worker chose is
+ * never changed.
+ */
+export async function categorizeEntries(): Promise<FibCategorizeResponse> {
+  const response = await apiRequest("/api/v1/fib/categorize", { method: "POST" });
+  return (await response.json()) as FibCategorizeResponse;
 }

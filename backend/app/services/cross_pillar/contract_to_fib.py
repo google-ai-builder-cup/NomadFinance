@@ -75,7 +75,10 @@ async def log_contract_income(
     The entry id is derived from `contract_id`, not `fib.new_id()`: re-analyzing the same
     contract (a different host country chosen, or the content changed) must overwrite the
     same entry rather than log a second one that would double-count toward
-    `income_stability`.
+    `income_stability`. For the same reason, one contract salary per calendar month: a
+    worker on a work permit has one employer, and checking a second contract (a new job, or
+    a draft) in the same month replaces the first rather than doubling that month's income.
+    `contract_ref` is what `financial_profile.verified_employment` is built from.
 
     Returns:
         The entry id written, or None when there was nothing to log.
@@ -86,7 +89,15 @@ async def log_contract_income(
         return None
 
     entry_id = f"{_ENTRY_ID_PREFIX}{contract_id}"
-    entry["entry_date"] = now.date().isoformat()
+    entry_date = now.date().isoformat()
+    entry["entry_date"] = entry_date
+    entry["contract_ref"] = contract_id
+    month = entry_date[:7]
+    for other_id, other in await run_in_threadpool(fib.list_entries, uid, "income"):
+        same_month = str(other.get("entry_date", "")).startswith(month)
+        if other_id != entry_id and other.get("source") == SOURCE and same_month:
+            await run_in_threadpool(fib.delete_entry, uid, "income", other_id)
+            logger.info("contract_income_replaced old=%s new=%s", other_id, entry_id)
     await run_in_threadpool(fib.save_entry, uid, "income", entry_id, entry)
     logger.info("contract_income_logged contract_id=%s amount=%s", contract_id, entry["amount"])
     return entry_id

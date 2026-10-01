@@ -1,9 +1,10 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import {
   analyzeContract,
+  getContract,
   getContractParties,
   getContractReport,
   listRecentContracts,
@@ -82,6 +83,31 @@ export function useRetryAnalysis() {
       analyzeContract(contractId, choices),
     // The progress card shows the failure itself.
     meta: { inlineError: true },
+  });
+}
+
+/**
+ * Write the complaint letter a stored analysis is missing: analyze again with the same
+ * choices, which the backend answers from its cache plus only the letter (Gemini overloaded
+ * earlier, or the templates were not loaded yet). The report is then read again.
+ */
+export function useWriteMissingLetter() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const uid = user?.uid;
+  return useMutation({
+    mutationFn: (analysis: ContractAnalysis) =>
+      analyzeContract(analysis.contract_id, {
+        host_country: analysis.host_country,
+        job_type: analysis.job_type,
+        report_language: analysis.report_language,
+      }),
+    retry: false,
+    meta: { inlineError: true },
+    onSuccess: (_result, analysis) =>
+      queryClient.invalidateQueries({
+        queryKey: ["contractReport", uid, analysis.contract_id],
+      }),
   });
 }
 
@@ -211,5 +237,16 @@ export function useContractParties(contractId: string | null) {
     queryKey: ["contractParties", uid, contractId] as const,
     queryFn: () => getContractParties(uid ?? "", contractId ?? ""),
     enabled: Boolean(uid && contractId),
+  });
+}
+
+/** One stored contract, to reopen its report from the history (`null` when it does not exist). */
+export function useStoredContract(contractId: string) {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: ["storedContract", uid, contractId] as const,
+    queryFn: () => getContract(uid ?? "", contractId),
+    enabled: uid !== undefined,
   });
 }

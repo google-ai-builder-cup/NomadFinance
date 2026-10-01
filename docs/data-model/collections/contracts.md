@@ -38,7 +38,7 @@ The uploaded file itself is **not kept** (NF-P2-007): step 1 reads it during the
 | `law_version` | number | when completed | `labor_laws/{country}/_meta/current.version` used for the analysis |
 | `prompt_versions` | map | yes | Prompt file versions used. After upload only `contract.extract`; after analysis all five, for example `{ "contract.extract": 2, "contract.detect": 2, "contract.compare": 1, "contract.translate": 1, "contract.complaint": 2 }` |
 | `models` | map | when completed | Model per tier, for example `{ "reasoning": "gemini-3.5-flash" }` (ADR-002) |
-| `complaint_pending` | boolean | no | `true` when the complaint letter failed for a passing reason (Gemini overloaded, timeout, bad answer); the next analyze writes only the letter. Absent otherwise |
+| `complaint_pending` | boolean | no | `true` when the complaint letter failed for a passing reason (Gemini overloaded, timeout, bad answer, or the host country's template not loaded in that Firestore); the next analyze writes only the letter. Absent otherwise. A stored analysis with a `danger` clause, no letter and no flag (analysed before 2026-10-01) is treated the same |
 | `error` | map | when failed | `{ "step": "compare", "code": "gemini_unavailable" }`. Codes: `poor_legibility`, `country_unknown`, `not_employment_contract`, `no_law_data`, `no_terms`, `gemini_busy`, `gemini_unavailable`, `gemini_timeout`, `gemini_bad_answer`, `internal`. No stack traces. |
 | `created_at`, `updated_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |

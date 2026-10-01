@@ -105,15 +105,18 @@ Entries created by the user (transfers, income, bills, savings) are written by t
 
 ## Required indexes
 
-Single-field indexes are automatic. These need to be created; the file `firestore.indexes.json` is currently empty and is out of scope for this task.
+Single-field indexes are automatic. These two composite indexes are the only ones a query needs; they are listed in `frontend/firestore.indexes.json` (2026-10-01).
 
 | Collection | Fields | Used by |
 |---|---|---|
-| `radar_reports` | `entity_slug` asc, `created_at` desc | Entity profile page (NF-P3-008) |
-| `radar_reports` | `corridor_id` asc, `created_at` desc | Surge detection cron (NF-P3-004) |
-| `radar_entities` | `corridors` array-contains, `report_count` desc | Heatmap and corridor lists (NF-P3-007) |
-| `users/*/notifications` (collection group `notifications`, scope: collection) | `read` asc, `created_at` desc | Unread alert feed (NF-P3-009) |
-| `report_embeddings` | `corridor_id` asc, `embedding` vector (dimension 768, flat) | Similar-report search (NF-P3-002) |
+| `radar_reports` | `entity_slug` asc, `created_at` desc | Entity profile page (NF-P3-008, `RadarRepository.list_by_entity`) |
+| `report_embeddings` | `corridor_id` asc, `embedding` vector (dimension 768, flat) | Similar-report search (NF-P3-002, `find_similar`) |
+
+Not needed, although earlier versions of this page listed them (2026-10-01 bug fix):
+- `radar_reports` `corridor_id` + `created_at`: the alert job (NF-P3-004) now reads two weeks of reports with one `created_at` range, which the automatic index serves. Its old per-corridor query needed `created_at` **ascending**; this page said descending, so the index created from it never matched and the job failed on every corridor.
+- `radar_entities` `corridors` + `report_count`, and `notifications` `read` + `created_at`: no query uses them. The heatmap reads every entity; the alert feed sorts by `created_at` alone.
+
+Existing copies of these three in a project do no harm.
 
 The vector index is created with `gcloud` (check `gcloud firestore indexes composite create --help` for the current syntax):
 

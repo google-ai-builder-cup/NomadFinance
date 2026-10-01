@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "radar_reports",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "entity_slug", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "report_embeddings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "corridor_id", "order": "ASCENDING" },
+        { "fieldPath": "embedding", "vectorConfig": { "dimension": 768, "flat": {} } }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

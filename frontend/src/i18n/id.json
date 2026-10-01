@@ -366,7 +366,25 @@
       "copied": "Surat disalin ke clipboard.",
       "copyFailed": "Kami tidak dapat menyalin surat. Silakan salin secara manual.",
       "printBlocked": "Izinkan pop-up untuk situs ini, lalu coba unduh lagi.",
-      "whereToSend": "Ke mana mengirimnya"
+      "whereToSend": "Ke mana mengirimnya",
+      "missing": {
+        "title": "Surat pengaduan",
+        "body": "Kontrak ini melanggar hukum, tetapi surat pengaduannya belum ditulis.",
+        "stillPending": "Surat belum bisa ditulis. Silakan coba lagi dalam beberapa menit.",
+        "action": "Tulis suratnya",
+        "writing": "Menulis…"
+      }
+    },
+    "history": {
+      "title": "Kontrak Anda",
+      "subtitle": "Semua kontrak yang sudah Anda periksa. Buka salah satunya untuk melihat laporannya lagi.",
+      "link": "Pemeriksaan sebelumnya",
+      "checkNew": "Periksa kontrak",
+      "emptyTitle": "Belum ada kontrak",
+      "loadError": "Kami tidak dapat memuat kontrak Anda. Silakan coba lagi.",
+      "back": "Semua kontrak Anda",
+      "notFinished": "Kontrak ini belum selesai diperiksa. Periksa lagi untuk melihat laporan.",
+      "notFound": "Kontrak ini tidak ditemukan."
     }
   },
   "remittance": {
@@ -452,7 +470,8 @@
       },
       "empty": "Belum ada riwayat kurs untuk periode ini.",
       "notLoaded": "Riwayat kurs untuk koridor ini belum tersedia.",
-      "loadError": "Kami tidak dapat memuat riwayat kurs."
+      "loadError": "Kami tidak dapat memuat riwayat kurs.",
+      "shortHistory": "Riwayat kurs dimulai pada {{date}}, jadi periode ini hanya menampilkan hari-hari sejak itu. Periode yang lebih panjang akan terisi seiring kurs dikumpulkan."
     },
     "savings": {
       "heading": "Selama {{months}} bulan terakhir",
@@ -460,6 +479,13 @@
       "shortHistory": "Baru {{months}} bulan riwayat kurs yang tersedia.",
       "notLoaded": "Angka penghematan untuk koridor ini belum tersedia.",
       "loadError": "Kami tidak dapat memuat angka penghematan."
+    },
+    "advice": {
+      "title": "Saran untuk Anda",
+      "intro": "Dapatkan penjelasan singkat tentang perbandingan ini dalam bahasa Anda.",
+      "ask": "Minta saran",
+      "writing": "Menulis…",
+      "disclaimer": "Ditulis oleh AI dari perbandingan di atas. Periksa harganya ke layanan sebelum Anda mengirim."
     }
   },
   "radar": {
@@ -616,7 +642,21 @@
       "emptyDescription": "Saat sebuah usaha dilaporkan beberapa kali, Anda akan melihat peringatan di sini.",
       "unread": "Belum dibaca: {{title}}",
       "pushToast": "Anda punya peringatan baru",
-      "pushToastAction": "Lihat"
+      "pushToastAction": "Lihat",
+      "feedTitle": "Notifikasi Anda",
+      "route": {
+        "title": "Aktif di rute Anda",
+        "summary": "Dilaporkan {{number}} kali dalam {{days}} hari terakhir: {{violation}}",
+        "severity": {
+          "info": "Perhatikan",
+          "warning": "Peringatan",
+          "critical": "Serius"
+        },
+        "routes": "Menampilkan peringatan untuk {{routes}}.",
+        "noRoutes": "Belum ada rute yang dipilih untuk peringatan.",
+        "chooseRoutes": "Pilih rute di profil Anda",
+        "none": "Saat ini tidak ada usaha yang dilaporkan berulang kali di rute Anda."
+      }
     }
   },
   "errors": {
@@ -792,6 +832,13 @@
         "verifiedEmployment": "Pekerjaan terverifikasi",
         "disclaimer": "Ini bukan skor kredit dan belum diperiksa terhadap catatan bank. Ini merangkum aktivitas yang dicatat sendiri oleh pekerja."
       }
+    },
+    "categorize": {
+      "title": "Kelompokkan tagihan Anda",
+      "pending": "Tagihan tanpa kategori: {{number}}. Kelompokkan otomatis untuk melihat ke mana uang Anda pergi.",
+      "done": "Dikelompokkan: {{sorted}}. Belum dikelompokkan: {{left}}.",
+      "action": "Kelompokkan tagihan saya",
+      "working": "Mengelompokkan…"
     }
   }
 }

@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 from app.dependencies import get_current_user
 from app.main import create_app
 from app.repositories.corridor_repo import get_corridor_repository
+from app.repositories.radar_repo import get_radar_repository
 from app.repositories.rate_repo import get_rate_repository
 from app.schemas.user import AuthenticatedUser
 
@@ -47,9 +48,24 @@ class FakeRates:
         return self.docs.get(pair_id)
 
 
+class FakeRadar:
+    """`radar_entities`: the flagged money transfer operators."""
+
+    def __init__(self) -> None:
+        self.flagged: list[dict[str, Any]] = []
+
+    def flagged_entities(self, entity_type: str) -> list[dict[str, Any]]:
+        return self.flagged if entity_type == "money_transfer_operator" else []
+
+
 @pytest.fixture
 def corridors() -> FakeCorridors:
     return FakeCorridors()
+
+
+@pytest.fixture
+def radar() -> FakeRadar:
+    return FakeRadar()
 
 
 @pytest.fixture
@@ -58,11 +74,12 @@ def rates() -> FakeRates:
 
 
 @pytest.fixture
-def app(corridors: FakeCorridors, rates: FakeRates) -> FastAPI:
+def app(corridors: FakeCorridors, rates: FakeRates, radar: FakeRadar) -> FastAPI:
     app = create_app()
     app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="test-user")
     app.dependency_overrides[get_corridor_repository] = lambda: corridors
     app.dependency_overrides[get_rate_repository] = lambda: rates
+    app.dependency_overrides[get_radar_repository] = lambda: radar
     return app
 
 
@@ -97,6 +114,7 @@ def test_every_field_of_a_provider_row_is_present(api: TestClient) -> None:
         "speed", "speed_order", "network_coverage", "note", "payout_currency", "comparable",
         "rank", "estimated", "fee", "fx_margin_pct", "rate_cost", "total_cost",
         "total_cost_pct", "recipient_receives", "lost_to_costs", "less_than_best",
+        "flagged", "flag_report_count",
     }  # fmt: skip
 
 
@@ -216,3 +234,17 @@ def test_endpoint_is_documented_in_openapi(api: TestClient) -> None:
 def test_no_gemini_key_is_needed(api: TestClient) -> None:
     # The comparison is arithmetic on stored data: it must not depend on the AI client.
     assert api.post(URL, json={"corridor_id": "SG-PH", "amount": 500}).status_code == 200
+
+
+def test_a_provider_workers_reported_is_flagged_but_keeps_its_rank(
+    api: TestClient, radar: FakeRadar
+) -> None:
+    radar.flagged = [{"slug": "instarem", "aliases": [], "report_count": 5}]
+
+    body = api.post(URL, json={"corridor_id": "SG-PH", "amount": 500}).json()
+
+    instarem = [p for p in body["providers"] if p["firm"] == "InstaReM"]
+    others = [p for p in body["providers"] if p["firm"] != "InstaReM"]
+    assert instarem and all(p["flagged"] and p["flag_report_count"] == 5 for p in instarem)
+    assert not any(p["flagged"] for p in others)
+    assert body["summary"]["best_firm"] == "InstaReM"  # the ranking stays by price

@@ -139,6 +139,8 @@ export interface BillEntry {
   paid: boolean;
   category?: BillCategory;
   category_source?: CategorySource;
+  /** Set when the model categorized it (`/fib/categorize`); absent for a bill photo's guess. */
+  category_confidence?: number | null;
   source: EntrySource;
   created_at: Timestamp;
 }
@@ -210,4 +212,21 @@ export interface ExportReportResponse {
   created_at: string;
   language: string;
   filename: string;
+}
+
+/** One entry that `POST /api/v1/fib/categorize` gave a category. */
+export interface CategorizedEntry {
+  entry_id: string;
+  entry_type: "income" | "bill";
+  category: IncomeCategory | BillCategory;
+  confidence: number;
+}
+
+/** Response of `POST /api/v1/fib/categorize`. */
+export interface FibCategorizeResponse {
+  categorized: CategorizedEntry[];
+  /** Gemini gave no usable category; still pending, tried again on the next call. */
+  skipped: number;
+  /** Left for a later call because of the per-call limit. */
+  remaining: number;
 }

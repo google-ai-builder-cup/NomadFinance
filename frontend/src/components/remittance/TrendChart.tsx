@@ -23,6 +23,7 @@ import {
   type TrendPoint,
 } from "@/types/remittance";
 import { weekdayName } from "@/utils/format";
+import { historyStartsLate } from "@/utils/trendHistory";
 
 export interface TrendChartProps {
   comparison: RemittanceComparison;
@@ -178,6 +179,14 @@ export default function TrendChart({ comparison }: TrendChartProps) {
 
       {trends.isSuccess && trends.data.points.length > 0 && (
         <>
+          {historyStartsLate(trends.data.points, days) !== null && (
+            <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
+              {t("remittance.trend.shortHistory", {
+                date: mediumDate(trends.data.points[0].date, language),
+              })}
+            </p>
+          )}
+
           {trends.data.summary && (
             <p className="text-sm text-muted-foreground">
               {t("remittance.trend.change", {

@@ -631,6 +631,7 @@ Each entry of `providers`:
 | `recipient_receives` | In the receiving currency; `null` when not comparable |
 | `lost_to_costs` | Mid-market amount minus `recipient_receives`. Negative for the few services the survey found cheaper than mid-market |
 | `less_than_best` | What the best service gives the recipient over this one; 0 for rank 1 |
+| `flagged`, `flag_report_count` | `true` (and the number of reports) when workers have reported the service on the Exploitation Radar (a flagged `money_transfer_operator` in `radar_entities`, matched by slug or alias). It keeps its rank; `/recommend` passes over it. `false` / `null` otherwise, and when Radar cannot be read |
 
 `stale` on `rate` is true when the cached rate is older than 6 hours, or when there is none and the survey's own median rate was used (`source: "survey"`): the app should say the rate may be out of date. All amounts are rounded to two decimals (the rate to six).
 
@@ -842,7 +843,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 Writes a short, personal recommendation from a finished comparison: one headline and two to four sentences, in the worker's own language. Step 9 of the Remittance X-Ray pipeline (NF-P2-016, `docs/pipelines/remittance-xray.md`), classification tier (`gemini-3.1-flash-lite`, prompt `remittance/recommend.v1`) — the only remittance step that calls Gemini, on a separate quota bucket from Contract Shield's reasoning tier (ADR-002, D-58). Nothing is stored.
 
-**The recommended provider is never a name Gemini chose.** `recommended_rpw_id` and `recommended_firm` are always the comparison's own top-ranked comparable provider (`summary.best_rpw_id` / `best_firm`); the prompt's own answer is only checked against them, and a mismatch is a `502`. There is no radar-flag data yet (NF-P3-022) that would make a different choice correct.
+**The recommended provider is never a name Gemini chose.** `recommended_rpw_id` and `recommended_firm` are the comparison's highest-ranked comparable provider that is not `flagged` (the top-ranked one when every provider is flagged), set by code (`recommender.recommended_provider`, prompt `recommend.v2`); the prompt's own answer is only checked against them, and a mismatch is a `502`.
 
 - **Auth:** `Authorization: Bearer <firebase-id-token>` required
 - **Request body (JSON):**
@@ -859,7 +860,7 @@ Writes a short, personal recommendation from a finished comparison: one headline
 |---|---|---|
 | `corridor_id` | | Same as `comparison.corridor_id` |
 | `target_language` | | Same as the request |
-| `recommended_rpw_id`, `recommended_firm` | | The top-ranked comparable provider of `comparison`, set by code |
+| `recommended_rpw_id`, `recommended_firm` | | The highest-ranked comparable provider of `comparison` that is not flagged, set by code |
 | `headline` | string | One short sentence with the key number |
 | `explanation` | string | Two to four short sentences: the gap to the most expensive option, and the fee or rate markup that causes it, in plain words (never a field name like `fx_margin_pct`) |
 | `timing_tip` | string or `null` | One sentence from `trend.best_day`; always `null` when `trend` had none, whatever Gemini wrote |
@@ -895,7 +896,7 @@ The headline reads "Send with InstaReM: your family will get 2907.3 PHP more."
 | 401 | see Authentication | No or invalid token |
 | 422 | FastAPI validation list | `comparison` has no ranked provider, more than 60 providers, or `target_language` outside the six supported codes |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 10 AI calls a minute or 60 API calls a minute |
-| 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no headline or explanation, or named a provider other than the top-ranked one |
+| 502 | `The AI service returned an unusable answer. Please try again.` | Gemini's answer had no headline or explanation, or named a provider other than the recommended one |
 | 503 / 504 | see Error format | Gemini busy or timed out |
 
 ---

@@ -350,16 +350,40 @@ async def test_after_a_failed_translation_the_next_run_only_translates(
     assert (steps.calls["compare"], steps.calls["translate"]) == (1, 2)
 
 
-async def test_a_missing_complaint_template_keeps_the_report(
+async def test_a_missing_complaint_template_keeps_the_report_and_the_letter_pending(
     steps: Steps, contracts: FakeContracts, deps: PipelineDeps
 ) -> None:
+    # Production had no templates loaded: the letter must come once they are, not never.
     steps.fail["complaint"] = ComplaintTemplateNotFoundError("SG")
     contract_id = await _upload(contracts)
 
     result = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
 
-    assert (result.status, result.complaint_pending) == ("completed", False)
+    assert (result.status, result.complaint_pending) == ("completed", True)
     assert contracts.reports[(UID, contract_id, "en")]["complaint"] is None
+    del steps.fail["complaint"]
+
+    again = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert (again.cached, again.complaint_pending) == (True, False)
+    assert contracts.reports[(UID, contract_id, "en")]["complaint"] is not None
+
+
+async def test_a_letter_missing_under_the_old_rule_is_written_on_the_next_analyze(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps
+) -> None:
+    # Analysed while a missing template was final: no letter, and nothing marked pending.
+    steps.fail["complaint"] = ComplaintTemplateNotFoundError("SG")
+    contract_id = await _upload(contracts)
+    await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+    contracts.update(UID, contract_id, {"complaint_pending": None})
+    del steps.fail["complaint"]
+
+    again = await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    assert (again.cached, again.complaint_pending) == (True, False)
+    assert steps.calls["compare"] == 1
+    assert contracts.reports[(UID, contract_id, "en")]["complaint"] is not None
 
 
 async def test_a_passing_letter_failure_is_retried_alone_on_the_next_analyze(

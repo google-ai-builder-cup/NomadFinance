@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { Link } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PipelineProgress from "@/components/contract/PipelineProgress";
@@ -184,7 +185,12 @@ export default function ContractUpload() {
   return (
     <div className="mx-auto max-w-lg space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("contract.upload.title")}</h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-2xl font-bold tracking-tight">{t("contract.upload.title")}</h1>
+          <Link to="/contract/history" className="shrink-0 pt-2 text-sm underline">
+            {t("contract.history.link")}
+          </Link>
+        </div>
         <p className="text-sm text-muted-foreground">{t("contract.upload.subtitle")}</p>
       </header>
 

@@ -79,6 +79,8 @@ async def test_logs_the_entry_under_a_contract_derived_id() -> None:
     assert stored["verified"] is True
     assert stored["source"] == "contract"
     assert stored["entry_date"] == "2026-09-30"
+    # What financial_profile.verified_employment is built from (profile_builder.py).
+    assert stored["contract_ref"] == "c_01"
 
 
 async def test_re_analysing_the_same_contract_overwrites_not_duplicates() -> None:
@@ -104,3 +106,40 @@ async def test_nothing_to_log_writes_nothing() -> None:
 
     assert entry_id is None
     assert fib.docs == {}
+
+
+async def test_a_second_contract_in_the_same_month_replaces_the_first() -> None:
+    fib = FakeFib()
+    fib.docs["worker-1/income/manual_1"] = {"source": "manual", "entry_date": "2026-09-05"}
+    fib.docs["worker-1/income/contract_old"] = {"source": "contract", "entry_date": "2026-08-30"}
+    await log_contract_income(
+        "worker-1", "c_01", "employment_contract", _facts(salary_amount=600.0), fib, NOW  # type: ignore[arg-type]
+    )
+
+    await log_contract_income(
+        "worker-1", "c_02", "employment_contract", _facts(salary_amount=700.0), fib, NOW  # type: ignore[arg-type]
+    )
+
+    assert sorted(fib.docs) == [
+        "worker-1/income/contract_c_02",
+        "worker-1/income/contract_old",  # last month's salary stays
+        "worker-1/income/manual_1",  # the worker's own entries are never touched
+    ]
+    assert fib.docs["worker-1/income/contract_c_02"]["amount"] == 700.0
+
+
+async def test_an_entry_from_before_contract_ref_is_replaced_too() -> None:
+    # Written by the first version, without contract_ref: the profile never showed it.
+    fib = FakeFib()
+    fib.docs["worker-1/income/contract_c_01"] = {
+        "source": "contract",
+        "verified": True,
+        "entry_date": "2026-09-12",
+        "amount": 650.0,
+    }
+
+    await log_contract_income(
+        "worker-1", "c_01", "employment_contract", _facts(), fib, NOW  # type: ignore[arg-type]
+    )
+
+    assert fib.docs["worker-1/income/contract_c_01"]["contract_ref"] == "c_01"

@@ -83,7 +83,7 @@ Values are illustrative.
 | `category` | string | yes | For income the category is required and says what kind of income it is: `salary`, `overtime`, `bonus`, `other_income` |
 | `employer_name` | string | no | Who paid |
 | `verified` | boolean | yes | `true` only for income backed by an analysed contract (`source: contract`, NF-P3-024). It feeds the "verified employment" line of the narrative. |
-| `contract_ref` | string | when `source: contract` | Contract id in `users/{uid}/contracts` |
+| `contract_ref` | string | when `source: contract` | Contract id in `users/{uid}/contracts`. What `verified_employment` is built from. One contract salary per calendar month: a second contract checked in the same month replaces the first (entries written before 2026-10-01 lack the field and are repaired when the profile is recomputed) |
 
 **Example** — `users/uid_priya_demo/income/i_01`
 

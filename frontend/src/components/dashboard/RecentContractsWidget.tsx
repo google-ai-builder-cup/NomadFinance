@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import WidgetCard from "@/components/dashboard/WidgetCard";
 import { useRecentContracts } from "@/hooks/useContract";
@@ -37,9 +38,15 @@ export default function RecentContractsWidget() {
         <ul className="space-y-2">
           {contracts.data.map((contract) => (
             <li key={contract.id} className="flex items-center justify-between gap-2 text-sm">
-              <span className="min-w-0 truncate">
-                {contract.title ?? t("dashboard.widgets.contract.untitled")}
-              </span>
+              {contract.status === "completed" ? (
+                <Link to={`/contract/${contract.id}`} className="min-w-0 truncate underline">
+                  {contract.title ?? t("dashboard.widgets.contract.untitled")}
+                </Link>
+              ) : (
+                <span className="min-w-0 truncate">
+                  {contract.title ?? t("dashboard.widgets.contract.untitled")}
+                </span>
+              )}
               {contract.risk_level ? (
                 <span
                   className={cn(

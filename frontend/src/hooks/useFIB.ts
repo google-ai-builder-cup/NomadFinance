@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/useAuth";
 import {
+  categorizeEntries,
   exportReport,
   getFinancialProfile,
   getLatestReport,
@@ -138,5 +139,18 @@ export function useExportReport() {
     retry: false,
     meta: { inlineError: true },
     onSuccess: (result) => queryClient.setQueryData(latestReportKey(uid), result),
+  });
+}
+
+/** Sort the pending bills into categories, then reload the timeline that charts them. */
+export function useCategorizeEntries() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const uid = user?.uid;
+  return useMutation({
+    mutationFn: categorizeEntries,
+    retry: false,
+    meta: { inlineError: true },
+    onSuccess: () => queryClient.refetchQueries({ queryKey: financialTimelineKey(uid) }),
   });
 }

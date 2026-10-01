@@ -1,9 +1,12 @@
 """The complaint letter inside the pipeline (NF-P2-007, step 6 of NF-P2-006).
 
 A report is worth having without its letter, so a failed letter never throws the analysis
-away. But a failure Gemini might not repeat (overloaded, timeout, bad answer) must not be
-cached as "no letter": the contract is marked `complaint_pending` and the next analyze writes
-only the letter. A country without a template is final: no letter, nothing pending.
+away. But a failure that may not repeat must not be cached as "no letter": the contract is
+marked `complaint_pending` and the next analyze writes only the letter. That covers Gemini
+(overloaded, timeout, bad answer) and a missing template: all six host countries have a
+curated one, so a missing template means it was not loaded into that Firestore yet, as
+happened in production. A contract analysed before that rule (no letter, nothing pending)
+is caught by `letter_missing` instead.
 """
 
 from __future__ import annotations
@@ -41,8 +44,8 @@ async def write_letter(
     try:
         return await generate_complaint(host, clauses, facts, language, templates, gemini), False
     except ComplaintTemplateNotFoundError:
-        logger.warning("pipeline_letter_skipped reason=no_template country=%s", host)
-        return None, False
+        logger.warning("pipeline_letter_pending reason=no_template country=%s", host)
+        return None, True
     except (GeminiError, ComplaintIncompleteError) as exc:
         logger.warning("pipeline_letter_pending reason=%s", type(exc).__name__)
         return None, True
@@ -60,7 +63,7 @@ async def add_pending_letter(
     """Write the letter an earlier failure left out and add it to every stored report.
 
     Returns:
-        True when the letter is no longer pending (written, or no template exists).
+        True when the letter was written.
     """
     stored = await run_in_threadpool(contracts.get_report, uid, contract_id, "en")
     if stored is None:
@@ -82,3 +85,17 @@ async def add_pending_letter(
             )
     await run_in_threadpool(contracts.update, uid, contract_id, {"complaint_pending": None})
     return True
+
+
+async def letter_missing(
+    contracts: ContractRepository, uid: str, contract_id: str, danger_count: int
+) -> bool:
+    """A stored analysis with an unlawful clause but no letter and nothing marked pending.
+
+    Only contracts analysed while a missing template was still treated as final end up like
+    this; reading `reports/en` tells them apart from a letter that exists.
+    """
+    if danger_count == 0:
+        return False
+    stored = await run_in_threadpool(contracts.get_report, uid, contract_id, "en")
+    return stored is not None and stored.get("complaint") is None

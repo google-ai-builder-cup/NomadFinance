@@ -6,6 +6,8 @@ import RouteError from "@/components/common/RouteError";
 import AppShell from "@/components/layout/AppShell";
 import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import ComingSoon from "@/pages/ComingSoon";
+import ContractList from "@/pages/contract/ContractList";
+import ContractReport from "@/pages/contract/ContractReport";
 import ContractUpload from "@/pages/contract/ContractUpload";
 import Dashboard from "@/pages/Dashboard";
 import FIBDashboard from "@/pages/fib/FIBDashboard";
@@ -62,6 +64,8 @@ export const router = createBrowserRouter([
                     children: [
                       { path: "/dashboard", element: <Dashboard /> },
                       { path: "/profile", element: <Profile /> },
+                      { path: "/contract/history", element: <ContractList /> },
+                      { path: "/contract/:contractId", element: <ContractReport /> },
                       { path: "/radar/heatmap", element: <RadarHeatmap /> },
                       { path: "/radar/report", element: <RadarReport /> },
                       { path: "/radar/entity/:slug", element: <RadarEntity /> },

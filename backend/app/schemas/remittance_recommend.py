@@ -33,7 +33,7 @@ class RemittanceRecommendRequest(BaseModel):
 
 
 class RecommendationAnswer(BaseModel):
-    """Gemini response schema for the recommendation (prompt remittance/recommend.v1).
+    """Gemini response schema for the recommendation (prompt remittance/recommend.v2).
 
     `best_provider` is checked against the comparison, never taken as the final answer: see
     `RemittanceRecommendation.recommended_firm`.
@@ -48,9 +48,9 @@ class RecommendationAnswer(BaseModel):
 class RemittanceRecommendation(BaseModel):
     """Response of `POST /api/v1/remittance/recommend` (NF-P2-016): step 9 of the pipeline.
 
-    `recommended_rpw_id` and `recommended_firm` are the top-ranked comparable provider of the
-    comparison (`summary.best_rpw_id` / `best_firm`), set by code: nothing here is a fact
-    Gemini is trusted to decide. `timing_tip` is `null` whenever `trend` had nothing to
+    `recommended_rpw_id` and `recommended_firm` are the best-ranked comparable provider that
+    workers have not flagged (`recommender.recommended_provider`), set by code: nothing here is
+    a fact Gemini is trusted to decide. `timing_tip` is `null` whenever `trend` had nothing to
     say, whatever Gemini wrote.
     """
 

@@ -7,11 +7,13 @@ import {
   getRemittanceSavings,
   getRemittanceTrends,
   logTransfer,
+  recommendRemittance,
 } from "@/services/remittanceService";
 import type { CorridorId } from "@/types/enums";
 import type {
   RemittanceCompareRequest,
   RemittanceComparison,
+  RemittanceRecommendRequest,
   RemittanceSavings,
   RemittanceTrends,
   TrendDays,
@@ -89,5 +91,17 @@ export function useRemittanceSavings(
     enabled: corridorId !== null && amount !== null,
     retry: (failureCount, error) =>
       !(error instanceof ApiError && error.status === 404) && failureCount < 1,
+  });
+}
+
+/**
+ * Ask for the recommendation (NF-P2-016) when the worker taps for it, not on every comparison:
+ * it is the one Gemini call on the page. Shows its own error, never the global toast.
+ */
+export function useRecommendRemittance() {
+  return useMutation({
+    mutationFn: (body: RemittanceRecommendRequest) => recommendRemittance(body),
+    retry: false,
+    meta: { inlineError: true },
   });
 }

@@ -104,6 +104,37 @@ async def _reporting_currency(
     return None
 
 
+_CONTRACT_ENTRY_PREFIX = "contract_"
+
+
+def _contract_income_once_a_month(
+    raw: list[tuple[str, dict[str, Any]]],
+) -> list[tuple[str, dict[str, Any]]]:
+    """Repair contract income written before the 2026-10-01 fix, at read time.
+
+    Those entries have no `contract_ref` (so they never showed as verified employment) and a
+    second checked contract added a second salary in the same month. Now each gets its ref
+    from its id (`contract_<contract_id>`), and only the newest contract salary of a month
+    counts, as `contract_to_fib.log_contract_income` keeps it for new entries.
+    """
+    kept: dict[str, tuple[str, dict[str, Any]]] = {}
+    others: list[tuple[str, dict[str, Any]]] = []
+    for entry_id, data in raw:
+        if data.get("source") != "contract":
+            others.append((entry_id, data))
+            continue
+        if not data.get("contract_ref") and entry_id.startswith(_CONTRACT_ENTRY_PREFIX):
+            data = data | {"contract_ref": entry_id.removeprefix(_CONTRACT_ENTRY_PREFIX)}
+        month = str(data.get("entry_date", ""))[:7]
+        current = kept.get(month)
+        if current is None or (str(data.get("entry_date")), entry_id) >= (
+            str(current[1].get("entry_date")),
+            current[0],
+        ):
+            kept[month] = (entry_id, data)
+    return others + list(kept.values())
+
+
 def _verified_employment(income: list[Entry]) -> list[dict[str, Any]]:
     """One line per contract that backs an income entry (NF-P3-024), newest entry winning."""
     by_contract: dict[str, dict[str, Any]] = {}
@@ -153,6 +184,8 @@ async def recompute_profile(
     kinds: tuple[EntryKind, ...] = ("income", "transfers", "bills", "savings")
     for kind in kinds:
         raw = await run_in_threadpool(fib.list_entries, uid, kind)
+        if kind == "income":
+            raw = _contract_income_once_a_month(raw)
         loaded[kind] = entries_in_window(raw, today)
     income, transfers, bills, savings = (
         loaded["income"],
