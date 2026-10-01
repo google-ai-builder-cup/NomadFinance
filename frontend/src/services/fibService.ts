@@ -7,6 +7,8 @@ import type {
   BillLogRequest,
   BillLogResponse,
   BillScanResponse,
+  ExportReportRequest,
+  ExportReportResponse,
   FinancialProfile,
   IncomeEntry,
   IncomeLogRequest,
@@ -93,4 +95,27 @@ export function listBillEntries(uid: string, sinceIsoDate: string): Promise<Bill
 /** Savings entries on or after `sinceIsoDate`, for the timeline dashboard. */
 export function listSavingsEntries(uid: string, sinceIsoDate: string): Promise<SavingsEntry[]> {
   return listEntries<SavingsEntry>(uid, "savings", sinceIsoDate);
+}
+
+/**
+ * Render a fresh PDF of the current Financial Identity profile and get a signed link to it
+ * (`POST /api/v1/fib/report/export`, NF-P3-014). Replaces any previous export. 404 when there
+ * is no profile yet.
+ */
+export async function exportReport(body: ExportReportRequest): Promise<ExportReportResponse> {
+  const response = await apiRequest("/api/v1/fib/report/export", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return (await response.json()) as ExportReportResponse;
+}
+
+/**
+ * A fresh signed link to the worker's last exported PDF, without rendering it again
+ * (`GET /api/v1/fib/report/export`). 404 when nothing has ever been exported.
+ */
+export async function getLatestReport(): Promise<ExportReportResponse> {
+  const response = await apiRequest("/api/v1/fib/report/export");
+  return (await response.json()) as ExportReportResponse;
 }

@@ -58,6 +58,13 @@ export default function FIBDashboard() {
           </button>
         </p>
       )}
+      {profile.isSuccess && profile.data !== null && (
+        <div className="flex justify-end">
+          <Button asChild variant="outline" size="sm">
+            <Link to="/identity/export">{t("fib.dashboard.exportReport")}</Link>
+          </Button>
+        </div>
+      )}
 
       <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
         <FinancialTimeline income={income} bills={bills} currency={currency} />

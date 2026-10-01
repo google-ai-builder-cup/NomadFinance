@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/useAuth";
 import {
+  exportReport,
   getFinancialProfile,
+  getLatestReport,
   listBillEntries,
   listIncomeEntries,
   listSavingsEntries,
@@ -103,4 +105,38 @@ export function useScanBill() {
 
 export function useLogSavings() {
   return useMutation({ mutationFn: logSavings, ...useLogMutationOptions() });
+}
+
+function latestReportKey(uid: string | undefined) {
+  return ["fibLatestReport", uid] as const;
+}
+
+/**
+ * A fresh link to the worker's last exported PDF (NF-P3-018); `data` is `undefined` (via the
+ * 404 this query does not retry) when nothing has been exported yet, not an error page. A
+ * short `staleTime` means returning to the export page re-signs the link rather than handing
+ * back one that may already be close to `expires_at`.
+ */
+export function useLatestReport() {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: latestReportKey(uid),
+    queryFn: getLatestReport,
+    enabled: uid !== undefined,
+    staleTime: 0,
+  });
+}
+
+/** Render a new PDF of the current profile, replacing any previous export (NF-P3-018). */
+export function useExportReport() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const uid = user?.uid;
+  return useMutation({
+    mutationFn: exportReport,
+    retry: false,
+    meta: { inlineError: true },
+    onSuccess: (result) => queryClient.setQueryData(latestReportKey(uid), result),
+  });
 }
