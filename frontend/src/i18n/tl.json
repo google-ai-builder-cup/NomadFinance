@@ -287,6 +287,11 @@
       "reportLoadError": "Hindi namin na-load ang buong ulat.",
       "reportMissing": "Hindi pa handa ang iyong ulat. Subukan ulit sandali."
     },
+    "flagged": {
+      "label": "Na-flag ng komunidad — {{number}} ulat",
+      "detail": "{{name}}: na-flag ng komunidad, {{number}} ulat ng mga manggagawa. Tingnan ang detalye.",
+      "listLabel": "Mga babala ng komunidad tungkol sa mga nakasaad sa kontratang ito"
+    },
     "progress": {
       "title": "Sinusuri ang iyong kontrata",
       "subtitle": "Karaniwang 1 hanggang 2 minuto ito. Panatilihing bukas ang pahinang ito habang nagtatrabaho kami.",

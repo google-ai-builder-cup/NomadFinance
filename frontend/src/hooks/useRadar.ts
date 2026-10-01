@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+import { useContractParties } from "@/hooks/useContract";
 import {
   getEntityReports,
   listRadarEntities,
@@ -7,6 +8,7 @@ import {
   uploadEvidence,
 } from "@/services/radarService";
 import type { RadarEntityProfile, RadarReportRequest, RadarReportResponse } from "@/types/radar";
+import { type FlaggedParty, findFlaggedParties } from "@/utils/flaggedParties";
 import { findFlaggedEntity } from "@/utils/flaggedProviders";
 
 export interface SubmitReportArgs {
@@ -98,4 +100,15 @@ export function useEntityReports(slug: string) {
 export function useFlaggedProvider(firm: string): RadarEntityProfile | null {
   const entities = useRadarEntities();
   return findFlaggedEntity(firm, entities.data ?? []);
+}
+
+/**
+ * The flagged radar profiles of the employer and agency a contract names (NF-P3-023): empty
+ * while anything is loading, when nothing is flagged, or when a read fails. A warning is an
+ * extra and never blocks or breaks the report it sits on.
+ */
+export function useFlaggedParties(contractId: string): FlaggedParty[] {
+  const parties = useContractParties(contractId);
+  const entities = useRadarEntities();
+  return parties.data === undefined ? [] : findFlaggedParties(parties.data, entities.data ?? []);
 }
