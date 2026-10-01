@@ -170,6 +170,13 @@ export interface MetricResult {
   detail: Record<string, unknown>;
 }
 
+export interface VerifiedEmployment {
+  employer_name: string;
+  salary_amount: number;
+  salary_currency: string;
+  contract_ref: string;
+}
+
 /** `users/{uid}/financial_profile/current` (NF-P3-013's weekly recompute). Does not exist at
  * all for a worker with no scoreable activity in the last 12 months — the cron writes nothing,
  * rather than a zeroed-out document. */
@@ -182,5 +189,25 @@ export interface FinancialProfile {
   metrics: Record<MetricKey, MetricResult>;
   overall_score: number;
   narrative: { language: string; text: string; model: string };
+  verified_employment?: VerifiedEmployment[];
   computed_at: Timestamp;
+}
+
+export const MAX_HOLDER_NAME_CHARS = 100;
+
+/** Body of `POST /api/v1/fib/report/export`. */
+export interface ExportReportRequest {
+  holder_name?: string | null;
+}
+
+/** Response of both `POST` and `GET /api/v1/fib/report/export`: a link to the exported PDF.
+ * `download_url` always sends `Content-Disposition: attachment` (NF-P3-014) — it downloads,
+ * it does not render inline, so the frontend's own "preview" is built from `FinancialProfile`
+ * data instead of this PDF's bytes. */
+export interface ExportReportResponse {
+  download_url: string;
+  expires_at: string;
+  created_at: string;
+  language: string;
+  filename: string;
 }

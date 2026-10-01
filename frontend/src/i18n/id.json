@@ -695,7 +695,8 @@
       "subtitle": "Penghasilan, pengeluaran, dan tabungan Anda — membangun catatan portabel dari waktu ke waktu.",
       "logActivity": "Catat aktivitas",
       "loadError": "Aktivitas Anda tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
-      "scoreLoadError": "Skor Anda tidak dapat dimuat."
+      "scoreLoadError": "Skor Anda tidak dapat dimuat.",
+      "exportReport": "Ekspor laporan"
     },
     "score": {
       "overall": "Skor keseluruhan",
@@ -727,6 +728,34 @@
       "income": "Penghasilan menurut kategori",
       "expenses": "Pengeluaran menurut kategori",
       "empty": "Catat penghasilan atau tagihan untuk melihat rincian ini."
+    },
+    "export": {
+      "title": "Ekspor laporan Anda",
+      "subtitle": "PDF portabel Identitas Finansial Anda yang bisa digunakan bank dan pemberi pinjaman di kampung halaman.",
+      "holderName": "Nama pada laporan (opsional)",
+      "holderNamePlaceholder": "Nama lengkap",
+      "holderNameHint": "Hanya dicetak pada PDF ini. Kami tidak menyimpannya.",
+      "generate": "Buat PDF",
+      "generating": "Membuat…",
+      "regenerate": "Buat PDF baru",
+      "download": "Unduh",
+      "share": "Bagikan",
+      "readyAt": "Siap sejak {{date}}",
+      "noneYet": "Anda belum membuat laporan.",
+      "linkCopied": "Tautan disalin ke clipboard.",
+      "shareFailed": "Tidak dapat membagikan ini. Coba unduh saja.",
+      "shareTitle": "Laporan Identitas Finansial Saya",
+      "profileLoadError": "Profil Anda tidak dapat dimuat. Periksa koneksi Anda dan coba lagi.",
+      "preview": {
+        "open": "Pratinjau",
+        "title": "Pratinjau laporan",
+        "close": "Tutup",
+        "period": "Periode",
+        "monthsOfData": "Bulan data",
+        "notEnoughRecords": "Catatan tidak cukup",
+        "verifiedEmployment": "Pekerjaan terverifikasi",
+        "disclaimer": "Ini bukan skor kredit dan belum diperiksa terhadap catatan bank. Ini merangkum aktivitas yang dicatat sendiri oleh pekerja."
+      }
     }
   }
 }

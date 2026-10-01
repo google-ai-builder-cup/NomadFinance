@@ -695,7 +695,8 @@
       "subtitle": "Ang iyong kita, gastos, at ipon — bumubuo ng portable na rekord sa paglipas ng panahon.",
       "logActivity": "I-log ang aktibidad",
       "loadError": "Hindi na-load ang iyong aktibidad. Tingnan ang iyong koneksyon at subukan ulit.",
-      "scoreLoadError": "Hindi na-load ang iyong score."
+      "scoreLoadError": "Hindi na-load ang iyong score.",
+      "exportReport": "I-export ang report"
     },
     "score": {
       "overall": "Pangkalahatang score",
@@ -727,6 +728,34 @@
       "income": "Kita ayon sa kategorya",
       "expenses": "Gastos ayon sa kategorya",
       "empty": "Mag-log ng kita o bayarin para makita ang breakdown na ito."
+    },
+    "export": {
+      "title": "I-export ang iyong report",
+      "subtitle": "Isang portable na PDF ng iyong Financial Identity na magagamit ng mga bangko at nagpapautang sa bahay.",
+      "holderName": "Pangalan sa report (opsyonal)",
+      "holderNamePlaceholder": "Buong pangalan",
+      "holderNameHint": "Ipi-print lang sa PDF na ito. Hindi namin ito sine-save.",
+      "generate": "Gumawa ng PDF",
+      "generating": "Ginagawa…",
+      "regenerate": "Gumawa ng bagong PDF",
+      "download": "I-download",
+      "share": "Ibahagi",
+      "readyAt": "Handa mula {{date}}",
+      "noneYet": "Wala ka pang nagawang report.",
+      "linkCopied": "Nakopya ang link sa clipboard.",
+      "shareFailed": "Hindi ito naibahagi. Subukang i-download na lang.",
+      "shareTitle": "Ang Aking Financial Identity Report",
+      "profileLoadError": "Hindi na-load ang iyong profile. Tingnan ang iyong koneksyon at subukan ulit.",
+      "preview": {
+        "open": "I-preview",
+        "title": "Preview ng report",
+        "close": "Isara",
+        "period": "Panahon",
+        "monthsOfData": "Buwan ng datos",
+        "notEnoughRecords": "Hindi sapat na record",
+        "verifiedEmployment": "Beripikadong trabaho",
+        "disclaimer": "Hindi ito credit score at hindi ito sinuri laban sa mga rekord ng bangko. Buod ito ng aktibidad na in-log ng manggagawa mismo."
+      }
     }
   }
 }

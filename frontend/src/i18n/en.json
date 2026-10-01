@@ -695,7 +695,8 @@
       "subtitle": "Your income, spending and savings, building a portable record over time.",
       "logActivity": "Log activity",
       "loadError": "Could not load your activity. Check your connection and try again.",
-      "scoreLoadError": "Could not load your score."
+      "scoreLoadError": "Could not load your score.",
+      "exportReport": "Export report"
     },
     "score": {
       "overall": "Overall score",
@@ -727,6 +728,34 @@
       "income": "Income by category",
       "expenses": "Expenses by category",
       "empty": "Log some income or bills to see this breakdown."
+    },
+    "export": {
+      "title": "Export your report",
+      "subtitle": "A portable PDF of your Financial Identity that banks and lenders back home can use.",
+      "holderName": "Name on the report (optional)",
+      "holderNamePlaceholder": "Full name",
+      "holderNameHint": "Printed on this PDF only. We don't save it.",
+      "generate": "Generate PDF",
+      "generating": "Generating…",
+      "regenerate": "Generate a new PDF",
+      "download": "Download",
+      "share": "Share",
+      "readyAt": "Ready since {{date}}",
+      "noneYet": "You haven't generated a report yet.",
+      "linkCopied": "Link copied to clipboard.",
+      "shareFailed": "Couldn't share this. Try downloading it instead.",
+      "shareTitle": "My Financial Identity Report",
+      "profileLoadError": "Could not load your profile. Check your connection and try again.",
+      "preview": {
+        "open": "Preview",
+        "title": "Report preview",
+        "close": "Close",
+        "period": "Period",
+        "monthsOfData": "Months of data",
+        "notEnoughRecords": "Not enough records",
+        "verifiedEmployment": "Verified employment",
+        "disclaimer": "This is not a credit score and has not been checked against bank records. It summarizes activity the worker logged themselves."
+      }
     }
   }
 }

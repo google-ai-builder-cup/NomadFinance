@@ -9,6 +9,7 @@ import ComingSoon from "@/pages/ComingSoon";
 import ContractUpload from "@/pages/contract/ContractUpload";
 import Dashboard from "@/pages/Dashboard";
 import FIBDashboard from "@/pages/fib/FIBDashboard";
+import FIBExportReport from "@/pages/fib/FIBExportReport";
 import FIBLogActivity from "@/pages/fib/FIBLogActivity";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
@@ -66,6 +67,7 @@ export const router = createBrowserRouter([
                       { path: "/radar/entity/:slug", element: <RadarEntity /> },
                       { path: "/radar/alerts", element: <RadarAlerts /> },
                       { path: "/identity/log", element: <FIBLogActivity /> },
+                      { path: "/identity/export", element: <FIBExportReport /> },
                       ...pillarRoutes,
                     ],
                   },

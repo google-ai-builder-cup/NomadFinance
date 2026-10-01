@@ -4,31 +4,11 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
 import { METRIC_KEYS, type FinancialProfile, type MetricKey, type MetricResult } from "@/types/fib";
+import { savingsRatePct, STATUS_COLOR, statusFor } from "@/utils/fibScore";
 
 export interface ScoreMeterProps {
   /** `null` before the weekly cron has ever scored this worker (NF-P3-013). */
   profile: FinancialProfile | null;
-}
-
-// Fixed, never themed — the dataviz skill's own status palette (good/warning/critical),
-// validated distinct from any categorical chart color on this page. Paired with a text label
-// everywhere it appears: on the light surface "warning" alone clears only 1.79:1 contrast.
-const STATUS_COLOR = { good: "#0ca30c", warning: "#fab219", critical: "#d03b3b" } as const;
-type Status = keyof typeof STATUS_COLOR;
-
-function statusFor(score: number): Status {
-  if (score >= 70) {
-    return "good";
-  }
-  return score >= 40 ? "warning" : "critical";
-}
-
-function savingsRatePct(result: MetricResult, language: string): string | null {
-  const rate = result.detail.savings_rate;
-  if (typeof rate !== "number") {
-    return null;
-  }
-  return rate.toLocaleString(language, { style: "percent", maximumFractionDigits: 0 });
 }
 
 function MetricMeter({ metricKey, result }: { metricKey: MetricKey; result: MetricResult }) {
@@ -46,7 +26,7 @@ function MetricMeter({ metricKey, result }: { metricKey: MetricKey; result: Metr
   }
 
   const status = statusFor(result.score);
-  const pct = metricKey === "savings_rate" ? savingsRatePct(result, language) : null;
+  const pct = metricKey === "savings_rate" ? savingsRatePct(result.detail, language) : null;
 
   return (
     <div className="space-y-1.5">
