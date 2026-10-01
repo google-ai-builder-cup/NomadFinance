@@ -151,3 +151,18 @@ python -m src.loaders.sample_contracts              # upload (also run by script
 The uploader writes `demo-samples/contracts/{file}.pdf` in the default bucket (`--bucket` or `FIREBASE_STORAGE_BUCKET` to change it). Browsers cannot read that folder (`storage.rules` only opens `contracts/`, `bills/` and `exports/` per user); download the files from the Firebase console or with `gcloud storage cp`, then upload them in the app like a worker would. Running again changes only what differs and deletes objects no longer in the manifest. Needs `gcloud auth application-default login`, or `STORAGE_EMULATOR_HOST` for an emulator.
 
 Full steps and the rehearsal guide: [`docs/runbooks/NF-P3-020-sample-contracts.md`](../docs/runbooks/NF-P3-020-sample-contracts.md).
+
+## Demo users and accounts (NF-P3-021)
+Three fictional workers, each a file in `data/seed/users/` (format above): Priya (SG, domestic, India, `hi`), Rajesh (KR, manufacturing, India, `hi`) and Miguel (JP, care, Philippines, `tl`). They are made to score differently: Miguel about 94, Priya 85, Rajesh about 63. Rajesh has no transfers on purpose, because no corridor starts in KR, so his remittance metric shows "no data". Miguel's transfers move from Kapitan Padala (the invented operator flagged in the radar seed) to DCOM Money Express.
+
+`src/loaders/demo_accounts.py` creates one Firebase Auth user per worker, with the uid from the seed file and one of the project's Firebase test phone numbers: `+61 491 570 156` Priya, `157` Rajesh, `158` Miguel. Signing in with a number then shows that worker's history.
+
+```bash
+python -m src.loaders.demo_accounts --dry-run   # validate, no Firebase access
+python -m src.loaders.demo_accounts             # create the three Auth users
+python -m src.loaders.seed                      # write all three histories (also in seed_demo.sh)
+```
+
+A number that already signs in under another uid (someone signed in before the accounts were created) is reported and never taken over: load that worker with `seed --only <name> --uid <that uid>` instead. Needs `gcloud auth application-default login`, or `FIREBASE_AUTH_EMULATOR_HOST` and `FIRESTORE_EMULATOR_HOST` for emulators. After loading, run `gcloud scheduler jobs run fib-recompute` to build the profiles.
+
+Full steps, the story in each user's data and limits: [`docs/runbooks/NF-P3-021-demo-users.md`](../docs/runbooks/NF-P3-021-demo-users.md).

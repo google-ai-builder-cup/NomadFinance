@@ -1,0 +1,288 @@
+{
+  "_comment": "NF-P3-021. Fictional demo worker: Rajesh, manufacturing worker in Siheung, South Korea. No transfers on purpose: none of the six corridors starts in KR (KR-NP was replaced in NF-P1-015), so the remittance metric shows 'no data'. Dates are months_ago/day, relative to the day the loader runs. Pay follows his sample contract (NF-P3-020: 1,950,000 KRW gross) net of the dormitory charge, agency fee and insurance; everything else is invented.",
+  "uid": "uid_rajesh_demo",
+  "user": {
+    "home_country": "IN",
+    "host_country": "KR",
+    "job_type": "manufacturing_worker",
+    "preferred_language": "hi"
+  },
+  "income": [
+    {
+      "id": "demo_i_01",
+      "months_ago": 5,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd.",
+      "notes": "After dormitory, agency fee and insurance deductions"
+    },
+    {
+      "id": "demo_i_02",
+      "months_ago": 4,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd."
+    },
+    {
+      "id": "demo_i_03",
+      "months_ago": 3,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd."
+    },
+    {
+      "id": "demo_i_04",
+      "months_ago": 2,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd."
+    },
+    {
+      "id": "demo_i_05",
+      "months_ago": 1,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd."
+    },
+    {
+      "id": "demo_i_06",
+      "months_ago": 0,
+      "day": 25,
+      "amount": 1235000,
+      "currency": "KRW",
+      "category": "salary",
+      "employer_name": "Han River Metals Co., Ltd."
+    },
+    {
+      "id": "demo_i_07",
+      "months_ago": 3,
+      "day": 14,
+      "amount": 80000,
+      "currency": "KRW",
+      "category": "other_income",
+      "notes": "Weekend loading work, cash"
+    },
+    {
+      "id": "demo_i_08",
+      "months_ago": 1,
+      "day": 14,
+      "amount": 80000,
+      "currency": "KRW",
+      "category": "other_income",
+      "notes": "Weekend loading work, cash"
+    }
+  ],
+  "bills": [
+    {
+      "id": "demo_b_01",
+      "months_ago": 5,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_02",
+      "months_ago": 4,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_03",
+      "months_ago": 3,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_04",
+      "months_ago": 2,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": false,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_05",
+      "months_ago": 1,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": false,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.97
+    },
+    {
+      "id": "demo_b_06",
+      "months_ago": 0,
+      "day": 8,
+      "amount": 33000,
+      "currency": "KRW",
+      "vendor": "Example Mobile Korea",
+      "paid": true,
+      "category": "phone_internet",
+      "category_source": "model",
+      "source": "bill_ocr",
+      "category_confidence": 0.97,
+      "bill_day": 6,
+      "extraction": {
+        "confidence": 0.9,
+        "model": "gemini-3.5-flash-lite",
+        "prompt_version": 1
+      }
+    },
+    {
+      "id": "demo_b_07",
+      "months_ago": 5,
+      "day": 12,
+      "amount": 25000,
+      "currency": "KRW",
+      "vendor": "Example Transit Card",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.94
+    },
+    {
+      "id": "demo_b_08",
+      "months_ago": 4,
+      "day": 12,
+      "amount": 25000,
+      "currency": "KRW",
+      "vendor": "Example Transit Card",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.94
+    },
+    {
+      "id": "demo_b_09",
+      "months_ago": 3,
+      "day": 12,
+      "amount": 25000,
+      "currency": "KRW",
+      "vendor": "Example Transit Card",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.94
+    },
+    {
+      "id": "demo_b_10",
+      "months_ago": 2,
+      "day": 12,
+      "amount": 25000,
+      "currency": "KRW",
+      "vendor": "Example Transit Card",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.94
+    },
+    {
+      "id": "demo_b_11",
+      "months_ago": 1,
+      "day": 12,
+      "amount": 25000,
+      "currency": "KRW",
+      "vendor": "Example Transit Card",
+      "paid": true,
+      "category": "transport",
+      "category_source": "model",
+      "source": "manual",
+      "category_confidence": 0.94
+    },
+    {
+      "id": "demo_b_12",
+      "months_ago": 2,
+      "day": 19,
+      "amount": 38000,
+      "currency": "KRW",
+      "vendor": "Ansan Hospital",
+      "paid": true,
+      "category": "medical",
+      "category_source": "user",
+      "source": "manual",
+      "notes": "Hand injury at the press machine"
+    }
+  ],
+  "savings": [
+    {
+      "id": "demo_s_01",
+      "months_ago": 5,
+      "day": 27,
+      "amount": 100000,
+      "currency": "KRW",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_02",
+      "months_ago": 3,
+      "day": 27,
+      "amount": 80000,
+      "currency": "KRW",
+      "direction": "deposit",
+      "account_type": "bank"
+    },
+    {
+      "id": "demo_s_03",
+      "months_ago": 2,
+      "day": 21,
+      "amount": 60000,
+      "currency": "KRW",
+      "direction": "withdrawal",
+      "account_type": "bank",
+      "notes": "Hospital and phone bill"
+    },
+    {
+      "id": "demo_s_04",
+      "months_ago": 1,
+      "day": 27,
+      "amount": 30000,
+      "currency": "KRW",
+      "direction": "deposit",
+      "account_type": "bank"
+    }
+  ]
+}
