@@ -62,10 +62,15 @@ async def extract_contract(
         NotADocumentError: Gemini found no readable document in the file.
         GeminiError: Any Gemini failure, left for the API error handlers.
     """
+    # Annotated: with Pillow installed (weasyprint pulls it in) mypy would infer list[object].
+    contents: list[types.PartUnion] = [
+        types.Part.from_bytes(data=data, mime_type=mime_type),
+        EXTRACT_PROMPT.user,
+    ]
     extracted = await gemini.generate_structured(
         operation=EXTRACT_PROMPT.key,
         tier=ModelTier.EXTRACTION,
-        contents=[types.Part.from_bytes(data=data, mime_type=mime_type), EXTRACT_PROMPT.user],
+        contents=contents,
         response_model=ExtractedContract,
         system_instruction=EXTRACT_PROMPT.system,
         timeout_seconds=_timeout_for(mime_type),

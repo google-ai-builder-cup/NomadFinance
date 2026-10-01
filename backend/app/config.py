@@ -85,6 +85,10 @@ class Settings(BaseSettings):
     gemini_narrative_timeout_seconds: float = Field(default=90.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
 
+    # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
+    # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.
+    export_url_expiry_minutes: int = Field(default=24 * 60, gt=0, le=7 * 24 * 60)
+
     # Bucket holding users' files (contracts/{uid}/, bills/{uid}/, exports/{uid}/), deleted
     # with the account. Local dev with the Storage emulator can override it.
     firebase_storage_bucket: str = "nomadfinance-prod.firebasestorage.app"

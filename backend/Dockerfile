@@ -23,6 +23,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     WEB_CONCURRENCY=1
 
 RUN useradd --create-home --uid 10001 appuser
+
+# weasyprint (NF-P3-014) draws text with Pango; the Noto fonts cover the report's six
+# languages (Latin, Devanagari, Bengali).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 fonts-noto-core \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv

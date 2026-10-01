@@ -7,6 +7,7 @@ Only accounts our own code or jobs run as. Google-managed service agents (`servi
 | `nomadfinance-backend@nomadfinance-prod.iam.gserviceaccount.com` | Cloud Run `nomadfinance-api` (runtime identity) | `roles/datastore.user` (project) | Read/write Firestore (rates, later all pillars) | NF-P1-019 |
 | | | `roles/secretmanager.secretAccessor` on secret `gemini-api-key` | Gemini API key | NF-P1-004 (granted 2026-09-25) |
 | | | `roles/secretmanager.secretAccessor` on secret `currencyfreaks-api-key` | FX provider 3 (ADR-006) | NF-P1-019 |
+| | | `roles/iam.serviceAccountTokenCreator` on itself | Sign the Financial Identity PDF download links through IAM (Cloud Run has no private key) | NF-P3-014 (grant once, see its runbook) |
 | | | `roles/secretmanager.secretAccessor` on secret `radar-reporter-hash-secret` | HMAC key for `radar_reports.reporter_hash` | NF-P3-001 |
 | | | `roles/firebaseauth.admin` (project) | Delete the sign-in account when a user deletes their account (`DELETE /api/v1/users/me`) | NF-P1-023 (`infra/iam/grant-account-deletion-roles.sh`) |
 | | | `roles/storage.objectUser` on bucket `nomadfinance-prod.firebasestorage.app` | Delete the user's uploaded files (`contracts/`, `bills/`, `exports/`) with the account | NF-P1-023 |
