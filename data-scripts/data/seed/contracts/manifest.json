@@ -1,0 +1,124 @@
+{
+  "_comment": "NF-P3-020. Six fictional sample contracts for the demo, one per host country. 'planted_issues' is what the contract was written to contain (clause number in the text, labor-law category, expected risk); it is a guide for demo rehearsal, not what Contract Shield will say word for word. 'radar_entity_slug' ties the business to a seeded radar_entities profile (NF-P3-005) so the community-flagged badge can show.",
+  "contracts": [
+    {
+      "id": "sg_domestic_worker",
+      "file": "sg_domestic_worker.pdf",
+      "country": "SG",
+      "job_type": "domestic_worker",
+      "worker_language": "hi",
+      "worker": "Priya Sharma (India)",
+      "employer": "Mrs. Lim Hui Min (Example Household)",
+      "agency": null,
+      "radar_entity_slug": null,
+      "overall": "fair",
+      "demo_note": "The safe contract: Priya's own, with one soft spot. Shows the tool does not cry wolf.",
+      "planted_issues": [
+        { "clause": "4", "category": "rest_days_and_holidays", "risk": "caution" }
+      ]
+    },
+    {
+      "id": "kr_manufacturing_worker",
+      "file": "kr_manufacturing_worker.pdf",
+      "country": "KR",
+      "job_type": "manufacturing_worker",
+      "worker_language": "hi",
+      "worker": "Rajesh Kumar (India)",
+      "employer": "Han River Metals Co., Ltd.",
+      "agency": null,
+      "radar_entity_slug": "han-river-metals-co",
+      "overall": "risky",
+      "demo_note": "The worst case: wage under the 2026 minimum, 60-hour week, held passport, fees and penalties. Employer is also flagged on the radar.",
+      "planted_issues": [
+        { "clause": "3", "category": "minimum_wage", "risk": "danger" },
+        { "clause": "4", "category": "working_hours", "risk": "danger" },
+        { "clause": "5", "category": "overtime_pay", "risk": "danger" },
+        { "clause": "7", "category": "passport_retention", "risk": "danger" },
+        { "clause": "8", "category": "recruitment_fees", "risk": "danger" },
+        { "clause": "9", "category": "salary_deductions", "risk": "caution" },
+        { "clause": "10", "category": "early_termination", "risk": "danger" },
+        { "clause": "11", "category": "termination_notice", "risk": "danger" }
+      ]
+    },
+    {
+      "id": "my_plantation_worker",
+      "file": "my_plantation_worker.pdf",
+      "country": "MY",
+      "job_type": "plantation_worker",
+      "worker_language": "id",
+      "worker": "Agus Pratama (Indonesia)",
+      "employer": "Sawit Jaya Plantations Sdn. Bhd.",
+      "agency": "Mitra Karya Tenaga Sdn. Bhd.",
+      "radar_entity_slug": null,
+      "overall": "mixed",
+      "demo_note": "Looks fine at first (wage is exactly the minimum). Two real problems hide in the small print.",
+      "planted_issues": [
+        { "clause": "6", "category": "overtime_pay", "risk": "danger" },
+        { "clause": "7", "category": "passport_retention", "risk": "danger" },
+        { "clause": "9", "category": "salary_deductions", "risk": "caution" },
+        { "clause": "12", "category": "termination_notice", "risk": "caution" }
+      ]
+    },
+    {
+      "id": "jp_care_worker",
+      "file": "jp_care_worker.pdf",
+      "country": "JP",
+      "job_type": "care_worker",
+      "worker_language": "tl",
+      "worker": "Miguel Santos (Philippines)",
+      "employer": "Sakura Gardens Care Co., Ltd.",
+      "agency": null,
+      "radar_entity_slug": null,
+      "overall": "mixed",
+      "demo_note": "Professional-looking contract with a held residence card and a penalty for resigning early.",
+      "planted_issues": [
+        { "clause": "8", "category": "salary_deductions", "risk": "caution" },
+        { "clause": "9", "category": "passport_retention", "risk": "danger" },
+        { "clause": "10", "category": "early_termination", "risk": "danger" }
+      ]
+    },
+    {
+      "id": "hk_domestic_worker",
+      "file": "hk_domestic_worker.pdf",
+      "country": "HK",
+      "job_type": "domestic_worker",
+      "worker_language": "tl",
+      "worker": "Maricel Dela Cruz (Philippines)",
+      "employer": "Mr. Wong Chi Keung (Lantau Bay Household)",
+      "agency": "Island Care Employment Agency",
+      "radar_entity_slug": "lantau-bay-household",
+      "overall": "risky",
+      "demo_note": "Pay and food allowance below the Hong Kong minimums, placement fee far over the 10% cap, no real rest days.",
+      "planted_issues": [
+        { "clause": "3", "category": "minimum_wage", "risk": "danger" },
+        { "clause": "4", "category": "minimum_wage", "risk": "danger" },
+        { "clause": "6", "category": "rest_days_and_holidays", "risk": "danger" },
+        { "clause": "8", "category": "recruitment_fees", "risk": "danger" },
+        { "clause": "9", "category": "passport_retention", "risk": "danger" },
+        { "clause": "10", "category": "salary_deductions", "risk": "danger" },
+        { "clause": "13", "category": "termination_notice", "risk": "caution" },
+        { "clause": "14", "category": "early_termination", "risk": "danger" }
+      ]
+    },
+    {
+      "id": "au_working_holiday",
+      "file": "au_working_holiday.pdf",
+      "country": "AU",
+      "job_type": "working_holiday",
+      "worker_language": "hi",
+      "worker": "Karan Mehta (India)",
+      "employer": "Outback Harvest Pty Ltd",
+      "agency": "Bayanihan Overseas Recruitment Pty Ltd",
+      "radar_entity_slug": "bayanihan-overseas-recruitment",
+      "overall": "risky",
+      "demo_note": "Hourly rate below the casual minimum, no super, a 2,500 AUD agency fee taken from pay. The agency is flagged on the radar.",
+      "planted_issues": [
+        { "clause": "3", "category": "minimum_wage", "risk": "danger" },
+        { "clause": "5", "category": "social_security", "risk": "danger" },
+        { "clause": "6", "category": "recruitment_fees", "risk": "danger" },
+        { "clause": "7", "category": "salary_deductions", "risk": "caution" },
+        { "clause": "8", "category": "salary_deductions", "risk": "caution" }
+      ]
+    }
+  ]
+}
