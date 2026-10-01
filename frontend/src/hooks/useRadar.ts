@@ -7,6 +7,7 @@ import {
   uploadEvidence,
 } from "@/services/radarService";
 import type { RadarEntityProfile, RadarReportRequest, RadarReportResponse } from "@/types/radar";
+import { findFlaggedEntity } from "@/utils/flaggedProviders";
 
 export interface SubmitReportArgs {
   report: RadarReportRequest;
@@ -87,4 +88,14 @@ export function useEntityReports(slug: string) {
     queryFn: () => getEntityReports(slug),
     staleTime: 60_000,
   });
+}
+
+/**
+ * The flagged radar profile of a remittance provider, or null: not flagged, not found, still
+ * loading, or the read failed. A warning is an extra, so it never blocks or breaks the
+ * comparison it sits on. Shares `useRadarEntities`'s cache: one read for every badge on a page.
+ */
+export function useFlaggedProvider(firm: string): RadarEntityProfile | null {
+  const entities = useRadarEntities();
+  return findFlaggedEntity(firm, entities.data ?? []);
 }

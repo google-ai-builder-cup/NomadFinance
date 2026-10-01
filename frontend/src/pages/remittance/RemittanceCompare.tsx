@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
+import FlaggedProviderBadge from "@/components/remittance/FlaggedProviderBadge";
 import SavingsCallout from "@/components/remittance/SavingsCallout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/hooks/useI18n";
@@ -67,7 +68,10 @@ function ComparisonSummaryCard({ comparison }: { comparison: RemittanceCompariso
       <dl className="space-y-3">
         <div>
           <dt className="text-sm text-muted-foreground">{t("remittance.result.best")}</dt>
-          <dd className="text-xl font-bold">{summary.best_firm}</dd>
+          <dd className="flex flex-wrap items-center gap-2 text-xl font-bold">
+            {summary.best_firm}
+            <FlaggedProviderBadge firm={summary.best_firm} />
+          </dd>
         </div>
         <div>
           <dt className="text-sm text-muted-foreground">{t("remittance.result.receives")}</dt>

@@ -78,6 +78,8 @@ export interface RadarEntityProfile {
   slug: string;
   name: string;
   entity_type: EntityType;
+  /** Other spellings merged into this profile; the way to catch a name the slug misses. */
+  aliases?: string[];
   corridors: CorridorId[];
   host_countries: HostCountry[];
   report_count: number;

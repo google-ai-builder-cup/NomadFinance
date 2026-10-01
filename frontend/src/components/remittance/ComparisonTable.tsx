@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import FlaggedProviderBadge from "@/components/remittance/FlaggedProviderBadge";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
@@ -79,6 +80,7 @@ function ProviderRow({
               {t("remittance.table.bestBadge")}
             </span>
           )}
+          <FlaggedProviderBadge firm={provider.firm} />
         </div>
         <p className="text-xs text-muted-foreground">
           {provider.payment_instrument} → {provider.pickup_method}
@@ -219,12 +221,13 @@ export default function ComparisonTable({
           </p>
           <ul className="mt-2 space-y-1">
             {notComparable.map((provider) => (
-              <li key={provider.rpw_id}>
+              <li key={provider.rpw_id} className="flex flex-wrap items-center gap-x-2">
                 {t("remittance.table.notComparable.row", {
                   firm: provider.firm,
                   fee: sendMoney(provider.fee),
                   currency: provider.payout_currency,
                 })}
+                <FlaggedProviderBadge firm={provider.firm} />
               </li>
             ))}
           </ul>
