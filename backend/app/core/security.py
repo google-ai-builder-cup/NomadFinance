@@ -53,6 +53,9 @@ def verify_id_token(id_token: str) -> dict[str, Any]:
         raise InvalidTokenError("Authentication token has been revoked") from exc
     except firebase_auth.UserDisabledError as exc:
         raise InvalidTokenError("User account is disabled") from exc
+    except firebase_auth.UserNotFoundError as exc:
+        # An account deleted in the last hour: its token is still valid until it expires.
+        raise InvalidTokenError("User account no longer exists") from exc
     except firebase_auth.CertificateFetchError as exc:
         raise InvalidTokenError("Could not verify token signature") from exc
     except (firebase_auth.InvalidIdTokenError, ValueError) as exc:
@@ -97,5 +100,6 @@ def verify_google_oidc_token(token: str, audience: str) -> dict[str, Any]:
         )
     except google_auth_exceptions.TransportError as exc:
         raise TokenVerificationUnavailableError("Could not fetch Google signing keys") from exc
-    except ValueError as exc:
+    except (google_auth_exceptions.GoogleAuthError, ValueError) as exc:
+        # GoogleAuthError is what a wrong issuer raises; TransportError (a subclass) is above.
         raise InvalidTokenError("Invalid service token") from exc

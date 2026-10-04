@@ -2,7 +2,7 @@
 
 Base URL: the Cloud Run service URL (local: `http://127.0.0.1:8080`).
 
-All endpoints live under `/api/v1/` except `/health`. Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json`.
+All endpoints live under `/api/v1/` except `/health`. Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
 
 ## Authentication
 

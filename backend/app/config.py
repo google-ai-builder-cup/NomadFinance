@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -12,6 +13,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # Resolved from this file so settings load the same way whether the app starts from
 # backend/, the repo root, or a test runner. Missing file is fine: Cloud Run injects env vars.
 _ENV_FILE = Path(__file__).resolve().parent.parent / ".env.local"
+
+# Setting any of these points the Firebase libraries at a local emulator. The Auth one is the
+# dangerous one: firebase-admin then stops verifying token signatures and trusts the payload.
+_EMULATOR_VARIABLES = (
+    "FIREBASE_AUTH_EMULATOR_HOST",
+    "FIRESTORE_EMULATOR_HOST",
+    "FIREBASE_STORAGE_EMULATOR_HOST",
+)
 
 # The Firebase Hosting sites in prod; the Vite dev server and `vite preview` locally.
 _DEFAULT_CORS_ORIGINS: dict[str, tuple[str, ...]] = {
@@ -137,6 +146,17 @@ class Settings(BaseSettings):
             raise ValueError(
                 "CRON_SERVICE_ACCOUNT and CRON_AUDIENCE are required when APP_ENV is not local"
             )
+        return self
+
+    @model_validator(mode="after")
+    def _refuse_emulators_when_deployed(self) -> Settings:
+        if self.app_env != "local":
+            for name in _EMULATOR_VARIABLES:
+                if os.environ.get(name):
+                    raise ValueError(
+                        f"{name} is set but APP_ENV is {self.app_env}: with an emulator "
+                        "variable set, firebase-admin skips token signature checks"
+                    )
         return self
 
     @model_validator(mode="after")

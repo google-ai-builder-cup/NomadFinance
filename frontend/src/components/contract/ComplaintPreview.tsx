@@ -8,6 +8,7 @@ import type { ComplaintChannel, ContractComplaint } from "@/types/contract";
 import { copyLetterToClipboard, openPrintableLetter } from "@/utils/complaintActions";
 import { languageName } from "@/utils/format";
 import i18n from "@/lib/i18n";
+import { safeWebUrl } from "@/utils/safeUrl";
 
 export interface ComplaintPreviewProps {
   complaint: ContractComplaint;
@@ -22,7 +23,7 @@ const CHANNEL_ICON: Record<ComplaintChannel["kind"], LucideIcon> = {
 
 function channelHref(channel: ComplaintChannel): string | null {
   if (channel.kind === "web") {
-    return channel.value;
+    return safeWebUrl(channel.value);
   }
   if (channel.kind === "email") {
     return `mailto:${channel.value}`;
@@ -142,14 +143,14 @@ export default function ComplaintPreview({ complaint }: ComplaintPreviewProps) {
                 </li>
               );
             })}
-            {complaint.authority_url && (
+            {safeWebUrl(complaint.authority_url) && (
               <li className="flex items-start gap-2">
                 <ExternalLink
                   className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
                   aria-hidden="true"
                 />
                 <a
-                  href={complaint.authority_url}
+                  href={safeWebUrl(complaint.authority_url) ?? undefined}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="break-all underline"

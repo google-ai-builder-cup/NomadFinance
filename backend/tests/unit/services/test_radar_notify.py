@@ -283,6 +283,92 @@ async def test_a_valid_push_token_is_used_and_kept(monkeypatch: pytest.MonkeyPat
     assert users.removed_tokens == []
 
 
+# The profile rules let a worker store any list in `fcm_tokens` (NF-P4-004), so what reaches
+# the push call is untrusted. One worker's bad data must never stop the alert for the rest.
+
+
+async def test_a_malformed_push_token_does_not_stop_alerts_for_other_workers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The real send_push, with only the network call replaced: firebase_admin itself rejects a
+    # non-string token, which is the failure being guarded against.
+    monkeypatch.setattr(
+        "app.integrations.firebase_messaging.messaging.send_each_for_multicast",
+        lambda message, app: type(
+            "Batch", (), {"responses": [type("R", (), {"success": True})() for _ in message.tokens]}
+        )(),
+    )
+    monkeypatch.setattr("app.integrations.firebase_messaging.get_firebase_app", lambda: None)
+    users = FakeUsers()
+    users.host_home = [
+        ("u1", _profile(fcm_tokens=[{"not": "a token"}])),
+        ("u2", _profile(fcm_tokens=["good-token"])),
+    ]
+    radar = FakeRadar()
+
+    sent = await notify_new_alert(
+        "a1",
+        _alert(),
+        cast(RadarRepository, radar),
+        cast(UserRepository, users),
+        cast(GeminiClient, FakeGemini(Hindi=TEXT_HI)),
+        NOW,
+    )
+
+    assert sent == 2
+    assert sorted(uid for uid, _ in users.notifications) == ["u1", "u2"]
+    assert len(radar.notified) == 1
+
+
+async def test_only_plausible_push_tokens_are_sent(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = []
+    monkeypatch.setattr(
+        notify_module, "send_push", lambda tokens, title, body, link: calls.append(tokens) or []
+    )
+    users = FakeUsers()
+    users.host_home = [
+        ("u1", _profile(fcm_tokens=["good-token", "", {"a": 1}, None, 7, "x" * 5000])),
+    ]
+
+    await notify_new_alert(
+        "a1",
+        _alert(),
+        cast(RadarRepository, FakeRadar()),
+        cast(UserRepository, users),
+        cast(GeminiClient, FakeGemini(Hindi=TEXT_HI)),
+        NOW,
+    )
+
+    assert calls == [["good-token"]]
+
+
+async def test_a_push_service_failure_for_one_worker_does_not_stop_the_rest(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def flaky(tokens: list[str], title: str, body: str, link: str) -> list[str]:
+        if tokens == ["bad"]:
+            raise ValueError("rejected")
+        return []
+
+    monkeypatch.setattr(notify_module, "send_push", flaky)
+    users = FakeUsers()
+    users.host_home = [
+        ("u1", _profile(fcm_tokens=["bad"])),
+        ("u2", _profile(fcm_tokens=["fine"])),
+    ]
+
+    sent = await notify_new_alert(
+        "a1",
+        _alert(),
+        cast(RadarRepository, FakeRadar()),
+        cast(UserRepository, users),
+        cast(GeminiClient, FakeGemini(Hindi=TEXT_HI)),
+        NOW,
+    )
+
+    assert sent == 2
+
+
 async def test_a_token_fcm_reports_invalid_is_removed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         notify_module, "send_push", lambda tokens, title, body, link: ["dead-token"]
