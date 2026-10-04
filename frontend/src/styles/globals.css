@@ -8,7 +8,19 @@
   * {
     @apply border-border;
   }
+  /* Native controls (date picker, dropdown lists, scrollbars) follow the app's theme. The theme
+     is a class, so the browser cannot tell: without this, Firefox and Safari draw them light on
+     a dark page (NF-P4-002). */
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
   body {
     @apply bg-background text-foreground;
+    /* With viewport-fit=cover (index.html) a landscape iPhone's notch must not cover content. */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }

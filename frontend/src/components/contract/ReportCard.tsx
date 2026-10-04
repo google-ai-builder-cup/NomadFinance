@@ -157,7 +157,7 @@ export default function ReportCard({ analysis, report }: ReportCardProps) {
           </div>
           {/* Stays visible while scrolling a long clause list; top-14 matches the app header's
               own sticky height (h-14) so the two never overlap. */}
-          <div className="sticky top-14 z-10 hidden gap-3 rounded-md bg-background/95 px-1 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid md:grid-cols-2">
+          <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 hidden gap-3 rounded-md bg-background/95 px-1 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid md:grid-cols-2">
             <span>{t("contract.report.contractColumn")}</span>
             <span>{t("contract.report.lawColumn")}</span>
           </div>

@@ -141,7 +141,7 @@ export default function SignIn() {
   const spinner = <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />;
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 px-4 py-10">
+    <main className="mx-auto flex min-h-screen min-h-dvh w-full max-w-sm flex-col justify-center gap-6 px-4 py-10">
       {/* Signed out: changes the language for this visit only; the page opens in English. */}
       <div className="flex justify-end">
         <LanguageSelector />

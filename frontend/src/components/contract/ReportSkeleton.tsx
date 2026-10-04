@@ -25,7 +25,7 @@ export default function ReportSkeleton() {
         {[0, 1, 2].map((key) => (
           <div key={key} className="space-y-2 rounded-lg border p-4">
             <Skeleton className="h-3 w-24" />
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <Skeleton className="h-10 w-full" />
               <Skeleton className="h-10 w-full" />
             </div>

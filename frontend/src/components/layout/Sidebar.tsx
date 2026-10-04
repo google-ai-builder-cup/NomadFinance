@@ -12,7 +12,7 @@ export default function Sidebar() {
     <aside className="hidden w-56 shrink-0 border-r md:block">
       <nav
         aria-label={t("nav.primary")}
-        className="sticky top-14 flex flex-col gap-1 p-3 md:h-[calc(100vh-3.5rem)]"
+        className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] flex flex-col gap-1 p-3 md:h-[calc(100vh-3.5rem)]"
       >
         {NAV_ITEMS.map(({ to, icon: Icon, labelKey }) => (
           <NavLink

@@ -57,7 +57,7 @@ export default function Onboarding() {
     return (
       <div
         role="alert"
-        className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center gap-4 px-4 text-center"
+        className="mx-auto flex min-h-screen min-h-dvh max-w-sm flex-col items-center justify-center gap-4 px-4 text-center"
       >
         <p className="text-sm text-muted-foreground">{t("onboarding.loadError")}</p>
         <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
@@ -122,7 +122,7 @@ export default function Onboarding() {
   const progressLabel = t("onboarding.progress", { current: stepIndex + 1, total: STEPS.length });
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-6 px-4 py-6">
+    <main className="mx-auto flex min-h-screen min-h-dvh w-full max-w-md flex-col gap-6 px-4 py-6">
       <header className="space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-lg font-bold tracking-tight">NomadFinance</span>
@@ -167,7 +167,7 @@ export default function Onboarding() {
           <p id="onboarding-hint" className="text-sm text-muted-foreground">
             {t(`onboarding.steps.${step.id}.hint`)}
           </p>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {options.map((option) => (
               <label
                 key={option.value}

@@ -20,6 +20,7 @@ function fakePrintWindow() {
     print: vi.fn(),
     close: vi.fn(),
     focus: vi.fn(),
+    opener: {} as unknown,
     onafterprint: null as (() => void) | null,
   };
 }
@@ -50,6 +51,26 @@ describe("openPrintableLetter", () => {
     );
     expect(fake.focus).toHaveBeenCalledOnce();
     expect(fake.print).toHaveBeenCalledOnce();
+  });
+
+  it("opens the window without `noopener`, which would make every open look blocked", () => {
+    const fake = fakePrintWindow();
+    const open = vi.fn(() => fake);
+    vi.stubGlobal("window", { open });
+
+    openPrintableLetter("text", "title");
+
+    // `noopener` in the features string makes window.open return null in every browser.
+    expect(open).toHaveBeenCalledWith("", "_blank");
+  });
+
+  it("cuts the new window's link back to the app", () => {
+    const fake = fakePrintWindow();
+    vi.stubGlobal("window", { open: vi.fn(() => fake) });
+
+    openPrintableLetter("text", "title");
+
+    expect(fake.opener).toBeNull();
   });
 
   it("closes the window once printing is done", () => {

@@ -37,7 +37,7 @@ export default function ErrorFallback({ onRetry, fullScreen = false }: ErrorFall
   return (
     <main
       role="alert"
-      className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10"
+      className="mx-auto flex min-h-screen min-h-dvh w-full max-w-md flex-col justify-center px-4 py-10"
     >
       {content}
     </main>

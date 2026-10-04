@@ -21,7 +21,7 @@ export default function RequireOnboarding() {
     return (
       <div
         role="alert"
-        className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center gap-4 px-4 text-center"
+        className="mx-auto flex min-h-screen min-h-dvh max-w-sm flex-col items-center justify-center gap-4 px-4 text-center"
       >
         <p className="text-sm text-muted-foreground">{t("onboarding.loadError")}</p>
         <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
