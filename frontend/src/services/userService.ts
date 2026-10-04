@@ -1,6 +1,6 @@
 import { arrayUnion, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firestore";
 import type { OnboardingAnswers, ProfileChanges, UserProfile } from "@/types/user";
 
 function profileRef(uid: string) {

@@ -5,7 +5,7 @@ import SaveStatus from "@/components/profile/SaveStatus";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useUpdateProfile } from "@/hooks/useUser";
-import i18n from "@/lib/i18n";
+import i18n, { setLanguage } from "@/lib/i18n";
 import { clearSessionLanguage, SUPPORTED_LANGUAGES } from "@/lib/languages";
 import {
   HOME_COUNTRIES,
@@ -83,7 +83,7 @@ export default function DetailsForm({ profile }: DetailsFormProps) {
         if (changes.preferred_language !== undefined) {
           // A header quick-switch would otherwise keep overriding the saved language.
           clearSessionLanguage();
-          void i18n.changeLanguage(changes.preferred_language);
+          void setLanguage(changes.preferred_language);
         }
       },
     });

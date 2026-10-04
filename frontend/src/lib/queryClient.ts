@@ -42,9 +42,16 @@ export const queryClient: QueryClient = new QueryClient({
     },
   }),
   defaultOptions: {
+    // TanStack Query's default is to pause a request while the browser says it is offline and
+    // wait, silently, for the signal to return: a worker who loses signal and taps "Compare"
+    // saw "Comparing…" for as long as they were offline, and a page showed its spinner forever
+    // (NF-P4-002 Slow-3G run). Sending the request anyway fails it at once with the offline
+    // error, which every page already words ("No internet connection") with a way to try again.
     queries: {
+      networkMode: "always",
       retry: (failureCount, error) => failureCount < 1 && isRetryable(error),
       staleTime: 60_000,
     },
+    mutations: { networkMode: "always" },
   },
 });

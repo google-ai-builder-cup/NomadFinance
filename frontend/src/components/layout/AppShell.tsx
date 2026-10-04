@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import BottomNav from "@/components/layout/BottomNav";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import NavigationProgress from "@/components/layout/NavigationProgress";
 import Sidebar from "@/components/layout/Sidebar";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useI18n } from "@/hooks/useI18n";
@@ -22,6 +23,7 @@ export default function AppShell() {
       >
         {t("layout.skipToContent")}
       </a>
+      <NavigationProgress />
       <Header />
       <div className="flex flex-1">
         <Sidebar />

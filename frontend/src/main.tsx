@@ -21,9 +21,15 @@ import "@/styles/globals.css";
 // hear about a new version after closing it completely.
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
+// Registering starts the download of the whole app for offline use (nearly 1 MB). Done at
+// page start it competes with the page's own downloads, which on a slow connection is the
+// difference between seeing the app in 3 seconds or 10, so it waits until the page has
+// loaded and the browser is idle (NF-P4-003).
+const REGISTER_DELAY_MAX_MS = 10_000;
+
 // registerType "prompt": a new version waits until the person chooses to load it, so a form
 // they are filling in is never swapped out under them.
-if ("serviceWorker" in navigator) {
+function registerServiceWorker() {
   const updateServiceWorker = registerSW({
     immediate: true,
     onNeedRefresh() {
@@ -43,6 +49,22 @@ if ("serviceWorker" in navigator) {
       }
     },
   });
+}
+
+if ("serviceWorker" in navigator) {
+  const whenIdle = () => {
+    // Safari has no requestIdleCallback.
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(registerServiceWorker, { timeout: REGISTER_DELAY_MAX_MS });
+    } else {
+      window.setTimeout(registerServiceWorker, 2_000);
+    }
+  };
+  if (document.readyState === "complete") {
+    whenIdle();
+  } else {
+    window.addEventListener("load", whenIdle, { once: true });
+  }
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

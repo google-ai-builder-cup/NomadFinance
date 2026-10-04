@@ -87,9 +87,56 @@
       media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
     />
     <title>NomadFinance</title>
+    <!-- Painted by the HTML alone, before any script runs. On a slow connection the app's
+         code takes seconds to arrive, and this is what the worker sees meanwhile instead of
+         a blank page (NF-P4-003). React replaces #root's contents on its first render.
+         Colours match tokens.css (--background) because that file has not loaded yet. -->
+    <style>
+      #root > .boot {
+        display: flex;
+        min-height: 100vh;
+        min-height: 100dvh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #fff;
+        color: #0b5d71;
+        font:
+          600 18px/1.2 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      .dark #root > .boot {
+        background: hsl(199 35% 7%);
+        color: #e6f1f4;
+      }
+      #root > .boot svg {
+        width: 56px;
+        height: 56px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" role="status" aria-label="NomadFinance">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true">
+          <rect width="64" height="64" rx="12" fill="#0B5D71" />
+          <path
+            d="M20 46 L20 18 L44 46 L44 18"
+            fill="none"
+            stroke="#FFFFFF"
+            stroke-width="7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle cx="44" cy="18" r="5" fill="#F59E0B" />
+        </svg>
+        NomadFinance
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

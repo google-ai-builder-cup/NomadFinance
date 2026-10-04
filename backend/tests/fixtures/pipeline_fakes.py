@@ -102,7 +102,7 @@ class FakeLaws:
     def get_version(self, country: str) -> int | None:
         return self.version
 
-    def get_rules(self, country: str) -> dict[str, dict[str, Any]]:
+    def get_rules(self, country: str, version: int | None = None) -> dict[str, dict[str, Any]]:
         return {"passport_retention": LAW_RULE} if self.version is not None else {}
 
 

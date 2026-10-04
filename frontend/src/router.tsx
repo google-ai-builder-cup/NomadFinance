@@ -1,77 +1,99 @@
-import { createBrowserRouter } from "react-router-dom";
+import type { ComponentType } from "react";
+import { createBrowserRouter, type RouteObject } from "react-router-dom";
 
 import ProtectedRoute from "@/components/common/ProtectedRoute";
-import RequireOnboarding from "@/components/common/RequireOnboarding";
 import RouteError from "@/components/common/RouteError";
-import AppShell from "@/components/layout/AppShell";
+import RouteLoading from "@/components/common/RouteLoading";
 import { PILLAR_ITEMS } from "@/components/layout/navItems";
-import ComingSoon from "@/pages/ComingSoon";
-import ContractList from "@/pages/contract/ContractList";
-import ContractReport from "@/pages/contract/ContractReport";
-import ContractUpload from "@/pages/contract/ContractUpload";
-import Dashboard from "@/pages/Dashboard";
-import FIBDashboard from "@/pages/fib/FIBDashboard";
-import FIBExportReport from "@/pages/fib/FIBExportReport";
-import FIBLogActivity from "@/pages/fib/FIBLogActivity";
 import Landing from "@/pages/Landing";
 import NotFound from "@/pages/NotFound";
-import Onboarding from "@/pages/Onboarding";
-import Profile from "@/pages/Profile";
-import RadarAlerts from "@/pages/radar/RadarAlerts";
-import RadarEntity from "@/pages/radar/RadarEntity";
-import RadarHeatmap from "@/pages/radar/RadarHeatmap";
-import RadarReport from "@/pages/radar/RadarReport";
-import RemittanceCompare from "@/pages/remittance/RemittanceCompare";
 import SignIn from "@/pages/SignIn";
+
+type PageModule = { default: ComponentType };
+
+// Everything behind sign-in loads on demand (NF-P4-003): the Firebase data SDK, the map,
+// push messaging and charts used to be in the one file every visitor downloaded first. The
+// router fetches every matched route's module in parallel, so a deep link does not wait
+// through a chain of downloads. Landing and sign-in stay in the first download because
+// they are the pages a new visitor opens.
+function page(load: () => Promise<PageModule>): Pick<RouteObject, "lazy"> {
+  return { lazy: async () => ({ Component: (await load()).default }) };
+}
 
 // Each pillar route shows ComingSoon until its own task swaps in the real page element.
 // Every pillar's primary route is its overview page, same as Remittance (`/remittance`,
 // compare) and Radar (`/radar`, the heatmap) — the Financial Identity Builder's is its
 // dashboard (NF-P3-017), with logging activity (NF-P3-016) moved to its own `/identity/log`.
-const PILLAR_PAGES: Readonly<Record<string, JSX.Element>> = {
-  "/contract": <ContractUpload />,
-  "/radar": <RadarHeatmap />,
-  "/remittance": <RemittanceCompare />,
-  "/identity": <FIBDashboard />,
+const PILLAR_PAGES: Readonly<Record<string, () => Promise<PageModule>>> = {
+  "/contract": () => import("@/pages/contract/ContractUpload"),
+  "/radar": () => import("@/pages/radar/RadarHeatmap"),
+  "/remittance": () => import("@/pages/remittance/RemittanceCompare"),
+  "/identity": () => import("@/pages/fib/FIBDashboard"),
 };
 
-const pillarRoutes = PILLAR_ITEMS.map((pillar) => ({
+const pillarRoutes: RouteObject[] = PILLAR_ITEMS.map((pillar) => ({
   path: pillar.to,
-  element: PILLAR_PAGES[pillar.to] ?? <ComingSoon pillar={pillar} />,
+  ...page(
+    PILLAR_PAGES[pillar.to] ??
+      (async () => {
+        const { default: ComingSoon } = await import("@/pages/ComingSoon");
+        return { default: () => <ComingSoon pillar={pillar} /> };
+      })
+  ),
 }));
 
 export const router = createBrowserRouter([
   {
     // Catches a crash in any page outside the app shell (landing, sign-in, onboarding).
     errorElement: <RouteError fullScreen />,
+    // Shown while the first pages' modules download, instead of a blank screen.
+    HydrateFallback: RouteLoading,
     children: [
       { path: "/", element: <Landing /> },
       { path: "/sign-in", element: <SignIn /> },
       {
         element: <ProtectedRoute />,
         children: [
-          { path: "/onboarding", element: <Onboarding /> },
+          { path: "/onboarding", ...page(() => import("@/pages/Onboarding")) },
           {
             // Every app page needs a finished profile (NF-P1-022).
-            element: <RequireOnboarding />,
+            ...page(() => import("@/components/common/RequireOnboarding")),
             children: [
               {
-                element: <AppShell />,
+                ...page(() => import("@/components/layout/AppShell")),
                 children: [
                   {
                     // Inside the shell, so a crashed page keeps the header and navigation.
                     errorElement: <RouteError />,
                     children: [
-                      { path: "/dashboard", element: <Dashboard /> },
-                      { path: "/profile", element: <Profile /> },
-                      { path: "/contract/history", element: <ContractList /> },
-                      { path: "/contract/:contractId", element: <ContractReport /> },
-                      { path: "/radar/heatmap", element: <RadarHeatmap /> },
-                      { path: "/radar/report", element: <RadarReport /> },
-                      { path: "/radar/entity/:slug", element: <RadarEntity /> },
-                      { path: "/radar/alerts", element: <RadarAlerts /> },
-                      { path: "/identity/log", element: <FIBLogActivity /> },
-                      { path: "/identity/export", element: <FIBExportReport /> },
+                      { path: "/dashboard", ...page(() => import("@/pages/Dashboard")) },
+                      { path: "/profile", ...page(() => import("@/pages/Profile")) },
+                      {
+                        path: "/contract/history",
+                        ...page(() => import("@/pages/contract/ContractList")),
+                      },
+                      {
+                        path: "/contract/:contractId",
+                        ...page(() => import("@/pages/contract/ContractReport")),
+                      },
+                      {
+                        path: "/radar/heatmap",
+                        ...page(() => import("@/pages/radar/RadarHeatmap")),
+                      },
+                      { path: "/radar/report", ...page(() => import("@/pages/radar/RadarReport")) },
+                      {
+                        path: "/radar/entity/:slug",
+                        ...page(() => import("@/pages/radar/RadarEntity")),
+                      },
+                      { path: "/radar/alerts", ...page(() => import("@/pages/radar/RadarAlerts")) },
+                      {
+                        path: "/identity/log",
+                        ...page(() => import("@/pages/fib/FIBLogActivity")),
+                      },
+                      {
+                        path: "/identity/export",
+                        ...page(() => import("@/pages/fib/FIBExportReport")),
+                      },
                       ...pillarRoutes,
                     ],
                   },

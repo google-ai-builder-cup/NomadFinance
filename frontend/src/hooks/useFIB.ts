@@ -70,6 +70,10 @@ export function useFinancialTimeline() {
       return { income, bills, savings };
     },
     enabled: uid !== undefined,
+    // Reads every entry of the last 12 months, so a refetch on each tab switch is the costly
+    // part. This device's own writes refetch it explicitly (the log mutations below);
+    // anything from elsewhere can wait five minutes (NF-P4-003).
+    staleTime: 5 * 60_000,
   });
 }
 

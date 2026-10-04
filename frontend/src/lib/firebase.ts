@@ -1,6 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  connectAuthEmulator,
+  indexedDBLocalPersistence,
+  initializeAuth,
+} from "firebase/auth";
 
 type FirebaseEnvKey =
   | "VITE_FIREBASE_API_KEY"
@@ -29,8 +34,14 @@ export const firebaseApp = initializeApp({
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || undefined,
 });
 
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
+// initializeAuth without a popup/redirect resolver, unlike getAuth: with one, Firebase loads
+// Google's apis.google.com scripts at start-up and does not say whether anyone is signed in
+// until they arrive, which on a slow connection is several seconds of every page. The
+// resolver is passed to the three calls that need it instead (services/authService.ts).
+// Persistence is getAuth's default order (NF-P4-003).
+export const auth = initializeAuth(firebaseApp, {
+  persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence],
+});
 
 // The emulator gives fake Google accounts and prints SMS codes instead of sending them,
 // so sign-in can be tested without billing or real phones (see the NF-P1-009 runbook).
@@ -38,11 +49,5 @@ if (import.meta.env.VITE_USE_FIREBASE_EMULATOR === "true") {
   connectAuthEmulator(
     auth,
     import.meta.env.VITE_FIREBASE_AUTH_EMULATOR_URL ?? "http://127.0.0.1:9099"
-  );
-  // Port 8085, not Firestore's default 8080, which the backend uses (frontend/firebase.json).
-  connectFirestoreEmulator(
-    db,
-    "127.0.0.1",
-    Number(import.meta.env.VITE_FIRESTORE_EMULATOR_PORT ?? 8085)
   );
 }
