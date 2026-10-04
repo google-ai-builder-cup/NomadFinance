@@ -10,7 +10,7 @@ export default function NotFound() {
   const { t } = useI18n();
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-10">
+    <main className="mx-auto flex min-h-screen min-h-dvh w-full max-w-md flex-col justify-center px-4 py-10">
       <EmptyState
         icon={SearchX}
         title={t("notFound.title")}

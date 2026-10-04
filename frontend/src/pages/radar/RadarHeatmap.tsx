@@ -129,7 +129,7 @@ export default function RadarHeatmap() {
         <h2 id="radar-corridors" className="text-lg font-semibold">
           {t("radar.heatmap.byCorridor")}
         </h2>
-        <ul className="grid gap-2 sm:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {[...corridors]
             .sort((a, b) => b.reportCount - a.reportCount)
             .map((corridor) => {

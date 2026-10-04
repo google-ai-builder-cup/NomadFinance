@@ -34,7 +34,7 @@ export default function LanguageSelector() {
         value={i18n.resolvedLanguage}
         onChange={handleChange}
         aria-label={t("layout.languageLabel")}
-        className="h-9 w-9 cursor-pointer appearance-none rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm text-transparent shadow-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-auto sm:text-foreground sm:hover:text-accent-foreground"
+        className="h-9 w-9 cursor-pointer appearance-none overflow-hidden rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm text-transparent shadow-sm [@media(pointer:coarse)]:text-base hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-auto sm:text-foreground sm:hover:text-accent-foreground"
       >
         {SUPPORTED_LANGUAGES.map((language) => (
           <option key={language.code} value={language.code}>

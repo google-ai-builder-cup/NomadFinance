@@ -52,7 +52,7 @@ export default function ClauseRow({ clause, expanded, onToggle }: ClauseRowProps
       </button>
 
       {expanded && (
-        <div id={detailId} className="grid gap-3 border-t p-4 pt-3 md:grid-cols-2">
+        <div id={detailId} className="grid grid-cols-1 gap-3 border-t p-4 pt-3 md:grid-cols-2">
           <div className="space-y-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground md:hidden">
               {t("contract.report.contractColumn")}

@@ -94,7 +94,7 @@ export default function ScoreMeter({ profile }: ScoreMeterProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {METRIC_KEYS.map((key) => (
           <MetricMeter key={key} metricKey={key} result={profile.metrics[key]} />
         ))}

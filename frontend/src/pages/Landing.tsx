@@ -23,7 +23,7 @@ export default function Landing() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen min-h-dvh flex-col">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:shadow"
@@ -71,7 +71,7 @@ export default function Landing() {
           <h2 id="pillars-heading" className="text-center text-2xl font-bold tracking-tight">
             {t("landing.pillars.heading")}
           </h2>
-          <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {PILLAR_ITEMS.map(({ to, icon: Icon, nameKey, descriptionKey }) => (
               <li key={to}>
                 {/* Signed out, every pillar leads to sign-in; SignIn reads `from` to send the

@@ -20,7 +20,7 @@ export default function LoadingSpinner({
       aria-live="polite"
       className={cn(
         "flex items-center justify-center gap-3 text-muted-foreground",
-        fullScreen && "min-h-screen",
+        fullScreen && "min-h-screen min-h-dvh",
         className
       )}
     >

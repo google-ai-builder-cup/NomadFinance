@@ -29,7 +29,7 @@ export default function Dashboard() {
         <h2 id="pillars-heading" className="sr-only">
           {t("dashboard.pillarsHeading")}
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <RecentContractsWidget />
           <RemittanceShortcutWidget />
           <RadarAlertsWidget />

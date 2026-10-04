@@ -23,7 +23,7 @@ export default function Header() {
   const identity = user?.displayName ?? user?.email ?? user?.phoneNumber ?? "";
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-40 border-b bg-background/95 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex h-14 items-center justify-between gap-3 px-4 md:px-8">
         <Link
           to="/dashboard"
