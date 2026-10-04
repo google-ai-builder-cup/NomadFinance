@@ -31,8 +31,9 @@ _EXEMPT_PREFIXES = ("/api/v1/internal/",)
 def _unverified_uid(authorization: str | None) -> str | None:
     """The `sub` claim of a bearer token, read WITHOUT checking the signature.
 
-    Only used to pick whose counter a request uses. The endpoint still verifies the token,
-    so a forged `sub` only earns a fresh counter for a request that ends in 401.
+    Only used to pick whose counter a request uses, never to decide who someone is: the
+    endpoint still verifies the token. Because it is unverified, anyone can put any uid in
+    it, so `rate_limit_key` never uses it alone (see there).
     """
     if not authorization or not authorization.lower().startswith("bearer "):
         return None
@@ -59,15 +60,20 @@ def client_ip(headers: Headers, client: tuple[str, int] | None) -> str:
 
 
 def rate_limit_key(headers: Headers, client: tuple[str, int] | None) -> str:
-    """Count signed-in requests per user and anonymous ones per IP.
+    """Count signed-in requests per user and address, and anonymous ones per address.
 
-    Per user because many workers share one IP (dormitory Wi-Fi, carrier NAT): a per-IP
-    limit would block them together. The uid is hashed so it never sits in memory in clear.
+    Per user because many workers share one address (dormitory Wi-Fi, carrier NAT): a
+    per-address limit would block them together. The address is part of the key because the
+    uid comes from a token that has not been verified yet: with the uid alone, someone who
+    knew a worker's uid could send forged tokens naming them and use up that worker's budget
+    from anywhere. With the address, forged requests land in the forger's own bucket. The uid
+    is hashed so it never sits in memory in clear.
     """
+    address = client_ip(headers, client)
     uid = _unverified_uid(headers.get("authorization"))
     if uid is not None:
-        return f"user:{hash_user_id(uid)}"
-    return f"ip:{client_ip(headers, client)}"
+        return f"user:{hash_user_id(uid)}:{address}"
+    return f"ip:{address}"
 
 
 class _Verdict:

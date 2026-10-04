@@ -16,6 +16,7 @@ import type { ProviderResult, RemittanceComparison } from "@/types/remittance";
 import { CORRIDORS, compareFailure, defaultCorridor } from "@/utils/corridors";
 import { errorMessageKey } from "@/utils/errors";
 import { countryName, formatMoney } from "@/utils/format";
+import { safeWebUrl } from "@/utils/safeUrl";
 
 // recharts is a sizeable chunk (D-45): loaded only once a comparison exists to show it for.
 const TrendChart = lazy(() => import("@/components/remittance/TrendChart"));
@@ -118,7 +119,12 @@ function ComparisonSummaryCard({ comparison }: { comparison: RemittanceCompariso
         </p>
         {/* The World Bank's own wording, required wherever its prices are shown. */}
         <p lang="en">
-          <a href={survey.source_url} target="_blank" rel="noreferrer" className="underline">
+          <a
+            href={safeWebUrl(survey.source_url) ?? undefined}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
             {survey.attribution}
           </a>
         </p>

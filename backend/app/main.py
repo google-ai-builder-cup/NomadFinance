@@ -25,7 +25,16 @@ def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings)
 
-    app = FastAPI(title=settings.app_name, version=settings.app_version)
+    # The interactive docs list every endpoint and field to anyone, signed in or not, so only
+    # local development serves them (NF-P4-004).
+    docs = settings.app_env == "local"
+    app = FastAPI(
+        title=settings.app_name,
+        version=settings.app_version,
+        docs_url="/docs" if docs else None,
+        redoc_url="/redoc" if docs else None,
+        openapi_url="/openapi.json" if docs else None,
+    )
 
     # Kept outside /api/v1 so Cloud Run and uptime checks have a stable, unversioned probe.
     @app.get("/health", response_model=HealthResponse, tags=["health"])

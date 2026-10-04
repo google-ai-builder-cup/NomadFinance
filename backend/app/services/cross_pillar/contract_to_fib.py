@@ -99,5 +99,6 @@ async def log_contract_income(
             await run_in_threadpool(fib.delete_entry, uid, "income", other_id)
             logger.info("contract_income_replaced old=%s new=%s", other_id, entry_id)
     await run_in_threadpool(fib.save_entry, uid, "income", entry_id, entry)
-    logger.info("contract_income_logged contract_id=%s amount=%s", contract_id, entry["amount"])
+    # The amount stays out of the log: a worker's pay is personal financial data (NF-P4-004).
+    logger.info("contract_income_logged contract_id=%s", contract_id)
     return entry_id

@@ -14,6 +14,7 @@ from datetime import datetime
 from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
+from firebase_admin.exceptions import FirebaseError  # type: ignore[import-untyped]
 
 from app.integrations.firebase_messaging import send_push
 from app.integrations.gemini import GeminiClient, GeminiError, ModelTier
@@ -29,6 +30,19 @@ logger = logging.getLogger(__name__)
 ALERT_NOTIFICATION_PROMPT = load_prompt("radar", "alert_notification", 1)
 
 DEEP_LINK = "/radar"
+
+# A worker can store anything in `fcm_tokens` (the profile rules only cap the list at 5), so
+# what reaches the push call is untrusted. Real FCM tokens are about 160 characters.
+_MAX_TOKENS = 5
+_MAX_TOKEN_CHARS = 1024
+
+
+def _push_tokens(profile: dict[str, Any]) -> list[str]:
+    raw = profile.get("fcm_tokens")
+    if not isinstance(raw, list):
+        return []
+    usable = [t for t in raw if isinstance(t, str) and 0 < len(t) <= _MAX_TOKEN_CHARS]
+    return usable[:_MAX_TOKENS]
 
 
 def _subscribed_profiles(corridor_id: str, users: UserRepository) -> dict[str, dict[str, Any]]:
@@ -138,9 +152,17 @@ async def notify_new_alert(
         await run_in_threadpool(users.create_notification, uid, notification)
         sent += 1
 
-        tokens = profile.get("fcm_tokens") or []
+        tokens = _push_tokens(profile)
         if tokens:
-            invalid = await run_in_threadpool(send_push, tokens, text.title, text.body, DEEP_LINK)
+            try:
+                invalid = await run_in_threadpool(
+                    send_push, tokens, text.title, text.body, DEEP_LINK
+                )
+            except (ValueError, FirebaseError) as exc:
+                # The in-app notification is already stored; the push is the extra. Only the
+                # exception's type is logged: a message could echo the token.
+                logger.warning("radar_push_failed error=%s", type(exc).__name__)
+                continue
             for token in invalid:
                 await run_in_threadpool(users.remove_fcm_token, uid, token)
 
