@@ -1,7 +1,7 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 import { appCheckHeader } from "@/lib/appCheck";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firestore";
 import { apiRequest } from "@/services/apiClient";
 import type { CorridorId } from "@/types/enums";
 import type {

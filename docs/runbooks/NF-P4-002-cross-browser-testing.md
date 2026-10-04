@@ -67,6 +67,7 @@ Fixes 6 and 7 are small and don't change anything where the extra space is 0, bu
 | `frontend/index.html` | `viewport-fit=cover` |
 | `frontend/src/components/layout/Header.tsx`, `Sidebar.tsx`, `components/contract/ReportCard.tsx` | Top safe-area padding; sticky offsets clear it |
 | 8 full-height pages and components (`AppShell`, `Landing`, `SignIn`, `Onboarding`, `NotFound`, `RequireOnboarding`, `ErrorFallback`, `LoadingSpinner`) | `min-h-dvh` |
+| `frontend/src/lib/queryClient.ts`, `queryClient.test.ts` (Slow-3G follow-up) | Requests run while offline instead of waiting silently; 2 tests |
 | `docs/deferred-items.md`, this runbook | D-72 (real-device pass), D-73 to D-76 |
 
 No new package, no shared file changed.
@@ -134,7 +135,35 @@ Tracked as D-72 in `docs/deferred-items.md`.
 | `pnpm build` | Pass |
 | 7 browser profiles × 29 steps | 6 × 29/29; Safari engine at 393 px 24/29 (5 screens would not load, see above) |
 
-**Not verified (needs a person and a phone):** real iPhone Safari and Android Chrome (checklist above); fixes 6 and 7; Firestore live updates in Apple's Safari; web push; Slow-3G throttling (not run).
+**Not verified (needs a person and a phone):** real iPhone Safari and Android Chrome (checklist above); fixes 6 and 7; Firestore live updates in Apple's Safari; web push.
+
+## Slow 3G (run after the first PR, 2026-10-04)
+
+**How:** the production bundle (`vite build --mode emulator`, served with `vite preview`) in Chromium on the Pixel 7 profile, with Chrome's own network emulation (the same mechanism as DevTools): **Slow 3G = 400 kbit/s down and up, 400 ms latency**; Fast 3G = 1.6 Mbit/s, 150 ms. Each screen is loaded cold (empty cache), signed in, against the local emulators. Screenshots were taken while it loaded.
+
+| Screen (cold, Slow 3G) | First paint | Usable | Data |
+|---|---|---|---|
+| Landing (signed out) | 10.5 s | 12.3 s | 527 KB, 9 requests |
+| Sign-in | 10.4 s | 12.2 s | 527 KB |
+| Dashboard | 10.4 s | 13.6 s | 529 KB, 16 requests |
+| Remittance | 10.5 s | 13.7 s | 528 KB |
+| Contract upload | 10.4 s | 13.6 s | 528 KB |
+| Contract report (stored) | 10.5 s | 14.1 s | 529 KB, 18 requests |
+| Radar map | 10.4 s | 14.3 s | 571 KB, 25 requests |
+| Financial Identity | 10.4 s | 14.5 s | 529 KB |
+| Profile | 10.5 s | 13.7 s | 528 KB |
+| *Dashboard on Fast 3G* | 2.9 s | 4.1 s | |
+| *Dashboard, no throttling* | 0.1 s | 0.4 s | |
+| **Dashboard, second visit, Slow 3G** (cache + service worker) | | **2.1 s** | 9.6 KB |
+
+**What it shows:**
+- **Everything works on Slow 3G**; no step failed or timed out. Doing things is fine once the app is open: the remittance comparison answered in 1.1 to 1.2 s.
+- **The first visit is slow, and the screen is completely white until about 10 s** (0% of the screen painted at 3 s and at 8 s). Nearly all of it is one 1.6 MB JavaScript file (470 KB compressed, up from the 303 KB D-45 recorded) that every screen needs. A second visit is fast (2.1 s), because Firebase Hosting caches the files for a year. This is what NF-P4-003 (performance profiling) works on.
+- **Offline was broken, and is fixed.** A worker who lost signal and tapped "Compare services" saw "Comparing…" for as long as they were offline, with no message and no request sent (checked for 24 s). Cause: TanStack Query pauses requests when the browser says it is offline and waits silently; that also made pages show their spinner forever offline. Fix: `networkMode: "always"` in `lib/queryClient.ts`. Now the request fails after 0.4 s with "No internet connection. Check your connection and try again.", the button works again, and when the signal returns the comparison completes in 1.3 s. Two new tests; both time out against the old default.
+
+**Not covered:** a real phone on a real mobile network (the checklist above), and a flaky connection that drops packets rather than being slow or off.
+
+**After NF-P4-003 (2026-10-04):** the blank screen was fixed. First paint on Slow 3G is now 1.2 s (was 10.4 s), the sign-in page is usable in 4.3 s (was 12.2 s) and a signed-in page in about 9 s (was 13.6 s). The first-visit table above is the "before"; the new numbers are in `docs/runbooks/NF-P4-003-performance-profiling.md`.
 
 ## Troubleshooting
 
@@ -150,7 +179,7 @@ Tracked as D-72 in `docs/deferred-items.md`.
 
 - [x] Tailwind and shadcn/ui only
 - [x] Fully mobile responsive: 7 widths/engines, no overflow on any measured screen
-- [ ] Works on slow network (throttled 3G): not run
+- [x] Works on slow network (throttled 3G): run 2026-10-04, see "Slow 3G" below. It works, but loads slowly, and the run found one bug (offline hang), fixed
 - [x] Loading and error states unchanged
 - [x] i18n: no new strings
 - [ ] Screenshots in the PR: yours to add (iPhone-width dashboard, dark date field, print window)

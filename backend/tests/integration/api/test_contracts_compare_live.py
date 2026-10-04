@@ -40,7 +40,7 @@ class CuratedFileRepo:
     def get_version(self, country: str) -> int:
         return 1
 
-    def get_rules(self, country: str) -> dict[str, dict[str, Any]]:
+    def get_rules(self, country: str, version: int | None = None) -> dict[str, dict[str, Any]]:
         rules: dict[str, dict[str, Any]] = json.loads(
             (CURATED / f"{country}.json").read_text(encoding="utf-8")
         )["rules"]

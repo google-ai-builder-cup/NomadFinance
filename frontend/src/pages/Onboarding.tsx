@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompleteOnboarding, useUserProfile } from "@/hooks/useUser";
 import { trackOnboardingCompleted } from "@/lib/analytics";
-import i18n from "@/lib/i18n";
+import i18n, { setLanguage } from "@/lib/i18n";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/services/authService";
@@ -92,7 +92,7 @@ export default function Onboarding() {
   function choose(value: string) {
     setAnswers((previous) => ({ ...previous, [step.field]: value }));
     if (step.id === "language") {
-      void i18n.changeLanguage(value);
+      void setLanguage(value);
     }
   }
 

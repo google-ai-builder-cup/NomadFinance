@@ -51,12 +51,13 @@ export function useSubmitReport() {
   });
 }
 
-/** Every business profile, for the heatmap. Aggregates change a few times a day at most. */
+/** Every business profile, for the heatmap. Aggregates change a few times a day at most, and
+ * every profile is a read, so it is kept five minutes (NF-P4-003). */
 export function useRadarEntities() {
   return useQuery({
     queryKey: ["radar", "entities"],
     queryFn: listRadarEntities,
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
   });
 }
 

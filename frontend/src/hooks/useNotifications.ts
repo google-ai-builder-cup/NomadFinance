@@ -5,20 +5,40 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/useToast";
 import { listenForPushes, pushPermission, requestPushToken } from "@/lib/messaging";
-import { listNotifications, markNotificationRead } from "@/services/notificationService";
+import {
+  countUnreadNotifications,
+  listNotifications,
+  markNotificationRead,
+  NOTIFICATIONS_PAGE_SIZE,
+} from "@/services/notificationService";
 import { saveFcmToken } from "@/services/userService";
 
 function notificationsKey(uid: string | undefined) {
   return ["notifications", uid] as const;
 }
 
-/** The signed-in worker's notification feed, newest first. */
-export function useNotifications() {
+/**
+ * The signed-in worker's newest notifications, newest first. `max` is how many the screen
+ * shows: the dashboard widget asks for two instead of downloading the whole feed.
+ */
+export function useNotifications(max: number = NOTIFICATIONS_PAGE_SIZE) {
   const { user } = useAuth();
   const uid = user?.uid;
   return useQuery({
-    queryKey: notificationsKey(uid),
-    queryFn: () => listNotifications(uid ?? ""),
+    queryKey: [...notificationsKey(uid), "list", max] as const,
+    queryFn: () => listNotifications(uid ?? "", max),
+    enabled: uid !== undefined,
+    staleTime: 30_000,
+  });
+}
+
+/** How many notifications are unread, for the dashboard's "N new alerts" line. */
+export function useUnreadNotificationCount() {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: [...notificationsKey(uid), "unread"] as const,
+    queryFn: () => countUnreadNotifications(uid ?? ""),
     enabled: uid !== undefined,
     staleTime: 30_000,
   });

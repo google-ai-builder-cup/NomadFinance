@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firestore";
 import { apiRequest } from "@/services/apiClient";
 import type {
   BillEntry,

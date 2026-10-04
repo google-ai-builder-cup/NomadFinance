@@ -3,7 +3,7 @@ import { Radar } from "lucide-react";
 import WidgetCard from "@/components/dashboard/WidgetCard";
 import AlertItem from "@/components/radar/AlertItem";
 import { useI18n } from "@/hooks/useI18n";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotifications, useUnreadNotificationCount } from "@/hooks/useNotifications";
 
 const MAX_SHOWN = 2;
 
@@ -12,8 +12,10 @@ const MAX_SHOWN = 2;
  * (NF-P3-019). */
 export default function RadarAlertsWidget() {
   const { t } = useI18n();
-  const notifications = useNotifications();
-  const unread = notifications.data?.filter((notification) => !notification.read).length ?? 0;
+  // Two rows and a count, not the whole feed (NF-P4-003). A failed count only hides the
+  // "N new" line; the alerts still show.
+  const notifications = useNotifications(MAX_SHOWN);
+  const unread = useUnreadNotificationCount().data ?? 0;
 
   return (
     <WidgetCard
@@ -42,7 +44,7 @@ export default function RadarAlertsWidget() {
             </p>
           )}
           <ul className="space-y-2">
-            {notifications.data.slice(0, MAX_SHOWN).map((notification) => (
+            {notifications.data.map((notification) => (
               <li key={notification.id}>
                 <AlertItem notification={notification} />
               </li>

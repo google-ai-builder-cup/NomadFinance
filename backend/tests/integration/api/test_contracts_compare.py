@@ -45,7 +45,7 @@ class FakeRepo:
         self.countries.append(country)
         return self.version
 
-    def get_rules(self, country: str) -> dict[str, dict[str, Any]]:
+    def get_rules(self, country: str, version: int | None = None) -> dict[str, dict[str, Any]]:
         return {"passport_retention": RULE}
 
 

@@ -1,5 +1,6 @@
 import { FirebaseError } from "firebase/app";
 import {
+  browserPopupRedirectResolver,
   type ConfirmationResult,
   getRedirectResult,
   GoogleAuthProvider,
@@ -21,26 +22,54 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 
 export async function signInWithGoogle(): Promise<void> {
   try {
-    await signInWithPopup(auth, googleProvider);
+    await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
     trackLogin("google");
   } catch (error) {
     // In-app browsers (Facebook, WhatsApp links) block popups; a full-page redirect still works.
     // The redirect result arrives through onAuthStateChanged in AuthProvider.
     if (error instanceof FirebaseError && error.code === "auth/popup-blocked") {
-      await signInWithRedirect(auth, googleProvider);
+      markRedirectPending();
+      await signInWithRedirect(auth, googleProvider, browserPopupRedirectResolver);
       return;
     }
     throw error;
   }
 }
 
+// Reading a redirect's result loads Google's scripts (see lib/firebase.ts), so it is only done
+// when this tab sent the person off to Google and is now back. Session storage survives the
+// round trip in the same tab and is gone for everyone else.
+const REDIRECT_PENDING_KEY = "nomadfinance.googleRedirectPending";
+
+function markRedirectPending(): void {
+  try {
+    sessionStorage.setItem(REDIRECT_PENDING_KEY, "1");
+  } catch {
+    // Storage blocked: the redirect still happens, its result is just not read on return.
+  }
+}
+
+function takeRedirectPending(): boolean {
+  try {
+    const pending = sessionStorage.getItem(REDIRECT_PENDING_KEY) !== null;
+    sessionStorage.removeItem(REDIRECT_PENDING_KEY);
+    return pending;
+  } catch {
+    return false;
+  }
+}
+
 /**
- * Error from a Google redirect sign-in, as an i18n key. Success needs no handling here:
- * it arrives through onAuthStateChanged, but a failure is only reported by this call.
+ * Finish a Google redirect sign-in when this tab is returning from one, and report a failure
+ * as an i18n key. Success also arrives through onAuthStateChanged, but a failure is only
+ * reported by this call.
  */
 export async function redirectSignInErrorKey(): Promise<string | null> {
+  if (!takeRedirectPending()) {
+    return null;
+  }
   try {
-    await getRedirectResult(auth);
+    await getRedirectResult(auth, browserPopupRedirectResolver);
     return null;
   } catch (error) {
     return authErrorKey(error);
@@ -110,7 +139,7 @@ export async function reauthenticateWithGoogle(): Promise<void> {
   if (user === null) {
     throw new Error("Not signed in");
   }
-  await reauthenticateWithPopup(user, googleProvider);
+  await reauthenticateWithPopup(user, googleProvider, browserPopupRedirectResolver);
   await user.getIdToken(true);
 }
 

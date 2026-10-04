@@ -70,7 +70,7 @@ async def get_labor_law_context(
         LaborLawNotFoundError: The country has no curated data loaded yet.
     """
     version = await run_in_threadpool(repo.get_version, country)
-    raw_rules = await run_in_threadpool(repo.get_rules, country)
+    raw_rules = await run_in_threadpool(repo.get_rules, country, version)
     if version is None or not raw_rules:
         raise LaborLawNotFoundError(f"no labor-law data loaded for {country!r}")
 
