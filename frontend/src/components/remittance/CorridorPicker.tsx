@@ -1,5 +1,7 @@
+import { ArrowRight } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
+import CountryPair from "@/components/common/CountryPair";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
@@ -10,8 +12,8 @@ import { CORRIDORS, type AmountProblem, type MessageRef, parseAmount } from "@/u
 import { countryName, currencyName, formatMoney } from "@/utils/format";
 
 const fieldClass =
-  "h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm " +
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
+  "h-12 w-full rounded-xl border border-input bg-card px-3 text-base font-semibold shadow-sm " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50";
 
 export interface CorridorPickerProps {
   /** The corridor selected when the form first shows (the worker's own, from the profile). */
@@ -23,7 +25,8 @@ export interface CorridorPickerProps {
   onSubmit: (request: RemittanceCompareRequest) => void;
 }
 
-/** Remittance X-Ray's form: where the money goes and how much (NF-P2-018). */
+/** Remittance X-Ray's form: where the money goes and how much (NF-P2-018). The corridor is a
+ * set of six pair cards (a radio group), not a drop-down, so every option is visible at once. */
 export default function CorridorPicker({
   initialCorridor,
   pending,
@@ -69,41 +72,66 @@ export default function CorridorPicker({
         : t(`remittance.form.errors.${problem}`, limits);
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 rounded-lg border bg-card p-6">
-      <div className="space-y-1.5">
-        <label htmlFor="remittance-corridor" className="text-sm font-medium">
-          {t("remittance.form.corridor")}
-        </label>
-        <select
-          id="remittance-corridor"
-          value={corridorId}
-          onChange={(event) => changeCorridor(event.target.value as CorridorId)}
-          disabled={pending}
-          className={fieldClass}
+    <form onSubmit={handleSubmit} noValidate className="card-surface space-y-6 p-5 md:p-6">
+      <fieldset className="space-y-2.5" disabled={pending}>
+        <legend className="text-sm font-bold">{t("remittance.form.corridor")}</legend>
+        <div
+          role="radiogroup"
+          aria-label={t("remittance.form.corridor")}
+          className="grid grid-cols-2 gap-2.5"
         >
-          {CORRIDOR_IDS.map((id) => (
-            <option key={id} value={id}>
-              {countryName(CORRIDORS[id].host, language)} →{" "}
-              {countryName(CORRIDORS[id].home, language)}
-            </option>
-          ))}
-        </select>
+          {CORRIDOR_IDS.map((id) => {
+            const corridor = CORRIDORS[id];
+            const selected = id === corridorId;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => changeCorridor(id)}
+                className={cn(
+                  "flex min-h-[3.75rem] items-center gap-2.5 rounded-xl border bg-card px-3 py-2 text-left transition-all duration-base",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60",
+                  selected
+                    ? "border-remit bg-remit-tint shadow-sm ring-2 ring-remit/25"
+                    : "hover:border-remit/50 hover:bg-accent"
+                )}
+              >
+                <CountryPair host={corridor.host} home={corridor.home} />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1 text-sm font-bold">
+                    {corridor.host}
+                    <ArrowRight className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
+                    {corridor.home}
+                  </span>
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {corridor.sendCurrency}→{corridor.receiveCurrency}
+                  </span>
+                </span>
+                <span className="sr-only">
+                  {countryName(corridor.host, language)} → {countryName(corridor.home, language)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
         <p className="text-xs text-muted-foreground">
           {t("remittance.form.currencies", {
             send: `${currencyName(info.sendCurrency, language)} (${info.sendCurrency})`,
             receive: `${currencyName(info.receiveCurrency, language)} (${info.receiveCurrency})`,
           })}
         </p>
-      </div>
+      </fieldset>
 
       <div className="space-y-1.5">
-        <label htmlFor="remittance-amount" className="text-sm font-medium">
+        <label htmlFor="remittance-amount" className="text-sm font-bold">
           {t("remittance.form.amount")}
         </label>
         <div className="relative">
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm font-medium text-muted-foreground"
+            className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sm font-bold text-muted-foreground"
           >
             {info.sendCurrency}
           </span>
@@ -124,14 +152,22 @@ export default function CorridorPicker({
               problem !== null && "remittance-amount-error"
             )}
             placeholder={String(info.surveyAmounts[1])}
-            className={cn(fieldClass, "pl-14", problem !== null && "border-destructive")}
+            className={cn(
+              fieldClass,
+              "pl-16 tabular-nums",
+              problem !== null && "border-destructive"
+            )}
           />
         </div>
         <p id="remittance-amount-hint" className="text-xs text-muted-foreground">
           {t("remittance.form.amountHint", { currency: info.sendCurrency, ...limits })}
         </p>
         {problemText && (
-          <p id="remittance-amount-error" role="alert" className="text-sm text-destructive">
+          <p
+            id="remittance-amount-error"
+            role="alert"
+            className="text-sm font-medium text-destructive"
+          >
             {problemText}
           </p>
         )}
@@ -147,7 +183,10 @@ export default function CorridorPicker({
               key={amount}
               type="button"
               variant="outline"
-              className="h-10 px-4"
+              className={cn(
+                "h-11 rounded-xl bg-card px-4 font-bold tabular-nums",
+                amountText === String(amount) && "border-remit bg-remit-tint"
+              )}
               disabled={pending}
               aria-pressed={amountText === String(amount)}
               onClick={() => {
@@ -162,12 +201,17 @@ export default function CorridorPicker({
       </div>
 
       {serverError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {t(serverError.key, serverError.values)}
         </p>
       )}
 
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+      <Button
+        type="submit"
+        size="lg"
+        className="h-12 w-full rounded-xl bg-remit-deep text-base font-bold text-white hover:bg-remit-deep/90"
+        disabled={pending}
+      >
         {pending ? t("remittance.form.submitting") : t("remittance.form.submit")}
       </Button>
     </form>

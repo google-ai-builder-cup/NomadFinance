@@ -1,39 +1,39 @@
+import GreetingBand from "@/components/dashboard/GreetingBand";
 import FIBProgressWidget from "@/components/dashboard/FIBProgressWidget";
+import KpiRow from "@/components/dashboard/KpiRow";
 import RadarAlertsWidget from "@/components/dashboard/RadarAlertsWidget";
 import RecentContractsWidget from "@/components/dashboard/RecentContractsWidget";
 import RemittanceShortcutWidget from "@/components/dashboard/RemittanceShortcutWidget";
-import { useAuth } from "@/hooks/useAuth";
+import Reveal from "@/components/visual/Reveal";
 import { useI18n } from "@/hooks/useI18n";
 
-/** Signed-in home: a live widget per pillar — recent contracts, a remittance shortcut, radar
- * alerts, Financial Identity progress (NF-P3-019). Each widget loads independently, so a slow
- * or empty one never blocks the others. */
+/** Signed-in home: a greeting, four live KPIs, and a widget per pillar — recent contracts, a
+ * remittance shortcut, radar alerts, Financial Identity progress (NF-P3-019). Every KPI and
+ * widget loads independently, so a slow or empty one never blocks the others. */
 export default function Dashboard() {
-  const { user } = useAuth();
   const { t } = useI18n();
-  // Only a Google name is worth greeting by; an email or phone number reads badly as a name.
-  const firstName = user?.displayName?.split(" ")[0];
 
   return (
-    <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">
-          {firstName
-            ? t("dashboard.greeting", { name: firstName })
-            : t("dashboard.greetingGeneric")}
-        </h1>
-        <p className="text-muted-foreground">{t("dashboard.subtitle")}</p>
-      </header>
-
+    <div className="space-y-5">
+      <GreetingBand />
+      <KpiRow />
       <section aria-labelledby="pillars-heading">
         <h2 id="pillars-heading" className="sr-only">
           {t("dashboard.pillarsHeading")}
         </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <RecentContractsWidget />
-          <RemittanceShortcutWidget />
-          <RadarAlertsWidget />
-          <FIBProgressWidget />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Reveal className="h-full">
+            <RemittanceShortcutWidget />
+          </Reveal>
+          <Reveal delay={60} className="h-full">
+            <RecentContractsWidget />
+          </Reveal>
+          <Reveal delay={120} className="h-full">
+            <RadarAlertsWidget />
+          </Reveal>
+          <Reveal delay={180} className="h-full">
+            <FIBProgressWidget />
+          </Reveal>
         </div>
       </section>
     </div>

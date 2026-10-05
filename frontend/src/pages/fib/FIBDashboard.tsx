@@ -1,7 +1,9 @@
+import { FileDown, Fingerprint, Plus } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
 import CategorizeEntriesCard from "@/components/fib/CategorizeEntriesCard";
 import CategoryBreakdown from "@/components/fib/CategoryBreakdown";
 import ScoreMeter from "@/components/fib/ScoreMeter";
@@ -39,16 +41,34 @@ export default function FIBDashboard() {
   const currency = majorityCurrency([...income, ...bills, ...savings]);
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <header className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">{t("fib.dashboard.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("fib.dashboard.subtitle")}</p>
-        </div>
-        <Button asChild size="sm" className="shrink-0">
-          <Link to="/identity/log">{t("fib.dashboard.logActivity")}</Link>
-        </Button>
-      </header>
+    <div className="space-y-5">
+      <PageHeader
+        pillar="identity"
+        icon={Fingerprint}
+        title={t("fib.dashboard.title")}
+        description={t("fib.dashboard.subtitle")}
+        actions={
+          <>
+            <Button
+              asChild
+              className="h-11 rounded-xl bg-identity-deep px-5 font-bold text-white hover:bg-identity-deep/90"
+            >
+              <Link to="/identity/log">
+                <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t("fib.dashboard.logActivity")}
+              </Link>
+            </Button>
+            {profile.isSuccess && profile.data !== null && (
+              <Button asChild variant="outline" className="h-11 rounded-xl bg-card font-bold">
+                <Link to="/identity/export">
+                  <FileDown className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {t("fib.dashboard.exportReport")}
+                </Link>
+              </Button>
+            )}
+          </>
+        }
+      />
 
       <ScoreMeter profile={profile.isSuccess ? profile.data : null} />
       {profile.isError && (
@@ -59,19 +79,15 @@ export default function FIBDashboard() {
           </button>
         </p>
       )}
-      {profile.isSuccess && profile.data !== null && (
-        <div className="flex justify-end">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/identity/export">{t("fib.dashboard.exportReport")}</Link>
-          </Button>
-        </div>
-      )}
 
-      <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
-        <FinancialTimeline income={income} bills={bills} currency={currency} />
-      </Suspense>
       <CategorizeEntriesCard bills={bills} />
-      <CategoryBreakdown income={income} bills={bills} currency={currency} />
+
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        <Suspense fallback={<Skeleton className="h-72 w-full rounded-2xl" />}>
+          <FinancialTimeline income={income} bills={bills} currency={currency} />
+        </Suspense>
+        <CategoryBreakdown income={income} bills={bills} currency={currency} />
+      </div>
     </div>
   );
 }

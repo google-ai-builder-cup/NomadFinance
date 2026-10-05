@@ -27,7 +27,7 @@ export default function FlaggedProviderBadge({ firm }: FlaggedProviderBadgeProps
       to={`/radar/entity/${entity.slug}`}
       title={detail}
       aria-label={detail}
-      className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive hover:bg-destructive/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive"
+      className="inline-flex items-center gap-1 rounded-full border border-danger/25 bg-danger-tint px-2 py-0.5 text-xs font-semibold text-danger-tint-ink hover:bg-danger/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger"
     >
       <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
       {t("remittance.flagged.label")}

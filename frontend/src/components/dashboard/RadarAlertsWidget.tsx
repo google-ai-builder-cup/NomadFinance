@@ -20,6 +20,7 @@ export default function RadarAlertsWidget() {
   return (
     <WidgetCard
       icon={Radar}
+      pillar="radar"
       title={t("pillars.radar.name")}
       to="/radar"
       openLabel={t("dashboard.widgets.radar.open")}
@@ -39,7 +40,7 @@ export default function RadarAlertsWidget() {
       {notifications.isSuccess && notifications.data.length > 0 && (
         <div className="space-y-2">
           {unread > 0 && (
-            <p className="text-xs font-medium text-primary">
+            <p className="text-xs font-bold text-radar-ink">
               {t("dashboard.widgets.radar.unread", { count: unread })}
             </p>
           )}

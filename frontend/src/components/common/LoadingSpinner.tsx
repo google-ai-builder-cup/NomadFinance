@@ -24,7 +24,7 @@ export default function LoadingSpinner({
         className
       )}
     >
-      <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+      <Loader2 className="h-5 w-5 animate-spin text-primary" aria-hidden="true" />
       <span className="text-sm">{label}</span>
     </div>
   );

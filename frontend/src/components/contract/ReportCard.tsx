@@ -3,13 +3,16 @@ import { useState } from "react";
 import ClauseRow from "@/components/contract/ClauseRow";
 import ComplaintPreview from "@/components/contract/ComplaintPreview";
 import FlaggedParties from "@/components/contract/FlaggedParties";
+import { Sparkles } from "lucide-react";
+
+import RiskBadge from "@/components/common/RiskBadge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import RiskGauge from "@/components/visual/RiskGauge";
 import { useWriteMissingLetter } from "@/hooks/useContract";
 import { useI18n } from "@/hooks/useI18n";
-import { cn } from "@/lib/utils";
 import type { ClauseRisk, ContractAnalysis, ContractReport } from "@/types/contract";
-import { RISK_BADGE_CLASSES } from "@/utils/contractRisk";
 import { letterPendingKey } from "@/utils/letterPending";
 import { requestFailureKey } from "@/utils/pipelineProgress";
 
@@ -19,6 +22,12 @@ export interface ReportCardProps {
   /** The full report in `analysis.report_language` (`reports/{language}`, read from Firestore). */
   report: ContractReport;
 }
+
+const COUNT_TILE: Record<"safe" | "caution" | "danger", string> = {
+  safe: "border-safe/25 bg-safe-tint text-safe-tint-ink",
+  caution: "border-caution/30 bg-caution-tint text-caution-tint-ink",
+  danger: "border-danger/25 bg-danger-tint text-danger-tint-ink",
+};
 
 // A fair contract's boilerplate is rarely what a worker needs to read first, so a safe
 // clause starts closed; anything worth a flag starts open.
@@ -46,9 +55,9 @@ function MissingLetter({ analysis }: { analysis: ContractAnalysis }) {
   return (
     <section
       aria-labelledby="contract-missing-letter"
-      className="space-y-3 rounded-lg border border-dashed p-4"
+      className="space-y-3 rounded-2xl border border-dashed bg-card p-5"
     >
-      <h2 id="contract-missing-letter" className="font-semibold">
+      <h2 id="contract-missing-letter" className="font-bold">
         {t("contract.complaint.missing.title")}
       </h2>
       <p className="text-sm text-muted-foreground">{t("contract.complaint.missing.body")}</p>
@@ -101,65 +110,90 @@ export default function ReportCard({ analysis, report }: ReportCardProps) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 rounded-lg border bg-card p-6">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+        <section
+          aria-label={t("contract.result.score")}
+          className="card-surface card-edge flex flex-col items-center gap-3 p-6 text-center"
+        >
+          <span className="flex items-center gap-1.5 text-sm font-bold text-muted-foreground">
             {t("contract.result.score")}
             <InfoTooltip label={t("contract.result.scoreInfoLabel")}>
               {t("contract.result.scoreInfo")}
             </InfoTooltip>
           </span>
-          <span className="text-3xl font-bold tabular-nums">{analysis.health_score}</span>
-        </div>
-        <div
-          className={cn(
-            "inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium",
-            RISK_BADGE_CLASSES[analysis.risk_level]
+          <RiskGauge
+            score={analysis.health_score}
+            label={t("contract.result.gaugeLabel", {
+              score: analysis.health_score,
+              level: t(`contract.result.riskLevel.${analysis.risk_level}`),
+            })}
+            safeLabel={t("contract.result.counts.safe")}
+            dangerLabel={t("contract.result.counts.danger")}
+          />
+          <p className="-mt-2 text-5xl font-extrabold leading-none tracking-tight tabular-nums">
+            {analysis.health_score}
+          </p>
+          <RiskBadge level={analysis.risk_level} className="px-3 py-1 text-sm">
+            {t(`contract.result.riskLevel.${analysis.risk_level}`)}
+          </RiskBadge>
+        </section>
+
+        <div className="space-y-4">
+          <dl className="grid grid-cols-3 gap-3 text-center">
+            {(["safe", "caution", "danger"] as const).map((level) => (
+              <div key={level} className={`rounded-2xl border p-4 ${COUNT_TILE[level]}`}>
+                <dt className="text-xs font-bold uppercase tracking-wide">
+                  {t(`contract.result.counts.${level}`)}
+                </dt>
+                <dd className="mt-1 text-3xl font-extrabold tabular-nums">
+                  {analysis.clause_counts[level]}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <FlaggedParties contractId={analysis.contract_id} />
+          <section className="ai-border space-y-2 rounded-2xl bg-card p-5">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-sm font-bold text-contract-ink">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                {t("contract.report.summaryHeading")}
+              </h2>
+              <Badge tone="info">{t("landing.hero.chips.gemini")}</Badge>
+            </div>
+            <p className="text-[15px] leading-relaxed">{report.summary}</p>
+          </section>
+          {analysis.complaint_pending && (
+            <p className="text-sm text-muted-foreground">{t("contract.result.complaintPending")}</p>
           )}
-        >
-          {t(`contract.result.riskLevel.${analysis.risk_level}`)}
         </div>
-        <FlaggedParties contractId={analysis.contract_id} />
-        <dl className="grid grid-cols-3 gap-2 text-center text-sm">
-          <div>
-            <dt className="text-muted-foreground">{t("contract.result.counts.safe")}</dt>
-            <dd className="text-lg font-semibold">{analysis.clause_counts.safe}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">{t("contract.result.counts.caution")}</dt>
-            <dd className="text-lg font-semibold">{analysis.clause_counts.caution}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">{t("contract.result.counts.danger")}</dt>
-            <dd className="text-lg font-semibold">{analysis.clause_counts.danger}</dd>
-          </div>
-        </dl>
-        <p className="text-sm">{report.summary}</p>
-        {analysis.complaint_pending && (
-          <p className="text-sm text-muted-foreground">{t("contract.result.complaintPending")}</p>
-        )}
       </div>
 
       {clauses.length > 0 && (
         <section aria-labelledby="contract-report-heading" className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id="contract-report-heading" className="text-lg font-semibold">
+            <h2 id="contract-report-heading" className="text-lg font-bold tracking-tight">
               {t("contract.report.heading")}
             </h2>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={expandAll}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg"
+                onClick={expandAll}
+              >
                 {t("contract.report.expandAll")}
               </Button>
-              <Button type="button" variant="outline" size="sm" onClick={collapseAll}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg"
+                onClick={collapseAll}
+              >
                 {t("contract.report.collapseAll")}
               </Button>
             </div>
-          </div>
-          {/* Stays visible while scrolling a long clause list; top-14 matches the app header's
-              own sticky height (h-14) so the two never overlap. */}
-          <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 hidden gap-3 rounded-md bg-background/95 px-1 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid md:grid-cols-2">
-            <span>{t("contract.report.contractColumn")}</span>
-            <span>{t("contract.report.lawColumn")}</span>
           </div>
           <ul className="space-y-3">
             {clauses.map((clause) => (

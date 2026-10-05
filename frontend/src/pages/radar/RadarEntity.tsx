@@ -1,7 +1,8 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Radar } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
 import EntityReportList from "@/components/radar/EntityReportList";
 import EntityRiskCard from "@/components/radar/EntityRiskCard";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ export default function RadarEntity() {
   const reports = useEntityReports(slug);
 
   const backLink = (
-    <Button asChild variant="ghost" className="-ml-2 h-9 gap-1.5">
+    <Button asChild variant="outline" className="h-11 gap-1.5 rounded-xl bg-card font-bold">
       <Link to="/radar">
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         {t("radar.entity.back")}
@@ -37,7 +38,7 @@ export default function RadarEntity() {
   }
   if (entity === null) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="space-y-5">
         {backLink}
         <p className="text-sm text-muted-foreground">{t("radar.entity.notFound")}</p>
       </div>
@@ -45,35 +46,37 @@ export default function RadarEntity() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      {backLink}
+    <div className="space-y-5">
+      <PageHeader
+        pillar="radar"
+        icon={Radar}
+        title={entity.name}
+        description={t(`radar.report.who.types.${entity.entity_type}`)}
+        compact
+        actions={backLink}
+      />
 
-      <header className="space-y-1">
-        <p className="text-sm text-muted-foreground">
-          {t(`radar.report.who.types.${entity.entity_type}`)}
-        </p>
-        <h1 className="text-2xl font-bold tracking-tight">{entity.name}</h1>
-      </header>
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+        <EntityRiskCard entity={entity} />
 
-      <EntityRiskCard entity={entity} />
-
-      <section aria-labelledby="radar-entity-reports" className="space-y-3">
-        <h2 id="radar-entity-reports" className="text-lg font-semibold">
-          {t("radar.entity.reportsHeading")}
-        </h2>
-        {reports.isPending ? (
-          <LoadingSpinner label={t("common.loading")} className="py-8" />
-        ) : reports.isError ? (
-          <div role="alert" className="flex flex-col items-start gap-2 text-sm">
-            <p className="text-destructive">{t("radar.entity.reportsLoadError")}</p>
-            <Button size="sm" variant="outline" onClick={() => void reports.refetch()}>
-              {t("common.retry")}
-            </Button>
-          </div>
-        ) : (
-          <EntityReportList reports={reports.data ?? []} />
-        )}
-      </section>
+        <section aria-labelledby="radar-entity-reports" className="space-y-3">
+          <h2 id="radar-entity-reports" className="text-lg font-bold tracking-tight">
+            {t("radar.entity.reportsHeading")}
+          </h2>
+          {reports.isPending ? (
+            <LoadingSpinner label={t("common.loading")} className="py-8" />
+          ) : reports.isError ? (
+            <div role="alert" className="flex flex-col items-start gap-2 text-sm">
+              <p className="text-destructive">{t("radar.entity.reportsLoadError")}</p>
+              <Button size="sm" variant="outline" onClick={() => void reports.refetch()}>
+                {t("common.retry")}
+              </Button>
+            </div>
+          ) : (
+            <EntityReportList reports={reports.data ?? []} />
+          )}
+        </section>
+      </div>
     </div>
   );
 }

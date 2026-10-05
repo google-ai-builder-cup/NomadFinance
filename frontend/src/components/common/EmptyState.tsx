@@ -9,6 +9,8 @@ export interface EmptyStateProps {
   description: string;
   /** Usually a button or link that gets the user somewhere useful. */
   action?: ReactNode;
+  /** A larger illustration (for example a PillarIllustration) shown instead of the icon tile. */
+  illustration?: ReactNode;
   className?: string;
 }
 
@@ -17,17 +19,24 @@ export default function EmptyState({
   title,
   description,
   action,
+  illustration,
   className,
 }: EmptyStateProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-3 rounded-lg border border-dashed p-8 text-center",
+        "dotted flex flex-col items-center gap-3 rounded-2xl border border-dashed bg-card/60 p-8 text-center",
         className
       )}
     >
-      <Icon className="h-10 w-10 text-muted-foreground" aria-hidden="true" />
-      <h2 className="text-lg font-semibold">{title}</h2>
+      {illustration ? (
+        <div className="w-full max-w-[11rem]">{illustration}</div>
+      ) : (
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-primary shadow-sm">
+          <Icon className="h-7 w-7" aria-hidden="true" />
+        </span>
+      )}
+      <h2 className="text-lg font-bold tracking-tight">{title}</h2>
       <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
       {action}
     </div>

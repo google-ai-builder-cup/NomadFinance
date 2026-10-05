@@ -1,11 +1,13 @@
-import { Bell } from "lucide-react";
+import { Bell, Radar } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AlertItem from "@/components/radar/AlertItem";
 import RouteAlertItem from "@/components/radar/RouteAlertItem";
+import PageHeader from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useRouteAlerts } from "@/hooks/useRadar";
@@ -61,59 +63,65 @@ export default function RadarAlerts() {
     .join(", ");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("radar.alerts.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("radar.alerts.subtitle")}</p>
-      </header>
+    <div className="space-y-5">
+      <PageHeader
+        pillar="radar"
+        icon={Radar}
+        title={t("radar.alerts.title")}
+        description={t("radar.alerts.subtitle")}
+        compact
+      />
 
-      <section aria-labelledby="route-alerts-title" className="space-y-3">
-        <h2 id="route-alerts-title" className="text-lg font-semibold">
-          {t("radar.alerts.route.title")}
-        </h2>
-        <p className="text-xs text-muted-foreground">
-          {routes.length > 0
-            ? t("radar.alerts.route.routes", { routes: routeNames })
-            : t("radar.alerts.route.noRoutes")}{" "}
-          <Link to="/profile" className="underline">
-            {t("radar.alerts.route.chooseRoutes")}
-          </Link>
-        </p>
-        {active.length === 0 ? (
-          <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-            {t("radar.alerts.route.none")}
+      <div className="grid items-start gap-5 lg:grid-cols-2">
+        <section aria-labelledby="route-alerts-title" className="space-y-3">
+          <h2 id="route-alerts-title" className="text-lg font-bold tracking-tight">
+            {t("radar.alerts.route.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            {routes.length > 0
+              ? t("radar.alerts.route.routes", { routes: routeNames })
+              : t("radar.alerts.route.noRoutes")}{" "}
+            <Link to="/profile" className="font-bold text-radar-ink underline">
+              {t("radar.alerts.route.chooseRoutes")}
+            </Link>
           </p>
-        ) : (
-          <ul className="space-y-3">
-            {active.map((alert) => (
-              <li key={`${alert.corridor_id}/${alert.id}`}>
-                <RouteAlertItem alert={alert} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+          {active.length === 0 ? (
+            <p className="rounded-2xl border border-dashed bg-card p-4 text-sm text-muted-foreground">
+              {t("radar.alerts.route.none")}
+            </p>
+          ) : (
+            <ul className="space-y-3">
+              {active.map((alert) => (
+                <li key={`${alert.corridor_id}/${alert.id}`}>
+                  <RouteAlertItem alert={alert} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-      <section aria-labelledby="alert-feed-title" className="space-y-3">
-        <h2 id="alert-feed-title" className="text-lg font-semibold">
-          {t("radar.alerts.feedTitle")}
-        </h2>
-        {feed.length === 0 ? (
-          <EmptyState
-            icon={Bell}
-            title={t("radar.alerts.emptyTitle")}
-            description={t("radar.alerts.emptyDescription")}
-          />
-        ) : (
-          <ul className="space-y-3">
-            {feed.map((notification) => (
-              <li key={notification.id}>
-                <AlertItem notification={notification} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <section aria-labelledby="alert-feed-title" className="space-y-3">
+          <h2 id="alert-feed-title" className="text-lg font-bold tracking-tight">
+            {t("radar.alerts.feedTitle")}
+          </h2>
+          {feed.length === 0 ? (
+            <EmptyState
+              icon={Bell}
+              title={t("radar.alerts.emptyTitle")}
+              description={t("radar.alerts.emptyDescription")}
+              illustration={<PillarIllustration pillar="radar" />}
+            />
+          ) : (
+            <ul className="space-y-3">
+              {feed.map((notification) => (
+                <li key={notification.id}>
+                  <AlertItem notification={notification} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

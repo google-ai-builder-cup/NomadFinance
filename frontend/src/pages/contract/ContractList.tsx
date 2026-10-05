@@ -1,20 +1,23 @@
-import { ShieldCheck } from "lucide-react";
+import { ChevronRight, FilePlus2, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
+import RiskBadge from "@/components/common/RiskBadge";
 import { Button } from "@/components/ui/button";
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useRecentContracts } from "@/hooks/useContract";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { ContractSummary } from "@/types/contract";
-import { RISK_BADGE_CLASSES } from "@/utils/contractRisk";
+import { RISK_BAR_CLASSES } from "@/utils/contractRisk";
 
 // Plenty for a worker's own contracts; the list is not paged.
 const MAX_SHOWN = 50;
 
-const ROW_CLASS = "flex items-center justify-between gap-3 rounded-lg border bg-card p-4";
+const ROW_CLASS = "card-surface flex items-center gap-3 overflow-hidden p-0 pr-4";
 
 function ContractRow({ contract }: { contract: ContractSummary }) {
   const { t } = useI18n();
@@ -26,25 +29,30 @@ function ContractRow({ contract }: { contract: ContractSummary }) {
   });
   const content = (
     <>
-      <div className="min-w-0">
-        <p className="truncate font-medium">
+      <span
+        className={cn(
+          "w-1.5 shrink-0 self-stretch",
+          contract.risk_level ? RISK_BAR_CLASSES[contract.risk_level] : "bg-border"
+        )}
+        aria-hidden="true"
+      />
+      <div className="min-w-0 flex-1 py-4">
+        <p className="truncate font-bold">
           {contract.title ?? t("dashboard.widgets.contract.untitled")}
         </p>
         {date && <p className="text-xs text-muted-foreground">{date}</p>}
       </div>
       {contract.risk_level ? (
-        <span
-          className={cn(
-            "shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium",
-            RISK_BADGE_CLASSES[contract.risk_level]
-          )}
-        >
+        <RiskBadge level={contract.risk_level}>
           {t(`contract.result.counts.${contract.risk_level}`)}
-        </span>
+        </RiskBadge>
       ) : (
         <span className="shrink-0 text-xs text-muted-foreground">
           {t(`dashboard.widgets.contract.status.${contract.status}`)}
         </span>
+      )}
+      {contract.status === "completed" && (
+        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
       )}
     </>
   );
@@ -55,7 +63,7 @@ function ContractRow({ contract }: { contract: ContractSummary }) {
   return (
     <Link
       to={`/contract/${contract.id}`}
-      className={cn(ROW_CLASS, "transition-colors hover:bg-accent")}
+      className={cn(ROW_CLASS, "transition-shadow duration-base hover:shadow-md")}
     >
       {content}
     </Link>
@@ -80,25 +88,35 @@ export default function ContractList() {
   }
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <header className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">{t("contract.history.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("contract.history.subtitle")}</p>
-        </div>
-        <Button asChild size="sm" className="shrink-0">
-          <Link to="/contract">{t("contract.history.checkNew")}</Link>
-        </Button>
-      </header>
+    <div className="space-y-5">
+      <PageHeader
+        pillar="contract"
+        icon={ShieldCheck}
+        title={t("contract.history.title")}
+        description={t("contract.history.subtitle")}
+        compact
+        actions={
+          <Button
+            asChild
+            className="h-11 rounded-xl bg-contract-deep px-5 font-bold text-white hover:bg-contract-deep/90"
+          >
+            <Link to="/contract">
+              <FilePlus2 className="mr-2 h-4 w-4" aria-hidden="true" />
+              {t("contract.history.checkNew")}
+            </Link>
+          </Button>
+        }
+      />
 
       {contracts.data.length === 0 ? (
         <EmptyState
           icon={ShieldCheck}
           title={t("contract.history.emptyTitle")}
           description={t("dashboard.widgets.contract.empty")}
+          illustration={<PillarIllustration pillar="contract" />}
         />
       ) : (
-        <ul className="space-y-2">
+        <ul className="grid gap-3 lg:grid-cols-2">
           {contracts.data.map((contract) => (
             <li key={contract.id}>
               <ContractRow contract={contract} />

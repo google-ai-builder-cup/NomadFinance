@@ -49,8 +49,8 @@ function ChartTooltip({
   }
   const decimals = currencyDecimals(currency);
   return (
-    <div className="rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
-      <p className="font-medium">{monthLabel(row.month, language)}</p>
+    <div className="rounded-xl border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg">
+      <p className="font-bold">{monthLabel(row.month, language)}</p>
       <p className="tabular-nums" style={{ color: CHART_INCOME_COLOR }}>
         {t("fib.timeline.income")}: {formatMoney(row.income, currency, language, decimals)}
       </p>
@@ -74,9 +74,9 @@ export default function FinancialTimeline({ income, bills, currency }: Financial
   const hasData = rows.some((row) => row.income > 0 || row.expense > 0);
 
   return (
-    <section aria-labelledby="fib-timeline-title" className="space-y-3 rounded-lg border p-4">
+    <section aria-labelledby="fib-timeline-title" className="card-surface space-y-3 p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="fib-timeline-title" className="text-lg font-semibold">
+        <h2 id="fib-timeline-title" className="text-lg font-bold tracking-tight">
           {t("fib.timeline.heading")}
         </h2>
         {currency && hasData && (
@@ -129,7 +129,7 @@ export default function FinancialTimeline({ income, bills, currency }: Financial
                 <Bar
                   dataKey="income"
                   fill={CHART_INCOME_COLOR}
-                  radius={[4, 4, 0, 0]}
+                  radius={[6, 6, 0, 0]}
                   isAnimationActive={false}
                 />
                 <Bar

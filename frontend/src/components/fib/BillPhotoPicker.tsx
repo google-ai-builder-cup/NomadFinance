@@ -101,7 +101,7 @@ export default function BillPhotoPicker({
 
   if (file) {
     return (
-      <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+      <div className="card-surface flex items-center gap-4 border-identity/40 bg-identity-tint p-4">
         {previewUrl ? (
           <img src={previewUrl} alt="" className="h-16 w-16 shrink-0 rounded object-cover" />
         ) : (
@@ -127,15 +127,17 @@ export default function BillPhotoPicker({
       <div
         {...getRootProps()}
         className={cn(
-          "flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors",
-          "has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
-          isDragActive ? "border-primary bg-accent" : "border-input hover:bg-accent",
+          "flex min-h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-6 text-center transition-colors",
+          "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+          isDragActive
+            ? "border-identity bg-identity-tint"
+            : "border-identity/50 bg-identity-tint/60 hover:bg-identity-tint",
           disabled && "pointer-events-none opacity-50"
         )}
       >
         <input {...getInputProps()} aria-label={t("fib.bill.scan.dropzoneLabel")} />
-        <Upload className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
-        <p className="text-sm font-medium">{t("fib.bill.scan.dropzoneLabel")}</p>
+        <Upload className="h-7 w-7 text-identity-ink" aria-hidden="true" />
+        <p className="text-sm font-bold">{t("fib.bill.scan.dropzoneLabel")}</p>
         <p className="text-xs text-muted-foreground">{t("fib.bill.scan.dropzoneHint")}</p>
       </div>
 
@@ -147,8 +149,8 @@ export default function BillPhotoPicker({
 
       <label
         className={cn(
-          "flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent",
-          "has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
+          "flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-input bg-card px-4 text-sm font-bold shadow-sm hover:bg-accent",
+          "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
           disabled && "pointer-events-none opacity-50"
         )}
       >

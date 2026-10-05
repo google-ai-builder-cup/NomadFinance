@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from "react";
 
 import BillPhotoPicker from "@/components/fib/BillPhotoPicker";
-import { fieldClass } from "@/components/fib/styles";
+import { fieldClass, submitClass } from "@/components/fib/styles";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import type { BillLogRequest } from "@/types/fib";
@@ -86,7 +86,7 @@ export default function BillForm({
       <div
         role="tablist"
         aria-label={t("fib.bill.modeLabel")}
-        className="grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+        className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1"
       >
         {(["photo", "manual"] as const).map((value) => (
           <button
@@ -96,9 +96,9 @@ export default function BillForm({
             aria-selected={mode === value}
             onClick={() => setMode(value)}
             className={cn(
-              "rounded-md px-2 py-2 text-sm font-medium transition-colors",
+              "min-h-11 rounded-lg px-2 py-2 text-sm font-bold transition-colors",
               mode === value
-                ? "bg-background shadow-sm"
+                ? "bg-card text-identity-ink shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -123,7 +123,7 @@ export default function BillForm({
           <Button
             type="button"
             size="lg"
-            className="h-11 w-full"
+            className={submitClass}
             disabled={!photo || scanPending}
             onClick={handleScan}
           >
@@ -134,7 +134,7 @@ export default function BillForm({
         <form onSubmit={handleManualSubmit} noValidate className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label htmlFor="bill-amount" className="text-sm font-medium">
+              <label htmlFor="bill-amount" className="text-sm font-bold">
                 {t("fib.log.fields.amount")}
               </label>
               <input
@@ -148,7 +148,7 @@ export default function BillForm({
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="bill-currency" className="text-sm font-medium">
+              <label htmlFor="bill-currency" className="text-sm font-bold">
                 {t("fib.log.fields.currency")}
               </label>
               <select
@@ -168,7 +168,7 @@ export default function BillForm({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="bill-vendor" className="text-sm font-medium">
+            <label htmlFor="bill-vendor" className="text-sm font-bold">
               {t("fib.log.fields.vendor")}
             </label>
             <input
@@ -183,7 +183,7 @@ export default function BillForm({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="bill-category" className="text-sm font-medium">
+            <label htmlFor="bill-category" className="text-sm font-bold">
               {t("fib.log.fields.category")}
             </label>
             <select
@@ -204,8 +204,8 @@ export default function BillForm({
 
           <label
             className={cn(
-              "flex cursor-pointer items-center gap-3 rounded-lg border p-3 has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
-              paid ? "border-primary bg-accent" : "hover:bg-accent"
+              "flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border p-3 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+              paid ? "border-identity bg-identity-tint" : "bg-card hover:bg-accent"
             )}
           >
             <input
@@ -215,12 +215,12 @@ export default function BillForm({
               disabled={manualPending}
               className="h-4 w-4 accent-primary"
             />
-            <span className="text-sm font-medium">{t("fib.log.fields.paid")}</span>
+            <span className="text-sm font-bold">{t("fib.log.fields.paid")}</span>
           </label>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label htmlFor="bill-date" className="text-sm font-medium">
+              <label htmlFor="bill-date" className="text-sm font-bold">
                 {t("fib.log.fields.billDate")}
               </label>
               <input
@@ -234,7 +234,7 @@ export default function BillForm({
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="bill-entry-date" className="text-sm font-medium">
+              <label htmlFor="bill-entry-date" className="text-sm font-bold">
                 {t("fib.log.fields.entryDate")}
               </label>
               <input
@@ -250,7 +250,7 @@ export default function BillForm({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="bill-notes" className="text-sm font-medium">
+            <label htmlFor="bill-notes" className="text-sm font-bold">
               {t("fib.log.fields.notes")}
             </label>
             <textarea
@@ -270,7 +270,7 @@ export default function BillForm({
             </p>
           )}
 
-          <Button type="submit" size="lg" className="h-11 w-full" disabled={manualPending}>
+          <Button type="submit" size="lg" className={submitClass} disabled={manualPending}>
             {manualPending ? t("fib.log.submitting") : t("fib.log.submit")}
           </Button>
         </form>

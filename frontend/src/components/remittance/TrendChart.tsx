@@ -1,8 +1,9 @@
 import { useState } from "react";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
-  Line,
-  LineChart,
+  ReferenceDot,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -83,8 +84,8 @@ function ChartTooltip({
     return null;
   }
   return (
-    <div className="rounded-md border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
-      <p className="font-medium">{mediumDate(point.date, language)}</p>
+    <div className="rounded-xl border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg">
+      <p className="font-bold">{mediumDate(point.date, language)}</p>
       <p className="tabular-nums text-muted-foreground">
         1 {sendCurrency} = {formatRate(point.rate, language)} {receiveCurrency}
       </p>
@@ -106,7 +107,7 @@ function PeriodPicker({
     <div
       role="group"
       aria-label={t("remittance.trend.periodLabel")}
-      className="inline-flex rounded-md border p-0.5"
+      className="inline-flex rounded-xl border bg-muted/60 p-0.5"
     >
       {TREND_DAYS.map((days) => (
         <Button
@@ -117,7 +118,7 @@ function PeriodPicker({
           aria-pressed={value === days}
           disabled={disabled}
           onClick={() => onChange(days)}
-          className="h-7 px-2.5 text-xs"
+          className="h-9 rounded-lg px-3 text-xs font-bold"
         >
           {t(PERIOD_LABEL_KEY[days])}
         </Button>
@@ -150,9 +151,9 @@ export default function TrendChart({ comparison }: TrendChartProps) {
     trends.isError && trends.error instanceof ApiError && trends.error.status === 404;
 
   return (
-    <section aria-labelledby="remittance-trend-title" className="space-y-3 rounded-lg border p-4">
+    <section aria-labelledby="remittance-trend-title" className="card-surface space-y-3 p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="remittance-trend-title" className="text-lg font-semibold">
+        <h2 id="remittance-trend-title" className="text-lg font-bold tracking-tight">
           {t("remittance.trend.heading")}
         </h2>
         <PeriodPicker value={days} onChange={setDays} disabled={trends.isPending} />
@@ -180,7 +181,7 @@ export default function TrendChart({ comparison }: TrendChartProps) {
       {trends.isSuccess && trends.data.points.length > 0 && (
         <>
           {historyStartsLate(trends.data.points, days) !== null && (
-            <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
+            <p className="rounded-xl border border-caution/30 bg-caution-tint p-3 text-sm text-caution-tint-ink">
               {t("remittance.trend.shortHistory", {
                 date: mediumDate(trends.data.points[0].date, language),
               })}
@@ -197,12 +198,18 @@ export default function TrendChart({ comparison }: TrendChartProps) {
             </p>
           )}
 
-          <div className="h-48 w-full" aria-hidden="true">
+          <div className="h-56 w-full" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart
+              <AreaChart
                 data={trends.data.points}
-                margin={{ top: 4, right: 8, left: 0, bottom: 0 }}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
               >
+                <defs>
+                  <linearGradient id="trend-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--remit))" stopOpacity={0.32} />
+                    <stop offset="100%" stopColor="hsl(var(--remit))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid stroke="hsl(var(--border))" vertical={false} />
                 <XAxis
                   dataKey="date"
@@ -221,6 +228,11 @@ export default function TrendChart({ comparison }: TrendChartProps) {
                   width={56}
                 />
                 <Tooltip
+                  cursor={{
+                    stroke: "hsl(var(--brand-gold))",
+                    strokeDasharray: "4 4",
+                    strokeWidth: 1.5,
+                  }}
                   content={
                     <ChartTooltip
                       language={language}
@@ -229,16 +241,28 @@ export default function TrendChart({ comparison }: TrendChartProps) {
                     />
                   }
                 />
-                <Line
+                <Area
                   type="monotone"
                   dataKey="rate"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
+                  stroke="hsl(var(--remit-ink))"
+                  strokeWidth={2.5}
+                  fill="url(#trend-fill)"
                   dot={false}
-                  activeDot={{ r: 4, stroke: "hsl(var(--background))", strokeWidth: 2 }}
+                  activeDot={{ r: 5, stroke: "hsl(var(--card))", strokeWidth: 2 }}
                   isAnimationActive={false}
                 />
-              </LineChart>
+                {trends.data.summary && (
+                  <ReferenceDot
+                    x={trends.data.summary.high.date}
+                    y={trends.data.summary.high.rate}
+                    r={6}
+                    fill="hsl(var(--brand-gold))"
+                    stroke="hsl(var(--card))"
+                    strokeWidth={2}
+                    ifOverflow="visible"
+                  />
+                )}
+              </AreaChart>
             </ResponsiveContainer>
           </div>
 
@@ -262,7 +286,7 @@ export default function TrendChart({ comparison }: TrendChartProps) {
           </table>
 
           {trends.data.best_day ? (
-            <div className="rounded-md border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm">
+            <div className="rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm font-medium">
               {t("remittance.trend.bestDay", {
                 weekday: weekdayName(trends.data.best_day.weekday, language),
                 pct: formatPct(trends.data.best_day.advantage_pct, language),

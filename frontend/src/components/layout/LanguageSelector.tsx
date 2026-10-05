@@ -25,7 +25,7 @@ export default function LanguageSelector() {
     <label className="relative flex items-center">
       <span className="sr-only">{t("layout.languageLabel")}</span>
       <Languages
-        className="pointer-events-none absolute left-2 h-4 w-4 text-muted-foreground"
+        className="pointer-events-none absolute left-3.5 h-4 w-4 text-muted-foreground sm:left-3"
         aria-hidden="true"
       />
       {/* Icon-only below sm (NF-P2-023: the header has no room for every control's full text
@@ -34,7 +34,7 @@ export default function LanguageSelector() {
         value={i18n.resolvedLanguage}
         onChange={handleChange}
         aria-label={t("layout.languageLabel")}
-        className="h-9 w-9 cursor-pointer appearance-none overflow-hidden rounded-md border border-input bg-background py-2 pl-8 pr-3 text-sm text-transparent shadow-sm [@media(pointer:coarse)]:text-base hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-auto sm:text-foreground sm:hover:text-accent-foreground"
+        className="h-11 w-11 cursor-pointer appearance-none overflow-hidden rounded-xl border border-input bg-card py-2 pl-8 pr-3 text-sm font-medium text-transparent shadow-sm sm:h-10 [@media(pointer:coarse)]:text-base hover:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-auto sm:text-foreground sm:hover:text-accent-foreground"
       >
         {SUPPORTED_LANGUAGES.map((language) => (
           <option key={language.code} value={language.code}>

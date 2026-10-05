@@ -4,7 +4,9 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import AuthSplit from "@/components/layout/AuthSplit";
 import LanguageSelector from "@/components/layout/LanguageSelector";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
@@ -25,8 +27,8 @@ import { toE164 } from "@/utils/validators";
 type BusyAction = "google" | "sendCode" | "verify";
 
 const inputClass =
-  "h-11 rounded-md border border-input bg-background px-3 text-base shadow-sm " +
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
+  "h-12 rounded-xl border border-input bg-card px-3 text-base shadow-sm " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50";
 
 export default function SignIn() {
   const { user, loading } = useAuth();
@@ -141,35 +143,38 @@ export default function SignIn() {
   const spinner = <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />;
 
   return (
-    <main className="mx-auto flex min-h-screen min-h-dvh w-full max-w-sm flex-col justify-center gap-6 px-4 py-10">
+    <AuthSplit>
       {/* Signed out: changes the language for this visit only; the page opens in English. */}
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         <LanguageSelector />
+        <ThemeToggle />
       </div>
 
       {accountDeleted && (
         <p
           role="status"
-          className="rounded-md border border-input bg-muted/50 p-3 text-center text-sm"
+          className="rounded-xl border border-input bg-muted/60 p-3 text-center text-sm"
         >
           {t("profile.delete.done")}
         </p>
       )}
 
-      <header className="space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">{t("auth.signIn.title")}</h1>
+      <header className="space-y-2">
+        <h1 className="text-3xl font-extrabold leading-tight tracking-tight">
+          {t("auth.signIn.title")}
+        </h1>
         <p className="text-sm text-muted-foreground">{t("auth.signIn.subtitle")}</p>
       </header>
 
       {googleUnavailable ? (
-        <p className="rounded-md border border-input bg-muted/50 p-3 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-input bg-muted/60 p-3 text-center text-sm text-muted-foreground">
           {t("auth.signIn.googleUnavailableStandalone")}
         </p>
       ) : (
         <Button
           variant="outline"
           size="lg"
-          className="h-11 w-full"
+          className="h-12 w-full rounded-xl bg-card text-base font-bold"
           disabled={busy !== null}
           onClick={() => void run("google", signInWithGoogle)}
         >
@@ -186,7 +191,7 @@ export default function SignIn() {
 
       {confirmation === null ? (
         <form onSubmit={handlePhoneSubmit} className="space-y-3" noValidate>
-          <label htmlFor="phone" className="block text-sm font-medium">
+          <label htmlFor="phone" className="block text-sm font-bold">
             {t("auth.signIn.phoneLabel")}
           </label>
           <div className="flex gap-2">
@@ -222,7 +227,7 @@ export default function SignIn() {
           <Button
             type="submit"
             size="lg"
-            className="h-11 w-full"
+            className="h-12 w-full rounded-xl text-base font-bold"
             disabled={busy !== null || localNumber.trim() === ""}
           >
             {busy === "sendCode" ? spinner : <Phone className="mr-2 h-4 w-4" aria-hidden="true" />}
@@ -234,7 +239,7 @@ export default function SignIn() {
           <p className="text-sm text-muted-foreground">
             {t("auth.signIn.codeSentTo", { phone: sentTo })}
           </p>
-          <label htmlFor="otp" className="block text-sm font-medium">
+          <label htmlFor="otp" className="block text-sm font-bold">
             {t("auth.signIn.codeLabel")}
           </label>
           <input
@@ -251,7 +256,7 @@ export default function SignIn() {
           <Button
             type="submit"
             size="lg"
-            className="h-11 w-full"
+            className="h-12 w-full rounded-xl text-base font-bold"
             disabled={busy !== null || code.length !== 6}
           >
             {busy === "verify" && spinner}
@@ -276,13 +281,13 @@ export default function SignIn() {
       )}
 
       {errorKey !== null && (
-        <p role="alert" className="text-center text-sm text-destructive">
+        <p role="alert" className="text-center text-sm font-medium text-destructive">
           {t(errorKey)}
         </p>
       )}
 
       {/* Invisible reCAPTCHA mounts here; freshVerifier() replaces its child on each attempt. */}
       <div ref={recaptchaHostRef} />
-    </main>
+    </AuthSplit>
   );
 }

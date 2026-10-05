@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 
-import { fieldClass } from "@/components/fib/styles";
+import { fieldClass, submitClass } from "@/components/fib/styles";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import type { SavingsLogRequest } from "@/types/fib";
@@ -70,8 +70,8 @@ export default function SavingsForm({
         {SAVINGS_DIRECTIONS.map((value) => (
           <label
             key={value}
-            className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border p-3 text-sm font-medium has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring ${
-              direction === value ? "border-primary bg-accent" : "hover:bg-accent"
+            className={`flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border p-3 text-sm font-bold transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${
+              direction === value ? "border-identity bg-identity-tint" : "bg-card hover:bg-accent"
             }`}
           >
             <input
@@ -90,7 +90,7 @@ export default function SavingsForm({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label htmlFor="savings-amount" className="text-sm font-medium">
+          <label htmlFor="savings-amount" className="text-sm font-bold">
             {t("fib.log.fields.amount")}
           </label>
           <input
@@ -104,7 +104,7 @@ export default function SavingsForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="savings-currency" className="text-sm font-medium">
+          <label htmlFor="savings-currency" className="text-sm font-bold">
             {t("fib.log.fields.currency")}
           </label>
           <select
@@ -124,7 +124,7 @@ export default function SavingsForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="savings-account" className="text-sm font-medium">
+        <label htmlFor="savings-account" className="text-sm font-bold">
           {t("fib.log.fields.accountType")}
         </label>
         <select
@@ -144,7 +144,7 @@ export default function SavingsForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="savings-date" className="text-sm font-medium">
+        <label htmlFor="savings-date" className="text-sm font-bold">
           {t("fib.log.fields.entryDate")}
         </label>
         <input
@@ -159,7 +159,7 @@ export default function SavingsForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="savings-notes" className="text-sm font-medium">
+        <label htmlFor="savings-notes" className="text-sm font-bold">
           {t("fib.log.fields.notes")}
         </label>
         <textarea
@@ -179,7 +179,7 @@ export default function SavingsForm({
         </p>
       )}
 
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+      <Button type="submit" size="lg" className={submitClass} disabled={pending}>
         {pending ? t("fib.log.submitting") : t("fib.log.submit")}
       </Button>
     </form>

@@ -1,141 +1,44 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { ArrowLeftRight } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 
+import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
+import ComparisonSummary from "@/components/remittance/ComparisonSummary";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
-import FlaggedProviderBadge from "@/components/remittance/FlaggedProviderBadge";
 import RecommendationCard from "@/components/remittance/RecommendationCard";
 import SavingsCallout from "@/components/remittance/SavingsCallout";
 import { Skeleton } from "@/components/ui/skeleton";
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import { useCompareRemittance, useLogTransfer } from "@/hooks/useRemittance";
 import { toast } from "@/hooks/useToast";
 import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
 import type { ProviderResult, RemittanceComparison } from "@/types/remittance";
-import { CORRIDORS, compareFailure, defaultCorridor } from "@/utils/corridors";
+import { compareFailure, defaultCorridor } from "@/utils/corridors";
 import { errorMessageKey } from "@/utils/errors";
-import { countryName, formatMoney } from "@/utils/format";
-import { safeWebUrl } from "@/utils/safeUrl";
 
 // recharts is a sizeable chunk (D-45): loaded only once a comparison exists to show it for.
 const TrendChart = lazy(() => import("@/components/remittance/TrendChart"));
 
-function formatDate(isoDate: string, language: string): string {
-  try {
-    return new Intl.DateTimeFormat(language, { dateStyle: "medium" }).format(new Date(isoDate));
-  } catch {
-    return isoDate;
-  }
-}
-
-/** The headline of a comparison. NF-P2-019's table of every service goes under it. */
-function ComparisonSummaryCard({ comparison }: { comparison: RemittanceComparison }) {
-  const { t } = useI18n();
-  const language = i18n.resolvedLanguage ?? "en";
-  const info = CORRIDORS[comparison.corridor_id];
-  const sent = (amount: number) =>
-    formatMoney(amount, comparison.send_currency, language, info.decimals);
-  const received = (amount: number) =>
-    formatMoney(amount, comparison.receive_currency, language, info.receiveDecimals);
-  const { summary, rate, survey } = comparison;
-  const anyEstimated = comparison.providers.some((p) => p.comparable && p.estimated);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-
-  // On a phone the answer appears below the form: bring it into view, and move focus to its
-  // title so a screen reader reads it. Each new comparison mounts this card again.
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    titleRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-    titleRef.current?.focus({ preventScroll: true });
-  }, []);
-
-  return (
-    <section
-      aria-labelledby="remittance-result-title"
-      className="space-y-4 rounded-lg border bg-card p-6"
-    >
-      <h2
-        id="remittance-result-title"
-        ref={titleRef}
-        tabIndex={-1}
-        className="text-lg font-semibold focus:outline-none"
-      >
-        {t("remittance.result.title", {
-          amount: sent(comparison.send_amount),
-          country: countryName(info.home, language),
-        })}
-      </h2>
-
-      <dl className="space-y-3">
-        <div>
-          <dt className="text-sm text-muted-foreground">{t("remittance.result.best")}</dt>
-          <dd className="flex flex-wrap items-center gap-2 text-xl font-bold">
-            {summary.best_firm}
-            <FlaggedProviderBadge firm={summary.best_firm} />
-          </dd>
-        </div>
-        <div>
-          <dt className="text-sm text-muted-foreground">{t("remittance.result.receives")}</dt>
-          <dd className="text-2xl font-bold tabular-nums">
-            {received(summary.best_recipient_receives)}
-          </dd>
-        </div>
-      </dl>
-
-      <ul className="space-y-1 text-sm">
-        <li>
-          {t("remittance.result.extra", {
-            amount: received(summary.extra_vs_worst),
-            firm: summary.worst_firm,
-          })}
-        </li>
-        <li>
-          {t("remittance.result.midMarket", { amount: received(summary.mid_market_receives) })}
-        </li>
-        <li>{t("remittance.result.compared", { number: String(summary.comparable_count) })}</li>
-        <li className="text-muted-foreground">
-          {t("remittance.result.rate", {
-            send: comparison.send_currency,
-            rate: rate.rate.toLocaleString(language, { maximumFractionDigits: 6 }),
-            receive: comparison.receive_currency,
-          })}
-        </li>
-      </ul>
-
-      {(rate.stale || anyEstimated) && (
-        <div className="space-y-1 rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-sm">
-          {rate.stale && <p>{t("remittance.result.staleRate")}</p>}
-          {anyEstimated && <p>{t("remittance.result.estimated")}</p>}
-        </div>
-      )}
-
-      <footer className="space-y-1 border-t pt-3 text-xs text-muted-foreground">
-        <p>
-          {t("remittance.result.survey", {
-            from: formatDate(survey.surveyed_from, language),
-            to: formatDate(survey.surveyed_to, language),
-          })}
-        </p>
-        {/* The World Bank's own wording, required wherever its prices are shown. */}
-        <p lang="en">
-          <a
-            href={safeWebUrl(survey.source_url) ?? undefined}
-            target="_blank"
-            rel="noreferrer"
-            className="underline"
-          >
-            {survey.attribution}
-          </a>
-        </p>
-      </footer>
-    </section>
-  );
-}
-
 // A new comparison starts the advice card afresh; the same one keeps any advice already written.
 function compareKey(comparison: RemittanceComparison): string {
   return `${comparison.corridor_id}/${comparison.send_amount}`;
+}
+
+/** What the results column shows while a comparison runs: the same shapes the answer will take. */
+function ResultsSkeleton() {
+  const { t } = useI18n();
+  return (
+    <div role="status" aria-live="polite" className="space-y-4">
+      <span className="sr-only">{t("common.loading")}</span>
+      <Skeleton className="h-52 w-full rounded-2xl" />
+      <Skeleton className="h-28 w-full rounded-2xl" />
+      <Skeleton className="h-72 w-full rounded-2xl" />
+    </div>
+  );
 }
 
 /** Remittance X-Ray: choose a corridor and an amount, see what the services cost. */
@@ -185,35 +88,53 @@ export default function RemittanceCompare() {
       : null;
 
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("remittance.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("remittance.subtitle")}</p>
-      </header>
-
-      <CorridorPicker
-        initialCorridor={initialCorridor}
-        pending={compare.isPending}
-        serverError={serverError}
-        onSubmit={(request) => compare.mutate(request)}
+    <div className="space-y-5">
+      <PageHeader
+        pillar="remit"
+        icon={ArrowLeftRight}
+        title={t("remittance.title")}
+        description={t("remittance.subtitle")}
       />
 
-      {compare.data && !compare.isPending && (
-        <>
-          <ComparisonSummaryCard comparison={compare.data} />
-          <RecommendationCard key={compareKey(compare.data)} comparison={compare.data} />
-          <SavingsCallout comparison={compare.data} />
-          <ComparisonTable
-            comparison={compare.data}
-            onLog={handleLog}
-            pendingRpwId={logTransfer.isPending ? (logTransfer.variables?.rpwId ?? null) : null}
-            loggedRpwIds={loggedRpwIds}
+      <div className="grid items-start gap-5 lg:grid-cols-12">
+        <div className="lg:sticky lg:top-24 lg:col-span-5 xl:col-span-4">
+          <CorridorPicker
+            initialCorridor={initialCorridor}
+            pending={compare.isPending}
+            serverError={serverError}
+            onSubmit={(request) => compare.mutate(request)}
           />
-          <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg border" />}>
-            <TrendChart comparison={compare.data} />
-          </Suspense>
-        </>
-      )}
+        </div>
+
+        <div className="min-w-0 space-y-5 lg:col-span-7 xl:col-span-8">
+          {compare.isPending && <ResultsSkeleton />}
+          {!compare.isPending && !compare.data && (
+            <EmptyState
+              icon={ArrowLeftRight}
+              title={t("remittance.empty.title")}
+              description={t("remittance.empty.description")}
+              illustration={<PillarIllustration pillar="remit" />}
+              className="min-h-[22rem] justify-center"
+            />
+          )}
+          {compare.data && !compare.isPending && (
+            <>
+              <ComparisonSummary comparison={compare.data} />
+              <RecommendationCard key={compareKey(compare.data)} comparison={compare.data} />
+              <SavingsCallout comparison={compare.data} />
+              <ComparisonTable
+                comparison={compare.data}
+                onLog={handleLog}
+                pendingRpwId={logTransfer.isPending ? (logTransfer.variables?.rpwId ?? null) : null}
+                loggedRpwIds={loggedRpwIds}
+              />
+              <Suspense fallback={<Skeleton className="h-72 w-full rounded-2xl" />}>
+                <TrendChart comparison={compare.data} />
+              </Suspense>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

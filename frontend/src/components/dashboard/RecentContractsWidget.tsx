@@ -18,6 +18,7 @@ export default function RecentContractsWidget() {
   return (
     <WidgetCard
       icon={ShieldCheck}
+      pillar="contract"
       title={t("pillars.contract.name")}
       to="/contract"
       openLabel={t("dashboard.widgets.contract.open")}

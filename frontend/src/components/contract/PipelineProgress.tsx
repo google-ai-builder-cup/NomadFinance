@@ -1,6 +1,7 @@
 import { Check, Loader2, X } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import { SCREEN_STEPS, type ScreenStep, type StepState } from "@/utils/pipelineProgress";
@@ -20,24 +21,25 @@ export interface PipelineProgressProps {
 }
 
 function StepIcon({ state, number }: { state: StepState; number: number }) {
-  const base = "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm";
+  const base =
+    "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 bg-card text-sm font-bold";
   if (state === "done") {
     return (
-      <span className={cn(base, "border-primary bg-primary text-primary-foreground")}>
+      <span className={cn(base, "animate-pop-in border-safe bg-safe text-white")}>
         <Check className="h-4 w-4" aria-hidden="true" />
       </span>
     );
   }
   if (state === "running") {
     return (
-      <span className={cn(base, "border-primary text-primary")}>
+      <span className={cn(base, "border-contract bg-contract-tint text-contract-ink")}>
         <Loader2 className="h-4 w-4 motion-safe:animate-spin" aria-hidden="true" />
       </span>
     );
   }
   if (state === "failed") {
     return (
-      <span className={cn(base, "border-destructive bg-destructive text-destructive-foreground")}>
+      <span className={cn(base, "border-danger bg-danger text-white")}>
         <X className="h-4 w-4" aria-hidden="true" />
       </span>
     );
@@ -50,8 +52,9 @@ function StepIcon({ state, number }: { state: StepState; number: number }) {
 }
 
 /**
- * Contract Shield's steps while a contract is checked (NF-P2-010). Driven by the live contract
- * document, so a step is only "done" when the backend has really moved past it.
+ * Contract Shield's steps while a contract is checked (NF-P2-010): a vertical timeline beside a
+ * document being scanned. Driven by the live contract document, so a step is only "done" when
+ * the backend has really moved past it.
  */
 export default function PipelineProgress({
   states,
@@ -74,74 +77,91 @@ export default function PipelineProgress({
   }, [running]);
 
   const runningNumber = running === null ? 0 : SCREEN_STEPS.indexOf(running) + 1;
+  const doneCount = SCREEN_STEPS.filter((step) => states[step] === "done").length;
 
   return (
     <section
       aria-labelledby="contract-progress-title"
-      className="space-y-5 rounded-lg border bg-card p-6"
+      className="card-surface card-edge grid gap-6 bg-gradient-to-br from-contract-tint via-card to-card p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,14rem)] md:p-7"
     >
-      <header className="space-y-1">
-        <h2 id="contract-progress-title" className="text-lg font-semibold">
-          {t("contract.progress.title")}
-        </h2>
-        <p className="text-sm text-muted-foreground">{t("contract.progress.subtitle")}</p>
-      </header>
+      <div className="space-y-5">
+        <header className="space-y-1">
+          <h2 id="contract-progress-title" className="text-lg font-bold tracking-tight">
+            {t("contract.progress.title")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("contract.progress.subtitle")}</p>
+        </header>
 
-      <ol className="space-y-3">
-        {SCREEN_STEPS.map((step, index) => {
-          const state = states[step];
-          return (
-            <li
-              key={step}
-              aria-current={state === "running" ? "step" : undefined}
-              className="flex items-start gap-3"
-            >
-              <StepIcon state={state} number={index + 1} />
-              <div className="min-w-0 pt-1">
-                <p
-                  className={cn(
-                    "text-sm",
-                    state === "running" && "font-semibold",
-                    state === "waiting" && "text-muted-foreground",
-                    state === "failed" && "font-semibold text-destructive"
-                  )}
-                >
-                  {t(`contract.progress.steps.${step}`)}
-                  <span className="sr-only"> ({t(`contract.progress.state.${state}`)})</span>
-                </p>
-                {state === "running" && stalled && (
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t("contract.progress.stalled")}
-                  </p>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
-
-      {/* Announces each new step; the list itself is not a live region, to avoid repeats. */}
-      <p aria-live="polite" className="sr-only">
-        {running &&
-          t("contract.progress.announce", {
-            number: runningNumber,
-            total: SCREEN_STEPS.length,
-            step: t(`contract.progress.steps.${running}`),
-          })}
-      </p>
-
-      {failureKey && (
-        <div
-          role="alert"
-          className="space-y-4 rounded-md border border-destructive/30 bg-destructive/10 p-4"
-        >
-          <p className="text-sm font-medium text-destructive">
-            {t("contract.progress.failedTitle")}
-          </p>
-          <p className="text-sm">{t(failureKey)}</p>
-          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+        <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <span
+            className="block h-full rounded-full bg-gradient-to-r from-contract to-contract-soft transition-[width] duration-slow ease-out-soft"
+            style={{ width: `${(doneCount / SCREEN_STEPS.length) * 100}%` }}
+          />
         </div>
-      )}
+
+        <ol className="relative space-y-4">
+          {/* The thread joining the step markers. */}
+          <span
+            aria-hidden="true"
+            className="absolute bottom-4 left-4 top-4 w-0.5 -translate-x-1/2 bg-border"
+          />
+          {SCREEN_STEPS.map((step, index) => {
+            const state = states[step];
+            return (
+              <li
+                key={step}
+                aria-current={state === "running" ? "step" : undefined}
+                className="relative flex items-start gap-3"
+              >
+                <StepIcon state={state} number={index + 1} />
+                <div className="min-w-0 pt-1">
+                  <p
+                    className={cn(
+                      "text-sm",
+                      state === "running" && "font-bold",
+                      state === "waiting" && "text-muted-foreground",
+                      state === "failed" && "font-bold text-danger-ink"
+                    )}
+                  >
+                    {t(`contract.progress.steps.${step}`)}
+                    <span className="sr-only"> ({t(`contract.progress.state.${state}`)})</span>
+                  </p>
+                  {state === "running" && stalled && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t("contract.progress.stalled")}
+                    </p>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        {/* Announces each new step; the list itself is not a live region, to avoid repeats. */}
+        <p aria-live="polite" className="sr-only">
+          {running &&
+            t("contract.progress.announce", {
+              number: runningNumber,
+              total: SCREEN_STEPS.length,
+              step: t(`contract.progress.steps.${running}`),
+            })}
+        </p>
+
+        {failureKey && (
+          <div
+            role="alert"
+            className="space-y-4 rounded-xl border border-danger/30 bg-danger-tint p-4 text-danger-tint-ink"
+          >
+            <p className="text-sm font-bold">{t("contract.progress.failedTitle")}</p>
+            <p className="text-sm">{t(failureKey)}</p>
+            {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+          </div>
+        )}
+      </div>
+
+      <div className="hidden self-center md:block">
+        <PillarIllustration pillar="contract" />
+      </div>
     </section>
   );
 }

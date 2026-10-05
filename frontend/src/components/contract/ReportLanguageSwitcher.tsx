@@ -23,7 +23,7 @@ export default function ReportLanguageSwitcher({
 
   return (
     <div className="space-y-1.5">
-      <label htmlFor="contract-report-view-language" className="text-sm font-medium">
+      <label htmlFor="contract-report-view-language" className="text-sm font-bold">
         {t("contract.report.language")}
       </label>
       <select
@@ -32,7 +32,7 @@ export default function ReportLanguageSwitcher({
         onChange={(event) => onChange(event.target.value as LanguageCode)}
         aria-describedby="contract-report-view-language-hint"
         disabled={disabled}
-        className="h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50 sm:w-64"
+        className="h-11 w-full rounded-xl border border-input bg-card px-3 text-base font-semibold shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 sm:w-64"
       >
         {SUPPORTED_LANGUAGES.map(({ code, nativeName }) => (
           <option key={code} value={code}>

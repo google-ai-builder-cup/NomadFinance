@@ -91,12 +91,12 @@ export default function DetailsForm({ profile }: DetailsFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className={sectionClass} aria-labelledby="details-heading">
-      <h2 id="details-heading" className="text-lg font-semibold">
+      <h2 id="details-heading" className="text-lg font-bold tracking-tight">
         {t("profile.details.heading")}
       </h2>
 
       <div className="space-y-1.5">
-        <label htmlFor="profile-language" className="text-sm font-medium">
+        <label htmlFor="profile-language" className="text-sm font-bold">
           {t("profile.details.language")}
         </label>
         <select
@@ -119,7 +119,7 @@ export default function DetailsForm({ profile }: DetailsFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="profile-host" className="text-sm font-medium">
+        <label htmlFor="profile-host" className="text-sm font-bold">
           {t("profile.details.hostCountry")}
         </label>
         <select
@@ -142,7 +142,7 @@ export default function DetailsForm({ profile }: DetailsFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="profile-home" className="text-sm font-medium">
+        <label htmlFor="profile-home" className="text-sm font-bold">
           {t("profile.details.homeCountry")}
         </label>
         <select
@@ -161,7 +161,7 @@ export default function DetailsForm({ profile }: DetailsFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="profile-job" className="text-sm font-medium">
+        <label htmlFor="profile-job" className="text-sm font-bold">
           {t("profile.details.jobType")}
         </label>
         <select

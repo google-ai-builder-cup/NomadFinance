@@ -1,5 +1,6 @@
-import { Lightbulb } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useRecommendRemittance, useRemittanceTrends } from "@/hooks/useRemittance";
@@ -35,16 +36,22 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
     <section
       aria-labelledby="remittance-advice-title"
       aria-busy={recommend.isPending}
-      className="space-y-3 rounded-lg border bg-card p-6"
+      className="ai-border space-y-3 rounded-2xl bg-card p-5 md:p-6"
     >
-      <h2 id="remittance-advice-title" className="flex items-center gap-2 text-lg font-semibold">
-        <Lightbulb className="h-5 w-5 text-primary" aria-hidden="true" />
-        {t("remittance.advice.title")}
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2
+          id="remittance-advice-title"
+          className="flex items-center gap-2 text-lg font-bold tracking-tight"
+        >
+          <Sparkles className="h-5 w-5 text-contract-ink" aria-hidden="true" />
+          {t("remittance.advice.title")}
+        </h2>
+        <Badge tone="info">{t("landing.hero.chips.gemini")}</Badge>
+      </div>
 
       {advice && !stale ? (
         <div className="space-y-2" aria-live="polite">
-          <p className="font-medium">{advice.headline}</p>
+          <p className="text-base font-bold">{advice.headline}</p>
           <p className="text-sm">{advice.explanation}</p>
           {advice.timing_tip && (
             <p className="text-sm text-muted-foreground">{advice.timing_tip}</p>
@@ -59,7 +66,11 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
               {t(requestFailureKey(recommend.error))}
             </p>
           )}
-          <Button onClick={ask} disabled={recommend.isPending}>
+          <Button
+            onClick={ask}
+            disabled={recommend.isPending}
+            className="h-11 rounded-xl bg-contract-deep px-5 font-bold text-white hover:bg-contract-deep/90"
+          >
             {recommend.isPending ? t("remittance.advice.writing") : t("remittance.advice.ask")}
           </Button>
         </>

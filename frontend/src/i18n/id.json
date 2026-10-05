@@ -10,20 +10,254 @@
       "eyebrow": "Dibuat untuk pekerja migran di seluruh Asia-Pasifik",
       "title": "Gajimu. Kontrakmu. Uang kirimanmu. Terlindungi.",
       "subtitle": "Periksa kontrakmu sesuai hukum ketenagakerjaan setempat, lihat biaya sebenarnya untuk mengirim uang ke rumah, dan kenali hakmu — semua dalam bahasamu sendiri.",
-      "cta": "Mulai sekarang"
+      "cta": "Mulai sekarang",
+      "titleLead": "Gajimu. Kontrakmu. Uang kirimanmu.",
+      "titleAccent": "Terlindungi.",
+      "secondaryCta": "Lihat cara kerjanya",
+      "trustLabel": "Yang bisa Anda andalkan",
+      "chips": {
+        "gemini": "Didukung Gemini",
+        "cloud": "Dibangun di Google Cloud",
+        "languages": "6 bahasa",
+        "data": "Data Anda tetap milik Anda"
+      }
     },
     "story": {
       "heading": "Kenalan dengan Priya",
-      "body": "Priya meninggalkan India untuk bekerja sebagai pekerja rumah tangga di Singapura. Agennya memberinya kontrak dalam bahasa Inggris — bahasa yang masih ia pelajari — dan memilihkan layanan transfer uang untuknya. Ia tidak punya cara untuk memeriksa apakah keduanya adil. NomadFinance membaca kontraknya dalam bahasa Hindi, memeriksanya sesuai hukum ketenagakerjaan Singapura, dan menunjukkan biaya sebenarnya dari setiap penyedia untuk mengirim uang ke keluarganya — agar pilihannya ada di tangannya, bukan agennya."
+      "body": "Priya meninggalkan India untuk bekerja sebagai pekerja rumah tangga di Singapura. Agennya memberinya kontrak dalam bahasa Inggris — bahasa yang masih ia pelajari — dan memilihkan layanan transfer uang untuknya. Ia tidak punya cara untuk memeriksa apakah keduanya adil. NomadFinance membaca kontraknya dalam bahasa Hindi, memeriksanya sesuai hukum ketenagakerjaan Singapura, dan menunjukkan biaya sebenarnya dari setiap penyedia untuk mengirim uang ke keluarganya — agar pilihannya ada di tangannya, bukan agennya.",
+      "kicker": "Kisah seorang pekerja",
+      "avatar": "Ilustrasi Priya, pekerja rumah tangga di Singapura",
+      "before": {
+        "badge": "Sebelum",
+        "title": "Kebingungan",
+        "b1": "Kontrak dalam bahasa yang masih ia pelajari",
+        "b2": "Layanan transfer pilihan agennya, dengan biaya tersembunyi",
+        "b3": "Tidak ada cara memastikan keduanya adil"
+      },
+      "after": {
+        "badge": "Dengan NomadFinance",
+        "title": "Kejelasan",
+        "a1": "Kontraknya dibaca dalam bahasa Hindi dan diperiksa terhadap hukum ketenagakerjaan Singapura",
+        "a2": "Penyedia terbaik, dan berapa sebenarnya biaya tiap penyedia",
+        "a3": "Pilihan ada di tangannya, bukan di tangan agennya"
+      }
     },
     "pillars": {
       "heading": "Empat cara NomadFinance melindungimu",
-      "cta": "Masuk untuk mencoba"
+      "cta": "Masuk untuk mencoba",
+      "kicker": "Empat pilar",
+      "items": {
+        "remit": {
+          "b1": "Bandingkan penyedia di 6 koridor",
+          "b2": "Kurs langsung, biaya, dan markup berdampingan",
+          "b3": "Saran berbahasa sederhana dalam bahasa Anda"
+        },
+        "contract": {
+          "b1": "Unggah foto atau PDF dalam bahasa apa pun",
+          "b2": "Pemeriksaan klausul demi klausul terhadap hukum ketenagakerjaan setempat",
+          "b3": "Skor Aman, Perhatian, atau Bahaya dan surat pengaduan"
+        },
+        "radar": {
+          "b1": "Laporan warga tentang agen, pemberi kerja, dan operator",
+          "b2": "Diperiksa Gemini dan dikelompokkan di peta panas",
+          "b3": "Peringatan koridor sebelum Anda membayar atau tanda tangan"
+        },
+        "identity": {
+          "b1": "Catat penghasilan, tagihan, dan tabungan; tagihan dari foto",
+          "b2": "Pengukur skor dan lini masa kemajuan Anda",
+          "b3": "Laporan PDF untuk bank dan pemberi pinjaman di kampung halaman"
+        }
+      }
     },
     "finalCta": {
       "heading": "Siap memeriksa milikmu sendiri?",
       "subtitle": "Masuk dan lihat posisimu — hanya perlu dua menit.",
       "button": "Masuk"
+    },
+    "header": {
+      "sections": "Bagian",
+      "problem": "Mengapa penting",
+      "performance": "Kinerja",
+      "pillars": "Empat pilar",
+      "how": "Cara kerja",
+      "impact": "Dampak",
+      "signIn": "Masuk",
+      "openMenu": "Buka menu",
+      "closeMenu": "Tutup menu"
+    },
+    "example": {
+      "label": "Contoh",
+      "compare": "Bandingkan",
+      "contract": "Kontrak",
+      "identity": "Identitas",
+      "providerA": "Penyedia A",
+      "providerB": "Penyedia B",
+      "bestValue": "Paling hemat",
+      "higherCost": "Biaya lebih tinggi",
+      "clauses": "2 klausul perlu ditinjau sebelum tanda tangan",
+      "building": "Skor sedang tumbuh",
+      "identityScoreLabel": "Contoh cincin skor identitas, 72 dari 100"
+    },
+    "problem": {
+      "kicker": "Masalahnya",
+      "heading": "Mengirim uang pulang lebih mahal dari seharusnya, dan hanya sedikit yang bisa memeriksanya.",
+      "lead": "Jutaan pekerja menandatangani kontrak dan memilih layanan transfer yang sulit mereka verifikasi. Ini adalah angka industri yang dipublikasikan, bukan hasil kami.",
+      "source": "Sumber: {{name}}",
+      "migrants": {
+        "label": "migran internasional di seluruh dunia"
+      },
+      "remittances": {
+        "label": "dikirim pulang setiap tahun ke negara berpenghasilan rendah dan menengah"
+      },
+      "lostToFees": {
+        "label": "diperkirakan hilang karena biaya dan selisih kurs setiap tahun"
+      },
+      "target": {
+        "label": "Target PBB untuk biaya mengirim uang pada 2030 (SDG 10.c)",
+        "goal": "Target",
+        "today": "Kini"
+      }
+    },
+    "performance": {
+      "kicker": "Kinerja NomadFinance",
+      "heading": "Satu platform. Enam koridor. Empat tingkat Gemini yang bekerja bersama.",
+      "lead": "Yang dilakukan sistem saat ini: kemampuan produk, bukan klaim pemasaran.",
+      "corridors": {
+        "title": "koridor di Asia-Pasifik",
+        "body": "Mengirim dari Singapura, Australia, Malaysia, dan Jepang ke Filipina, India, dan Indonesia."
+      },
+      "languages": {
+        "title": "bahasa, satu janji",
+        "sr": "Terlindungi, dalam enam bahasa: {{words}}"
+      },
+      "fx": {
+        "live": "Langsung",
+        "unit": "jam",
+        "title": "Kurs diperbarui setiap {{hours}} jam"
+      },
+      "pipeline": {
+        "title": "Alur kontrak Gemini multi-langkah",
+        "count": "{{count}} langkah",
+        "steps": {
+          "extract": "Membaca teks",
+          "detect": "Mengenali bahasa dan negara",
+          "law": "Mengambil hukum ketenagakerjaan setempat",
+          "translate": "Menerjemahkan ke bahasa Anda",
+          "compare": "Membandingkan klausul demi klausul",
+          "score": "Menilai risiko",
+          "letter": "Menulis surat pengaduan"
+        },
+        "body": "Dari foto kontrak hingga laporan per klausul dan surat pengaduan siap pakai."
+      },
+      "tiers": {
+        "title": "{{count}} tingkat Gemini, masing-masing satu tugas",
+        "extraction": {
+          "name": "Ekstraksi",
+          "body": "Vision dan OCR untuk kontrak dan tagihan"
+        },
+        "reasoning": {
+          "name": "Penalaran",
+          "body": "Perbandingan hukum dan penilaian risiko"
+        },
+        "translation": {
+          "name": "Terjemahan",
+          "body": "Bahasa Anda, dengan kata sederhana"
+        },
+        "embeddings": {
+          "name": "Embedding",
+          "body": "Mengelompokkan laporan serupa di peta"
+        }
+      },
+      "data": {
+        "title": "Berpijak pada data nyata",
+        "worldBank": {
+          "name": "RPW Bank Dunia",
+          "body": "Data biaya penyedia untuk setiap koridor"
+        },
+        "ilo": {
+          "name": "Dasar hukum ketenagakerjaan ILO",
+          "body": "Kontrak diperiksa terhadap aturan setempat"
+        }
+      },
+      "time": {
+        "pending": "Menunggu pengukuran",
+        "unit": "detik",
+        "title": "Rata-rata waktu analisis kontrak",
+        "note": "Kami hanya menampilkannya setelah diukur."
+      },
+      "privacy": {
+        "title": "Privat sejak dirancang",
+        "body": "Masuk dengan Google atau nomor ponsel. Data Anda disimpan di Google Cloud, dan Anda bisa menghapus akun kapan saja."
+      }
+    },
+    "how": {
+      "kicker": "Cara kerja",
+      "heading": "Dari foto kontrak ke laporan kesehatan dalam lima langkah",
+      "scanning": "Memindai…",
+      "flagged": "2 klausul ditandai",
+      "steps": {
+        "upload": {
+          "title": "Unggah",
+          "body": "Ambil foto atau pilih PDF. Bahasa apa pun, negara mana pun yang tercakup."
+        },
+        "read": {
+          "title": "Gemini membaca",
+          "body": "Teks diekstrak, lalu bahasa dan negara tempat bekerja dikenali."
+        },
+        "law": {
+          "title": "Cek hukum ketenagakerjaan setempat",
+          "body": "Setiap klausul dibandingkan dengan hukum ketenagakerjaan negara itu."
+        },
+        "report": {
+          "title": "Laporan kesehatan",
+          "body": "Skor Aman, Perhatian, atau Bahaya, dengan setiap klausul dijelaskan dalam bahasa Anda."
+        },
+        "letter": {
+          "title": "Surat pengaduan",
+          "body": "Jika ada yang salah, tersedia surat siap kirim untuk Anda bawa ke pihak berwenang."
+        }
+      }
+    },
+    "ecosystem": {
+      "kicker": "Satu ekosistem",
+      "heading": "Pilar-pilar saling belajar",
+      "lead": "Setiap pemeriksaan membuat berikutnya lebih cerdas, dan pekerja memiliki catatan portabel.",
+      "diagramLabel": "Diagram: tanda kontrak masuk ke Radar, Radar memperingatkan Remitansi dan Kontrak, transfer dan pekerjaan terverifikasi masuk ke Identitas, dan Identitas menjadi profil untuk bank di kampung halaman.",
+      "flags": "tanda kontrak",
+      "warnings": "peringatan",
+      "transfers": "riwayat transfer",
+      "employment": "pekerjaan terverifikasi",
+      "profile": "profil portabel",
+      "banks": "Bank & MFI",
+      "home": "di kampung halaman",
+      "flow": {
+        "contractToRadar": "Tanda kontrak masuk ke Radar.",
+        "radarToTools": "Radar memperingatkan Remitansi dan Kontrak.",
+        "remitToIdentity": "Setiap transfer tercatat dan pekerjaan terverifikasi masuk ke Identitas.",
+        "identityToBanks": "Identitas menjadi profil portabel untuk bank dan pemberi pinjaman di kampung halaman."
+      }
+    },
+    "impact": {
+      "kicker": "Dampak dan SDG",
+      "heading": "Dibangun untuk mendukung tiga tujuan PBB",
+      "goal": "SDG {{number}}:",
+      "g8": {
+        "title": "Pekerjaan layak dan pertumbuhan ekonomi",
+        "body": "Kontrak diperiksa terhadap hukum ketenagakerjaan, sehingga pekerjaan yang aman lebih mudah dikenali."
+      },
+      "g10": {
+        "title": "Berkurangnya kesenjangan, target 10.c",
+        "body": "Membuat biaya transfer terlihat, mendukung tujuan mengirim uang di bawah 3%."
+      },
+      "g16": {
+        "title": "Perdamaian, keadilan, dan kelembagaan yang kuat",
+        "body": "Laporan warga dan surat pengaduan memberi pekerja jalan untuk didengar."
+      }
+    },
+    "footer": {
+      "links": "Tautan footer",
+      "event": "Prototipe untuk Google Cloud AI Builder Cup 2026",
+      "sources": "Angka: UN DESA, Bank Dunia, kerangka SDG PBB"
     }
   },
   "auth": {
@@ -91,6 +325,40 @@
         "open": "Buka Financial Identity",
         "empty": "Catat aktivitas untuk mulai membangun skor Anda."
       }
+    },
+    "actions": {
+      "compare": "Bandingkan kurs",
+      "contract": "Periksa kontrak",
+      "report": "Laporkan masalah"
+    },
+    "kpi": {
+      "heading": "Ringkasan Anda",
+      "identity": {
+        "label": "Skor Identitas Finansial",
+        "ring": "Skor Identitas Finansial {{score}} dari 100",
+        "empty": "Belum ada skor. Catat penghasilan Anda untuk memulai.",
+        "action": "Catat aktivitas"
+      },
+      "alerts": {
+        "label": "Peringatan belum dibaca",
+        "unread": "Menunggu Anda di Radar",
+        "empty": "Anda sudah terbaru. Tidak ada peringatan baru.",
+        "action": "Buka peringatan"
+      },
+      "contracts": {
+        "label": "Kontrak diperiksa",
+        "empty": "Belum ada kontrak yang diperiksa.",
+        "action": "Periksa kontrak pertama Anda",
+        "danger": "{{count}} Bahaya",
+        "caution": "{{count}} Perhatian",
+        "allClear": "Semua aman"
+      },
+      "rate": {
+        "label": "Kurs · {{corridor}}",
+        "empty": "Belum ada riwayat kurs untuk koridor Anda.",
+        "action": "Buka Remittance X-Ray",
+        "change": "{{value}}% dalam 30 hari"
+      }
     }
   },
   "nav": {
@@ -113,7 +381,18 @@
     },
     "footer": {
       "tagline": "Perlindungan finansial untuk pekerja migran.",
-      "rights": "© {{year}} NomadFinance"
+      "rights": "© {{year}} NomadFinance",
+      "disclaimer": "Hanya informasi, bukan nasihat hukum atau keuangan."
+    },
+    "accountMenu": "Menu akun",
+    "alerts": "Peringatan",
+    "alertsUnread": "Peringatan, {{count}} belum dibaca",
+    "crumbHome": "Beranda",
+    "crumbTools": "Alat Anda",
+    "sidebarHeading": "Menu",
+    "protected": {
+      "title": "Dilindungi oleh Gemini",
+      "body": "Pemeriksaan berjalan di Google Cloud. Dokumen Anda tetap pribadi."
     }
   },
   "pillars": {
@@ -264,7 +543,8 @@
       "submitting": "Memeriksa…",
       "submit": "Periksa kontrak saya",
       "poorLegibility": "Foto terlalu buram untuk dibaca. Ambil foto baru di tempat terang dengan seluruh halaman terlihat.",
-      "profileLoadError": "Kami tidak dapat memuat profil Anda. Silakan coba lagi."
+      "profileLoadError": "Kami tidak dapat memuat profil Anda. Silakan coba lagi.",
+      "nextHeading": "Apa yang terjadi selanjutnya"
     },
     "result": {
       "title": "Kontrak Anda telah diperiksa",
@@ -285,7 +565,8 @@
       "complaintPending": "Kami masih menyiapkan surat pengaduan Anda. Kembali lagi nanti untuk melihatnya.",
       "analyzeAnother": "Periksa kontrak lain",
       "reportLoadError": "Kami tidak dapat memuat laporan lengkap.",
-      "reportMissing": "Laporan Anda belum siap. Coba lagi sebentar."
+      "reportMissing": "Laporan Anda belum siap. Coba lagi sebentar.",
+      "gaugeLabel": "Kesehatan kontrak {{score}} dari 100: {{level}}"
     },
     "flagged": {
       "label": "Ditandai komunitas — {{number}} laporan",
@@ -336,7 +617,8 @@
       "language": "Bahasa laporan",
       "languageHint": "Bahasa lain diterjemahkan saat pertama kali Anda memilihnya. Ini butuh beberapa detik.",
       "switching": "Laporan Anda sedang diterjemahkan…",
-      "switchOutOfDate": "Laporan ini sudah kedaluwarsa. Periksa kontrak Anda lagi untuk melihatnya dalam bahasa ini."
+      "switchOutOfDate": "Laporan ini sudah kedaluwarsa. Periksa kontrak Anda lagi untuk melihatnya dalam bahasa ini.",
+      "summaryHeading": "Ringkasan"
     },
     "category": {
       "minimum_wage": "Upah minimum",
@@ -451,7 +733,9 @@
         "logging": "Mencatat…",
         "logged": "Tercatat",
         "toastSuccess": "Transfer tercatat."
-      }
+      },
+      "costBar": "Biaya {{fee}}, markup kurs {{markup}}",
+      "legendMarkup": "Markup kurs"
     },
     "flagged": {
       "label": "Ditandai komunitas",
@@ -492,6 +776,10 @@
       "ask": "Minta saran",
       "writing": "Menulis…",
       "disclaimer": "Ditulis oleh AI dari perbandingan di atas. Periksa harganya ke layanan sebelum Anda mengirim."
+    },
+    "empty": {
+      "title": "Bandingkan sebelum mengirim",
+      "description": "Pilih koridor dan jumlah untuk melihat biaya sebenarnya tiap layanan, dengan biaya dan markup kurs berdampingan."
     }
   },
   "radar": {
@@ -853,6 +1141,19 @@
       "done": "Dikelompokkan: {{sorted}}. Belum dikelompokkan: {{left}}.",
       "action": "Kelompokkan tagihan saya",
       "working": "Mengelompokkan…"
+    }
+  },
+  "visual": {
+    "illustration": {
+      "remit": "Ilustrasi: dua tumpukan koin dengan aliran koin di antaranya",
+      "contract": "Ilustrasi: kontrak yang dipindai dan dilindungi perisai",
+      "radar": "Ilustrasi: antena radar yang menyapu area dan menampakkan titik-titik",
+      "identity": "Ilustrasi: kartu identitas bertumpuk dengan sidik jari dan batang yang naik"
+    },
+    "status": {
+      "notFound": "Ilustrasi: kubus dengan tanda tanya",
+      "error": "Ilustrasi: kubus dengan tanda peringatan",
+      "soon": "Ilustrasi: kubus dengan tiga titik, segera hadir"
     }
   }
 }

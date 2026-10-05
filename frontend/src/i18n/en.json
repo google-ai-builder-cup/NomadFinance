@@ -10,20 +10,254 @@
       "eyebrow": "Built for migrant workers across Asia-Pacific",
       "title": "Your pay. Your contract. Your money home. Protected.",
       "subtitle": "Check your contract against local labor law, see the true cost of sending money home, and know your rights — all in your own language.",
-      "cta": "Get started"
+      "cta": "Get started",
+      "titleLead": "Your pay. Your contract. Your money home.",
+      "titleAccent": "Protected.",
+      "secondaryCta": "See how it works",
+      "trustLabel": "What you can rely on",
+      "chips": {
+        "gemini": "Powered by Gemini",
+        "cloud": "Built on Google Cloud",
+        "languages": "6 languages",
+        "data": "Your data stays yours"
+      }
     },
     "story": {
       "heading": "Meet Priya",
-      "body": "Priya left India to work as a domestic worker in Singapore. Her agency handed her a contract in English — a language she was still learning — and picked the money transfer service she used to send money home. She had no way to check if either was fair. NomadFinance reads her contract in Hindi, checks it against Singapore's labor law, and shows her exactly what each provider really charges to send money to her family — so the choice is hers, not her agency's."
+      "body": "Priya left India to work as a domestic worker in Singapore. Her agency handed her a contract in English — a language she was still learning — and picked the money transfer service she used to send money home. She had no way to check if either was fair. NomadFinance reads her contract in Hindi, checks it against Singapore's labor law, and shows her exactly what each provider really charges to send money to her family — so the choice is hers, not her agency's.",
+      "kicker": "A worker's story",
+      "avatar": "Illustration of Priya, a domestic worker in Singapore",
+      "before": {
+        "badge": "Before",
+        "title": "Confusion",
+        "b1": "A contract in a language she is still learning",
+        "b2": "A transfer service chosen by her agency, with hidden fees",
+        "b3": "No way to tell if either was fair"
+      },
+      "after": {
+        "badge": "With NomadFinance",
+        "title": "Clarity",
+        "a1": "Her contract, read in Hindi and checked against Singapore's labor law",
+        "a2": "The best provider, with what each one really charges",
+        "a3": "The choice is hers, not her agency's"
+      }
     },
     "pillars": {
       "heading": "Four ways NomadFinance has your back",
-      "cta": "Sign in to try it"
+      "cta": "Sign in to try it",
+      "kicker": "Four pillars",
+      "items": {
+        "remit": {
+          "b1": "Compare providers across 6 corridors",
+          "b2": "Live exchange rates, fees and markup side by side",
+          "b3": "Plain-language advice in your language"
+        },
+        "contract": {
+          "b1": "Upload a photo or PDF in any language",
+          "b2": "Clause-by-clause check against local labor law",
+          "b3": "Safe, Caution or Danger score and a complaint letter"
+        },
+        "radar": {
+          "b1": "Crowdsourced reports on agencies, employers and operators",
+          "b2": "Checked by Gemini and grouped on a heat map",
+          "b3": "Corridor alerts before you pay or sign"
+        },
+        "identity": {
+          "b1": "Log income, bills and savings, bills from a photo",
+          "b2": "A score meter and a timeline of your progress",
+          "b3": "A PDF report for banks and lenders back home"
+        }
+      }
     },
     "finalCta": {
       "heading": "Ready to check your own?",
       "subtitle": "Sign in and see where you stand — it takes two minutes.",
       "button": "Sign in"
+    },
+    "header": {
+      "sections": "Sections",
+      "problem": "Why it matters",
+      "performance": "Performance",
+      "pillars": "Pillars",
+      "how": "How it works",
+      "impact": "Impact",
+      "signIn": "Sign in",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "example": {
+      "label": "Example",
+      "compare": "Compare",
+      "contract": "Contract",
+      "identity": "Identity",
+      "providerA": "Provider A",
+      "providerB": "Provider B",
+      "bestValue": "Best value",
+      "higherCost": "Higher cost",
+      "clauses": "2 clauses to review before you sign",
+      "building": "Score building",
+      "identityScoreLabel": "Example identity score ring, 72 out of 100"
+    },
+    "problem": {
+      "kicker": "The problem",
+      "heading": "Sending money home costs more than it should, and few can check.",
+      "lead": "Millions of workers sign contracts and pick transfer services they cannot easily verify. These are published industry figures, not our results.",
+      "source": "Source: {{name}}",
+      "migrants": {
+        "label": "international migrants worldwide"
+      },
+      "remittances": {
+        "label": "sent home each year to low- and middle-income countries"
+      },
+      "lostToFees": {
+        "label": "estimated lost to fees and exchange-rate margins every year"
+      },
+      "target": {
+        "label": "UN target for the cost of sending money by 2030 (SDG 10.c)",
+        "goal": "Target",
+        "today": "Today"
+      }
+    },
+    "performance": {
+      "kicker": "How NomadFinance performs",
+      "heading": "One platform. Six corridors. Four Gemini tiers working together.",
+      "lead": "What the system does today: capabilities of the product, not marketing claims.",
+      "corridors": {
+        "title": "corridors across Asia-Pacific",
+        "body": "Sending from Singapore, Australia, Malaysia and Japan to the Philippines, India and Indonesia."
+      },
+      "languages": {
+        "title": "languages, one promise",
+        "sr": "Protected, in six languages: {{words}}"
+      },
+      "fx": {
+        "live": "Live",
+        "unit": "hrs",
+        "title": "FX rates refreshed every {{hours}} hours"
+      },
+      "pipeline": {
+        "title": "Multi-step Gemini contract pipeline",
+        "count": "{{count}} steps",
+        "steps": {
+          "extract": "Read the text",
+          "detect": "Detect language and country",
+          "law": "Fetch local labor law",
+          "translate": "Translate to your language",
+          "compare": "Compare clause by clause",
+          "score": "Score the risk",
+          "letter": "Write a complaint letter"
+        },
+        "body": "From a photo of a contract to a clause-by-clause report and a ready complaint letter."
+      },
+      "tiers": {
+        "title": "{{count}} Gemini tiers, one job each",
+        "extraction": {
+          "name": "Extraction",
+          "body": "Vision and OCR for contracts and bills"
+        },
+        "reasoning": {
+          "name": "Reasoning",
+          "body": "Law comparison and risk scoring"
+        },
+        "translation": {
+          "name": "Translation",
+          "body": "Your language, in plain words"
+        },
+        "embeddings": {
+          "name": "Embeddings",
+          "body": "Group similar reports on the map"
+        }
+      },
+      "data": {
+        "title": "Grounded in real data",
+        "worldBank": {
+          "name": "World Bank RPW",
+          "body": "Provider cost data for every corridor"
+        },
+        "ilo": {
+          "name": "ILO labor-law grounding",
+          "body": "Contracts checked against local rules"
+        }
+      },
+      "time": {
+        "pending": "Pending measurement",
+        "unit": "s",
+        "title": "Average contract analysis time",
+        "note": "We show this only once we have measured it."
+      },
+      "privacy": {
+        "title": "Private by design",
+        "body": "Sign in with Google or your phone number. Your data is stored on Google Cloud, and you can delete your account at any time."
+      }
+    },
+    "how": {
+      "kicker": "How it works",
+      "heading": "From a photo of your contract to a health report in five steps",
+      "scanning": "Scanning…",
+      "flagged": "2 clauses flagged",
+      "steps": {
+        "upload": {
+          "title": "Upload",
+          "body": "Take a photo or pick a PDF. Any language, any country in scope."
+        },
+        "read": {
+          "title": "Gemini reads",
+          "body": "The text is extracted, and the language and host country are detected."
+        },
+        "law": {
+          "title": "Checks local labor law",
+          "body": "Each clause is compared with the labor law of that country."
+        },
+        "report": {
+          "title": "Health report",
+          "body": "A Safe, Caution or Danger score, with every clause explained in your language."
+        },
+        "letter": {
+          "title": "Complaint letter",
+          "body": "If something is wrong, a ready-to-send letter you can take to the right authority."
+        }
+      }
+    },
+    "ecosystem": {
+      "kicker": "One ecosystem",
+      "heading": "The pillars learn from each other",
+      "lead": "Each check makes the next one smarter, and the worker keeps a portable record.",
+      "diagramLabel": "Diagram: contract flags feed the Radar, the Radar warns Remittance and Contract, transfers and verified employment feed Identity, and Identity becomes a profile for banks back home.",
+      "flags": "contract flags",
+      "warnings": "warnings",
+      "transfers": "transfer history",
+      "employment": "verified employment",
+      "profile": "portable profile",
+      "banks": "Banks & MFIs",
+      "home": "back home",
+      "flow": {
+        "contractToRadar": "Contract flags feed the Radar.",
+        "radarToTools": "The Radar warns Remittance and Contract.",
+        "remitToIdentity": "Every logged transfer and verified job feeds Identity.",
+        "identityToBanks": "Identity becomes a portable profile for banks and lenders back home."
+      }
+    },
+    "impact": {
+      "kicker": "Impact and SDGs",
+      "heading": "Built to support three UN goals",
+      "goal": "SDG {{number}}:",
+      "g8": {
+        "title": "Decent work and economic growth",
+        "body": "Contracts checked against labor law, so safe work is easier to recognise."
+      },
+      "g10": {
+        "title": "Reduced inequalities, target 10.c",
+        "body": "Making transfer costs visible, in support of the goal of sending money for under 3%."
+      },
+      "g16": {
+        "title": "Peace, justice and strong institutions",
+        "body": "Crowdsourced reports and complaint letters give workers a route to be heard."
+      }
+    },
+    "footer": {
+      "links": "Footer links",
+      "event": "Prototype for the Google Cloud AI Builder Cup 2026",
+      "sources": "Figures: UN DESA, World Bank, UN SDG framework"
     }
   },
   "auth": {
@@ -91,6 +325,40 @@
         "open": "Open Financial Identity",
         "empty": "Log activity to start building your score."
       }
+    },
+    "actions": {
+      "compare": "Compare rates",
+      "contract": "Check a contract",
+      "report": "Report an issue"
+    },
+    "kpi": {
+      "heading": "Your summary",
+      "identity": {
+        "label": "Financial Identity score",
+        "ring": "Financial Identity score {{score}} out of 100",
+        "empty": "No score yet. Log your income to start one.",
+        "action": "Log activity"
+      },
+      "alerts": {
+        "label": "Unread alerts",
+        "unread": "Waiting for you on the Radar",
+        "empty": "You are all caught up. No new alerts.",
+        "action": "Open alerts"
+      },
+      "contracts": {
+        "label": "Contracts checked",
+        "empty": "No contracts checked yet.",
+        "action": "Check your first contract",
+        "danger": "{{count}} Danger",
+        "caution": "{{count}} Caution",
+        "allClear": "All clear"
+      },
+      "rate": {
+        "label": "Rate · {{corridor}}",
+        "empty": "No rate history yet for your corridor.",
+        "action": "Open Remittance X-Ray",
+        "change": "{{value}}% in 30 days"
+      }
     }
   },
   "nav": {
@@ -113,7 +381,18 @@
     },
     "footer": {
       "tagline": "Financial protection for migrant workers.",
-      "rights": "© {{year}} NomadFinance"
+      "rights": "© {{year}} NomadFinance",
+      "disclaimer": "Information only, not legal or financial advice."
+    },
+    "accountMenu": "Account menu",
+    "alerts": "Alerts",
+    "alertsUnread": "Alerts, {{count}} unread",
+    "crumbHome": "Home",
+    "crumbTools": "Your tools",
+    "sidebarHeading": "Menu",
+    "protected": {
+      "title": "Protected by Gemini",
+      "body": "Checks run on Google Cloud. Your documents stay private."
     }
   },
   "pillars": {
@@ -264,7 +543,8 @@
       "submitting": "Checking…",
       "submit": "Check my contract",
       "poorLegibility": "The photo is too unclear to read. Take a new photo in good light with the whole page in view.",
-      "profileLoadError": "We couldn't load your profile. Please try again."
+      "profileLoadError": "We couldn't load your profile. Please try again.",
+      "nextHeading": "What happens next"
     },
     "result": {
       "title": "Your contract, checked",
@@ -285,7 +565,8 @@
       "complaintPending": "We're still preparing your complaint letter. Come back soon to see it.",
       "analyzeAnother": "Check another contract",
       "reportLoadError": "We couldn't load the full report.",
-      "reportMissing": "Your report isn't ready yet. Please try again in a moment."
+      "reportMissing": "Your report isn't ready yet. Please try again in a moment.",
+      "gaugeLabel": "Contract health {{score}} out of 100: {{level}}"
     },
     "flagged": {
       "label": "Community flagged — {{number}} reports",
@@ -336,7 +617,8 @@
       "language": "Report language",
       "languageHint": "Other languages are translated the first time you choose them. This takes a few seconds.",
       "switching": "Translating your report…",
-      "switchOutOfDate": "This report is out of date. Check your contract again to see it in this language."
+      "switchOutOfDate": "This report is out of date. Check your contract again to see it in this language.",
+      "summaryHeading": "Summary"
     },
     "category": {
       "minimum_wage": "Minimum wage",
@@ -451,7 +733,9 @@
         "logging": "Logging…",
         "logged": "Logged",
         "toastSuccess": "Transfer logged."
-      }
+      },
+      "costBar": "Fee {{fee}}, exchange-rate markup {{markup}}",
+      "legendMarkup": "Exchange-rate markup"
     },
     "flagged": {
       "label": "Community flagged",
@@ -492,6 +776,10 @@
       "ask": "Get advice",
       "writing": "Writing…",
       "disclaimer": "Written by AI from the comparison above. Check the price with the service before you send."
+    },
+    "empty": {
+      "title": "Compare before you send",
+      "description": "Choose a corridor and an amount to see what each service really costs, with fees and exchange-rate markup side by side."
     }
   },
   "radar": {
@@ -853,6 +1141,19 @@
       "done": "Sorted: {{sorted}}. Still to sort: {{left}}.",
       "action": "Sort my bills",
       "working": "Sorting…"
+    }
+  },
+  "visual": {
+    "illustration": {
+      "remit": "Illustration: two stacks of coins with a stream of coins moving between them",
+      "contract": "Illustration: a contract being scanned and protected by a shield",
+      "radar": "Illustration: a radar dish sweeping an area and revealing blips",
+      "identity": "Illustration: layered ID cards with a fingerprint and rising bars"
+    },
+    "status": {
+      "notFound": "Illustration: a cube with a question mark",
+      "error": "Illustration: a cube with a warning mark",
+      "soon": "Illustration: a cube with an ellipsis, coming soon"
     }
   }
 }

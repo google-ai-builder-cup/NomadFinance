@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 
-import { fieldClass } from "@/components/fib/styles";
+import { fieldClass, submitClass } from "@/components/fib/styles";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import type { IncomeLogRequest } from "@/types/fib";
@@ -70,7 +70,7 @@ export default function IncomeForm({
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label htmlFor="income-amount" className="text-sm font-medium">
+          <label htmlFor="income-amount" className="text-sm font-bold">
             {t("fib.log.fields.amount")}
           </label>
           <input
@@ -84,7 +84,7 @@ export default function IncomeForm({
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="income-currency" className="text-sm font-medium">
+          <label htmlFor="income-currency" className="text-sm font-bold">
             {t("fib.log.fields.currency")}
           </label>
           <select
@@ -104,7 +104,7 @@ export default function IncomeForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="income-category" className="text-sm font-medium">
+        <label htmlFor="income-category" className="text-sm font-bold">
           {t("fib.log.fields.category")}
         </label>
         <select
@@ -124,7 +124,7 @@ export default function IncomeForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="income-employer" className="text-sm font-medium">
+        <label htmlFor="income-employer" className="text-sm font-bold">
           {t("fib.log.fields.employerName")}
         </label>
         <input
@@ -139,7 +139,7 @@ export default function IncomeForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="income-date" className="text-sm font-medium">
+        <label htmlFor="income-date" className="text-sm font-bold">
           {t("fib.log.fields.entryDate")}
         </label>
         <input
@@ -154,7 +154,7 @@ export default function IncomeForm({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="income-notes" className="text-sm font-medium">
+        <label htmlFor="income-notes" className="text-sm font-bold">
           {t("fib.log.fields.notes")}
         </label>
         <textarea
@@ -174,7 +174,7 @@ export default function IncomeForm({
         </p>
       )}
 
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={pending}>
+      <Button type="submit" size="lg" className={submitClass} disabled={pending}>
         {pending ? t("fib.log.submitting") : t("fib.log.submit")}
       </Button>
     </form>
