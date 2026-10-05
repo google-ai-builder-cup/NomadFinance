@@ -34,11 +34,11 @@ export default function EntityReportList({
             className={
               compact
                 ? "space-y-1 py-3 text-sm first:pt-0 last:pb-0"
-                : "space-y-1.5 rounded-lg border bg-card p-4 text-sm"
+                : "card-surface space-y-1.5 p-4 text-sm"
             }
           >
             <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-              <span className="font-medium">{t(`radar.violation.${report.violation_type}`)}</span>
+              <span className="font-bold">{t(`radar.violation.${report.violation_type}`)}</span>
               <span className="text-xs text-muted-foreground">
                 {new Date(report.created_at).toLocaleDateString(language, {
                   year: "numeric",

@@ -2,6 +2,7 @@ import { TriangleAlert } from "lucide-react";
 
 import EmptyState from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
+import StatusIllustration from "@/components/visual/StatusIllustration";
 import { useI18n } from "@/hooks/useI18n";
 
 export interface ErrorFallbackProps {
@@ -19,6 +20,7 @@ export default function ErrorFallback({ onRetry, fullScreen = false }: ErrorFall
       icon={TriangleAlert}
       title={t("errors.boundaryTitle")}
       description={t("errors.boundaryDescription")}
+      illustration={<StatusIllustration variant="error" />}
       action={
         <div className="flex flex-wrap justify-center gap-2">
           <Button onClick={onRetry}>{t("common.retry")}</Button>

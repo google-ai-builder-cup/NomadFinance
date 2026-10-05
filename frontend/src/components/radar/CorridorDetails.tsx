@@ -2,7 +2,9 @@ import { ChevronDown, ShieldAlert } from "lucide-react";
 import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 
+import CountryPair from "@/components/common/CountryPair";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import RiskBadge from "@/components/common/RiskBadge";
 import EntityReportList from "@/components/radar/EntityReportList";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
@@ -19,8 +21,8 @@ const BUSINESSES_SHOWN = 5;
 
 // Same look for the two actions at the foot of a business, so they line up. 44 px tall to tap.
 const linkClass =
-  "inline-flex min-h-11 items-center rounded-sm text-sm font-medium underline underline-offset-2 " +
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
+  "inline-flex min-h-11 items-center rounded-sm text-sm font-bold text-radar-ink underline underline-offset-2 " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function routeLabel(corridorId: string, language: string): string {
   const [host, home] = corridorId.split("-");
@@ -48,24 +50,26 @@ function Business({ entity, corridorId }: BusinessProps) {
       : null;
 
   return (
-    <div className="space-y-3 rounded-md border bg-background p-3">
+    <div className="space-y-3 rounded-xl border bg-card p-3 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div className="min-w-0 space-y-0.5">
-          <p className="break-words font-medium">{entity.name}</p>
+          <p className="break-words font-bold">{entity.name}</p>
           <p className="text-xs text-muted-foreground">
             {t(`radar.report.who.types.${entity.entity_type}`)} ·{" "}
             {t("radar.heatmap.reports", { n: entity.report_count })}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <span
-            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium text-white"
-            style={{ backgroundColor: RISK_COLOR[entity.risk_level] }}
-          >
+          <RiskBadge level={entity.risk_level === "high" ? "danger" : "caution"}>
+            <span
+              aria-hidden="true"
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ backgroundColor: RISK_COLOR[entity.risk_level] }}
+            />
             {t(`radar.entity.risk.${entity.risk_level}`)}
-          </span>
+          </RiskBadge>
           {entity.flagged && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-medium text-destructive">
+            <span className="inline-flex items-center gap-1 rounded-full border border-danger/25 bg-danger-tint px-2.5 py-0.5 text-xs font-semibold text-danger-tint-ink">
               <ShieldAlert className="h-3.5 w-3.5" aria-hidden="true" />
               {t("radar.entity.flagged")}
             </span>
@@ -133,22 +137,21 @@ export default function CorridorDetails({
   const shown = allBusinesses ? entities : entities.slice(0, BUSINESSES_SHOWN);
 
   return (
-    <li className="rounded-lg border bg-card">
+    <li className="card-surface">
       <button
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((previous) => !previous)}
-        className="flex min-h-12 w-full items-center gap-3 rounded-lg p-3 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="flex min-h-12 w-full items-center gap-3 rounded-xl p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span
           aria-hidden="true"
           className="h-3 w-3 shrink-0 rounded-full"
           style={{ background: HEAT_STYLE[level].color }}
         />
-        <span className="min-w-0 flex-1 text-sm font-medium">
-          {routeLabel(corridorId, language)}
-        </span>
+        <CountryPair host={corridorId.split("-")[0]} home={corridorId.split("-")[1]} size="sm" />
+        <span className="min-w-0 flex-1 text-sm font-bold">{routeLabel(corridorId, language)}</span>
         <span className="shrink-0 text-sm text-muted-foreground">
           {t("radar.heatmap.reports", { n: reportCount })}
         </span>
@@ -171,7 +174,7 @@ export default function CorridorDetails({
             </div>
           ) : (
             <>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 {t("radar.heatmap.businessesHeading")}
               </p>
               {shown.map((entity) => (

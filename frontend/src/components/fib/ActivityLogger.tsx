@@ -37,11 +37,11 @@ export default function ActivityLogger() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="card-surface space-y-6 p-5 md:p-7">
       <div
         role="tablist"
         aria-label={t("fib.log.tabsLabel")}
-        className="grid grid-cols-4 gap-1 rounded-lg bg-muted p-1"
+        className="grid grid-cols-4 gap-1 rounded-xl bg-muted p-1"
       >
         {TABS.map((name) => (
           <button
@@ -51,9 +51,9 @@ export default function ActivityLogger() {
             aria-selected={tab === name}
             onClick={() => setTab(name)}
             className={cn(
-              "rounded-md px-1 py-2 text-xs font-medium transition-colors sm:text-sm",
+              "min-h-11 rounded-lg px-1 py-2 text-xs font-bold transition-all duration-base sm:text-sm",
               tab === name
-                ? "bg-background shadow-sm"
+                ? "bg-card text-identity-ink shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -96,9 +96,13 @@ export default function ActivityLogger() {
       )}
 
       {tab === "transfer" && (
-        <div className="space-y-3 rounded-lg border bg-card p-6 text-center">
+        <div className="space-y-4 rounded-2xl bg-remit-tint p-6 text-center">
           <p className="text-sm text-muted-foreground">{t("fib.log.transfer.explainer")}</p>
-          <Button asChild size="lg" className="h-11">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 w-full rounded-xl bg-remit-deep text-base font-bold text-white hover:bg-remit-deep/90"
+          >
             <Link to="/remittance">{t("fib.log.transfer.cta")}</Link>
           </Button>
         </div>

@@ -9,9 +9,9 @@ import { CORRIDORS } from "@/utils/corridors";
 import { countryName } from "@/utils/format";
 
 const SEVERITY_CLASSES: Record<RouteAlert["severity"], string> = {
-  info: "border-amber-500/30 bg-amber-500/5",
-  warning: "border-orange-500/40 bg-orange-500/10",
-  critical: "border-destructive/40 bg-destructive/10",
+  info: "border-info/30 bg-info-tint",
+  warning: "border-caution/40 bg-caution-tint",
+  critical: "border-danger/40 bg-danger-tint",
 };
 
 export interface RouteAlertItemProps {
@@ -34,15 +34,15 @@ export default function RouteAlertItem({ alert }: RouteAlertItemProps) {
     <Link
       to={`/radar/entity/${alert.entity_slug}`}
       className={cn(
-        "block rounded-lg border p-4 transition-colors hover:bg-accent",
+        "block rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md",
         SEVERITY_CLASSES[alert.severity]
       )}
     >
       <div className="flex items-start gap-3">
-        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
+        <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-danger-ink" aria-hidden="true" />
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <p className="font-medium">{alert.entity_name}</p>
+            <p className="font-bold">{alert.entity_name}</p>
             <span className="text-xs text-muted-foreground">{date}</span>
           </div>
           <p className="text-sm">

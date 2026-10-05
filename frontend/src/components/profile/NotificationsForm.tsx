@@ -112,7 +112,7 @@ export default function NotificationsForm({ profile }: NotificationsFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className={sectionClass} aria-labelledby="notifications-heading">
-      <h2 id="notifications-heading" className="text-lg font-semibold">
+      <h2 id="notifications-heading" className="text-lg font-bold tracking-tight">
         {t("profile.notifications.heading")}
       </h2>
 
@@ -130,7 +130,7 @@ export default function NotificationsForm({ profile }: NotificationsFormProps) {
       </label>
 
       <fieldset className="space-y-2" disabled={!draft.radar_alerts || save.isPending}>
-        <legend className="text-sm font-medium">{t("profile.notifications.corridors")}</legend>
+        <legend className="text-sm font-bold">{t("profile.notifications.corridors")}</legend>
         <p className="text-xs text-muted-foreground">{t("profile.notifications.corridorsHint")}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {CORRIDOR_IDS.map((id) => {

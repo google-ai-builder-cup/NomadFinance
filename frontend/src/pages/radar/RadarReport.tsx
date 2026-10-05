@@ -1,4 +1,7 @@
+import { Flag } from "lucide-react";
+
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
 import ReportConfirmation from "@/components/radar/ReportConfirmation";
 import ReportForm from "@/components/radar/ReportForm";
 import { Button } from "@/components/ui/button";
@@ -28,7 +31,7 @@ export default function RadarReport() {
 
   if (submit.data) {
     return (
-      <div className="mx-auto max-w-lg">
+      <div className="mx-auto max-w-2xl">
         <ReportConfirmation result={submit.data} onAnother={() => submit.reset()} />
       </div>
     );
@@ -36,23 +39,28 @@ export default function RadarReport() {
 
   const preferred = profile.data?.preferred_language;
   return (
-    <div className="mx-auto max-w-lg space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("radar.report.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("radar.report.subtitle")}</p>
-      </header>
-      <ReportForm
-        defaults={{
-          language: isLanguageCode(preferred) ? preferred : "en",
-          hostCountry: profile.data?.host_country ?? null,
-          corridorId: profile.data
-            ? defaultCorridor(profile.data.host_country, profile.data.home_country)
-            : null,
-        }}
-        pending={submit.isPending}
-        errorKey={submit.isError ? reportFailureKey(submit.error) : null}
-        onSubmit={(report, files) => submit.mutate({ report, files })}
+    <div className="space-y-5">
+      <PageHeader
+        pillar="radar"
+        icon={Flag}
+        title={t("radar.report.title")}
+        description={t("radar.report.subtitle")}
+        compact
       />
+      <div className="mx-auto max-w-2xl">
+        <ReportForm
+          defaults={{
+            language: isLanguageCode(preferred) ? preferred : "en",
+            hostCountry: profile.data?.host_country ?? null,
+            corridorId: profile.data
+              ? defaultCorridor(profile.data.host_country, profile.data.home_country)
+              : null,
+          }}
+          pending={submit.isPending}
+          errorKey={submit.isError ? reportFailureKey(submit.error) : null}
+          onSubmit={(report, files) => submit.mutate({ report, files })}
+        />
+      </div>
     </div>
   );
 }

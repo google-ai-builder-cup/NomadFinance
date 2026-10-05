@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
 import { useUserProfile } from "@/hooks/useUser";
+import { initialsOf } from "@/utils/initials";
 
 export default function Profile() {
   const { t } = useI18n();
@@ -28,17 +29,24 @@ export default function Profile() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("profile.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("profile.subtitle")}</p>
+    <div className="mx-auto max-w-3xl space-y-5">
+      <header className="card-surface card-edge flex flex-wrap items-center gap-4 bg-gradient-to-br from-accent via-card to-card p-5 md:p-7">
+        <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-primary text-xl font-extrabold text-primary-foreground shadow-md">
+          {initialsOf(identity)}
+        </span>
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
+            {t("profile.title")}
+          </h1>
+          <p className="text-sm text-muted-foreground">{t("profile.subtitle")}</p>
+        </div>
       </header>
 
       <section className={sectionClass} aria-labelledby="account-heading">
-        <h2 id="account-heading" className="text-lg font-semibold">
+        <h2 id="account-heading" className="text-lg font-bold tracking-tight">
           {t("profile.account.heading")}
         </h2>
-        <p className="break-words text-base font-medium">{identity}</p>
+        <p className="break-words text-base font-semibold">{identity}</p>
         <p className="text-sm text-muted-foreground">{t("profile.account.note")}</p>
       </section>
 

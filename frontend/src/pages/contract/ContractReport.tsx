@@ -1,6 +1,8 @@
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
 import ReportView from "@/components/contract/ReportView";
 import { Button } from "@/components/ui/button";
 import { useStoredContract } from "@/hooks/useContract";
@@ -40,15 +42,21 @@ export default function ContractReport() {
   const analysis = stored ? analysisFromDoc(contractId, stored, language) : null;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <header className="space-y-1">
-        <Link to="/contract/history" className="text-sm text-muted-foreground underline">
-          {t("contract.history.back")}
-        </Link>
-        <h1 className="text-2xl font-bold tracking-tight">
-          {stored?.title ?? t("contract.result.title")}
-        </h1>
-      </header>
+    <div className="space-y-5">
+      <PageHeader
+        pillar="contract"
+        icon={ShieldCheck}
+        title={stored?.title ?? t("contract.result.title")}
+        compact
+        actions={
+          <Button asChild variant="outline" className="h-11 rounded-xl bg-card font-bold">
+            <Link to="/contract/history">
+              <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+              {t("contract.history.back")}
+            </Link>
+          </Button>
+        }
+      />
 
       {analysis ? (
         <ReportView analysis={analysis} />

@@ -1,15 +1,22 @@
 import type { ClauseRisk } from "@/types/contract";
 
-/** Pill background for the overall risk badge (ReportCard's header). */
+/** Pill background for the overall risk badge (ReportCard's header): the shared risk scale. */
 export const RISK_BADGE_CLASSES: Record<ClauseRisk, string> = {
-  safe: "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400",
-  caution: "border-yellow-600/30 bg-yellow-600/10 text-yellow-700 dark:text-yellow-400",
-  danger: "border-red-600/30 bg-red-600/10 text-red-700 dark:text-red-400",
+  safe: "border-safe/25 bg-safe-tint text-safe-tint-ink",
+  caution: "border-caution/30 bg-caution-tint text-caution-tint-ink",
+  danger: "border-danger/25 bg-danger-tint text-danger-tint-ink",
 };
 
 /** Solid dot for a single clause's 🟢🟡🔴 flag (ClauseRow). */
 export const RISK_DOT_CLASSES: Record<ClauseRisk, string> = {
-  safe: "bg-green-600 dark:bg-green-400",
-  caution: "bg-yellow-600 dark:bg-yellow-400",
-  danger: "bg-red-600 dark:bg-red-400",
+  safe: "bg-safe",
+  caution: "bg-caution",
+  danger: "bg-danger",
+};
+
+/** Left severity bar on a clause card. */
+export const RISK_BAR_CLASSES: Record<ClauseRisk, string> = {
+  safe: "bg-safe",
+  caution: "bg-caution",
+  danger: "bg-danger",
 };

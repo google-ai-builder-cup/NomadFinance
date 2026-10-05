@@ -1,6 +1,7 @@
 import { Fingerprint } from "lucide-react";
 
 import WidgetCard from "@/components/dashboard/WidgetCard";
+import ScoreRing from "@/components/visual/ScoreRing";
 import { useFinancialProfile } from "@/hooks/useFIB";
 import { useI18n } from "@/hooks/useI18n";
 import { STATUS_COLOR, statusFor } from "@/utils/fibScore";
@@ -14,6 +15,7 @@ export default function FIBProgressWidget() {
   return (
     <WidgetCard
       icon={Fingerprint}
+      pillar="identity"
       title={t("pillars.identity.name")}
       to="/identity"
       openLabel={t("dashboard.widgets.identity.open")}
@@ -29,15 +31,14 @@ export default function FIBProgressWidget() {
       )}
 
       {profile.isSuccess && profile.data !== null && (
-        <div className="flex items-center gap-3">
-          <span
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-4 text-sm font-bold tabular-nums"
-            style={{ borderColor: STATUS_COLOR[statusFor(profile.data.overall_score)] }}
-          >
-            {profile.data.overall_score}
-          </span>
+        <div className="flex items-center gap-4">
+          <ScoreRing
+            value={profile.data.overall_score}
+            color={STATUS_COLOR[statusFor(profile.data.overall_score)]}
+            label={t("dashboard.kpi.identity.ring", { score: profile.data.overall_score })}
+          />
           <p
-            className="text-sm font-medium"
+            className="text-sm font-semibold"
             style={{ color: STATUS_COLOR[statusFor(profile.data.overall_score)] }}
           >
             {t(`fib.score.status.${statusFor(profile.data.overall_score)}`)}

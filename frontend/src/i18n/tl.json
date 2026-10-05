@@ -10,20 +10,254 @@
       "eyebrow": "Ginawa para sa mga migrant worker sa buong Asia-Pacific",
       "title": "Ang sahod mo. Ang kontrata mo. Ang pera pauwi. Protektado.",
       "subtitle": "Suriin ang iyong kontrata laban sa lokal na batas paggawa, tingnan ang tunay na halaga ng pagpapadala ng pera pauwi, at alamin ang iyong mga karapatan — lahat sa iyong sariling wika.",
-      "cta": "Magsimula"
+      "cta": "Magsimula",
+      "titleLead": "Ang sahod mo. Ang kontrata mo. Ang pera pauwi.",
+      "titleAccent": "Protektado.",
+      "secondaryCta": "Tingnan kung paano ito gumagana",
+      "trustLabel": "Mapagkakatiwalaan mo",
+      "chips": {
+        "gemini": "Pinapagana ng Gemini",
+        "cloud": "Binuo sa Google Cloud",
+        "languages": "6 na wika",
+        "data": "Sa iyo pa rin ang data mo"
+      }
     },
     "story": {
       "heading": "Kilalanin si Priya",
-      "body": "Umalis si Priya sa India para magtrabaho bilang domestic worker sa Singapore. Binigyan siya ng ahensya ng kontrata sa Ingles — isang wikang natututuhan pa lang niya — at pinili na rin nila kung aling serbisyo ang gagamitin niya sa pagpapadala ng pera. Wala siyang paraan para malaman kung patas ang dalawa. Binabasa ng NomadFinance ang kontrata niya sa Hindi, sinusuri ito laban sa batas paggawa ng Singapore, at ipinapakita kung magkano talaga ang sinisingil ng bawat provider para magpadala ng pera sa kanyang pamilya — para sa kanya ang desisyon, hindi sa ahensya niya."
+      "body": "Umalis si Priya sa India para magtrabaho bilang domestic worker sa Singapore. Binigyan siya ng ahensya ng kontrata sa Ingles — isang wikang natututuhan pa lang niya — at pinili na rin nila kung aling serbisyo ang gagamitin niya sa pagpapadala ng pera. Wala siyang paraan para malaman kung patas ang dalawa. Binabasa ng NomadFinance ang kontrata niya sa Hindi, sinusuri ito laban sa batas paggawa ng Singapore, at ipinapakita kung magkano talaga ang sinisingil ng bawat provider para magpadala ng pera sa kanyang pamilya — para sa kanya ang desisyon, hindi sa ahensya niya.",
+      "kicker": "Kuwento ng isang manggagawa",
+      "avatar": "Larawan ni Priya, isang domestic worker sa Singapore",
+      "before": {
+        "badge": "Dati",
+        "title": "Pagkalito",
+        "b1": "Kontrata sa wikang inaaral pa lang niya",
+        "b2": "Serbisyo sa padala na pinili ng ahensya niya, may nakatagong bayarin",
+        "b3": "Walang paraan para malaman kung patas ang alinman"
+      },
+      "after": {
+        "badge": "Kasama ang NomadFinance",
+        "title": "Linaw",
+        "a1": "Ang kontrata niya, binasa sa Hindi at sinuri sa batas sa paggawa ng Singapore",
+        "a2": "Ang pinakamahusay na provider, at kung magkano talaga ang singil ng bawat isa",
+        "a3": "Siya ang pipili, hindi ang ahensya niya"
+      }
     },
     "pillars": {
       "heading": "Apat na paraan ng pagtulong ng NomadFinance sa iyo",
-      "cta": "Mag-sign in para subukan"
+      "cta": "Mag-sign in para subukan",
+      "kicker": "Apat na haligi",
+      "items": {
+        "remit": {
+          "b1": "Ihambing ang mga provider sa 6 na corridor",
+          "b2": "Live na exchange rate, bayarin at markup nang magkatabi",
+          "b3": "Simpleng payo sa wika mo"
+        },
+        "contract": {
+          "b1": "Mag-upload ng litrato o PDF sa anumang wika",
+          "b2": "Pagsusuri bawat sugnay laban sa lokal na batas sa paggawa",
+          "b3": "Iskor na Ligtas, Pag-iingat o Panganib at liham ng reklamo"
+        },
+        "radar": {
+          "b1": "Mga ulat mula sa komunidad tungkol sa ahensya, employer at operator",
+          "b2": "Sinusuri ng Gemini at pinagsasama sa heat map",
+          "b3": "Mga alerto sa corridor bago ka magbayad o pumirma"
+        },
+        "identity": {
+          "b1": "I-log ang kita, bayarin at ipon; bayarin mula sa litrato",
+          "b2": "Metro ng iskor at timeline ng progreso mo",
+          "b3": "PDF na ulat para sa mga bangko at nagpapautang sa bahay"
+        }
+      }
     },
     "finalCta": {
       "heading": "Handa ka na bang suriin ang sa iyo?",
       "subtitle": "Mag-sign in at tingnan kung nasaan ka — dalawang minuto lang ito.",
       "button": "Mag-sign in"
+    },
+    "header": {
+      "sections": "Mga seksyon",
+      "problem": "Bakit mahalaga",
+      "performance": "Performance",
+      "pillars": "Mga haligi",
+      "how": "Paano ito gumagana",
+      "impact": "Epekto",
+      "signIn": "Mag-sign in",
+      "openMenu": "Buksan ang menu",
+      "closeMenu": "Isara ang menu"
+    },
+    "example": {
+      "label": "Halimbawa",
+      "compare": "Paghambingin",
+      "contract": "Kontrata",
+      "identity": "Identity",
+      "providerA": "Provider A",
+      "providerB": "Provider B",
+      "bestValue": "Pinakamura",
+      "higherCost": "Mas mahal",
+      "clauses": "2 sugnay na dapat suriin bago pumirma",
+      "building": "Nabubuo ang iskor",
+      "identityScoreLabel": "Halimbawang ring ng iskor ng identity, 72 sa 100"
+    },
+    "problem": {
+      "kicker": "Ang problema",
+      "heading": "Mas mahal ang magpadala ng pera pauwi kaysa nararapat, at kakaunti ang nakakasuri nito.",
+      "lead": "Milyun-milyong manggagawa ang pumipirma ng kontrata at pumipili ng serbisyo sa padala na hindi nila madaling ma-verify. Mga nailathalang bilang ng industriya ang mga ito, hindi ang aming mga resulta.",
+      "source": "Pinagmulan: {{name}}",
+      "migrants": {
+        "label": "mga international migrant sa buong mundo"
+      },
+      "remittances": {
+        "label": "ipinapadala pauwi bawat taon sa mga bansang mababa at katamtaman ang kita"
+      },
+      "lostToFees": {
+        "label": "tinatayang nawawala sa mga bayarin at margin ng exchange rate bawat taon"
+      },
+      "target": {
+        "label": "Target ng UN para sa gastos ng pagpapadala ng pera pagsapit ng 2030 (SDG 10.c)",
+        "goal": "Target",
+        "today": "Ngayon"
+      }
+    },
+    "performance": {
+      "kicker": "Paano gumaganap ang NomadFinance",
+      "heading": "Isang platform. Anim na corridor. Apat na antas ng Gemini na nagtutulungan.",
+      "lead": "Ang ginagawa ng sistema ngayon: mga kakayahan ng produkto, hindi pang-marketing na pahayag.",
+      "corridors": {
+        "title": "corridor sa buong Asia-Pacific",
+        "body": "Pagpapadala mula Singapore, Australia, Malaysia at Japan patungong Pilipinas, India at Indonesia."
+      },
+      "languages": {
+        "title": "wika, isang pangako",
+        "sr": "Protektado, sa anim na wika: {{words}}"
+      },
+      "fx": {
+        "live": "Live",
+        "unit": "oras",
+        "title": "Ina-update ang exchange rate kada {{hours}} oras"
+      },
+      "pipeline": {
+        "title": "Multi-step na pipeline ng kontrata ng Gemini",
+        "count": "{{count}} hakbang",
+        "steps": {
+          "extract": "Basahin ang teksto",
+          "detect": "Tukuyin ang wika at bansa",
+          "law": "Kunin ang lokal na batas sa paggawa",
+          "translate": "Isalin sa wika mo",
+          "compare": "Ihambing bawat sugnay",
+          "score": "Markahan ang panganib",
+          "letter": "Sumulat ng liham ng reklamo"
+        },
+        "body": "Mula sa litrato ng kontrata hanggang sa ulat bawat sugnay at handang liham ng reklamo."
+      },
+      "tiers": {
+        "title": "{{count}} antas ng Gemini, isang gawain bawat isa",
+        "extraction": {
+          "name": "Pagkuha ng datos",
+          "body": "Vision at OCR para sa kontrata at bayarin"
+        },
+        "reasoning": {
+          "name": "Pangangatwiran",
+          "body": "Paghahambing sa batas at pagmamarka ng panganib"
+        },
+        "translation": {
+          "name": "Pagsasalin",
+          "body": "Sa wika mo, sa simpleng salita"
+        },
+        "embeddings": {
+          "name": "Embeddings",
+          "body": "Pinagsasama ang magkakatulad na ulat sa mapa"
+        }
+      },
+      "data": {
+        "title": "Nakabatay sa totoong data",
+        "worldBank": {
+          "name": "World Bank RPW",
+          "body": "Datos ng gastos ng provider para sa bawat corridor"
+        },
+        "ilo": {
+          "name": "Batayan sa batas-paggawa ng ILO",
+          "body": "Sinusuri ang mga kontrata laban sa lokal na patakaran"
+        }
+      },
+      "time": {
+        "pending": "Hinihintay pa ang sukat",
+        "unit": "seg",
+        "title": "Karaniwang oras ng pagsusuri ng kontrata",
+        "note": "Ipapakita lang namin ito kapag nasukat na."
+      },
+      "privacy": {
+        "title": "Pribado ayon sa disenyo",
+        "body": "Mag-sign in gamit ang Google o numero ng telepono. Naka-store ang data mo sa Google Cloud, at maaari mong burahin ang account mo anumang oras."
+      }
+    },
+    "how": {
+      "kicker": "Paano ito gumagana",
+      "heading": "Mula sa litrato ng kontrata hanggang ulat ng kalusugan nito sa limang hakbang",
+      "scanning": "Ini-scan…",
+      "flagged": "2 sugnay ang namarkahan",
+      "steps": {
+        "upload": {
+          "title": "I-upload",
+          "body": "Kumuha ng litrato o pumili ng PDF. Anumang wika, anumang bansang sakop."
+        },
+        "read": {
+          "title": "Binabasa ng Gemini",
+          "body": "Kinukuha ang teksto, at natutukoy ang wika at host country."
+        },
+        "law": {
+          "title": "Sinusuri sa lokal na batas sa paggawa",
+          "body": "Bawat sugnay ay inihahambing sa batas sa paggawa ng bansang iyon."
+        },
+        "report": {
+          "title": "Ulat ng kalusugan",
+          "body": "Iskor na Ligtas, Pag-iingat o Panganib, na may paliwanag sa bawat sugnay sa wika mo."
+        },
+        "letter": {
+          "title": "Liham ng reklamo",
+          "body": "Kung may mali, may handang liham na maaari mong dalhin sa tamang awtoridad."
+        }
+      }
+    },
+    "ecosystem": {
+      "kicker": "Isang ecosystem",
+      "heading": "Natututo ang mga haligi sa isa't isa",
+      "lead": "Bawat pagsusuri ay nagpapahusay sa susunod, at may dala-dalang record ang manggagawa.",
+      "diagramLabel": "Diagram: ang mga flag ng kontrata ay napupunta sa Radar, nagbabala ang Radar sa Remittance at Contract, ang mga padala at beripikadong trabaho ay napupunta sa Identity, at ang Identity ay nagiging profile para sa mga bangko sa bahay.",
+      "flags": "mga flag ng kontrata",
+      "warnings": "mga babala",
+      "transfers": "kasaysayan ng padala",
+      "employment": "beripikadong trabaho",
+      "profile": "portable na profile",
+      "banks": "Mga bangko at MFI",
+      "home": "sa bahay",
+      "flow": {
+        "contractToRadar": "Ang mga flag ng kontrata ay napupunta sa Radar.",
+        "radarToTools": "Nagbabala ang Radar sa Remittance at Contract.",
+        "remitToIdentity": "Bawat naitalang padala at beripikadong trabaho ay napupunta sa Identity.",
+        "identityToBanks": "Ang Identity ay nagiging portable na profile para sa mga bangko at nagpapautang sa bahay."
+      }
+    },
+    "impact": {
+      "kicker": "Epekto at mga SDG",
+      "heading": "Ginawa para suportahan ang tatlong layunin ng UN",
+      "goal": "SDG {{number}}:",
+      "g8": {
+        "title": "Disenteng trabaho at paglago ng ekonomiya",
+        "body": "Sinusuri ang mga kontrata laban sa batas sa paggawa, kaya mas madaling makilala ang ligtas na trabaho."
+      },
+      "g10": {
+        "title": "Nabawasang di-pagkakapantay-pantay, target 10.c",
+        "body": "Ginagawang nakikita ang gastos sa padala, bilang suporta sa layuning magpadala ng pera nang wala pang 3%."
+      },
+      "g16": {
+        "title": "Kapayapaan, katarungan at matatag na institusyon",
+        "body": "Ang mga ulat mula sa komunidad at liham ng reklamo ay nagbibigay sa manggagawa ng daan para marinig."
+      }
+    },
+    "footer": {
+      "links": "Mga link sa footer",
+      "event": "Prototype para sa Google Cloud AI Builder Cup 2026",
+      "sources": "Mga bilang: UN DESA, World Bank, balangkas ng UN SDG"
     }
   },
   "auth": {
@@ -91,6 +325,40 @@
         "open": "Buksan ang Financial Identity",
         "empty": "Mag-log ng aktibidad para simulan ang iyong score."
       }
+    },
+    "actions": {
+      "compare": "Ihambing ang mga rate",
+      "contract": "Suriin ang kontrata",
+      "report": "Mag-ulat ng problema"
+    },
+    "kpi": {
+      "heading": "Buod mo",
+      "identity": {
+        "label": "Iskor ng Financial Identity",
+        "ring": "Iskor ng Financial Identity: {{score}} sa 100",
+        "empty": "Wala pang iskor. I-log ang kita mo para magsimula.",
+        "action": "Mag-log ng aktibidad"
+      },
+      "alerts": {
+        "label": "Mga hindi pa nabasang alerto",
+        "unread": "Naghihintay sa iyo sa Radar",
+        "empty": "Wala kang pending. Walang bagong alerto.",
+        "action": "Buksan ang mga alerto"
+      },
+      "contracts": {
+        "label": "Mga kontratang nasuri",
+        "empty": "Wala pang nasuring kontrata.",
+        "action": "Suriin ang una mong kontrata",
+        "danger": "{{count}} Panganib",
+        "caution": "{{count}} Pag-iingat",
+        "allClear": "Maayos lahat"
+      },
+      "rate": {
+        "label": "Rate · {{corridor}}",
+        "empty": "Wala pang kasaysayan ng rate para sa corridor mo.",
+        "action": "Buksan ang Remittance X-Ray",
+        "change": "{{value}}% sa loob ng 30 araw"
+      }
     }
   },
   "nav": {
@@ -113,7 +381,18 @@
     },
     "footer": {
       "tagline": "Proteksiyong pinansyal para sa mga migranteng manggagawa.",
-      "rights": "© {{year}} NomadFinance"
+      "rights": "© {{year}} NomadFinance",
+      "disclaimer": "Impormasyon lamang ito, hindi legal o pinansyal na payo."
+    },
+    "accountMenu": "Menu ng account",
+    "alerts": "Mga alerto",
+    "alertsUnread": "Mga alerto, {{count}} ang hindi pa nababasa",
+    "crumbHome": "Home",
+    "crumbTools": "Mga gamit mo",
+    "sidebarHeading": "Menu",
+    "protected": {
+      "title": "Protektado ng Gemini",
+      "body": "Tumatakbo ang mga pagsusuri sa Google Cloud. Pribado ang iyong mga dokumento."
     }
   },
   "pillars": {
@@ -264,7 +543,8 @@
       "submitting": "Sinusuri…",
       "submit": "Suriin ang kontrata ko",
       "poorLegibility": "Masyadong malabo ang larawan para basahin. Kumuha ng bagong larawan sa maliwanag na lugar, buong pahina ang makikita.",
-      "profileLoadError": "Hindi namin na-load ang profile mo. Pakisubukang muli."
+      "profileLoadError": "Hindi namin na-load ang profile mo. Pakisubukang muli.",
+      "nextHeading": "Ano ang susunod na mangyayari"
     },
     "result": {
       "title": "Nasuri na ang kontrata mo",
@@ -285,7 +565,8 @@
       "complaintPending": "Inihahanda pa namin ang iyong sulat-reklamo. Bumalik ka rito sa madaling panahon.",
       "analyzeAnother": "Suriin ang ibang kontrata",
       "reportLoadError": "Hindi namin na-load ang buong ulat.",
-      "reportMissing": "Hindi pa handa ang iyong ulat. Subukan ulit sandali."
+      "reportMissing": "Hindi pa handa ang iyong ulat. Subukan ulit sandali.",
+      "gaugeLabel": "Kalusugan ng kontrata: {{score}} sa 100, {{level}}"
     },
     "flagged": {
       "label": "Na-flag ng komunidad — {{number}} ulat",
@@ -336,7 +617,8 @@
       "language": "Wika ng ulat",
       "languageHint": "Isinasalin ang ibang wika sa unang beses na piliin mo ito. Ilang segundo lang ito.",
       "switching": "Isinasalin ang iyong ulat…",
-      "switchOutOfDate": "Luma na ang ulat na ito. Suriin muli ang iyong kontrata para makita ito sa wikang ito."
+      "switchOutOfDate": "Luma na ang ulat na ito. Suriin muli ang iyong kontrata para makita ito sa wikang ito.",
+      "summaryHeading": "Buod"
     },
     "category": {
       "minimum_wage": "Minimum na sahod",
@@ -451,7 +733,9 @@
         "logging": "Nilo-log…",
         "logged": "Na-log",
         "toastSuccess": "Na-log ang padala."
-      }
+      },
+      "costBar": "Bayarin {{fee}}, markup sa exchange rate {{markup}}",
+      "legendMarkup": "Markup sa exchange rate"
     },
     "flagged": {
       "label": "Na-flag ng komunidad",
@@ -492,6 +776,10 @@
       "ask": "Humingi ng payo",
       "writing": "Isinusulat…",
       "disclaimer": "Isinulat ng AI mula sa paghahambing sa itaas. Tiyakin ang presyo sa serbisyo bago ka magpadala."
+    },
+    "empty": {
+      "title": "Ihambing bago magpadala",
+      "description": "Pumili ng corridor at halaga para makita kung magkano talaga ang bawat serbisyo, na magkatabi ang bayarin at markup sa exchange rate."
     }
   },
   "radar": {
@@ -853,6 +1141,19 @@
       "done": "Naayos: {{sorted}}. Aayusin pa: {{left}}.",
       "action": "Ayusin ang mga bayarin ko",
       "working": "Inaayos…"
+    }
+  },
+  "visual": {
+    "illustration": {
+      "remit": "Larawan: dalawang tumpok ng barya na may mga baryang gumagalaw sa pagitan nila",
+      "contract": "Larawan: isang kontratang ini-scan at pinoprotektahan ng kalasag",
+      "radar": "Larawan: radar dish na sumusuri sa isang lugar at nagpapakita ng mga tuldok",
+      "identity": "Larawan: patong-patong na ID card na may fingerprint at tumataas na mga bar"
+    },
+    "status": {
+      "notFound": "Larawan: isang kubo na may tandang pananong",
+      "error": "Larawan: isang kubo na may tanda ng babala",
+      "soon": "Larawan: isang kubo na may tatlong tuldok, paparating pa lang"
     }
   }
 }

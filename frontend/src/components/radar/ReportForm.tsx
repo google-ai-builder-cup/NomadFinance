@@ -25,8 +25,8 @@ import {
 } from "@/utils/radarForm";
 
 const fieldClass =
-  "h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm " +
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
+  "h-12 w-full rounded-xl border border-input bg-card px-3 text-base shadow-sm " +
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50";
 
 export interface ReportFormProps {
   /** The worker's own values, used until they pick something else. */
@@ -88,35 +88,52 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate className="card-surface space-y-6 p-5 md:p-7">
       <div>
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="text-xs font-bold uppercase tracking-wide text-radar-ink">
           {t("radar.report.stepOf", { current: stepIndex + 1, total: STEPS.length })}
         </p>
-        <div className="mt-2 flex gap-1.5" aria-hidden="true">
+        <ol className="mt-3 flex items-center gap-2" aria-hidden="true">
           {STEPS.map((name, index) => (
-            <div
-              key={name}
-              className={cn(
-                "h-1.5 flex-1 rounded-full",
-                index <= stepIndex ? "bg-primary" : "bg-muted"
+            <li key={name} className="flex flex-1 items-center gap-2 last:flex-none">
+              <span
+                className={cn(
+                  "grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-extrabold transition-colors duration-base",
+                  index < stepIndex && "bg-safe text-white",
+                  index === stepIndex && "bg-radar text-white ring-4 ring-radar/20",
+                  index > stepIndex && "bg-muted text-muted-foreground"
+                )}
+              >
+                {index < stepIndex ? "✓" : index + 1}
+              </span>
+              {index < STEPS.length - 1 && (
+                <span
+                  className={cn(
+                    "h-1 flex-1 rounded-full transition-colors duration-base",
+                    index < stepIndex ? "bg-safe" : "bg-muted"
+                  )}
+                />
               )}
-            />
+            </li>
           ))}
-        </div>
-        <h2 className="mt-3 text-lg font-semibold">{t(`radar.report.steps.${step}`)}</h2>
+        </ol>
+        <h2 className="mt-4 text-xl font-extrabold tracking-tight">
+          {t(`radar.report.steps.${step}`)}
+        </h2>
       </div>
 
       {step === "who" && (
         <>
           <fieldset className="space-y-2">
-            <legend className="mb-2 text-sm font-medium">{t("radar.report.who.typeLabel")}</legend>
+            <legend className="mb-2 text-sm font-bold">{t("radar.report.who.typeLabel")}</legend>
             {ENTITY_TYPES.map((type) => (
               <label
                 key={type}
                 className={cn(
-                  "flex cursor-pointer items-start gap-3 rounded-lg border p-3 has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
-                  draft.entityType === type ? "border-primary bg-accent" : "hover:bg-accent"
+                  "flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+                  draft.entityType === type
+                    ? "border-radar bg-radar-tint"
+                    : "bg-card hover:bg-accent"
                 )}
               >
                 <input
@@ -128,7 +145,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
                   className="mt-1"
                 />
                 <span>
-                  <span className="block text-sm font-medium">
+                  <span className="block text-sm font-bold">
                     {t(`radar.report.who.types.${type}`)}
                   </span>
                   <span className="block text-xs text-muted-foreground">
@@ -140,7 +157,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
           </fieldset>
 
           <div className="space-y-1.5">
-            <label htmlFor="radar-entity-name" className="text-sm font-medium">
+            <label htmlFor="radar-entity-name" className="text-sm font-bold">
               {t("radar.report.who.nameLabel")}
             </label>
             <input
@@ -161,7 +178,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
 
       {step === "where" && (
         <div className="space-y-1.5">
-          <label htmlFor="radar-location" className="text-sm font-medium">
+          <label htmlFor="radar-location" className="text-sm font-bold">
             {isEmployer ? t("radar.report.where.hostLabel") : t("radar.report.where.corridorLabel")}
           </label>
           {isEmployer ? (
@@ -206,7 +223,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
       {step === "what" && (
         <>
           <div className="space-y-1.5">
-            <label htmlFor="radar-description" className="text-sm font-medium">
+            <label htmlFor="radar-description" className="text-sm font-bold">
               {t("radar.report.what.label")}
             </label>
             <textarea
@@ -227,7 +244,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="radar-language" className="text-sm font-medium">
+            <label htmlFor="radar-language" className="text-sm font-bold">
               {t("radar.report.what.languageLabel")}
             </label>
             <select
@@ -248,7 +265,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
 
       {step === "review" && (
         <>
-          <dl className="space-y-3 rounded-lg border bg-card p-4 text-sm">
+          <dl className="space-y-3 rounded-xl border bg-radar-tint p-4 text-sm">
             <div>
               <dt className="text-xs text-muted-foreground">{t("radar.report.review.about")}</dt>
               <dd className="font-medium">
@@ -271,7 +288,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
           </dl>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">{t("radar.report.evidence.label")}</p>
+            <p className="text-sm font-bold">{t("radar.report.evidence.label")}</p>
             <EvidencePicker
               files={draft.files}
               onChange={(files) => update({ files })}
@@ -283,7 +300,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
       )}
 
       {shownKey && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-medium text-destructive">
           {t(shownKey, { min: MIN_DESCRIPTION_CHARS })}
         </p>
       )}
@@ -293,14 +310,19 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
           <Button
             type="button"
             variant="outline"
-            className="h-11 flex-1"
+            className="h-12 flex-1 rounded-xl font-bold"
             onClick={goBack}
             disabled={pending}
           >
             {t("radar.report.back")}
           </Button>
         )}
-        <Button type="submit" size="lg" className="h-11 flex-1" disabled={pending}>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 flex-1 rounded-xl bg-radar-deep font-bold text-white hover:bg-radar-deep/90"
+          disabled={pending}
+        >
           {step !== "review"
             ? t("radar.report.next")
             : pending

@@ -20,6 +20,7 @@ export default function RemittanceShortcutWidget() {
   return (
     <WidgetCard
       icon={ArrowLeftRight}
+      pillar="remit"
       title={t("pillars.remittance.name")}
       to="/remittance"
       openLabel={t("dashboard.widgets.remittance.open")}

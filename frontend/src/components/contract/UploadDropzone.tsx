@@ -3,6 +3,7 @@ import { type ChangeEvent, useCallback, useEffect, useMemo, useState } from "rea
 import { type FileRejection, useDropzone } from "react-dropzone";
 
 import { Button } from "@/components/ui/button";
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 
@@ -108,14 +109,14 @@ export default function UploadDropzone({
 
   if (file) {
     return (
-      <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+      <div className="card-surface flex items-center gap-4 border-contract/40 bg-contract-tint p-4">
         {previewUrl ? (
-          <img src={previewUrl} alt="" className="h-16 w-16 shrink-0 rounded object-cover" />
+          <img src={previewUrl} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
         ) : (
-          <FileText className="h-10 w-10 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <FileText className="h-10 w-10 shrink-0 text-contract-ink" aria-hidden="true" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{file.name}</p>
+          <p className="truncate text-sm font-bold">{file.name}</p>
           <p className="text-xs text-muted-foreground">{formatBytes(file.size)}</p>
         </div>
         <Button
@@ -137,15 +138,20 @@ export default function UploadDropzone({
       <div
         {...getRootProps()}
         className={cn(
-          "flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-8 text-center transition-colors",
-          "has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
-          isDragActive ? "border-primary bg-accent" : "border-input hover:bg-accent",
+          "flex min-h-52 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-8 text-center transition-colors",
+          "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+          isDragActive
+            ? "scale-[1.01] border-contract bg-contract-tint"
+            : "border-contract/50 bg-contract-tint/60 hover:bg-contract-tint",
           disabled && "pointer-events-none opacity-50"
         )}
       >
         <input {...getInputProps()} aria-label={t("contract.upload.dropzoneLabel")} />
-        <Upload className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-        <p className="text-sm font-medium">{t("contract.upload.dropzoneLabel")}</p>
+        <div className="w-28" aria-hidden="true">
+          <PillarIllustration pillar="contract" />
+        </div>
+        <Upload className="h-6 w-6 text-contract-ink" aria-hidden="true" />
+        <p className="text-base font-bold">{t("contract.upload.dropzoneLabel")}</p>
         <p className="text-xs text-muted-foreground">{t("contract.upload.dropzoneHint")}</p>
       </div>
 
@@ -157,8 +163,8 @@ export default function UploadDropzone({
 
       <label
         className={cn(
-          "flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border border-input bg-background px-4 text-sm font-medium shadow-sm hover:bg-accent",
-          "has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
+          "flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-input bg-card px-4 text-sm font-bold shadow-sm hover:bg-accent",
+          "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
           disabled && "pointer-events-none opacity-50"
         )}
       >

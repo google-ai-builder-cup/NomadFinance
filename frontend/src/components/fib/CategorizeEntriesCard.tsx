@@ -28,10 +28,10 @@ export default function CategorizeEntriesCard({ bills }: CategorizeEntriesCardPr
   return (
     <section
       aria-labelledby="fib-categorize-title"
-      className="space-y-3 rounded-lg border bg-card p-4"
+      className="card-surface space-y-3 border-identity/40 bg-identity-tint p-5"
     >
-      <h2 id="fib-categorize-title" className="flex items-center gap-2 font-semibold">
-        <Tags className="h-4 w-4 text-primary" aria-hidden="true" />
+      <h2 id="fib-categorize-title" className="flex items-center gap-2 font-bold">
+        <Tags className="h-4 w-4 text-identity-ink" aria-hidden="true" />
         {t("fib.categorize.title")}
       </h2>
       {result ? (
@@ -52,7 +52,12 @@ export default function CategorizeEntriesCard({ bills }: CategorizeEntriesCardPr
         </p>
       )}
       {pending > 0 && (
-        <Button size="sm" onClick={() => categorize.mutate()} disabled={categorize.isPending}>
+        <Button
+          size="sm"
+          className="h-10 rounded-lg bg-identity-deep px-4 font-bold text-white hover:bg-identity-deep/90"
+          onClick={() => categorize.mutate()}
+          disabled={categorize.isPending}
+        >
           {categorize.isPending ? t("fib.categorize.working") : t("fib.categorize.action")}
         </Button>
       )}

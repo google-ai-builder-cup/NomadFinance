@@ -138,7 +138,7 @@ export default function ReauthPanel({ onConfirmed, onCancel }: ReauthPanelProps)
 
       {method === "phone" && confirmation !== null && (
         <form onSubmit={handleCodeSubmit} className="space-y-3">
-          <label htmlFor="reauth-code" className="text-sm font-medium">
+          <label htmlFor="reauth-code" className="text-sm font-bold">
             {t("profile.delete.codeLabel")}
           </label>
           <input

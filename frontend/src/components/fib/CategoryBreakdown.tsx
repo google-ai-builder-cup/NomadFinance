@@ -13,6 +13,48 @@ export interface CategoryBreakdownProps {
   currency: string | null;
 }
 
+/** Shares of a total as a ring, in the same fixed category colours as the bars beside it. */
+function Donut<C extends string>({
+  rows,
+  order,
+  total,
+}: {
+  rows: readonly CategoryTotal<C>[];
+  order: readonly C[];
+  total: number;
+}) {
+  const r = 40;
+  const circumference = 2 * Math.PI * r;
+  let offset = 0;
+  return (
+    <svg viewBox="0 0 120 120" className="h-24 w-24 shrink-0" aria-hidden="true">
+      <circle cx="60" cy="60" r={r} fill="none" stroke="hsl(var(--muted))" strokeWidth="18" />
+      <g transform="rotate(-90 60 60)">
+        {total > 0 &&
+          rows.map((row) => {
+            const length = (row.amount / total) * circumference;
+            const slot = order.indexOf(row.category);
+            const node = (
+              <circle
+                key={row.category}
+                cx="60"
+                cy="60"
+                r={r}
+                fill="none"
+                stroke={CATEGORY_CHART_COLORS[slot % CATEGORY_CHART_COLORS.length]}
+                strokeWidth="18"
+                strokeDasharray={`${Math.max(0, length - 1.5)} ${circumference}`}
+                strokeDashoffset={-offset}
+              />
+            );
+            offset += length;
+            return node;
+          })}
+      </g>
+    </svg>
+  );
+}
+
 function BreakdownList<C extends string>({
   title,
   rows,
@@ -35,7 +77,10 @@ function BreakdownList<C extends string>({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold">{title}</h3>
+      <div className="flex items-center gap-4">
+        <Donut rows={rows} order={order} total={total} />
+        <h3 className="text-sm font-bold">{title}</h3>
+      </div>
       <ul className="space-y-2.5">
         {rows.map((row) => {
           const slot = order.indexOf(row.category);
@@ -85,8 +130,8 @@ export default function CategoryBreakdown({ income, bills, currency }: CategoryB
   const empty = incomeRows.length === 0 && billRows.length === 0;
 
   return (
-    <section aria-labelledby="fib-breakdown-title" className="space-y-5 rounded-lg border p-4">
-      <h2 id="fib-breakdown-title" className="text-lg font-semibold">
+    <section aria-labelledby="fib-breakdown-title" className="card-surface space-y-5 p-5">
+      <h2 id="fib-breakdown-title" className="text-lg font-bold tracking-tight">
         {t("fib.breakdown.heading")}
       </h2>
 

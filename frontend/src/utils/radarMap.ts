@@ -76,16 +76,16 @@ export function entitiesOnCorridor(
 
 /** Line colour and width per level, shared by the map and its legend. */
 export const HEAT_STYLE: Readonly<Record<HeatLevel, { color: string; weight: number }>> = {
-  0: { color: "#94a3b8", weight: 2 },
-  1: { color: "#f59e0b", weight: 4 },
-  2: { color: "#ea580c", weight: 7 },
-  3: { color: "#dc2626", weight: 10 },
+  0: { color: "hsl(var(--heat-0))", weight: 2 },
+  1: { color: "hsl(var(--heat-1))", weight: 4 },
+  2: { color: "hsl(var(--heat-2))", weight: 7 },
+  3: { color: "hsl(var(--heat-3))", weight: 10 },
 };
 
 export const RISK_COLOR: Readonly<Record<RadarEntityProfile["risk_level"], string>> = {
-  low: "#f59e0b",
-  medium: "#ea580c",
-  high: "#dc2626",
+  low: "hsl(var(--heat-1))",
+  medium: "hsl(var(--heat-2))",
+  high: "hsl(var(--heat-3))",
 };
 
 export type EntityFilter = EntityType | "all";

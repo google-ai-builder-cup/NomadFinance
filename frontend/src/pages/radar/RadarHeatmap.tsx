@@ -1,14 +1,17 @@
-import { Bell, Radar } from "lucide-react";
+import { Bell, Flag, Radar } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
 import CorridorDetails from "@/components/radar/CorridorDetails";
 import HeatmapMap from "@/components/radar/HeatmapMap";
 import { Button } from "@/components/ui/button";
+import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import { useRadarEntities } from "@/hooks/useRadar";
+import { cn } from "@/lib/utils";
 import { ENTITY_TYPES } from "@/types/radar";
 import {
   corridorHeat,
@@ -20,11 +23,8 @@ import {
   type HeatLevel,
 } from "@/utils/radarMap";
 
-const selectClass =
-  "h-11 w-full rounded-md border border-input bg-background px-3 text-base shadow-sm " +
-  "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring sm:w-64";
-
 const LEVELS: readonly HeatLevel[] = [0, 1, 2, 3];
+const FILTERS: readonly EntityFilter[] = ["all", ...ENTITY_TYPES];
 
 export default function RadarHeatmap() {
   const { t } = useI18n();
@@ -36,12 +36,18 @@ export default function RadarHeatmap() {
   const markers = useMemo(() => entityMarkers(shown), [shown]);
 
   const reportButton = (
-    <Button asChild className="h-11">
-      <Link to="/radar/report">{t("radar.heatmap.report")}</Link>
+    <Button
+      asChild
+      className="h-11 rounded-xl bg-radar-deep px-5 font-bold text-white hover:bg-radar-deep/90"
+    >
+      <Link to="/radar/report">
+        <Flag className="mr-2 h-4 w-4" aria-hidden="true" />
+        {t("radar.heatmap.report")}
+      </Link>
     </Button>
   );
   const alertsButton = (
-    <Button asChild variant="outline" className="h-11 gap-1.5">
+    <Button asChild variant="outline" className="h-11 gap-1.5 rounded-xl bg-card font-bold">
       <Link to="/radar/alerts">
         <Bell className="h-4 w-4" aria-hidden="true" />
         {t("radar.heatmap.alerts")}
@@ -62,12 +68,19 @@ export default function RadarHeatmap() {
   }
   if (entities.data.length === 0) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight">{t("radar.heatmap.title")}</h1>
+      <div className="space-y-5">
+        <PageHeader
+          pillar="radar"
+          icon={Radar}
+          title={t("radar.heatmap.title")}
+          description={t("radar.heatmap.subtitle")}
+          compact
+        />
         <EmptyState
           icon={Radar}
           title={t("radar.heatmap.emptyTitle")}
           description={t("radar.heatmap.emptyDescription")}
+          illustration={<PillarIllustration pillar="radar" />}
           action={reportButton}
         />
       </div>
@@ -75,74 +88,94 @@ export default function RadarHeatmap() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">{t("radar.heatmap.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("radar.heatmap.subtitle")}</p>
-        </div>
-        <div className="flex gap-2">
-          {alertsButton}
-          {reportButton}
-        </div>
-      </header>
+    <div className="space-y-5">
+      <PageHeader
+        pillar="radar"
+        icon={Radar}
+        title={t("radar.heatmap.title")}
+        description={t("radar.heatmap.subtitle")}
+        actions={
+          <>
+            {alertsButton}
+            {reportButton}
+          </>
+        }
+      />
 
-      <div className="space-y-1.5">
-        <label htmlFor="radar-filter" className="text-sm font-medium">
-          {t("radar.heatmap.filterLabel")}
-        </label>
-        <select
-          id="radar-filter"
-          value={filter}
-          onChange={(event) => setFilter(event.target.value as EntityFilter)}
-          className={selectClass}
-        >
-          <option value="all">{t("radar.heatmap.filterAll")}</option>
-          {ENTITY_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {t(`radar.report.who.types.${type}`)}
-            </option>
-          ))}
-        </select>
+      <div
+        role="radiogroup"
+        aria-label={t("radar.heatmap.filterLabel")}
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0"
+      >
+        {FILTERS.map((value) => {
+          const selected = filter === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => setFilter(value)}
+              className={cn(
+                "min-h-11 shrink-0 rounded-full border px-4 text-sm font-bold transition-colors",
+                selected
+                  ? "border-radar bg-radar-tint text-radar-ink"
+                  : "bg-card text-muted-foreground hover:bg-accent"
+              )}
+            >
+              {value === "all"
+                ? t("radar.heatmap.filterAll")
+                : t(`radar.report.who.types.${value}`)}
+            </button>
+          );
+        })}
       </div>
 
-      <HeatmapMap corridors={corridors} markers={markers} />
-
-      <ul
-        className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground"
-        aria-label={t("radar.heatmap.legend")}
-      >
-        {LEVELS.map((level) => (
-          <li key={level} className="flex items-center gap-2">
-            <span
-              aria-hidden="true"
-              className="inline-block w-6 rounded-full"
-              style={{ height: HEAT_STYLE[level].weight, background: HEAT_STYLE[level].color }}
-            />
-            {t(`radar.heatmap.level.${level}`)}
-          </li>
-        ))}
-      </ul>
-
-      <section aria-labelledby="radar-corridors" className="space-y-3">
-        <h2 id="radar-corridors" className="text-lg font-semibold">
-          {t("radar.heatmap.byCorridor")}
-        </h2>
-        {/* One column: a row that opens would otherwise stretch its neighbour in a two-column grid. */}
-        <ul className="space-y-2">
-          {[...corridors]
-            .sort((a, b) => b.reportCount - a.reportCount)
-            .map((corridor) => (
-              <CorridorDetails
-                key={corridor.id}
-                corridorId={corridor.id}
-                level={corridor.level}
-                reportCount={corridor.reportCount}
-                entities={entitiesOnCorridor(shown, corridor.id)}
-              />
+      {/* The map fills the screen height on a wide display with a glass panel floating over its
+          right edge; on a phone the same panel sits under the map as a sheet. */}
+      <div className="relative">
+        <HeatmapMap corridors={corridors} markers={markers} />
+        <aside
+          aria-labelledby="radar-corridors"
+          className={cn(
+            "glass relative z-[500] -mt-6 space-y-4 rounded-t-3xl border p-4 shadow-lg",
+            "lg:absolute lg:inset-y-4 lg:right-4 lg:mt-0 lg:w-[23rem] lg:overflow-y-auto lg:rounded-2xl"
+          )}
+        >
+          <h2 id="radar-corridors" className="text-base font-bold tracking-tight">
+            {t("radar.heatmap.byCorridor")}
+          </h2>
+          <ul
+            className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground"
+            aria-label={t("radar.heatmap.legend")}
+          >
+            {LEVELS.map((level) => (
+              <li key={level} className="flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="inline-block w-5 rounded-full"
+                  style={{ height: HEAT_STYLE[level].weight, background: HEAT_STYLE[level].color }}
+                />
+                {t(`radar.heatmap.level.${level}`)}
+              </li>
             ))}
-        </ul>
-      </section>
+          </ul>
+          {/* One column: a row that opens would otherwise stretch its neighbour in a grid. */}
+          <ul className="space-y-2">
+            {[...corridors]
+              .sort((a, b) => b.reportCount - a.reportCount)
+              .map((corridor) => (
+                <CorridorDetails
+                  key={corridor.id}
+                  corridorId={corridor.id}
+                  level={corridor.level}
+                  reportCount={corridor.reportCount}
+                  entities={entitiesOnCorridor(shown, corridor.id)}
+                />
+              ))}
+          </ul>
+        </aside>
+      </div>
     </div>
   );
 }

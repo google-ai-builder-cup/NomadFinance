@@ -58,15 +58,17 @@ export default function EvidencePicker({ files, onChange, disabled = false }: Ev
       <div
         {...getRootProps()}
         className={cn(
-          "flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors",
-          "has-[:focus-visible]:ring-1 has-[:focus-visible]:ring-ring",
-          isDragActive ? "border-primary bg-accent" : "border-input hover:bg-accent",
+          "flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-4 py-6 text-center transition-colors",
+          "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+          isDragActive
+            ? "border-radar bg-radar-tint"
+            : "border-radar/40 bg-radar-tint/50 hover:bg-radar-tint",
           (disabled || full) && "pointer-events-none opacity-50"
         )}
       >
         <input {...getInputProps()} aria-label={t("radar.report.evidence.add")} />
-        <Upload className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-        <p className="text-sm font-medium">{t("radar.report.evidence.add")}</p>
+        <Upload className="h-6 w-6 text-radar-ink" aria-hidden="true" />
+        <p className="text-sm font-bold">{t("radar.report.evidence.add")}</p>
         <p className="text-xs text-muted-foreground">{t("radar.report.evidence.hint")}</p>
       </div>
 
@@ -81,7 +83,7 @@ export default function EvidencePicker({ files, onChange, disabled = false }: Ev
           {files.map((file, index) => (
             <li
               key={`${file.name}-${file.size}-${index}`}
-              className="flex items-center gap-3 rounded-lg border bg-card p-3"
+              className="flex items-center gap-3 rounded-xl border bg-card p-3"
             >
               <FileText className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="min-w-0 flex-1 truncate text-sm">{file.name}</span>

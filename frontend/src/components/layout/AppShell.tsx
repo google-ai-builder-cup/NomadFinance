@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import NavigationProgress from "@/components/layout/NavigationProgress";
 import Sidebar from "@/components/layout/Sidebar";
+import AnimatedBackground from "@/components/visual/AnimatedBackground";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { useI18n } from "@/hooks/useI18n";
 import { usePushSync } from "@/hooks/useNotifications";
@@ -27,12 +28,14 @@ export default function AppShell() {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        {/* The bottom padding keeps the footer clear of the fixed tab bar on phones. */}
-        <div className="flex min-w-0 flex-1 flex-col pb-16 md:pb-0">
+        {/* The bottom padding keeps the footer clear of the floating tab bar on phones. */}
+        <div className="relative flex min-w-0 flex-1 flex-col pb-24 md:pb-0">
+          {/* A faint dotted map behind the content only; every card on top stays solid. */}
+          <AnimatedBackground variant="dotted-map" className="hidden opacity-40 lg:block" />
           <main
             id="main-content"
             tabIndex={-1}
-            className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 focus:outline-none md:px-8 md:py-8"
+            className="relative mx-auto w-full max-w-[84rem] flex-1 px-4 py-6 focus:outline-none md:px-8 md:py-8"
           >
             <Outlet />
           </main>

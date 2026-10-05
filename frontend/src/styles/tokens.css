@@ -1,39 +1,148 @@
-/* NomadFinance brand tokens (NF-P1-024). Primary is "Nomad Teal" #0B5D71 (hsl(192 82% 24%)),
-   chosen for trust/protection and strong contrast outdoors on a phone screen; --brand-gold is a
-   sparing marketing accent (the logo's dot), not wired into any component by this task. See
-   docs/runbooks/NF-P1-024-brand-assets.md for the full palette, hex values and rationale. */
+/* NomadFinance design tokens. Primary stays "Nomad Teal" #0B5D71 (NF-P1-024); the surfaces are
+   the light "Mist" palette. Colour tokens are HSL triplets consumed as hsl(var(--x)); shadows,
+   gradients and motion are full values. See docs/design-system.md for how each group is used.
+   Every pair of text and surface below was checked against WCAG 2.2 AA (4.5:1). */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 195 35% 11%;
-
+  /* Surfaces and ink */
+  --background: 190 37% 97%;
+  --foreground: 195 57% 13%;
   --card: 0 0% 100%;
-  --card-foreground: 195 35% 11%;
-
+  --card-foreground: 195 57% 13%;
   --popover: 0 0% 100%;
-  --popover-foreground: 195 35% 11%;
+  --popover-foreground: 195 57% 13%;
 
   --primary: 192 82% 24%;
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 192 30% 95%;
+  --secondary: 194 37% 93%;
   --secondary-foreground: 192 45% 15%;
 
-  --muted: 195 20% 96%;
-  --muted-foreground: 197 15% 40%;
+  --muted: 193 33% 95%;
+  --muted-foreground: 198 22% 36%;
+  --subtle-foreground: 198 16% 57%;
 
-  --accent: 192 30% 95%;
+  --accent: 193 49% 91%;
   --accent-foreground: 192 45% 15%;
 
-  --destructive: 4 74% 45%;
+  --destructive: 0 74% 42%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 195 20% 88%;
-  --input: 195 20% 88%;
+  --border: 195 32% 88%;
+  --input: 195 32% 88%;
   --ring: 192 82% 24%;
 
-  --radius: 0.5rem;
+  /* Radius scale: 12 / 16 / 24 px (sm / md / lg are the shadcn names the primitives use). */
+  --radius: 0.75rem;
 
+  /* Brand extras */
   --brand-gold: 38 92% 50%;
+  --gold-ink: 29 100% 30%;
+  --navy: 209 74% 10%;
+  --aqua: 188 75% 64%;
+  --deep: 192 82% 13%;
+  --alt: 194 37% 93%;
+
+  /* Risk scale, used for contract health, radar risk, alerts and badges. Each state has a fill,
+     a text-safe ink, a tint for backgrounds and the ink that sits on that tint. */
+  --safe: 161 94% 30%;
+  --safe-ink: 163 94% 24%;
+  --safe-tint: 149 80% 90%;
+  --safe-tint-ink: 163 88% 20%;
+  --caution: 38 92% 50%;
+  --caution-ink: 29 100% 30%;
+  --caution-tint: 48 96% 89%;
+  --caution-tint-ink: 28 100% 27%;
+  --danger: 0 72% 51%;
+  --danger-ink: 0 74% 42%;
+  --danger-tint: 0 93% 94%;
+  --danger-tint-ink: 0 70% 35%;
+  --info: 221 83% 53%;
+  --info-ink: 224 76% 48%;
+  --info-tint: 214 95% 93%;
+  --info-tint-ink: 226 71% 40%;
+
+  /* Radar heat levels: none, low, medium, high. Always paired with a text label in the legend. */
+  --heat-0: 198 16% 57%;
+  --heat-1: 38 92% 50%;
+  --heat-2: 21 90% 48%;
+  --heat-3: 0 72% 51%;
+
+  /* One accent hue per pillar, chosen away from the four risk hues. base / soft / deep / tint / ink. */
+  --remit: 189 86% 40%;
+  --remit-soft: 188 73% 71%;
+  --remit-deep: 191 86% 28%;
+  --remit-tint: 190 71% 93%;
+  --remit-ink: 190 86% 29%;
+  --contract: 245 68% 63%;
+  --contract-soft: 245 78% 82%;
+  --contract-deep: 245 48% 42%;
+  --contract-tint: 246 83% 95%;
+  --contract-ink: 245 50% 50%;
+  --radar: 321 56% 52%;
+  --radar-soft: 322 72% 79%;
+  --radar-deep: 320 63% 33%;
+  --radar-tint: 323 69% 95%;
+  --radar-ink: 320 60% 39%;
+  --identity: 75 75% 41%;
+  --identity-soft: 73 75% 71%;
+  --identity-deep: 74 100% 23%;
+  --identity-tint: 72 64% 91%;
+  --identity-ink: 74 100% 22%;
+
+  /* The logo mark is a fixed brand asset: it keeps its colours in the dark theme too. */
+  --logo-from: 192 76% 33%;
+  --logo-to: 192 82% 17%;
+
+  /* The printed-letter sheet and the illustrated avatar use fixed paper and skin tones that do
+     not follow the theme. */
+  --paper: 40 33% 99%;
+  --paper-ink: 195 30% 14%;
+  --paper-muted: 198 14% 38%;
+  --skin: 24 50% 55%;
+  --skin-light: 24 55% 62%;
+  --hair: 14 40% 12%;
+  --mouth: 12 52% 32%;
+
+  /* Official UN SDG colours, used only as small accents on the impact cards. */
+  --sdg-8: 341 73% 36%;
+  --sdg-10: 335 84% 47%;
+  --sdg-16: 201 100% 31%;
+
+  /* Corridor globe: sphere shading, land dots and labels. */
+  --globe-hi: 0 0% 100%;
+  --globe-mid: 193 49% 91%;
+  --globe-lo: 193 45% 79%;
+  --globe-dot: 192 82% 24%;
+  --globe-label: 195 57% 13%;
+
+  /* Hero and section washes */
+  --gradient-hero:
+    radial-gradient(900px 480px at 86% 0%, #cbeaf0, transparent 62%),
+    radial-gradient(700px 420px at 0% 100%, #dceff3, transparent 60%),
+    linear-gradient(180deg, #eaf5f8, #f4f9fa);
+  --gradient-band: linear-gradient(180deg, #e8f2f5, #eef6f8);
+  --gradient-border: linear-gradient(
+    160deg,
+    hsl(192 82% 24% / 0.28),
+    transparent 45%,
+    hsl(38 92% 50% / 0.3)
+  );
+  --blob-a: hsl(189 86% 40% / 0.22);
+  --blob-b: hsl(38 92% 50% / 0.16);
+  --glass: hsl(0 0% 100% / 0.78);
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgb(14 42 51 / 0.05), 0 4px 14px -8px rgb(14 42 51 / 0.1);
+  --shadow-md: 0 2px 4px rgb(14 42 51 / 0.05), 0 14px 34px -14px rgb(14 42 51 / 0.18);
+  --shadow-lg: 0 6px 12px rgb(14 42 51 / 0.06), 0 30px 60px -26px rgb(14 42 51 / 0.3);
+  --shadow-glow: 0 0 0 1px hsl(var(--border)), 0 12px 36px -12px rgb(14 165 192 / 0.4);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur-base: 280ms;
+  --dur-slow: 600ms;
 
   /* Financial Identity dashboard chart colors (NF-P3-017). The brand teal (--primary) fails
      the dataviz skill's categorical chroma/lightness gates outright when validated against
@@ -56,10 +165,8 @@
 .dark {
   --background: 199 35% 7%;
   --foreground: 195 25% 94%;
-
   --card: 199 32% 9%;
   --card-foreground: 195 25% 94%;
-
   --popover: 199 32% 9%;
   --popover-foreground: 195 25% 94%;
 
@@ -71,6 +178,7 @@
 
   --muted: 199 25% 16%;
   --muted-foreground: 197 15% 65%;
+  --subtle-foreground: 197 14% 52%;
 
   --accent: 199 25% 16%;
   --accent-foreground: 195 25% 94%;
@@ -83,6 +191,63 @@
   --ring: 193 70% 55%;
 
   --brand-gold: 38 92% 55%;
+  --gold-ink: 43 96% 56%;
+  --alt: 199 35% 10%;
+
+  --safe: 158 64% 52%;
+  --safe-ink: 158 64% 52%;
+  --safe-tint: 165 76% 10%;
+  --safe-tint-ink: 156 72% 67%;
+  --caution: 43 96% 56%;
+  --caution-ink: 43 96% 56%;
+  --caution-tint: 37 67% 12%;
+  --caution-tint-ink: 46 97% 65%;
+  --danger: 0 91% 71%;
+  --danger-ink: 0 91% 71%;
+  --danger-tint: 0 53% 15%;
+  --danger-tint-ink: 0 94% 82%;
+  --info: 213 94% 68%;
+  --info-ink: 213 94% 68%;
+  --info-tint: 218 67% 17%;
+  --info-tint-ink: 212 96% 78%;
+
+  --heat-0: 197 14% 52%;
+  --heat-1: 43 96% 56%;
+  --heat-2: 21 90% 58%;
+  --heat-3: 0 91% 71%;
+
+  --remit-tint: 192 70% 16%;
+  --remit-ink: 190 75% 68%;
+  --contract-tint: 244 47% 21%;
+  --contract-ink: 245 78% 82%;
+  --radar-tint: 314 57% 15%;
+  --radar-ink: 324 76% 81%;
+  --identity-tint: 78 67% 12%;
+  --identity-ink: 73 71% 62%;
+
+  --gradient-hero:
+    radial-gradient(1100px 560px at 80% 0%, hsl(189 86% 40% / 0.22), transparent 62%),
+    linear-gradient(180deg, #071b2e, #0a2338 70%, #0c2a44);
+  --gradient-band: linear-gradient(180deg, #091c26, #0a2029);
+  --gradient-border: linear-gradient(
+    160deg,
+    hsl(193 70% 55% / 0.35),
+    transparent 45%,
+    hsl(38 92% 55% / 0.28)
+  );
+  --globe-hi: 192 55% 28%;
+  --globe-mid: 205 70% 14%;
+  --globe-lo: 209 74% 8%;
+  --globe-dot: 188 75% 64%;
+  --globe-label: 195 25% 94%;
+  --blob-a: hsl(191 86% 30% / 0.5);
+  --blob-b: hsl(221 83% 53% / 0.25);
+  --glass: hsl(199 35% 10% / 0.78);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 14px -6px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.4), 0 14px 34px -12px rgb(0 0 0 / 0.65);
+  --shadow-lg: 0 6px 12px rgb(0 0 0 / 0.4), 0 30px 60px -24px rgb(0 0 0 / 0.8);
+  --shadow-glow: 0 0 0 1px hsl(var(--border)), 0 12px 36px -12px rgb(14 165 192 / 0.35);
 
   /* Same 8-hue order, stepped for the dark surface (own validator pass, not an automatic
      flip of the light values). */

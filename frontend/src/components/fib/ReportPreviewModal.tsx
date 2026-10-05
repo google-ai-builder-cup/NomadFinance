@@ -100,10 +100,10 @@ export default function ReportPreviewModal({
         aria-labelledby="report-preview-title"
         tabIndex={-1}
         onClick={(event) => event.stopPropagation()}
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-lg border bg-card p-6 shadow-lg focus:outline-none"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl border bg-card p-6 shadow-lg focus:outline-none"
       >
         <div className="flex items-start justify-between gap-3">
-          <h2 id="report-preview-title" className="text-lg font-semibold">
+          <h2 id="report-preview-title" className="text-lg font-bold tracking-tight">
             {t("fib.export.preview.title")}
           </h2>
           <Button

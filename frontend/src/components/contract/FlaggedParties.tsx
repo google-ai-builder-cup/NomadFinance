@@ -29,18 +29,18 @@ export default function FlaggedParties({ contractId }: FlaggedPartiesProps) {
         return (
           <li
             key={role}
-            className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-danger/30 bg-danger-tint p-3 text-sm"
           >
             <Link
               to={`/radar/entity/${entity.slug}`}
               title={detail}
               aria-label={detail}
-              className="inline-flex items-center gap-1.5 font-semibold text-destructive underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-destructive"
+              className="inline-flex items-center gap-1.5 font-bold text-danger-tint-ink underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger"
             >
               <ShieldAlert className="h-4 w-4" aria-hidden="true" />
               {t("contract.flagged.label", { number })}
             </Link>
-            <span className="text-muted-foreground">
+            <span className="text-danger-tint-ink/80">
               {t(`radar.report.who.types.${entity.entity_type}`)}:{" "}
               <span className="text-foreground">{name}</span>
             </span>

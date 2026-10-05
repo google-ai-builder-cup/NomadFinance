@@ -3,6 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Financial protection for migrant workers." />
+    <!-- Plus Jakarta Sans for Latin, with the two Indic scripts the app ships in, so Hindi,
+         Nepali and Bengali render with proper conjuncts. font-display: swap keeps text visible
+         while the files load. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -100,10 +109,11 @@
         align-items: center;
         justify-content: center;
         gap: 12px;
-        background: #fff;
+        background: #f4f9fa;
         color: #0b5d71;
         font:
-          600 18px/1.2 system-ui,
+          600 18px/1.2 "Plus Jakarta Sans",
+          system-ui,
           -apple-system,
           "Segoe UI",
           Roboto,

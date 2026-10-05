@@ -34,7 +34,7 @@ export interface HeatmapMapProps {
 function markerIcon(risk: RadarEntityProfile["risk_level"]): L.DivIcon {
   return L.divIcon({
     className: "",
-    html: `<span style="display:block;width:18px;height:18px;border-radius:9999px;background:${RISK_COLOR[risk]};border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.4)"></span>`,
+    html: `<span style="display:block;width:18px;height:18px;border-radius:9999px;background:${RISK_COLOR[risk]};border:2px solid hsl(var(--card));box-shadow:0 0 0 1px hsl(var(--foreground) / .35)"></span>`,
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   });
@@ -56,7 +56,7 @@ export default function HeatmapMap({ corridors, markers }: HeatmapMapProps) {
       zoom={3}
       minZoom={2}
       scrollWheelZoom={false}
-      className="h-[60vh] min-h-72 w-full rounded-lg border"
+      className="radar-map h-[62vh] min-h-80 w-full rounded-2xl border shadow-sm lg:h-[calc(100dvh-17rem)] lg:min-h-[34rem]"
       aria-label={t("radar.heatmap.mapLabel")}
     >
       <TileLayer
@@ -113,7 +113,7 @@ export default function HeatmapMap({ corridors, markers }: HeatmapMapProps) {
                   {violation && <p>{t(`radar.violation.${violation}`)}</p>}
                   <Link
                     to={`/radar/entity/${entity.slug}`}
-                    className="font-medium text-primary underline"
+                    className="font-bold text-primary underline"
                   >
                     {t("radar.heatmap.viewProfile")}
                   </Link>
