@@ -61,7 +61,7 @@ export default function DeleteAccount() {
     rememberAccountDeleted();
     await signOut().catch(() => undefined);
     queryClient.clear();
-    navigate("/sign-in", { replace: true });
+    navigate("/", { replace: true });
   }
 
   async function handleContinue() {

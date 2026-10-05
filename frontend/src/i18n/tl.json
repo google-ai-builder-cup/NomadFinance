@@ -612,7 +612,15 @@
       "emptyTitle": "Wala pang ulat",
       "emptyDescription": "Kapag may nag-report ng negosyo, lalabas ito rito. Puwede kang maging una.",
       "viewProfile": "Tingnan ang profile ng negosyo",
-      "alerts": "Mga alerto"
+      "alerts": "Mga alerto",
+      "businessesHeading": "Mga negosyong naiulat sa rutang ito",
+      "noBusinesses": "Wala pang naiulat na negosyo sa rutang ito.",
+      "showAllReports": "Ipakita ang lahat ng {{n}} ulat",
+      "showFewerReports": "Ipakita ang mas kaunting ulat",
+      "showMoreBusinesses": "Magpakita ng {{n}} pang negosyo",
+      "showFewerBusinesses": "Ipakita ang mas kaunting negosyo",
+      "reportsLoadError": "Hindi namin ma-load ang mga ulat na ito.",
+      "otherRoute": "Ruta: {{route}}"
     },
     "entity": {
       "back": "Bumalik sa mapa",

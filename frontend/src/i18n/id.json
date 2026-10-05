@@ -612,7 +612,15 @@
       "emptyTitle": "Belum ada laporan",
       "emptyDescription": "Saat pekerja melaporkan sebuah usaha, usaha itu akan muncul di sini. Anda bisa jadi yang pertama.",
       "viewProfile": "Lihat profil usaha",
-      "alerts": "Peringatan"
+      "alerts": "Peringatan",
+      "businessesHeading": "Usaha yang dilaporkan di jalur ini",
+      "noBusinesses": "Belum ada usaha yang dilaporkan di jalur ini.",
+      "showAllReports": "Tampilkan semua {{n}} laporan",
+      "showFewerReports": "Tampilkan lebih sedikit laporan",
+      "showMoreBusinesses": "Tampilkan {{n}} usaha lagi",
+      "showFewerBusinesses": "Tampilkan lebih sedikit usaha",
+      "reportsLoadError": "Kami tidak bisa memuat laporan ini.",
+      "otherRoute": "Jalur: {{route}}"
     },
     "entity": {
       "back": "Kembali ke peta",

@@ -61,6 +61,19 @@ export function corridorHeat(entities: readonly RadarEntityProfile[]): CorridorH
   });
 }
 
+/**
+ * The businesses reported on one route, most reports first (ties by name). The same list the
+ * route's report total in `corridorHeat` adds up, so the numbers on screen agree.
+ */
+export function entitiesOnCorridor(
+  entities: readonly RadarEntityProfile[],
+  corridorId: CorridorId
+): RadarEntityProfile[] {
+  return entities
+    .filter((entity) => entity.corridors?.includes(corridorId))
+    .sort((a, b) => b.report_count - a.report_count || a.name.localeCompare(b.name));
+}
+
 /** Line colour and width per level, shared by the map and its legend. */
 export const HEAT_STYLE: Readonly<Record<HeatLevel, { color: string; weight: number }>> = {
   0: { color: "#94a3b8", weight: 2 },

@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -8,12 +9,16 @@ import { PILLAR_ITEMS } from "@/components/layout/navItems";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useI18n } from "@/hooks/useI18n";
+import { accountWasDeleted, clearAccountDeletedNotice } from "@/services/accountService";
 
 // Public marketing page at "/". Signed-in visitors never see it: they're sent straight to
 // the dashboard, same as SignIn does for an already-authenticated visit.
 export default function Landing() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
+  // After deleting an account the person is sent here, so this is where it is confirmed.
+  const [accountDeleted] = useState(accountWasDeleted);
+  useEffect(() => clearAccountDeletedNotice(), []);
 
   if (loading) {
     return <LoadingSpinner label={t("common.loading")} fullScreen />;
@@ -37,6 +42,14 @@ export default function Landing() {
       </header>
 
       <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+        {accountDeleted && (
+          <p
+            role="status"
+            className="mx-auto mt-2 max-w-xl rounded-md border border-input bg-muted/50 p-3 text-center text-sm"
+          >
+            {t("profile.delete.done")}
+          </p>
+        )}
         <section className="mx-auto max-w-3xl px-4 py-10 text-center md:py-16">
           <p className="text-sm font-medium text-muted-foreground">{t("landing.hero.eyebrow")}</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">

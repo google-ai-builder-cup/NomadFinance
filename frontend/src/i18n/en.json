@@ -612,7 +612,15 @@
       "emptyTitle": "No reports yet",
       "emptyDescription": "When workers report a business, it will show up here. You can be the first.",
       "viewProfile": "View business profile",
-      "alerts": "Alerts"
+      "alerts": "Alerts",
+      "businessesHeading": "Businesses reported on this route",
+      "noBusinesses": "No business has been reported on this route yet.",
+      "showAllReports": "Show all {{n}} reports",
+      "showFewerReports": "Show fewer reports",
+      "showMoreBusinesses": "Show {{n}} more businesses",
+      "showFewerBusinesses": "Show fewer businesses",
+      "reportsLoadError": "We could not load these reports.",
+      "otherRoute": "Route: {{route}}"
     },
     "entity": {
       "back": "Back to map",

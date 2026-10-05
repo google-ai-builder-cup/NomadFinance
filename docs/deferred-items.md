@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-10-04, after NF-P4-004 (security audit).
+Last updated: 2026-10-05, after the sign-out and radar route changes.
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -33,6 +33,7 @@ Last updated: 2026-10-04, after NF-P4-004 (security audit).
 | D-87 | NF-P4-004 | **Restrict the Firebase browser API key to the site's own addresses.** It lists 27 APIs but has no HTTP-referrer restriction, so anyone who copies it from the site's JavaScript can call those APIs (15 are enabled, incl. sign-up and phone verification) from any script; billing is now on. Two `gcloud services api-keys update` commands in `docs/runbooks/NF-P4-004-security-audit.md`, F-01 (key id `08bf3f03-62a7-4220-a191-1e5ee3d2f79f`). Test sign-in and the dashboard afterwards. | Anyone can use the public key outside the app, at the project's cost. | Pranjal / Devam (owner access) | Open |
 | D-88 | NF-P4-004 | **Delete the 3 test phone numbers** (Authentication → Sign-in method → Phone → Phone numbers for testing) before the demo on 2026-10-18, or confirm their shared code is not written anywhere public. | A test number signs in with a fixed code and skips SMS. | Devam | Open |
 | D-89 | NF-P4-004 | **Tidy Google Cloud access:** remove `roles/editor` from the default Compute Engine service account (nothing in the app runs as it; check Cloud Build first); enforce public-access prevention on the bucket `gs://nomadfinance-prod.firebasestorage.app` (nothing is public today); consider fewer than 4 project owners. Commands in `docs/runbooks/NF-P4-004-security-audit.md`, F-13. | Narrower damage if an account or a build is ever compromised. | Pranjal (owner access) | Open |
+| D-97 | UX sign-out and radar routes | Have a native speaker read the 8 new strings in hi, tl, id, ne and bn (`radar.heatmap.businessesHeading` to `otherRoute`, the last keys of that block). Written by the team, not by a translator. See `docs/runbooks/UX-signout-landing-and-radar-route-details.md`. | Wording on the Radar route rows. | Aditya (with translators) | Open |
 
 ## 2. Code fixes scheduled into a later task
 
@@ -101,6 +102,7 @@ Last updated: 2026-10-04, after NF-P4-004 (security audit).
 | D-91 | NF-P4-004 | **Secret scan in CI** (a new job in `.github/workflows/security-scan.yml`, a shared file; diff in the runbook, F-15) so a key in a new commit is caught; also pin GitHub Actions to commits instead of version tags. | Today only dependencies are scanned. | Pranjal (needs the team's OK) | Open: waits for OK |
 | D-92 | NF-P4-004 | **Move `react-router-dom` 6.30.6 to v7** (the two moderate advisories GHSA-wrjc-x8rr-h8h6 and GHSA-337j-9hxr-rhxg are fixed in 7.18). Not reachable today (no server rendering; no outside value reaches `navigate`), but `pnpm audit` keeps reporting them. Changes `package.json` and the lock file (shared) and the router API in `router.tsx`, so test every route after. | Clean audit. | Devam / Aditya | Open: after the submission, or with the team's OK |
 | D-93 | NF-P4-004 | **Tighten the profile rules** so push tokens must be short strings and `radar_corridors` only the six real ids (`frontend/firestore.rules`, shared; the diff was tested against the emulator and is in the runbook, F-10). The Radar alert job no longer breaks on bad tokens (F-03), so this is hardening of a worker's own document. | A worker can store a 1 MB value or a map in these lists today. | Pranjal (needs the team's OK) | Open: waits for OK |
+| D-96 | UX sign-out and radar routes | `ProtectedRoute` now sends every signed-out visitor to the landing page, so it no longer remembers which page they wanted: after sign-in they open the dashboard, not (say) `/radar/alerts`. `pages/SignIn.tsx` still reads that remembered page (`location.state.from`) and nothing sets it any more. Either remove that code, or bring the feature back for links only (send to `/sign-in` with the page remembered when the visitor arrived by a direct link, and to `/` only on sign-out and deletion). | A shared link to a signed-in page loses its target; dead code in `SignIn.tsx`. | Devam | Open: decision |
 
 ## 4. Notes and decisions to keep in mind (no fix planned)
 
