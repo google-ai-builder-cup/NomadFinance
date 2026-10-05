@@ -75,3 +75,6 @@ lib-cov/
 # Test outputs
 playwright-report/
 test-results/
+
+#MCP
+.mcp.json
