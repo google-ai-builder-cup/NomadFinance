@@ -13,8 +13,7 @@ export default function Header() {
   const { t } = useI18n();
   const navigate = useNavigate();
 
-  // Without this, ProtectedRoute would catch the signed-out state and redirect to /sign-in
-  // instead of the public landing page.
+  // ProtectedRoute also sends a signed-out visitor to "/", so this is only a direct route there.
   async function handleSignOut() {
     await signOut();
     navigate("/", { replace: true });

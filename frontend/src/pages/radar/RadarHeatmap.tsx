@@ -4,15 +4,15 @@ import { Link } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import CorridorDetails from "@/components/radar/CorridorDetails";
 import HeatmapMap from "@/components/radar/HeatmapMap";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useRadarEntities } from "@/hooks/useRadar";
-import i18n from "@/lib/i18n";
 import { ENTITY_TYPES } from "@/types/radar";
-import { countryName } from "@/utils/format";
 import {
   corridorHeat,
+  entitiesOnCorridor,
   type EntityFilter,
   entityMarkers,
   filterEntities,
@@ -30,7 +30,6 @@ export default function RadarHeatmap() {
   const { t } = useI18n();
   const entities = useRadarEntities();
   const [filter, setFilter] = useState<EntityFilter>("all");
-  const language = i18n.resolvedLanguage ?? "en";
 
   const shown = useMemo(() => filterEntities(entities.data ?? [], filter), [entities.data, filter]);
   const corridors = useMemo(() => corridorHeat(shown), [shown]);
@@ -129,30 +128,19 @@ export default function RadarHeatmap() {
         <h2 id="radar-corridors" className="text-lg font-semibold">
           {t("radar.heatmap.byCorridor")}
         </h2>
-        <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {/* One column: a row that opens would otherwise stretch its neighbour in a two-column grid. */}
+        <ul className="space-y-2">
           {[...corridors]
             .sort((a, b) => b.reportCount - a.reportCount)
-            .map((corridor) => {
-              const [host, home] = corridor.id.split("-");
-              return (
-                <li
-                  key={corridor.id}
-                  className="flex items-center gap-3 rounded-lg border bg-card p-3"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="h-3 w-3 shrink-0 rounded-full"
-                    style={{ background: HEAT_STYLE[corridor.level].color }}
-                  />
-                  <span className="flex-1 text-sm font-medium">
-                    {countryName(host, language)} → {countryName(home, language)}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {t("radar.heatmap.reports", { n: corridor.reportCount })}
-                  </span>
-                </li>
-              );
-            })}
+            .map((corridor) => (
+              <CorridorDetails
+                key={corridor.id}
+                corridorId={corridor.id}
+                level={corridor.level}
+                reportCount={corridor.reportCount}
+                entities={entitiesOnCorridor(shown, corridor.id)}
+              />
+            ))}
         </ul>
       </section>
     </div>

@@ -20,7 +20,7 @@ export async function deleteAccount(): Promise<void> {
   await apiRequest("/api/v1/users/me", { method: "DELETE" });
 }
 
-/** Remember to tell the person their account is gone on the sign-in page they land on. */
+/** Remember to tell the person their account is gone on the landing page they are sent to. */
 export function rememberAccountDeleted(): void {
   try {
     sessionStorage.setItem(DELETED_FLAG, "1");
@@ -29,7 +29,7 @@ export function rememberAccountDeleted(): void {
   }
 }
 
-/** Whether the sign-in page should say the account was deleted. Read with `clear...` after. */
+/** Whether the landing page should say the account was deleted. Read with `clear...` after. */
 export function accountWasDeleted(): boolean {
   try {
     return sessionStorage.getItem(DELETED_FLAG) === "1";

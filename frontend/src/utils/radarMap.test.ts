@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { RadarEntityProfile } from "@/types/radar";
-import { corridorHeat, entityMarkers, filterEntities } from "@/utils/radarMap";
+import { corridorHeat, entitiesOnCorridor, entityMarkers, filterEntities } from "@/utils/radarMap";
 
 function entity(over: Partial<RadarEntityProfile>): RadarEntityProfile {
   return {
@@ -72,5 +72,39 @@ describe("entityMarkers", () => {
       entity({ slug: "b", flagged: true }),
     ]);
     expect(second.position).not.toEqual(first.position);
+  });
+});
+
+describe("entitiesOnCorridor", () => {
+  const list = [
+    entity({ slug: "quiet", name: "Quiet Remit", report_count: 1, corridors: ["SG-PH"] }),
+    entity({ slug: "busy", name: "Busy Agency", report_count: 6, corridors: ["SG-PH", "SG-IN"] }),
+    entity({ slug: "other", name: "Other Co", report_count: 9, corridors: ["AU-IN"] }),
+    entity({ slug: "tie", name: "Alpha Tie", report_count: 1, corridors: ["SG-PH"] }),
+  ];
+
+  it("lists only the businesses on that route, most reports first, ties by name", () => {
+    expect(entitiesOnCorridor(list, "SG-PH").map((e) => e.slug)).toEqual(["busy", "tie", "quiet"]);
+  });
+
+  it("includes a business on every route it works", () => {
+    expect(entitiesOnCorridor(list, "SG-IN").map((e) => e.slug)).toEqual(["busy"]);
+  });
+
+  it("is empty for a route nobody was reported on", () => {
+    expect(entitiesOnCorridor(list, "MY-ID")).toEqual([]);
+  });
+
+  it("adds up to the report total the route shows", () => {
+    const total = entitiesOnCorridor(list, "SG-PH").reduce((sum, e) => sum + e.report_count, 0);
+
+    expect(total).toBe(corridorHeat(list).find((c) => c.id === "SG-PH")?.reportCount);
+  });
+
+  it("does not reorder the list it was given", () => {
+    const before = list.map((e) => e.slug);
+    entitiesOnCorridor(list, "SG-PH");
+
+    expect(list.map((e) => e.slug)).toEqual(before);
   });
 });

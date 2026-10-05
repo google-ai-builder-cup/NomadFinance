@@ -612,7 +612,15 @@
       "emptyTitle": "अभी कोई रिपोर्ट नहीं",
       "emptyDescription": "जब मज़दूर किसी व्यवसाय की रिपोर्ट करेंगे, वह यहाँ दिखेगा। पहली रिपोर्ट आप कर सकते हैं।",
       "viewProfile": "व्यवसाय की प्रोफ़ाइल देखें",
-      "alerts": "चेतावनियां"
+      "alerts": "चेतावनियां",
+      "businessesHeading": "इस रास्ते पर रिपोर्ट किए गए व्यवसाय",
+      "noBusinesses": "इस रास्ते पर अभी किसी व्यवसाय की रिपोर्ट नहीं हुई है।",
+      "showAllReports": "सभी {{n}} रिपोर्ट दिखाएं",
+      "showFewerReports": "कम रिपोर्ट दिखाएं",
+      "showMoreBusinesses": "{{n}} और व्यवसाय दिखाएं",
+      "showFewerBusinesses": "कम व्यवसाय दिखाएं",
+      "reportsLoadError": "हम ये रिपोर्ट लोड नहीं कर सके।",
+      "otherRoute": "रास्ता: {{route}}"
     },
     "entity": {
       "back": "नक्शे पर वापस जाएँ",
