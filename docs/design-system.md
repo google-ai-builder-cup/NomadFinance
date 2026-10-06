@@ -75,6 +75,7 @@ Use `PILLAR_STYLES[key]` (never build a class name from the key: Tailwind cannot
 | `AnimatedBackground` | `mesh`, `dotted-map`, `grid` ambient backgrounds |
 | `CorridorGlobe` | Hero globe with the six corridors |
 | `CountryPair` | Host to home country-code discs (no flags or brand logos) |
+| `ChatBubble`, `QuickReplyChips`, `RiskMeter`, `StepProgress`, `TimelineItem`, `EmptyState` | Shared pieces of the Coach and Scam Analyzer screens (NF-F0-012). Props, rules and a usage example for each: `docs/ui-kit.md` |
 
 ## Landing page figures
 

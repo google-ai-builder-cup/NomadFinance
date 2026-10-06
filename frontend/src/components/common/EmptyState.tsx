@@ -11,6 +11,8 @@ export interface EmptyStateProps {
   action?: ReactNode;
   /** A larger illustration (for example a PillarIllustration) shown instead of the icon tile. */
   illustration?: ReactNode;
+  /** Heading level for the title, so the page's heading order stays correct. Defaults to 2. */
+  headingLevel?: 2 | 3 | 4;
   className?: string;
 }
 
@@ -20,8 +22,10 @@ export default function EmptyState({
   description,
   action,
   illustration,
+  headingLevel = 2,
   className,
 }: EmptyStateProps) {
+  const Heading = `h${headingLevel}` as const;
   return (
     <div
       className={cn(
@@ -36,7 +40,7 @@ export default function EmptyState({
           <Icon className="h-7 w-7" aria-hidden="true" />
         </span>
       )}
-      <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+      <Heading className="text-lg font-bold tracking-tight">{title}</Heading>
       <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
       {action}
     </div>
