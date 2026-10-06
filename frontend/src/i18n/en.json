@@ -368,6 +368,8 @@
     "contract": "Contracts",
     "radar": "Radar",
     "identity": "Identity",
+    "coach": "Coach",
+    "scamCheck": "Scam check",
     "profile": "Profile"
   },
   "layout": {

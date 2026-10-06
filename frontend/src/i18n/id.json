@@ -368,6 +368,8 @@
     "contract": "Kontrak",
     "radar": "Radar",
     "identity": "Identitas",
+    "coach": "Pelatih",
+    "scamCheck": "Cek penipuan",
     "profile": "Profil"
   },
   "layout": {

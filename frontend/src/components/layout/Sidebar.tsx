@@ -1,7 +1,8 @@
 import { Sparkles } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-import { NAV_ITEMS, PILLAR_ITEMS } from "@/components/layout/navItems";
+import { PILLAR_ITEMS, visibleNavItems } from "@/components/layout/navItems";
+import { useFeatureFlags } from "@/hooks/useFeatureFlag";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import { PILLAR_STYLES } from "@/utils/pillars";
@@ -10,6 +11,7 @@ import { PILLAR_STYLES } from "@/utils/pillars";
  * wears its pillar's colour. Phones use BottomNav instead. */
 export default function Sidebar() {
   const { t } = useI18n();
+  const { flags } = useFeatureFlags();
 
   return (
     <aside className="hidden shrink-0 border-r bg-card md:block md:w-[4.75rem] lg:w-64">
@@ -18,7 +20,7 @@ export default function Sidebar() {
           <p className="hidden px-3 pb-1 pt-2 text-[11px] font-bold uppercase tracking-widest text-subtle lg:block">
             {t("layout.sidebarHeading")}
           </p>
-          {NAV_ITEMS.map(({ to, icon: Icon, labelKey }) => {
+          {visibleNavItems(flags).map(({ to, icon: Icon, labelKey }) => {
             const pillar = PILLAR_ITEMS.find((item) => item.to === to);
             const style = pillar ? PILLAR_STYLES[pillar.pillar] : null;
             return (

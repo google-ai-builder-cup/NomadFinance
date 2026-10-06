@@ -145,19 +145,20 @@ Two more indexes are needed, and one setting that is not an index:
 
 Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). Both are entries in `frontend/firestore.indexes.json` (`indexes` for the vector index, `fieldOverrides` for the group-scope field), and `frontend/firebase.json` now points at that file, so `firebase deploy --only firestore:indexes` creates them. No workflow runs that command yet, and the entries have not been deployed to any project (D-33, D-68); the file inside `frontend/` is the one the CLI reads, and `infra/firebase/firestore.indexes.json` is an empty stub.
 
-The same two as `gcloud` commands (syntax from `--help` on 2026-10-06; not run):
+The vector index as a `gcloud` command (syntax from `--help` on 2026-10-06; not run):
 
 ```bash
 gcloud firestore indexes composite create --project nomadfinance-prod \
   --collection-group=scam_patterns --query-scope=COLLECTION \
   --field-config=field-path=embedding,vector-config='{"dimension":768,"flat":{}}'
-
-# keeping the collection-scope index as well, because an exemption replaces the defaults
-gcloud firestore indexes fields update departure_date --project nomadfinance-prod \
-  --collection-group=coach_plans \
-  --index=order=ASCENDING,query-scope=COLLECTION \
-  --index=order=ASCENDING,query-scope=COLLECTION_GROUP
 ```
+
+**The group-scope index on `coach_plans.departure_date` cannot be made with `gcloud`.** `gcloud firestore indexes fields update` accepts only `order` and `array-config` in `--index`, with no way to say "collection group", so an earlier version of this page that showed such a command was wrong (corrected in NF-F0-006). Two ways that do work:
+
+1. **From the file (preferred):** `firebase deploy --only firestore:indexes --project <project-id>` creates the `fieldOverrides` entry above. The CLI lists any index that exists in the project but not in the file and **offers to delete it: decline** (production has three unused ones, D-69), and never add `--force`.
+2. **In the console:** Firestore, Indexes, Single field, Add exemption: collection ID `coach_plans`, field path `departure_date`, then add an Ascending index with **Collection group** scope as well as the Collection one (an exemption replaces the defaults, so keep both).
+
+In production this exemption was made by hand in the console. The file and production agree, but the deploy path from the file has not been run (D-114).
 
 ## Time to live
 
