@@ -1,7 +1,22 @@
-# Default: any team member reviews
+# Branch protection on `main` requires one approval from a code owner (NF-F0-010).
+#
+# GitHub never asks the author of a pull request to review it, so with all three of us listed the
+# other two are requested automatically. The tracker also names one reviewer per task and rotates
+# it, which a path rule cannot say; the pull request template asks for that name.
 * @Aditya083103 @Devam45 @pranjalparmar23
 
-# Sensitive files require explicit review
-/backend/app/core/security.py @Aditya083103 @Devam45 @pranjalparmar23
+# Paths where a mistake reaches production, weakens security or changes how everyone works. The
+# owners are the same today. They are listed on purpose, so the rule is visible and a change of
+# ownership is one line.
+/.github/ @Aditya083103 @Devam45 @pranjalparmar23
+/commitlint.config.cjs @Aditya083103 @Devam45 @pranjalparmar23
+/.pre-commit-config.yaml @Aditya083103 @Devam45 @pranjalparmar23
 /infra/ @Aditya083103 @Devam45 @pranjalparmar23
-/.github/workflows/ @Aditya083103 @Devam45 @pranjalparmar23
+/backend/app/core/ @Aditya083103 @Devam45 @pranjalparmar23
+/backend/app/config.py @Aditya083103 @Devam45 @pranjalparmar23
+/backend/app/dependencies.py @Aditya083103 @Devam45 @pranjalparmar23
+/backend/Dockerfile @Aditya083103 @Devam45 @pranjalparmar23
+/frontend/firestore.rules @Aditya083103 @Devam45 @pranjalparmar23
+/frontend/storage.rules @Aditya083103 @Devam45 @pranjalparmar23
+/frontend/firestore.indexes.json @Aditya083103 @Devam45 @pranjalparmar23
+/frontend/firebase.json @Aditya083103 @Devam45 @pranjalparmar23
