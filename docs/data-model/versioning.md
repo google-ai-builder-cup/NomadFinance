@@ -18,6 +18,17 @@ Only `labor_laws` has one, because it is the only reference data that stored res
 - A contract report records the `law_version` it was made with. When the current version is higher, the stored report is out of date and is remade on the next request (see the cache rule in [contracts](collections/contracts.md)).
 - The version is per country. Changing the Singapore rules does not invalidate Japanese reports.
 
+### Future Scope (NF-F0-003)
+
+Two more reference data sets that stored results depend on, handled the same way as `labor_laws` (hash of the validated content in canonical form; the version rises by 1 only when the hash changes; re-running the loader is safe):
+
+| Data | Where the version lives | Who records it |
+|---|---|---|
+| Scam taxonomy | `scam_taxonomy/_meta.version` | `scam_checks.taxonomy_version`. A stored check made under another version is not used as a cached answer. |
+| Cost baselines | `cost_baselines/{host}.version` (on the document itself: it is one document per country) | `coach_plans.grounding.baselines.version`, for the record. A plan is **not** remade when the baselines change: it is keyed by the worker's slots, and a new baseline applies to the next plan. |
+
+A scam check's cached answer must also match the prompt versions, so the cache rule is: same `cache_key`, same `prompt_versions`, same `taxonomy_version`; otherwise it is a miss and the message is analysed again.
+
 Corridor prices and FX rates do not need a data version: they are read live, never copied into stored results, and `period` and `fetched_at` already say how old they are.
 
 ## Prompt version
@@ -48,7 +59,11 @@ Every user-owned document and every AI-written document has `schema_version`, a 
 | Comparison engine | `payout_currency` other than the destination currency; `total_cost_pct` below zero |
 | Contract report UI | `complaint: null`; `law_reference: null`; a rule with no variant for the worker's job type (use the `all` variant); `coverage` of `not_regulated` or `unclear` (show "no rule found", not "safe") |
 | Radar UI | `community_rating: null` |
-| Financial Identity | Entries without `category`; a profile that does not exist yet |
+| Financial Identity | Entries without `category`; a profile that does not exist yet; a profile without `goals`, `coach_signal` or `scam_signal` (all optional, and the two signals are removed when the worker opts out) |
+| Radar screens and jobs | A report with `source: scam_check`, `entity_type: scam_type`, `violation_type: scam_message` and a `scam` map; no `reporter_hash` on it (`radar.md`, "Scam reports") |
+| Notification feed | A `type` it does not know, such as `coach_checkin`: show it with a generic icon, never drop it |
+| Coach screens | A plan with no `translations/{language}` yet: show the English plan and ask for the translation; a session whose `expires_at` has passed but is not yet deleted: treat it as gone |
+| Scam screens | A check with no `details`, no `explainer.why_it_works` (a benign check) or an empty `indicators`; an indicator with no `scam_indicators` document (never reported) or a `hidden` one: show no count |
 
 ## Survey period (corridors)
 

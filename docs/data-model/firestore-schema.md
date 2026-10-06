@@ -1,6 +1,6 @@
 # Firestore schema
 
-Status: NF-P1-013, written 2026-09-25. This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
+Status: NF-P1-013, written 2026-09-25; extended for Future Scope by NF-F0-003, 2026-10-06 (eight new collections, the rows marked *Future Scope*). This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
 
 How to read it: each collection group says where its shape comes from.
 
@@ -47,6 +47,15 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `report_embeddings/{id}` | same id as the report | Vector for similarity search | Radar | Backend (NF-P3-002) | [radar](collections/radar.md) |
 | `radar_entities/{slug}` | slugified name | Aggregated risk profile of one operator, agency or employer | Radar | Backend (NF-P3-003) | [radar](collections/radar.md) |
 | `radar_alerts/{corridor}` and `.../current/{alertId}` | auto | Active alerts per corridor | Radar | Cron (NF-P3-004) | [radar](collections/radar.md) |
+| `users/{uid}/coach_sessions/{sessionId}` | auto | One Financial Coach interview: stage, slots, transcript. *Future Scope* | Coach | Backend (NF-FC-008) | [coach](collections/coach.md) |
+| `users/{uid}/coach_plans/{planId}` | first 20 hex of the slot hash | Preparedness score and 90-day plan in English, check-in markers. *Future Scope* | Coach | Backend (NF-FC-012) | [coach](collections/coach.md) |
+| `users/{uid}/coach_plans/{planId}/translations/{language}` | language code | The plan in one other language. *Future Scope* | Coach | Backend (NF-FC-014) | [coach](collections/coach.md) |
+| `users/{uid}/scam_checks/{checkId}` | auto | One analysed message: redacted text, verdict, indicators, explainer. *Future Scope* | Scam Analyzer | Backend (NF-SA-012) | [scam](collections/scam.md) |
+| `scam_taxonomy/{id}` and `scam_taxonomy/_meta` | slug; `_meta` | Scam types and manipulation tactics; taxonomy version. *Future Scope* | Scam Analyzer | Data script (NF-SA-001) | [scam](collections/scam.md) |
+| `scam_patterns/{id}` | `<type>-<lang>-<nnn>` | Canonical scam templates with 768-number vectors. *Future Scope* | Scam Analyzer | Data script (NF-SA-006) | [scam](collections/scam.md) |
+| `scam_indicators/{id}` | first 32 hex of the indicator key | How often one phone number, address or account was reported, for "reported N times". *Future Scope* | Scam Analyzer | Backend (NF-SA-013) | [scam](collections/scam.md) |
+| `cost_baselines/{host}` | ISO-2 host country | Monthly cost-of-living figures for the Coach. *Future Scope* | Coach | Data script (NF-FC-003 to -005) | [cost_baselines](collections/cost_baselines.md) |
+| `config/feature_flags` | `feature_flags` | Flags `coach` and `scam`: global value and uid allow-list. *Future Scope* | Both | Operator | [config](collections/config.md) |
 
 ## Differences from the design doc table (section 4.7)
 
@@ -60,6 +69,8 @@ The design doc lists some paths that Firestore cannot hold and misses one collec
 | `complaint_templates/{country}/{type}` | A variable in the collection position | `complaint_templates/{country}/types/{type}` |
 | `rates_history/{pair}/points` | Same as the first row | `rates_history/{pair}/points/{pointId}` |
 | (missing) | NF-P3-010 needs `POST /fib/savings` | `users/{uid}/savings/{id}` |
+
+Future Scope paths are not in design doc 4.7 (it lists the 17 collections of v1.0). They follow its naming: plural snake_case collections, `users/{uid}/...` for anything one worker owns, natural keys for reference data. `config/feature_flags` and `scam_taxonomy/_meta` are single documents named by a fixed id, like `financial_profile/current`.
 
 Each parent document (`labor_laws/{country}`, `rates_history/{pair}`, `radar_alerts/{corridor}`, `complaint_templates/{country}`) is created as a real small document. Firestore lets a subcollection exist under a missing parent, but a missing parent does not show up when listing the parent collection.
 
@@ -100,6 +111,11 @@ Input for the security rules task (NF-P1-014). It states intent. Backend access 
 | `corridors`, `rates_cache`, `rates_history`, `labor_laws` (all subcollections), `complaint_templates` | Read (reference data) | Read | None |
 | `radar_entities`, `radar_alerts` | Read (aggregated, no personal data) | Read | None |
 | `radar_reports`, `report_embeddings` | None (the backend serves reports through the API and hides `reporter_hash`) | None | None |
+| `users/{uid}/coach_sessions`, `coach_plans` and its `translations`, `scam_checks` (*Future Scope*) | Read; **no client write**, every change goes through the API | None | None |
+| `scam_taxonomy`, `cost_baselines` (*Future Scope*) | Read (reference data) | Read | None |
+| `scam_patterns`, `scam_indicators`, `config` (*Future Scope*) | None | None | None |
+
+Future Scope adds one client-writable field: `users/{uid}.signal_sharing` (a map of two booleans, set from the profile page), which the rules must accept alongside the other profile fields. Rules for the new collections are NF-F0-004's. Whether a worker may delete one of their own scam checks from the browser is not decided (D-109).
 
 Entries created by the user (transfers, income, bills, savings) are written by the backend so the values can be validated and categorized. If a task needs the browser to write directly, that task must add the matching rule.
 
@@ -117,6 +133,54 @@ Not needed, although earlier versions of this page listed them (2026-10-01 bug f
 - `radar_entities` `corridors` + `report_count`, and `notifications` `read` + `created_at`: no query uses them. The heatmap reads every entity; the alert feed sorts by `created_at` alone.
 
 Existing copies of these three in a project do no harm.
+
+### Added by Future Scope (NF-F0-003; creating them is NF-F0-004)
+
+Two more indexes are needed, and one setting that is not an index:
+
+| Index | Used by | Why it is not automatic |
+|---|---|---|
+| `scam_patterns`: vector, dimension 768, flat, on `embedding` | The nearest-3 search of NF-SA-010 | Vector fields are never indexed by default |
+| `coach_plans`: single field `departure_date`, ascending, **collection-group scope** | The daily check-in job (NF-FC-016) finds plans reaching day 30, 60 and 90 across all users: `departure_date ==` on the group `coach_plans` | Single-field indexes are created for one collection at a time; a query over a collection group needs the group scope on purpose |
+
+Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). `firestore.indexes.json` supports both as entries (`indexes` for the vector index, `fieldOverrides` for the group-scope field). Which of the two files deploys is still open (D-33, D-68); the one inside `frontend/` is the one the CLI reads.
+
+The same two as `gcloud` commands (syntax from `--help` on 2026-10-06; not run):
+
+```bash
+gcloud firestore indexes composite create --project nomadfinance-prod \
+  --collection-group=scam_patterns --query-scope=COLLECTION \
+  --field-config=field-path=embedding,vector-config='{"dimension":768,"flat":{}}'
+
+# keeping the collection-scope index as well, because an exemption replaces the defaults
+gcloud firestore indexes fields update departure_date --project nomadfinance-prod \
+  --collection-group=coach_plans \
+  --index=order=ASCENDING,query-scope=COLLECTION \
+  --index=order=ASCENDING,query-scope=COLLECTION_GROUP
+```
+
+## Time to live
+
+Three collection groups delete their own documents. A TTL policy is a setting on the field, not code and not an index, so it needs a person with project access, once per project (production, and staging when NF-F0-011 creates it).
+
+| Collection group | TTL field | Value of the field | Why this long |
+|---|---|---|---|
+| `coach_sessions` | `expires_at` | `last_active` + 30 days, moved on every turn | The plan keeps a copy of the slots; the session is only for resuming and looking back |
+| `scam_checks` | `expires_at` | `last_checked_at` + 90 days | Enough for "did I see this before"; the stored text and the scam's phone numbers and addresses should not live longer |
+| `scam_indicators` | `expires_at` | `last_reported_at` + 365 days | Phone numbers are reissued; one nobody has reported for a year stops being flagged |
+
+`coach_plans`, `scam_taxonomy`, `scam_patterns`, `cost_baselines` and `config` have no TTL (the reports in `radar_reports` have none either, see D-110): plans are kept until the worker deletes the account (the account deletion removes them), and the rest is reference data.
+
+```bash
+gcloud firestore fields ttls update expires_at --project nomadfinance-prod \
+  --collection-group=coach_sessions --enable-ttl --async
+gcloud firestore fields ttls update expires_at --project nomadfinance-prod \
+  --collection-group=scam_checks --enable-ttl --async
+gcloud firestore fields ttls update expires_at --project nomadfinance-prod \
+  --collection-group=scam_indicators --enable-ttl --async
+```
+
+Things to know: deletion is not instant, it usually happens within a day of the time in the field and can take longer, so code must not rely on a document being gone at `expires_at` (a read after expiry may still succeed, and the backend should treat `expires_at < now` as absent). A TTL policy applies to the whole collection group, so it covers every user at once. It does not delete subcollections of a document it removes; neither collection has any. If `expires_at` is missing or is not a timestamp, the document never expires, so the backend always writes it.
 
 The vector index is created with `gcloud` (check `gcloud firestore indexes composite create --help` for the current syntax):
 
@@ -137,6 +201,7 @@ gcloud firestore indexes composite create --project nomadfinance-prod \
 | `bills/{uid}/{billId}/{filename}` | Bill or payslip photo | `users/{uid}/bills/{id}.image_path` |
 | `radar-evidence/{reportId}/{filename}` | Optional report attachment | `radar_reports/{id}.evidence_paths` |
 | `exports/{uid}/financial-identity-{timestamp}.pdf` | Exported Financial Identity PDF | `financial_profile/current.latest_export` |
+| `exports/{uid}/coach-plan-{planId}-{language}.pdf` | Coach plan PDF (*Future Scope*), under `exports/` so account deletion already covers it | `coach_plans/{id}.pdf.{language}.storage_path` |
 
 ## How the pillars share data
 
@@ -145,6 +210,16 @@ Remittance X-Ray ──log transfer──────────► users/{uid}
 Contract Shield ──anonymised signal──────► radar_reports  (source: contract_signal)
 Contract Shield ──verified employment────► users/{uid}/income      (source: contract)
 Radar ──flagged entity────────────────────► shown in Remittance (provider slug) and Contract Shield (employer or agency slug)
+```
+
+Future Scope adds:
+
+```
+Coach ──goals──────────────────────────────► users/{uid}/financial_profile/current.goals
+Coach, Scam ──counts only, opt-in──────────► financial_profile (coach_signal, scam_signal)
+Scam Analyzer ──worker-confirmed scam report► radar_reports  (source: scam_check)
+Scam Analyzer ──same transaction───────────► scam_indicators (counts per number or address)
+Contract Shield ──salary, employer, confirmed► coach session slots (source: contract_prefill)
 ```
 
 The join key for the two "shown in" links is the entity `slug` (a slugified name), see [radar](collections/radar.md).
@@ -157,3 +232,6 @@ The join key for the two "shown in" links is the entity `slug` (a slugified name
 | 2 | Push notifications: store FCM tokens per user, or use FCM topics per corridor? | Tokens in `users/{uid}.fcm_tokens` | NF-P3-004 |
 | 3 | Contract text is stored in Firestore in the report documents. Is that acceptable for real users? | Yes for the prototype with demo data (ADR-002: free-tier Gemini content may be used by Google); real data needs the paid tier and a retention rule | Public demo |
 | 4 | Should signed-in users read `radar_reports` directly? | No, the backend serves them | NF-P1-014 |
+| 5 | *Future Scope.* Scam cache per user or shared? | Per user (`cache_key` on `scam_checks`); a shared cache would need a new collection and a retention rule | Decided in NF-F0-003; NF-SA-012 may revisit |
+| 6 | *Future Scope.* How does a scam report look in Radar? | `source: scam_check`, `entity_type: scam_type`, `violation_type: scam_message`, with the full scam details and the worker-confirmed indicators in `scam` (see [radar](collections/radar.md)) | Decided in NF-F0-003 |
+| 7 | *Future Scope.* Can a worker delete their own scam checks or a Coach session before the TTL? | Not specified | NF-F0-004 / NF-SA-012 (D-109) |

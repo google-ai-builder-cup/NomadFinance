@@ -16,20 +16,22 @@ A worker's own report (`source: "user"`) is written only after it passes validat
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `entity_type` | string | yes | `money_transfer_operator`, `recruitment_agency`, `employer` |
+| `entity_type` | string | yes | `money_transfer_operator`, `recruitment_agency`, `employer`, and `scam_type` (scam reports, Future Scope: the entity is the kind of scam, see below) |
 | `entity_name` | string | yes | Name as written in the report, cleaned up |
 | `entity_slug` | string | yes | Slug of the name; the id of the matching `radar_entities` document |
-| `violation_type` | string | yes | `hidden_fees`, `exchange_rate_markup`, `illegal_recruitment_fee`, `wage_theft`, `illegal_deduction`, `contract_substitution`, `passport_retention`, `unlicensed_operator`, `other` |
+| `violation_type` | string | yes | `hidden_fees`, `exchange_rate_markup`, `illegal_recruitment_fee`, `wage_theft`, `illegal_deduction`, `contract_substitution`, `passport_retention`, `unlicensed_operator`, `other`, and `scam_message` (scam reports) |
 | `corridor_id` | string | no | For operators and agencies, for example `SG-PH` |
 | `host_country` | string | no | For employers, and for heatmap grouping. At least one of `corridor_id` and `host_country` is required. |
 | `description` | string | yes | What happened, in the reporter's words |
 | `language` | string | yes | Language of `description` |
 | `cluster_id` | string | yes | Id of the first report in its similarity cluster. Equal to its own id when it starts a new cluster. Counts unique incidents. |
-| `source` | string | yes | `user`, `contract_signal` (Contract Shield, NF-P2-021) or `seed` (demo data, NF-P3-005) |
-| `reporter_hash` | string | for `user` | HMAC-SHA-256 of the reporter's uid with a secret kept in Secret Manager. **Never the uid.** Absent for `contract_signal` and `seed`. Used to limit repeat reports and abuse. |
+| `source` | string | yes | `user`, `contract_signal` (Contract Shield, NF-P2-021), `seed` (demo data, NF-P3-005) or `scam_check` (a Scam Analyzer check the worker chose to share, NF-SA-013) |
+| `reporter_hash` | string | for `user` | HMAC-SHA-256 of the reporter's uid with a secret kept in Secret Manager. **Never the uid.** Absent for `contract_signal`, `seed` and `scam_check`. Used to limit repeat reports and abuse. |
 | `evidence_paths` | array of string | no | Cloud Storage paths of optional attachments (`radar-evidence/{id}/`), added after the report itself via `POST /radar/report/{report_id}/evidence` (NF-P3-004). At most 5. |
 | `validation` | map | yes | `{ "spam_score": number, "category_confidence": number, "model": string }` from the classification tier. For `contract_signal` there is no free text to check and no model call: fixed values that say so (`spam_score: 0`, `category_confidence: 1`, `model: "contract_shield"`), never invented Gemini output |
 | `summary` | string | for `user` | One neutral English sentence from step 4's classification (NF-P3-001). Absent for `contract_signal` and `seed` (no free text to summarize). Not what NF-P3-004's alert cron shows — that's a separate, alert-level summary generated from facts aggregated across multiple reports, never this per-report one |
+| `scam` | map | for `scam_check` | The details of the scam. See "Scam reports" below. Absent on every other source. |
+| `hidden` | boolean | no | **Future Scope.** An operator sets `true` to take a report out of every list and count, for example after a complaint that a legitimate person was named (D-107). Absent means visible. The API leaves a hidden report out and the aggregation job does not count it. Any source may use it. |
 | `created_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
 
@@ -57,6 +59,76 @@ A worker's own report (`source: "user"`) is written only after it passes validat
 Values and the entity name are illustrative. Real demo data is created by NF-P3-005.
 
 **Access:** no client access. The backend returns reports through the API and leaves out `reporter_hash`.
+
+### Scam reports (Future Scope, NF-F0-003)
+
+A worker who has checked a message in the Scam Analyzer and the analyzer found a scam can share it (one tap, behind a confirmation sheet, NF-SA-013). The report carries **the full picture of the scam, so other workers can recognise it**, and nothing that says who sent it in: no uid, no reporter hash, no raw message, no screenshot. A report can be made only from a check the analyzer itself marked as a scam, and only once per check (`scam_checks.reported_report_id`).
+
+How the common fields are filled:
+
+| Field | Value |
+|---|---|
+| `source` | `scam_check` |
+| `entity_type`, `entity_name`, `entity_slug` | `scam_type`; the taxonomy `label` (for example `Illegal recruitment fee`); `scam-` plus the type id with hyphens (`scam-illegal-recruitment-fee`). So the Radar profile page is "this kind of scam", and it lists every report of it with its details. The slug cannot clash with a provider or an employer: those slugs never start with `scam-` unless a business is called that. |
+| `violation_type` | `scam_message` |
+| `corridor_id`, `host_country` | The check's `corridor_id` if it has one; `host_country` from the worker's profile (a country, not an identity) |
+| `description` | The redacted message text **as the worker confirmed it** (they can edit it in the confirmation sheet; at most 1,000 characters). This is also the text that is embedded for similarity. |
+| `language` | `scam.message_language`, or the worker's language when that is `other` |
+| `validation` | `{ "spam_score": 0, "category_confidence": <the verdict's confidence>, "model": <the classifier model id> }`. There is no spam check, because the analyzer already classified the message; the confidence and model are the analyzer's real values, not invented ones. |
+| `summary` | Absent (no free text to summarise) |
+| `reporter_hash` | Absent, on purpose: nothing that links a report to a worker is kept. Abuse is limited instead by the analyzer's rate limit and by the rule that only a check marked as a scam can be reported. |
+
+The `scam` map:
+
+| Key | Description |
+|---|---|
+| `scam_type` | Taxonomy `type` id |
+| `tactics` | Taxonomy `tactic` ids |
+| `risk_level`, `confidence` | From the check's verdict |
+| `trigger_phrases` | From the verdict (substrings of the redacted text) |
+| `details` | Same keys as `scam_checks.details`: `claimed_identity`, `contact_channel`, `payment_requested`, `amount_requested`, `deadline_stated`. Only the ones the check has. |
+| `indicators` | Array of `{ "kind", "value", "flags", "imitates" }` (same as in `scam_checks`, without `id`). **Only the indicators the worker left ticked** in the confirmation sheet: a phone number or an address in the message may be the worker's own. Creating the report also adds one to the counters of each of these in `scam_indicators` (see [scam](scam.md)), in the same transaction, which is what lets a later check say "this number was reported N times". |
+| `message_language`, `input_type` | `en`...`bn` or `other`; `text` or `screenshot` |
+
+**What the confirmation sheet must show** (NF-SA-018): exactly what will be public to other workers: the type, the text (editable), each indicator with a tick, and a line that the report is anonymous and unverified. Nothing that is not on the sheet is sent. The text is redacted for phone numbers, emails, IDs, accounts and URLs but **not for personal names**, so the sheet is also where the worker removes a name that appears in the message (D-108).
+
+**Example** — `radar_reports/r_02` (scam report)
+
+```json
+{
+  "entity_type": "scam_type",
+  "entity_name": "Illegal recruitment fee",
+  "entity_slug": "scam-illegal-recruitment-fee",
+  "violation_type": "scam_message",
+  "corridor_id": "SG-IN",
+  "host_country": "SG",
+  "description": "Congratulations! You are selected for a caregiver job in Singapore. Pay [AMOUNT] processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE].",
+  "language": "en",
+  "cluster_id": "r_02",
+  "source": "scam_check",
+  "validation": { "spam_score": 0, "category_confidence": 0.94, "model": "gemini-3.1-flash-lite" },
+  "scam": {
+    "scam_type": "illegal_recruitment_fee",
+    "tactics": ["urgency", "scarcity"],
+    "risk_level": "high",
+    "confidence": 0.94,
+    "trigger_phrases": ["processing fee", "visa slot is cancelled"],
+    "details": { "contact_channel": "whatsapp", "payment_requested": "bank transfer", "deadline_stated": true },
+    "indicators": [
+      { "kind": "phone", "value": "6590000001", "flags": [] },
+      { "kind": "url", "value": "sg-careers-visa.example", "flags": ["lookalike"], "imitates": "mom.gov.sg" }
+    ],
+    "message_language": "en",
+    "input_type": "text"
+  },
+  "created_at": "2026-11-02T10:20:00Z",
+  "schema_version": 1
+}
+```
+
+**Code that reads `radar_reports` must tolerate these values** (adding values and an optional map needs no `schema_version` bump, see `versioning.md`): the entity page and its report list (labels for the new `entity_type` and `violation_type`, and a layout for `scam`), the alert job (counts reports by corridor and violation type; a scam type can raise a surge alert like any entity), the aggregation (`radar_entities` for a `scam-...` slug works as for any entity and is `flagged` at 2 incidents), and the cross-pillar badges (they look up provider and employer slugs and never meet a `scam-` slug). The API that serves reports must keep leaving out `reporter_hash` and must return `scam` for these reports.
+
+**Known risk, for the walkthrough.** A scam report names phone numbers and addresses that other people will see, from one unverified worker. A wrongly flagged number could harm a legitimate person. What limits it: the worker confirms each indicator, the analyzer must have judged the message a scam, the page labels such reports "reported by a worker, not verified", and the profile is "flagged" only at 2 or more incidents. A report can be hidden by an operator (`hidden`), and so can an indicator (`scam_indicators.hidden`); who reviews complaints and how fast is a process decision for NF-HR-008 (security review), D-107. Indicators also stop being flagged a year after their last report (`scam_indicators.expires_at`), because phone numbers are reissued; the values inside old reports are not removed (D-110).
 
 ## `report_embeddings/{id}`
 
@@ -190,4 +262,4 @@ Each alert is language-neutral. The text a user sees is written into their own `
 
 ## Tasks that use it
 
-NF-P3-001 (submit), NF-P3-002 (embeddings and clustering), NF-P3-003 (entity aggregation), NF-P3-004 (alert cron), NF-P3-005 (demo seed), NF-P3-007 to NF-P3-009 (UI), NF-P3-025 (App Check on submit), NF-P2-021 (contract signal), NF-P3-022 and NF-P3-023 (badges).
+NF-P3-001 (submit), NF-P3-002 (embeddings and clustering), NF-P3-003 (entity aggregation), NF-P3-004 (alert cron), NF-P3-005 (demo seed), NF-P3-007 to NF-P3-009 (UI), NF-P3-025 (App Check on submit), NF-P2-021 (contract signal), NF-P3-022 and NF-P3-023 (badges); from Future Scope NF-SA-010 (similar scams), NF-SA-013 (report from a scam check), NF-SA-018 (confirmation sheet).
