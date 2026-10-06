@@ -1,0 +1,60 @@
+# Checks that run on your machine before a commit lands (NF-F0-009). Setup: docs/CONTRIBUTING.md.
+# `pre-commit install` installs both hook types listed here; the commit-msg one runs commitlint.
+minimum_pre_commit_version: "4.0.0"
+default_install_hook_types: [pre-commit, commit-msg]
+
+repos:
+  # Same pins as backend/requirements-dev.txt, so the hook and CI agree.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.8
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^(backend|data-scripts)/
+
+  # Black comes from `pip install -r backend/requirements-dev.txt` (26.5.1, the CI pin) rather than
+  # from pre-commit's own environment: the compiled wheel pre-commit would install is blocked
+  # by Windows Application Control on at least one teammate's machine.
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        language: system
+        # Black reads pyproject.toml from the common folder of the files it is given, and a
+        # commit touching both backend/ and data-scripts/ has none (the repo root). The two
+        # [tool.black] sections are identical.
+        entry: python -m black --config backend/pyproject.toml
+        types: [python]
+        files: ^(backend|data-scripts)/
+
+  # Detects hardcoded secrets in the staged changes. The binary is built by pre-commit.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      # Run through node on the installed packages: the commands would otherwise start in
+      # frontend/, where the staged paths (frontend/src/...) do not exist. `pnpm install` in
+      # frontend/ is the only setup. The flags match `pnpm lint` and `pnpm format`, except that
+      # prettier keeps each file's line endings: a Windows checkout is CRLF (core.autocrlf), and
+      # forcing LF would rewrite every file it touches and fail the commit each time.
+      - id: eslint
+        name: eslint
+        language: system
+        entry: node frontend/node_modules/eslint/bin/eslint.js --max-warnings 0 --report-unused-disable-directives --resolve-plugins-relative-to frontend
+        files: ^frontend/.*\.(ts|tsx)$
+      - id: prettier
+        name: prettier
+        language: system
+        entry: node frontend/node_modules/prettier/bin/prettier.cjs --write --ignore-unknown --end-of-line auto --ignore-path frontend/.prettierignore
+        files: ^frontend/
+
+      # The version is pinned here and in .github/workflows/commit-policy.yml. Needs Node 22.12+.
+      - id: commitlint
+        name: commitlint
+        language: node
+        additional_dependencies: ["@commitlint/cli@21.2.3"]
+        entry: commitlint --config commitlint.config.cjs --edit
+        stages: [commit-msg]
