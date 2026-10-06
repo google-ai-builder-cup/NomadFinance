@@ -11,6 +11,8 @@ venv/
 htmlcov/
 .coverage
 coverage.xml
+coverage.json
+coverage/
 .tox/
 
 # Node

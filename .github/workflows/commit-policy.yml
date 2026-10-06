@@ -1,0 +1,39 @@
+name: Commit policy
+
+# Runs commitlint over every commit of a pull request, with the same config and version as the
+# local commit-msg hook, so `git commit --no-verify` does not get past it (NF-F0-009, NF-F0-010).
+# No path filter: it is a required check and must run on every pull request.
+
+on:
+  pull_request:
+
+concurrency:
+  group: commit-policy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  commitlint:
+    # The name is what branch protection lists, so it must differ from every other job's.
+    name: Commit policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Full history: both ends of the range must be present.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # commitlint 21 needs Node 22.12 or newer.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Merge commits and reverts are skipped by commitlint's defaults. Pinned, as in .pre-commit-config.yaml.
+      - name: Check every commit of the pull request
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: npx --yes @commitlint/cli@21.2.3 --config commitlint.config.cjs --from "$BASE_SHA" --to "$HEAD_SHA" --verbose

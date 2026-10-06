@@ -1,10 +1,9 @@
 name: Backend CI
 
 on:
+  # No path filter on pull requests: this is a required check (NF-F0-010), and a required check
+  # that does not run leaves a docs-only pull request waiting forever.
   pull_request:
-    paths:
-      - "backend/**"
-      - ".github/workflows/backend-ci.yml"
   push:
     branches: [main]
     paths:
@@ -20,13 +19,18 @@ permissions:
 
 jobs:
   checks:
+    # The name is what branch protection lists, so it must differ from every other job's.
+    name: Backend checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: backend
     steps:
+      # Full history: the coverage gate compares the pull request with its base branch.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -39,7 +43,40 @@ jobs:
       - run: ruff check .
       - run: black --check .
       - run: mypy app
-      - run: pytest -q
+
+      # Tests that need no emulator. Coverage is measured from here on and added to below.
+      - run: pytest -q --cov=app --cov-report=
+
+      # The repository and end-to-end tests skip themselves without a Firestore emulator, so
+      # without this step about 19 tests never ran in CI and app/repositories sat at 63%.
+      # The configuration tests are left out: a deployed environment refuses to start with
+      # emulator variables set (NF-P4-004), which these tests exercise on purpose.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --global firebase-tools@15.31.0
+      - name: Tests that need the Firestore and Auth emulators
+        run: >
+          firebase emulators:exec --only firestore,auth --project demo-nomadfinance
+          --config ../frontend/firebase.json
+          "python -m pytest tests/integration -q --cov=app --cov-append --cov-report="
+
+      # Every changed backend package needs 70% and app/ as a whole 93% (scripts/check_coverage.py).
+      - name: Coverage gate
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ -n "$BASE_REF" ]; then
+            git diff --name-only "origin/$BASE_REF...HEAD" > ../changed-files.txt
+          else
+            : > ../changed-files.txt
+          fi
+          coverage json -o coverage.json
+          python scripts/check_coverage.py coverage.json --changed-list ../changed-files.txt
 
       # The deploy workflow builds this image on merge; catching a broken Dockerfile here is cheaper.
       - name: Build the image

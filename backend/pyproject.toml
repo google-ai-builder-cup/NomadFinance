@@ -26,3 +26,7 @@ strict = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+# Measured with `pytest --cov` (NF-F0-010); the gates are in scripts/check_coverage.py.
+[tool.coverage.run]
+source = ["app"]

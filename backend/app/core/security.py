@@ -1,17 +1,20 @@
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from typing import Any
 
 import firebase_admin  # type: ignore[import-untyped]
 from firebase_admin import app_check as firebase_app_check
 from firebase_admin import auth as firebase_auth
+from firebase_admin import credentials as firebase_credentials
+from google.auth import credentials as google_credentials
 from google.auth import exceptions as google_auth_exceptions
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 from jwt import PyJWKClientError
 
-from app.config import get_settings
+from app.config import _EMULATOR_VARIABLES, get_settings
 
 
 class InvalidTokenError(Exception):
@@ -22,16 +25,37 @@ class TokenVerificationUnavailableError(Exception):
     """Google's signing keys couldn't be fetched, so no token can be checked right now."""
 
 
+class _EmulatorCredential(firebase_credentials.Base):  # type: ignore[misc]
+    """Stands in for Application Default Credentials while an emulator is configured.
+
+    The Firestore and Auth emulators check no credentials, but firebase-admin still looks
+    ADC up when it builds a client, and fails on a machine that has none (a CI runner).
+    """
+
+    def get_credential(self) -> google_credentials.Credentials:
+        return google_credentials.AnonymousCredentials()  # type: ignore[no-untyped-call]
+
+
+def _credential() -> firebase_credentials.Base | None:
+    # `Settings` refuses to start outside local development with an emulator variable set, so
+    # a deployed service never takes this branch and keeps real ADC.
+    if any(os.environ.get(name) for name in _EMULATOR_VARIABLES):
+        return _EmulatorCredential()
+    return None
+
+
 @lru_cache
 def get_firebase_app() -> firebase_admin.App:
     """Return the process-wide Firebase Admin app, initializing it on first use.
 
-    No explicit credentials are passed: Cloud Run's attached service account
-    supplies Application Default Credentials in prod, and local dev runs against
+    No explicit credentials are passed in a deployed service: Cloud Run's attached service
+    account supplies Application Default Credentials in prod. Local dev and CI run against
     the Firebase Emulator Suite via FIRESTORE_EMULATOR_HOST / FIREBASE_AUTH_EMULATOR_HOST.
     """
     settings = get_settings()
-    return firebase_admin.initialize_app(options={"projectId": settings.firebase_project_id})
+    return firebase_admin.initialize_app(
+        credential=_credential(), options={"projectId": settings.firebase_project_id}
+    )
 
 
 def verify_id_token(id_token: str) -> dict[str, Any]:

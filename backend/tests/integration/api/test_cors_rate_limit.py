@@ -128,7 +128,15 @@ def _settings(**values: object) -> Settings:
     return Settings(**{**base, **values})  # type: ignore[arg-type]
 
 
-def test_prod_defaults_to_the_firebase_hosting_origins() -> None:
+def test_prod_defaults_to_the_firebase_hosting_origins(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Under the Firebase emulators these are set, and a deployed environment refuses to start
+    # with them (NF-P4-004), which is not what this test is about.
+    for name in (
+        "FIREBASE_AUTH_EMULATOR_HOST",
+        "FIRESTORE_EMULATOR_HOST",
+        "FIREBASE_STORAGE_EMULATOR_HOST",
+    ):
+        monkeypatch.delenv(name, raising=False)
     settings = _settings(app_env="prod", cron_service_account="s", cron_audience="a")
 
     assert settings.cors_allowed_origins == [

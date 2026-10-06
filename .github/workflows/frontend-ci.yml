@@ -1,10 +1,9 @@
 name: Frontend CI
 
 on:
+  # No path filter on pull requests: these are required checks (NF-F0-010), and a required check
+  # that does not run leaves a docs-only pull request waiting forever.
   pull_request:
-    paths:
-      - "frontend/**"
-      - ".github/workflows/frontend-ci.yml"
   push:
     branches: [main]
     paths:
@@ -24,8 +23,16 @@ defaults:
 
 jobs:
   checks:
+    # The name is what branch protection lists, so it must differ from every other job's.
+    name: Frontend checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Placeholders: nothing is deployed here. The build and the tests both read them.
+    env:
+      VITE_FIREBASE_API_KEY: ci-placeholder
+      VITE_FIREBASE_AUTH_DOMAIN: nomadfinance-prod.web.app
+      VITE_FIREBASE_PROJECT_ID: nomadfinance-prod
+      VITE_FIREBASE_APP_ID: ci-placeholder
     steps:
       - uses: actions/checkout@v4
 
@@ -43,17 +50,17 @@ jobs:
       - run: pnpm lint
       - run: pnpm format:check
 
-      # Type-checks (tsc -b) and builds. The Firebase values are placeholders: nothing is deployed here.
+      # Unit tests, with the coverage floors set in vite.config.ts (D-46: they never ran in CI).
+      - name: Unit tests with coverage
+        run: pnpm test:coverage
+
+      # Type-checks (tsc -b) and builds.
       - name: Build
         run: pnpm build
-        env:
-          VITE_FIREBASE_API_KEY: ci-placeholder
-          VITE_FIREBASE_AUTH_DOMAIN: nomadfinance-prod.web.app
-          VITE_FIREBASE_PROJECT_ID: nomadfinance-prod
-          VITE_FIREBASE_APP_ID: ci-placeholder
 
   # Firestore and Storage security rules, against the local emulators.
   rules:
+    name: Frontend rules tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

@@ -1,6 +1,6 @@
 import path from "node:path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
@@ -55,6 +55,28 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  test: {
+    // Unit tests sit beside the code (`pnpm test` runs src). tests/rules needs the Firebase
+    // emulators and has its own script (`pnpm test:rules`).
+    include: ["src/**/*.test.{ts,tsx}", "tests/**/*.test.ts"],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["src/**/*.test.{ts,tsx}", "src/**/*.d.ts", "src/main.tsx"],
+      reporter: ["text-summary", "json-summary"],
+      // Measured on 2026-10-06: 16.6% of lines overall, src/utils 78%, src/lib 40%. Most screens
+      // have no unit test yet, so the overall floors only stop coverage from collapsing; raise
+      // them as tests are added (NF-F0-010). The two folders that are tested hold their level.
+      thresholds: {
+        lines: 15,
+        statements: 15,
+        functions: 13,
+        branches: 15,
+        "src/utils/**": { lines: 70, statements: 70 },
+        "src/lib/**": { lines: 35, statements: 35 },
+      },
     },
   },
   server: {

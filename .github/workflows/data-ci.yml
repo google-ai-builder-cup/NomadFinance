@@ -1,10 +1,9 @@
 name: Data scripts CI
 
 on:
+  # No path filter on pull requests: this is a required check (NF-F0-010), and a required check
+  # that does not run leaves a docs-only pull request waiting forever.
   pull_request:
-    paths:
-      - "data-scripts/**"
-      - ".github/workflows/data-ci.yml"
   push:
     branches: [main]
     paths:
@@ -20,6 +19,8 @@ permissions:
 
 jobs:
   checks:
+    # The name is what branch protection lists, so it must differ from every other job's.
+    name: Data scripts checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

@@ -76,6 +76,22 @@ If a message is refused, fix it and commit again: the commit was not made. For t
 
 `.github/workflows/commit-policy.yml` runs commitlint, the same config at the same version, over **every commit between `main` and the head of your pull request**. `git commit --no-verify` skips the local hooks but not this check, so a bad message fails the pull request instead. Fix it by rewriting the branch's commits and pushing again.
 
+## Checks a pull request must pass
+
+Five checks run on every pull request, and `main` accepts a merge only when all of them are green, the branch is up to date with `main` and a teammate has approved (branch protection, NF-F0-010; settings in `docs/runbooks/NF-F0-010-ci-test-gates.md`).
+
+| Check | What it runs | Run it yourself |
+|---|---|---|
+| Backend checks | ruff, black, mypy, pytest, the tests that need the Firestore emulator, the coverage gate, the Docker build | from `backend/`: `ruff check .`, `black --check .`, `mypy app`, `pytest -q` |
+| Frontend checks | eslint, prettier, vitest with coverage, `tsc` and the build | from `frontend/`: `pnpm lint`, `pnpm format:check`, `pnpm test:coverage`, `pnpm build` |
+| Frontend rules tests | The Firestore and Storage rules on the emulators | `pnpm test:rules` |
+| Data scripts checks | ruff, black, mypy, pytest and the dry runs | from `data-scripts/` |
+| Commit policy | commitlint over every commit of the pull request | see "Commit messages" |
+
+**Coverage.** Every `backend/app/<package>` your pull request changes must have 70% of its statements covered, and `app/` as a whole 93% (`backend/scripts/check_coverage.py`). On the frontend, floors are set in `frontend/vite.config.ts` (15% overall, 70% for `src/utils`, 35% for `src/lib`): most screens have no unit test yet, so these stop coverage from collapsing and are raised as tests are added. To see your own numbers, from `backend/`: `pytest --cov=app --cov-report=term-missing`.
+
+**The emulator tests.** The repository and end-to-end tests skip themselves when no Firestore emulator is running, so a plain `pytest` leaves about 19 of them out. CI runs them with `firebase emulators:exec` (see `.github/workflows/backend-ci.yml`); to do the same, from `backend/`: `firebase emulators:exec --only firestore,auth --project demo-nomadfinance --config ../frontend/firebase.json "python -m pytest tests/integration -q"`. Run only `tests/integration` that way: the configuration unit tests deliberately refuse emulator variables.
+
 ## Secrets
 
 The gitleaks hook stops a key before it is committed; if it blocks something that is not a secret (a placeholder, a test value), change the value to an obvious placeholder first. If it must stay, add its fingerprint (printed by the hook) to a `.gitleaksignore` file and say why in the pull request. Never commit `.env` files; only `.env.example` carries placeholder names.
