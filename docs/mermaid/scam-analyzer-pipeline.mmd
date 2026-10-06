@@ -1,0 +1,42 @@
+%% Future scope, behind feature flag "scam" (docs/future-scope/design.md section 5).
+flowchart LR
+    U([Worker])
+
+    U -->|1 - Paste text or upload screenshot| API[Cloud Run API - api v2 scam]
+
+    API -->|Step 1| S1[Verify Auth + require_flag scam + Rate Limit 20 per hour]
+    S1 -->|Text path| S3
+    S1 -->|Image path - Step 2| S2[Resize + Read Message and Sender - Gemini 1.5 Flash Vision]
+    S2 -->|Image discarded| S3[Redact PII + Normalise + SHA-256 of text and language]
+
+    S3 -->|Step 3| S4{Verdict Cached?}
+    S4 -->|Hit - zero Gemini calls| R
+
+    S4 -->|Miss - Step 4| S5[Extract Indicators - URLs phones lookalike domains, never fetched]
+    S5 -->|Step 5| S6[Classify Message - Gemini Flash-Lite structured ScamVerdict]
+    TAX[(Firestore - scam_taxonomy)] -.Grounding.-> S6
+
+    S5 -->|Step 6, parallel| S7[Embed Message - 768-number vector]
+    S7 --> S8[Vector Search - scam_patterns + report_embeddings]
+    PAT[(Firestore - scam_patterns)] -.Known templates.-> S8
+    RE[(Firestore - report_embeddings)] -.Radar reports.-> S8
+
+    S6 -->|is_scam true - Step 7| S9[Explain Tactics + Safe Next Steps - Gemini 2.5 Flash]
+    S6 -->|is_scam false| S10[Short Reassurance + General Tip]
+
+    S9 --> R[Verdict Card + Explainer + Similar Scams]
+    S10 --> R
+    S8 --> R
+    R --> U
+
+    R -.Save redacted check.-> SC[(Firestore - users scam_checks)]
+
+    U -->|Warn other workers| RP[POST report - idempotent per check]
+    SC --> RP
+    RP -->|Anonymised, no raw text| RR[(Firestore - radar_reports)]
+    RR -.Enters Radar pipeline.-> RAD[Exploitation Radar clustering + alerts]
+
+    classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
+    classDef data fill:#34A853,stroke:#188038,color:#fff
+    class S2,S6,S7,S9 gemini
+    class TAX,PAT,RE,SC,RR data

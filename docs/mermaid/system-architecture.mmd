@@ -1,10 +1,11 @@
+%% Dashed outlines = future scope behind feature flags (docs/future-scope/design.md). Not yet deployed.
 flowchart TB
     User([Migrant Worker - Any Language, Any Device])
 
     subgraph FE[FRONTEND - Firebase Hosting - React PWA]
         Landing[Landing Page + Language Selector]
         Auth[Firebase Auth - Google + Phone OTP]
-        Home[Dashboard - 4 Feature Cards]
+        Home[Dashboard - 4 Feature Cards + 2 Flag-Gated]
     end
 
     User --> Landing
@@ -15,28 +16,39 @@ flowchart TB
     Home --> P2[Contract Shield]
     Home --> P3[Exploitation Radar]
     Home --> P4[Financial Identity]
+    Home -.flag coach.-> P5[Financial Coach]
+    Home -.flag scam.-> P6[Scam Analyzer]
 
     subgraph BE[BACKEND - Cloud Run - FastAPI]
         API[REST API Gateway - Firebase Auth Verify]
         Router{Route to Service}
+        FLG[Feature Flag Check - require_flag, 60 s cache]
+        RED[PII Redaction - before log or store]
     end
 
     P1 --> API
     P2 --> API
     P3 --> API
     P4 --> API
+    P5 --> API
+    P6 --> API
     API --> Router
+    Router -.v2 routes.-> FLG
 
     Router --> RX[Remittance Engine]
     Router --> CS[Contract Analysis Pipeline]
     Router --> RD[Radar Aggregation]
     Router --> FI[Financial Profile Builder]
+    FLG --> CO[Coach Engine - SSE interview + plan]
+    FLG --> SA[Scam Analysis Pipeline]
+    CO --> RED
+    SA --> RED
 
     subgraph AI[GEMINI AI LAYER]
         G1[Gemini 1.5 Flash - Vision + Extraction]
         G2[Gemini 2.5 Flash - Legal Reasoning + Synthesis]
         G3[Gemini Flash-Lite - Translation + Classification]
-        G4[text-embedding-004 - Vector Embeddings]
+        G4[Embeddings - Vector Search]
     end
 
     RX --> G3
@@ -46,14 +58,25 @@ flowchart TB
     RD --> G4
     FI --> G1
     FI --> G2
+    CO --> G2
+    CO --> G3
+    SA --> G1
+    SA --> G2
+    SA --> G3
+    SA --> G4
 
     subgraph DB[FIRESTORE - Data Layer]
         FS1[(users + contracts + transfers)]
         FS2[(labor_laws - 6 countries)]
         FS3[(corridors - World Bank)]
         FS4[(rates_cache + rates_history)]
-        FS5[(radar_reports + radar_entities)]
+        FS5[(radar_reports + radar_entities + report_embeddings)]
         FS6[(financial_profile)]
+        FS7[(users coach_sessions + coach_plans)]
+        FS8[(users scam_checks)]
+        FS9[(scam_taxonomy + scam_patterns - vector)]
+        FS10[(cost_baselines)]
+        FS11[(config feature_flags)]
     end
 
     RX --> FS3
@@ -64,7 +87,21 @@ flowchart TB
     FI --> FS1
     FI --> FS6
 
+    CO --> FS7
+    CO --> FS10
+    CO --> FS2
+    CO --> FS4
+    CO -.cheapest provider.-> RX
+    CO -.salary prefill.-> FS1
+    CO -.plan goals.-> FS6
+    SA --> FS8
+    SA --> FS9
+    SA --> FS5
+    SA -.one-tap report.-> FS5
+    FLG --> FS11
+
     CS --> CST[(Cloud Storage - PDFs + Reports)]
+    CO --> CST
 
     subgraph EXT[EXTERNAL DATA SOURCES]
         WB[World Bank RPW - Quarterly Excel]
@@ -76,6 +113,11 @@ flowchart TB
     CRON --> FRA
     FRA --> FS4
 
+    CRON2[Cloud Scheduler - Daily Check-In Job]
+    CRON2 --> CO
+    CO --> FCM[Firebase Cloud Messaging]
+    FCM --> User
+
     WB -.One-time load.-> FS3
     ILO -.Manual curation.-> FS2
 
@@ -83,8 +125,10 @@ flowchart TB
     classDef aiStyle fill:#EA4335,stroke:#c5221f,color:#fff
     classDef dbStyle fill:#34A853,stroke:#188038,color:#fff
     classDef extStyle fill:#FBBC04,stroke:#f9ab00,color:#000
+    classDef planned stroke-dasharray:5 3,stroke-width:2px
 
     class User userStyle
     class G1,G2,G3,G4 aiStyle
-    class FS1,FS2,FS3,FS4,FS5,FS6,CST dbStyle
+    class FS1,FS2,FS3,FS4,FS5,FS6,CST,FS7,FS8,FS9,FS10,FS11 dbStyle
     class WB,ILO,FRA extStyle
+    class P5,P6,FLG,RED,CO,SA,FS7,FS8,FS9,FS10,FS11,CRON2,FCM planned

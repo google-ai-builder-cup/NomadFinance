@@ -34,6 +34,12 @@ flowchart LR
         SYN --> PROF[(financial_profile)]
     end
 
+    %% Future scope (flags coach, scam): plan targets become goals, and opt-in activity signals
+    %% feed the narrative and the unified activity feed.
+    COACH[Financial Coach] -.Plan targets as goals.-> PROF
+    COACH -.Plan adherence, opt-in.-> METRICS
+    SCAMA[Scam Analyzer] -.Scam-check activity, opt-in.-> METRICS
+
     U -->|Request Portable Report| EXP[Export Financial Identity]
     EXP --> PROF
     PROF --> PDF[Generate PDF - weasyprint]
@@ -44,3 +50,5 @@ flowchart LR
     classDef data fill:#34A853,stroke:#188038,color:#fff
     class S2a,S4,SYN gemini
     class S3,S5,PROF,METRICS data
+    classDef planned stroke-dasharray:5 3,stroke-width:2px
+    class COACH,SCAMA planned

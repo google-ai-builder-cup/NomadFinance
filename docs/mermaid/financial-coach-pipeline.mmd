@@ -1,0 +1,49 @@
+%% Future scope, behind feature flag "coach" (docs/future-scope/design.md section 4).
+flowchart LR
+    U([Worker - Before Departure])
+
+    U -->|1 - Start or resume interview| API[Cloud Run API - api v2 coach]
+
+    API -->|Step 1| S1[Verify Auth + require_flag coach]
+    S1 -->|Step 2| S2[Load or Create Session - one active per user]
+    S2 -->|Step 3| S3[Redact PII + Guardrails - scope and injection]
+    S3 -->|Step 4| S4[Extract Slot Updates + Confidence - Gemini Flash-Lite]
+    S4 -->|Step 5| S5[Apply Slots + Advance Stage - state machine]
+    S5 -->|Step 6| S6[Stream Coach Reply over SSE - Gemini 2.5 Flash chat]
+    S6 -->|token events| U
+
+    S2 <-.Load and save slots + transcript.-> CS[(Firestore - users coach_sessions)]
+    S5 -.Save slots + stage.-> CS
+    CTR[(Firestore - users contracts)] -.Salary + employer, user confirms.-> S2
+
+    S5 -->|Stage reaches review| S7[Compute Preparedness Score - pure Python, no model]
+    LL[(Firestore - labor_laws)] -.Legal fee cap.-> S7
+    FX[(Firestore - rates_cache)] -.Live FX.-> S7
+
+    S7 -->|Step 7| S8[Generate 90-Day Plan - Gemini 2.5 Flash structured]
+    BL[(Firestore - cost_baselines)] -.Cost of living.-> S8
+    RX[Remittance Engine - cheapest provider] -.Corridor price.-> S8
+
+    S8 -->|Step 8| S9[Validate Every Figure - derivable from inputs]
+    S9 -->|Step 9| S10[Translate Narrative - Gemini Flash-Lite, numbers untouched]
+    S10 -->|Step 10| S11[Render PDF - weasyprint]
+
+    S11 --> R[Score + Plan + PDF link]
+    R --> U
+
+    S11 -.Save plan.-> PL[(Firestore - users coach_plans)]
+    S11 -.Upload PDF.-> ST[(Cloud Storage - plan PDFs)]
+    S11 -.Plan targets as goals.-> FP[(Firestore - financial_profile)]
+
+    subgraph CHK[Check-In Reminders - Daily Cron]
+        CRON[Cloud Scheduler] --> CJ[coach check-in endpoint - IAM]
+        CJ -->|Plans at day 30 60 90| DUE[Find Due Plans - once per milestone]
+        DUE -->|Push| FCM[Firebase Cloud Messaging]
+        DUE -->|Write| NT[(users notifications)]
+        FCM --> U
+    end
+
+    classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
+    classDef data fill:#34A853,stroke:#188038,color:#fff
+    class S4,S6,S8,S10 gemini
+    class CS,CTR,LL,FX,BL,PL,ST,FP,NT data
