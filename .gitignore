@@ -13,6 +13,9 @@ htmlcov/
 coverage.xml
 coverage.json
 coverage/
+.vitest/
+playwright-report/
+test-results/
 .tox/
 
 # Node

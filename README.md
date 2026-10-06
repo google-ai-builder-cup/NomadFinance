@@ -54,6 +54,20 @@ See individual folder READMEs:
 
 Full docs: [docs/README.md](./docs/README.md)
 
+## How to Test
+
+Five kinds of test, from fastest to slowest. Commands are the same on macOS, Linux and Windows (PowerShell). Details, fixtures and examples: [`docs/runbooks/NF-F0-014-test-harness.md`](./docs/runbooks/NF-F0-014-test-harness.md).
+
+| Kind | Where | Command | Needs |
+|---|---|---|---|
+| Backend unit and API tests, Gemini replaced by recordings | `backend/tests/unit`, `backend/tests/integration/api` | `cd backend && pytest` | the backend virtual environment active |
+| Backend tests against the Firestore emulator, with seeded data | `backend/tests/integration` | `cd backend && firebase emulators:exec --only firestore,auth --project demo-nomadfinance --config ../frontend/firebase.json "python -m pytest tests/integration -q"` | the backend virtual environment active, Java 11+ and the Firebase CLI |
+| Frontend unit and component tests, with the API mocked from `docs/mocks/` | `frontend/src/**/*.test.ts(x)` | `cd frontend && pnpm test` | `pnpm install` |
+| Security-rule tests | `frontend/tests/rules` | `cd frontend && pnpm test:rules` | Java 11+ and the Firebase CLI |
+| End-to-end tests in a real browser | `frontend/e2e` | `cd frontend && pnpm build && pnpm exec playwright install chromium && pnpm test:e2e` | a built app; the browser is downloaded once |
+
+Point the end-to-end tests at another running copy of the app with `PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 pnpm test:e2e`. By default no test calls the real Gemini API or a real Google project: Gemini is replaced by recorded answers (`backend/tests/fixtures/gemini/`), the tests that call the real API run only with `RUN_LIVE_GEMINI=1`, and the emulator fixtures refuse to run against anything that is not on your own machine.
+
 ## License
 
 MIT — see [LICENSE](./LICENSE)

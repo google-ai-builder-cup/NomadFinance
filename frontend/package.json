@@ -15,6 +15,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run src",
     "test:coverage": "vitest run src --coverage",
+    "test:e2e": "playwright test",
     "test:rules": "firebase emulators:exec --only firestore,storage --project demo-nomadfinance \"vitest run tests/rules\""
   },
   "dependencies": {
@@ -39,6 +40,7 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "5.0.2",
+    "@playwright/test": "1.63.0",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
     "@testing-library/user-event": "14.6.7",
@@ -56,6 +58,7 @@
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.4.26",
     "jsdom": "29.1.1",
+    "msw": "2.15.0",
     "postcss": "8.5.28",
     "prettier": "3.9.9",
     "tailwindcss": "3.4.19",

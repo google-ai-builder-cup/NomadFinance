@@ -1,0 +1,6 @@
+{
+  "description": "The Scam Analyzer on for this worker, the Coach off.",
+  "request": "GET /api/v2/flags",
+  "status": 200,
+  "body": { "coach": false, "scam": true }
+}

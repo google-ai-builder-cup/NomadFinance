@@ -1,0 +1,6 @@
+{
+  "description": "Both modules off: what a worker gets with no flag document, or no allow-list entry.",
+  "request": "GET /api/v2/flags",
+  "status": 200,
+  "body": { "coach": false, "scam": false }
+}

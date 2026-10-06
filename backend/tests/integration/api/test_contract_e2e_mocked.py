@@ -8,13 +8,11 @@ translator/complaint code and the real per-country data end to end, at zero Gemi
 (D-58). The real-Gemini counterpart lives in test_contract_analysis_live.py (SG, in depth) and
 test_contract_e2e_countries.py (AU, KR, MY, JP), both opt-in and gated on quota being available.
 
-Needs only the Firestore Emulator, loaded with the 5 countries' labor law and complaint
-templates:
+Needs only the Firestore Emulator. The `seeded_reference_data` fixture (tests/integration/
+conftest.py) loads the 5 countries' labor law and complaint templates itself when they are
+missing, so there is nothing to load by hand:
 
     firebase emulators:start --only firestore --project demo-nomadfinance      (frontend/)
-    FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 FIREBASE_PROJECT_ID=demo-nomadfinance \\
-        python -m src.loaders.ilo_natlex --only SG AU KR MY JP                  (data-scripts/)
-    ... python -m src.loaders.complaint_templates --only SG AU KR MY JP
     FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 FIREBASE_PROJECT_ID=demo-nomadfinance \\
         pytest tests/integration/api/test_contract_e2e_mocked.py -v -s
 """
@@ -41,21 +39,9 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def _country_ready(country: str) -> bool:
-    db = get_firestore_client()
-    return (
-        db.document(f"labor_laws/{country}/_meta/current").get().exists
-        and db.document(f"complaint_templates/{country}").get().exists
-    )
-
-
 @pytest.mark.parametrize("country", list(SCENARIOS), ids=list(SCENARIOS))
-def test_full_pipeline_per_country(country: str) -> None:
-    if not _country_ready(country):
-        pytest.skip(
-            f"load {country}'s labor law and complaint template into the emulator first "
-            "(see module docstring)"
-        )
+def test_full_pipeline_per_country(country: str, seeded_reference_data: tuple[str, ...]) -> None:
+    assert country in seeded_reference_data
     scenario = SCENARIOS[country]
     gemini = ScriptedGemini(scenario)
     uid = f"e2e-{country.lower()}-{uuid.uuid4().hex[:8]}"
@@ -125,7 +111,9 @@ def test_full_pipeline_per_country(country: str) -> None:
         assert gemini.calls == [], "a cached analysis must not call Gemini again"
 
 
-def test_a_loan_agreement_is_not_compared(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_loan_agreement_is_not_compared(
+    monkeypatch: pytest.MonkeyPatch, seeded_reference_data: tuple[str, ...]
+) -> None:
     """One real edge case found worth a dedicated check: document_kind bypasses compare/law."""
     scenario = SCENARIOS["SG"]
     loan_detected = scenario.detected.model_copy(update={"document_kind": "loan_agreement"})
@@ -136,8 +124,6 @@ def test_a_loan_agreement_is_not_compared(monkeypatch: pytest.MonkeyPatch) -> No
     db.document(f"users/{uid}").set(
         {"host_country": "SG", "job_type": scenario.job_type, "preferred_language": "hi"}
     )
-    if not _country_ready("SG"):
-        pytest.skip("load SG's labor law and complaint template into the emulator first")
 
     app = create_app()
     app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid=uid)
