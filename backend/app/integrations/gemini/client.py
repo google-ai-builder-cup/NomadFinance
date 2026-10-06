@@ -1,36 +1,36 @@
 from __future__ import annotations
 
 import asyncio
-import logging
 import time
+from collections.abc import Sequence
 from functools import lru_cache
 from typing import TypeVar
 
-import httpx
 from google import genai
-from google.genai import errors as genai_errors
 from google.genai import types
 from pydantic import BaseModel, ValidationError
 from tenacity import (
     AsyncRetrying,
-    RetryCallState,
     retry_if_exception_type,
     stop_after_attempt,
     wait_random_exponential,
 )
 
 from app.config import Settings, get_settings
+from app.integrations.gemini.chat import ChatReply, ChatTurn
+from app.integrations.gemini.conversation import build_config, prepare_chat, start_stream
 from app.integrations.gemini.embeddings import embed_text
 from app.integrations.gemini.errors import (
+    GeminiError,
     GeminiRateLimitError,
-    GeminiRequestError,
     GeminiResponseError,
     GeminiTimeoutError,
     GeminiUnavailableError,
 )
 from app.integrations.gemini.model_tiers import ModelTier, model_for
-
-logger = logging.getLogger(__name__)
+from app.integrations.gemini.sdk_errors import empty_reason, translate_sdk_errors
+from app.integrations.gemini.streaming import GeminiStream
+from app.integrations.gemini.usage import log_failure, log_retry, log_usage
 
 ResponseT = TypeVar("ResponseT", bound=BaseModel)
 
@@ -40,9 +40,11 @@ _RETRYABLE = (GeminiRateLimitError, GeminiUnavailableError, GeminiTimeoutError)
 class GeminiClient:
     """Single entry point for Gemini calls across all pillars.
 
-    Picks the model from a `ModelTier`, forces structured output through a Pydantic
-    `response_schema`, enforces a per-attempt timeout, retries transient failures
-    with jittered exponential backoff, and logs token usage per call.
+    Picks the model from a `ModelTier`, enforces a per-attempt timeout, retries transient
+    failures with jittered exponential backoff, and logs one line per call with the feature,
+    model, tokens in and out and latency (also for a call that fails). `generate_structured`
+    forces output into a Pydantic `response_schema`; `chat` and `stream` carry a conversation
+    (the caller keeps it: the client holds no state between calls).
 
     Args:
         settings: App settings (API key, per-tier model IDs, timeout, attempts).
@@ -71,6 +73,8 @@ class GeminiClient:
         system_instruction: str | None = None,
         temperature: float | None = None,
         timeout_seconds: float | None = None,
+        safety_settings: Sequence[types.SafetySetting] | None = None,
+        thinking_budget: int | None = None,
     ) -> ResponseT:
         """Run one Gemini call and return its output validated as `response_model`.
 
@@ -83,6 +87,9 @@ class GeminiClient:
             temperature: Sampling temperature; None keeps the model default.
             timeout_seconds: Per-attempt timeout; None uses GEMINI_TIMEOUT_SECONDS. Calls
                 whose output grows with the input (a long contract) need more.
+            safety_settings: Per-call content filter thresholds; None keeps Google's defaults.
+            thinking_budget: Most tokens the model may spend thinking (0 turns it off); None
+                keeps the model default. Only the reasoning tier thinks much.
 
         Returns:
             The validated `response_model` instance.
@@ -95,37 +102,153 @@ class GeminiClient:
             GeminiResponseError: Empty, blocked, or schema-invalid output.
         """
         model = model_for(tier, self._settings)
-        config = types.GenerateContentConfig(
+        config = build_config(
             system_instruction=system_instruction,
             temperature=temperature,
+            safety_settings=safety_settings,
+            thinking_budget=thinking_budget,
             response_mime_type="application/json",
             response_schema=response_model,
-            # No tools are ever passed, so the SDK's function-calling loop only adds log noise.
-            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
-        retrying = AsyncRetrying(
-            stop=stop_after_attempt(self._settings.gemini_max_attempts),
-            wait=wait_random_exponential(multiplier=1, max=self._max_backoff_seconds),
-            retry=retry_if_exception_type(_RETRYABLE),
-            before_sleep=_log_retry,
-            reraise=True,
+        response = await self._run(operation, tier, model, contents, config, timeout_seconds)
+        return _parse(response, response_model, model)
+
+    async def chat(
+        self,
+        *,
+        operation: str,
+        tier: ModelTier,
+        message: str,
+        history: Sequence[ChatTurn] = (),
+        system_instruction: str | None = None,
+        summary: str | None = None,
+        temperature: float | None = None,
+        timeout_seconds: float | None = None,
+        safety_settings: Sequence[types.SafetySetting] | None = None,
+        thinking_budget: int | None = None,
+        max_history_turns: int | None = None,
+        max_history_tokens: int | None = None,
+    ) -> ChatReply:
+        """Answer one message of a conversation, with the whole answer at once.
+
+        `history` is truncated first (`truncate_history`: the newest turns that fit
+        `max_history_turns` and `max_history_tokens`, defaulting to the GEMINI_CHAT_HISTORY_*
+        settings). The turns left out come back in `ChatReply.dropped_turns` for the caller to
+        summarise; `summary`, framed by the caller, is added after the system instruction.
+        Other arguments and errors are as in `generate_structured`; a reply with no text is a
+        `GeminiResponseError`.
+        """
+        prepared = prepare_chat(
+            self._settings,
+            tier,
+            message,
+            history,
+            system_instruction=system_instruction,
+            summary=summary,
+            temperature=temperature,
+            safety_settings=safety_settings,
+            thinking_budget=thinking_budget,
+            max_history_turns=max_history_turns,
+            max_history_tokens=max_history_tokens,
+        )
+        model = prepared.model
+        response = await self._run(
+            operation, tier, model, prepared.contents, prepared.config, timeout_seconds
+        )
+        if not response.text:
+            raise GeminiResponseError(f"{model} returned no content ({empty_reason(response)})")
+        return ChatReply(text=response.text, dropped_turns=prepared.dropped_turns)
+
+    async def stream(
+        self,
+        *,
+        operation: str,
+        tier: ModelTier,
+        message: str,
+        history: Sequence[ChatTurn] = (),
+        system_instruction: str | None = None,
+        summary: str | None = None,
+        temperature: float | None = None,
+        timeout_seconds: float | None = None,
+        safety_settings: Sequence[types.SafetySetting] | None = None,
+        thinking_budget: int | None = None,
+        max_history_turns: int | None = None,
+        max_history_tokens: int | None = None,
+    ) -> GeminiStream:
+        """Start a reply and return it as a stream of text pieces (`async for piece in stream`).
+
+        Same arguments as `chat`. Returns once the first piece has arrived: opening is retried
+        like any call (429s, 5xx, timeouts), but nothing is retried after a piece has gone out.
+        `timeout_seconds` bounds the wait for the first piece and then the wait between pieces.
+        Errors before the first piece are raised here; later ones end the iteration. Use it as
+        `async with` so the upstream call closes however the loop ends.
+        """
+        prepared = prepare_chat(
+            self._settings,
+            tier,
+            message,
+            history,
+            system_instruction=system_instruction,
+            summary=summary,
+            temperature=temperature,
+            safety_settings=safety_settings,
+            thinking_budget=thinking_budget,
+            max_history_turns=max_history_turns,
+            max_history_tokens=max_history_tokens,
+        )
+        return await start_stream(
+            self._sdk,
+            self._retrying(),
+            prepared,
+            operation=operation,
+            tier=tier,
+            timeout_seconds=timeout_seconds or self._settings.gemini_timeout_seconds,
         )
 
+    async def _run(
+        self,
+        operation: str,
+        tier: ModelTier,
+        model: str,
+        contents: types.ContentListUnion | types.ContentListUnionDict,
+        config: types.GenerateContentConfig,
+        timeout_seconds: float | None,
+    ) -> types.GenerateContentResponse:
+        """One non-streaming call with retries; logs a usage line, or a failure line."""
+        retrying = self._retrying()
         started = time.perf_counter()
-        response: types.GenerateContentResponse = await retrying(
-            self._call, model, contents, config, timeout_seconds
-        )
-        latency_ms = round((time.perf_counter() - started) * 1000)
-
-        _log_usage(
-            response,
+        try:
+            response: types.GenerateContentResponse = await retrying(
+                self._call, model, contents, config, timeout_seconds
+            )
+        except GeminiError as exc:
+            log_failure(
+                exc,
+                operation=operation,
+                tier=tier,
+                model=model,
+                latency_ms=_ms_since(started),
+                attempts=retrying.statistics.get("attempt_number", 1),
+            )
+            raise
+        log_usage(
+            response.usage_metadata,
             operation=operation,
             tier=tier,
             model=model,
-            latency_ms=latency_ms,
+            latency_ms=_ms_since(started),
             attempts=retrying.statistics.get("attempt_number", 1),
         )
-        return _parse(response, response_model, model)
+        return response
+
+    def _retrying(self) -> AsyncRetrying:
+        return AsyncRetrying(
+            stop=stop_after_attempt(self._settings.gemini_max_attempts),
+            wait=wait_random_exponential(multiplier=1, max=self._max_backoff_seconds),
+            retry=retry_if_exception_type(_RETRYABLE),
+            before_sleep=log_retry,
+            reraise=True,
+        )
 
     async def embed_text(self, text: str, *, operation: str) -> list[float]:
         """Embed `text` as one normalized 768-number vector (`gemini_model_embedding`).
@@ -148,40 +271,15 @@ class GeminiClient:
         timeout_seconds: float | None = None,
     ) -> types.GenerateContentResponse:
         timeout = timeout_seconds or self._settings.gemini_timeout_seconds
-        try:
+        with translate_sdk_errors(model, timeout):
             async with asyncio.timeout(timeout):
                 return await self._sdk.aio.models.generate_content(
                     model=model, contents=contents, config=config
                 )
-        except TimeoutError as exc:
-            raise GeminiTimeoutError(f"{model} did not respond within {timeout:g}s") from exc
-        except genai_errors.ClientError as exc:
-            # Only the code/status/message are kept: the raw response JSON can echo prompt data.
-            detail = f"{model}: {exc.code} {exc.status} {exc.message}"
-            if exc.code == 429:
-                raise GeminiRateLimitError(detail, daily=is_daily_quota(exc.details)) from exc
-            raise GeminiRequestError(detail) from exc
-        except genai_errors.ServerError as exc:
-            raise GeminiUnavailableError(f"{model}: {exc.code} {exc.status} {exc.message}") from exc
-        except httpx.TransportError as exc:
-            raise GeminiUnavailableError(f"{model}: network error ({type(exc).__name__})") from exc
 
 
-def is_daily_quota(details: object) -> bool:
-    """Whether a 429's details name a per-day quota (a `quotaId` such as
-    "GenerateRequestsPerDayPerProjectPerModel-FreeTier"). Only quota ids are read: the rest of
-    the response can echo prompt data."""
-    pending: list[object] = [details]
-    while pending:
-        item = pending.pop()
-        if isinstance(item, dict):
-            for key, value in item.items():
-                if key == "quotaId" and isinstance(value, str) and "PerDay" in value:
-                    return True
-                pending.append(value)
-        elif isinstance(item, list):
-            pending.extend(item)
-    return False
+def _ms_since(started: float) -> int:
+    return round((time.perf_counter() - started) * 1000)
 
 
 def _parse(
@@ -192,7 +290,7 @@ def _parse(
 
     text = response.text
     if not text:
-        raise GeminiResponseError(f"{model} returned no content ({_empty_reason(response)})")
+        raise GeminiResponseError(f"{model} returned no content ({empty_reason(response)})")
     try:
         return response_model.model_validate_json(text)
     except ValidationError as exc:
@@ -200,54 +298,6 @@ def _parse(
             f"{model} output did not match {response_model.__name__}: "
             f"{exc.error_count()} validation error(s)"
         ) from exc
-
-
-def _empty_reason(response: types.GenerateContentResponse) -> str:
-    feedback = response.prompt_feedback
-    if feedback is not None and feedback.block_reason is not None:
-        return f"prompt blocked: {feedback.block_reason}"
-    if response.candidates and response.candidates[0].finish_reason is not None:
-        return f"finish reason: {response.candidates[0].finish_reason}"
-    return "no candidates"
-
-
-def _log_usage(
-    response: types.GenerateContentResponse,
-    *,
-    operation: str,
-    tier: ModelTier,
-    model: str,
-    latency_ms: int,
-    attempts: int,
-) -> None:
-    usage = response.usage_metadata
-    fields = {
-        "operation": operation,
-        "tier": tier.value,
-        "model": model,
-        "prompt_tokens": usage.prompt_token_count if usage else None,
-        "output_tokens": usage.candidates_token_count if usage else None,
-        "thinking_tokens": usage.thoughts_token_count if usage else None,
-        "total_tokens": usage.total_token_count if usage else None,
-        "latency_ms": latency_ms,
-        "attempts": attempts,
-    }
-    # Readable in plain-text logs now; `extra` carries the same fields for JSON logging.
-    logger.info(
-        "gemini_call %s",
-        " ".join(f"{key}={value}" for key, value in fields.items()),
-        extra={"gemini_usage": fields},
-    )
-
-
-def _log_retry(retry_state: RetryCallState) -> None:
-    exc = retry_state.outcome.exception() if retry_state.outcome else None
-    logger.warning(
-        "gemini_retry attempt=%d error=%s: %s",
-        retry_state.attempt_number,
-        type(exc).__name__,
-        exc,
-    )
 
 
 @lru_cache
