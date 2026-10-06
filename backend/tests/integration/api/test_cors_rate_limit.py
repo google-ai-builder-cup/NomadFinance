@@ -102,6 +102,27 @@ def test_response_exposes_request_id_and_rate_limit_headers(client: TestClient) 
         assert name in exposed
 
 
+def test_the_idempotency_key_may_be_sent_and_the_v2_headers_may_be_read(
+    client: TestClient,
+) -> None:
+    # `/api/v2` conventions (NF-F0-002) add these; a browser hides them without CORS (D-98).
+    preflight = client.options(
+        "/api/v2/flags",
+        headers={
+            "Origin": LOCAL_ORIGIN,
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "authorization,idempotency-key",
+        },
+    )
+    assert preflight.status_code == 200
+    assert "idempotency-key" in preflight.headers["access-control-allow-headers"].lower()
+
+    response = client.get("/api/v2/flags", headers={"Origin": LOCAL_ORIGIN})
+    exposed = response.headers["access-control-expose-headers"].lower()
+    for name in ("idempotency-replayed", "deprecation", "sunset"):
+        assert name in exposed
+
+
 def _settings(**values: object) -> Settings:
     base: dict[str, object] = {"gemini_api_key": "k", "_env_file": None}
     return Settings(**{**base, **values})  # type: ignore[arg-type]

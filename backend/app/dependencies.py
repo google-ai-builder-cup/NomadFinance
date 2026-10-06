@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+from collections.abc import Awaitable, Callable
 from functools import lru_cache
 from typing import Annotated
 
@@ -19,8 +21,12 @@ from app.core.security import (
 from app.integrations.cloud_storage import UserFileStore
 from app.integrations.firebase_auth import delete_firebase_user
 from app.repositories.base import get_firestore_client
+from app.repositories.config_repo import get_config_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
+from app.services.feature_flag_service import FeatureFlagService, FlagName
+
+logger = logging.getLogger(__name__)
 
 # auto_error=False so a missing token becomes our own 401 instead of FastAPI's default.
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -137,3 +143,30 @@ async def require_cloud_scheduler(
 def get_account_service() -> AccountService:
     """The account-deletion service wired to real Firestore, Storage and Firebase Auth."""
     return AccountService(get_firestore_client(), UserFileStore(), delete_firebase_user)
+
+
+@lru_cache
+def get_feature_flag_service() -> FeatureFlagService:
+    """One per process: the service holds the one-minute copy of `config/feature_flags`."""
+    return FeatureFlagService(get_config_repository())
+
+
+def require_flag(flag: FlagName) -> Callable[..., Awaitable[None]]:
+    """Guard a route behind a Future Scope flag (NF-F0-005).
+
+    Use as `dependencies=[Depends(require_flag("scam"))]`. When the flag is off for the
+    caller the answer is the same 404 an unknown path gets, so a disabled module cannot be
+    told from a missing one; under `/api/v2` that is the standard error envelope with code
+    `not_found`. It needs the caller's uid for the allow-list, so a request without a valid
+    token is a 401 first, like every other route behind sign-in.
+    """
+
+    async def check(
+        user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+        service: Annotated[FeatureFlagService, Depends(get_feature_flag_service)],
+    ) -> None:
+        if not await service.is_enabled(flag, user.uid):
+            logger.info("feature_flag_off flag=%s", flag)
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+
+    return check
