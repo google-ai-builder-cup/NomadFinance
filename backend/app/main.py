@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import api_router
+from app.api.v2.router import api_router as api_v2_router
 from app.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import REQUEST_ID_HEADER, configure_logging
@@ -42,6 +43,7 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(api_router, prefix="/api/v1")
+    app.include_router(api_v2_router, prefix="/api/v2")
     register_exception_handlers(app)
 
     # The last middleware added is the outermost. Order of a request, outside in:
@@ -56,13 +58,17 @@ def create_app() -> FastAPI:
         # Bearer tokens, never cookies, so no credentials mode.
         allow_credentials=False,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER],
+        allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER, "Idempotency-Key"],
         expose_headers=[
             REQUEST_ID_HEADER,
             "Retry-After",
             "X-RateLimit-Limit",
             "X-RateLimit-Remaining",
             "X-RateLimit-Reset",
+            # Set by /api/v2 routes (docs/api/v2-conventions.md, sections 5 and 6).
+            "Idempotency-Replayed",
+            "Deprecation",
+            "Sunset",
         ],
         # Browsers cache the preflight answer for up to this long (Chrome caps it at 2 h).
         max_age=3600,
