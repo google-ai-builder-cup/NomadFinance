@@ -72,6 +72,12 @@ export default function GreetingBand() {
                 {t("dashboard.actions.report")}
               </Link>
             </Button>
+            <Button asChild variant="outline" className="h-12 rounded-xl bg-card px-5 font-bold">
+              <Link to="/identity/log">
+                <Fingerprint className="mr-2 h-4 w-4" aria-hidden="true" />
+                {t("fib.dashboard.logActivity")}
+              </Link>
+            </Button>
           </div>
         </div>
         {/* Decoration only: the pillar illustration with the other pillars floating around it. */}
