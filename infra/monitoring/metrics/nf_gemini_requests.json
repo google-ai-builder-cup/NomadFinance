@@ -1,0 +1,25 @@
+{
+  "description": "Requests made to a Gemini model: every answered call, every call that gave up and every retried attempt. One line each, so the count is what the model's daily quota sees from this service. NF-F0-016.",
+  "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND jsonPayload.message=~\"^gemini_(call|call_failed|retry) \"",
+  "metricDescriptor": {
+    "metricKind": "DELTA",
+    "valueType": "INT64",
+    "unit": "1",
+    "labels": [
+      {
+        "key": "model",
+        "valueType": "STRING",
+        "description": "The Gemini model id, e.g. gemini-3.5-flash"
+      },
+      {
+        "key": "feature",
+        "valueType": "STRING",
+        "description": "The product area of the operation"
+      }
+    ]
+  },
+  "labelExtractors": {
+    "model": "EXTRACT(jsonPayload.gemini_usage.model)",
+    "feature": "EXTRACT(jsonPayload.gemini_usage.feature)"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "displayName": "Gemini daily limit 80%: __MODEL__",
+  "documentation": {
+    "mimeType": "text/markdown",
+    "content": "**__MODEL__ is at 80% of its daily request limit** (__THRESHOLD__ of __RPD__ requests in the last 23.5 hours, counted from this service's logs).\n\nWhat to do:\n1. Open the dashboard *NomadFinance: requests, errors and Gemini usage* and see which feature is spending the requests.\n2. If it is a loop or a retry storm, fix or roll back (flag off for the module, or the previous Cloud Run revision).\n3. If it is real demand, move a tier to another model with the `GEMINI_MODEL_*` setting, or enable billing on the key.\n\nThe count includes retried attempts. It does not include other users of the same key (tests, scripts), and Google's day ends at midnight Pacific, so check AI Studio's Rate limits page for the real figure. Runbook: docs/runbooks/NF-F0-016-ci-observability.md"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "__MODEL__ requests above __THRESHOLD__ in 23.5 h",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_requests\" AND metric.label.model=\"__MODEL__\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "84600s",
+            "perSeriesAligner": "ALIGN_DELTA",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupByFields": []
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": "__THRESHOLD_NUMBER__",
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "alertStrategy": {
+    "autoClose": "86400s"
+  },
+  "userLabels": {
+    "nf": "gemini-quota"
+  }
+}

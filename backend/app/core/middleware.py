@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.core.errors import error_response, is_v2_path
+from app.core.features import feature_for_path
 from app.core.logging import (
     REQUEST_ID_HEADER,
     RequestContext,
@@ -52,6 +53,7 @@ class RequestLoggingMiddleware:
         context = RequestContext(
             request_id=supplied if _VALID_REQUEST_ID.match(supplied) else uuid.uuid4().hex,
             trace_id=trace.group(1).lower() if trace else None,
+            feature=feature_for_path(scope["path"]),
         )
         # The 500 handler runs outside this middleware, after the context var is reset, so the
         # id is also kept on the scope for error responses to read.
@@ -94,7 +96,9 @@ class RequestLoggingMiddleware:
                 level,
                 "request_completed %s",
                 " ".join(f"{key}={value}" for key, value in fields.items()),
-                extra=fields,
+                # `status_class` ("2xx", "4xx", "5xx") is only a field, not in the message: the
+                # per-feature error metric (NF-F0-016) filters on it without parsing text.
+                extra=fields | {"status_class": f"{(status_code or 0) // 100}xx"},
                 exc_info=error,
             )
             reset_request_context(token)

@@ -10,25 +10,33 @@ Cloud Run the logs are JSON, so Cloud Logging can filter and count them by field
 ```json
 {"severity": "INFO", "message": "request_completed method=GET path=/api/v1/nope status=404 latency_ms=2.6",
  "timestamp": "2026-09-25T21:34:20.545555+00:00", "logger": "app.core.middleware",
- "request_id": "5a78542e22f54df7a1f6b87be4e2b56f",
+ "request_id": "5a78542e22f54df7a1f6b87be4e2b56f", "feature": "platform",
  "logging.googleapis.com/trace": "projects/nomadfinance-prod/traces/105445aa7843bc8bf206b12000100000",
- "method": "GET", "path": "/api/v1/nope", "status": 404, "latency_ms": 2.6}
+ "method": "GET", "path": "/api/v1/nope", "status": 404, "status_class": "4xx", "latency_ms": 2.6}
 ```
 
 - `request_id`: taken from the caller's `X-Request-ID` header when it is 8 to 64 characters
   of `A-Z a-z 0-9 . _ -`, otherwise a new UUID. Always returned in the `X-Request-ID`
   response header, so a user can quote it in a bug report.
-- `user_hash`: 16 hex characters of SHA-256 of the Firebase uid, added by
+- `uid_hash` (called `user_hash` until NF-F0-016): 16 hex characters of SHA-256 of the Firebase uid, added by
   `get_current_user` once the token is verified. Absent on public endpoints, unauthenticated
   calls and Cloud Scheduler calls.
 - `logging.googleapis.com/trace`: built from Cloud Run's `X-Cloud-Trace-Context` header, so
   the line links to the Cloud Run request log in the Logs Explorer.
 - `latency_ms`: time spent in the whole app for this request.
+- `feature` (NF-F0-016): the product area, taken from the path: `contract`, `remittance`, `radar`,
+  `fib`, `coach`, `scam`, or `platform` for everything else (`/health`, `/api/v2/flags`,
+  `/api/v1/users/me`). Cloud Scheduler jobs take their pillar (`refresh-rates` is `remittance`).
+  It is on every line written during the request, so one filter finds a feature's whole story.
+  A Gemini line names its own feature from its operation (`contract.detect` is `contract`), which
+  wins over the request's. See `app/core/features.py`.
+- `status_class` (NF-F0-016, `request_completed` only): `2xx`, `4xx` or `5xx`, so a metric can
+  count errors without reading the message text.
 - Level: `INFO` up to 4xx, `ERROR` for 5xx and unhandled exceptions. `/health` is logged at
   `DEBUG`, so uptime probes stay out of the logs.
 
 **Every other log line written during a request** (Gemini calls, account deletion, FX
-lookups) carries the same `request_id` and `user_hash`, and any `extra=` fields, such as
+lookups) carries the same `request_id`, `uid_hash` and `feature`, and any `extra=` fields, such as
 `gemini_usage` with token counts, appear as their own JSON fields.
 
 **Unhandled exceptions** are logged at `ERROR` with the traceback inside `message` (Error
@@ -38,7 +46,7 @@ Reporting reads it from there). The client only gets a generic 500 with no detai
 
 | `APP_ENV` | Format |
 | --- | --- |
-| `local` | readable text: `2026-09-26 03:03:35,625 INFO    app.core.middleware: request_completed ... [req=... user=...]` |
+| `local` | readable text: `2026-09-26 03:03:35,625 INFO    app.core.middleware: request_completed ... [req=... uid=... feature=...]` |
 | `staging`, `prod` | one JSON object per line on stdout |
 
 `LOG_LEVEL` (default `INFO`) now takes effect; before this task nothing applied it. uvicorn's
@@ -72,7 +80,7 @@ Other useful filters (add to the first two lines):
 ```
 jsonPayload.message:"request_completed" jsonPayload.status>=500
 jsonPayload.message:"request_completed" jsonPayload.latency_ms>2000
-jsonPayload.user_hash="<16 hex characters>"
+jsonPayload.uid_hash="<16 hex characters>"
 severity>=ERROR
 ```
 
@@ -83,7 +91,7 @@ gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.serv
   --project nomadfinance-prod --limit 20 --freshness 1d --format json
 ```
 
-To find one person's requests: compute their hash from the uid, then filter on `user_hash`.
+To find one person's requests: compute their hash from the uid, then filter on `uid_hash`.
 
 ```bash
 python3 -c "import hashlib,sys; print(hashlib.sha256(sys.argv[1].encode()).hexdigest()[:16])" <uid>

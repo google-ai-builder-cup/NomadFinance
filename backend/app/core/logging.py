@@ -14,7 +14,7 @@ from app.utils.hashing import hash_user_id
 # Lives here, not in middleware.py, so app.core.errors can name it without an import cycle.
 REQUEST_ID_HEADER = "X-Request-ID"
 
-_CONTEXT_FIELDS = ("request_id", "user_hash", "trace_id")
+_CONTEXT_FIELDS = ("request_id", "uid_hash", "trace_id", "feature")
 
 # Attributes every LogRecord has; anything else on a record came in through `extra=`.
 # color_message is uvicorn's copy of its message with terminal colour codes.
@@ -35,7 +35,9 @@ class RequestContext:
 
     request_id: str
     trace_id: str | None = None
-    user_hash: str | None = None
+    uid_hash: str | None = None
+    # The product area the request belongs to (`app.core.features`), set by the middleware.
+    feature: str | None = None
 
 
 # Holds a mutable object rather than plain values: the user is only known after the auth
@@ -55,7 +57,7 @@ def bind_user(uid: str) -> None:
     """Tag the rest of this request's log lines with the caller's hashed uid."""
     context = _request_context.get()
     if context is not None:
-        context.user_hash = hash_user_id(uid)
+        context.uid_hash = hash_user_id(uid)
 
 
 def _install_record_factory() -> None:
@@ -76,6 +78,17 @@ def _install_record_factory() -> None:
     logging.setLogRecordFactory(factory)
 
 
+def _feature_of(record: logging.LogRecord) -> str | None:
+    """A Gemini line names its own feature (from the operation), which beats the request's: a
+    scheduled job's Gemini calls and a request's both read the same on a dashboard."""
+    usage = getattr(record, "gemini_usage", None)
+    own = usage.get("feature") if isinstance(usage, dict) else None
+    if isinstance(own, str) and own:
+        return own
+    inherited = getattr(record, "feature", None)
+    return inherited if isinstance(inherited, str) and inherited else None
+
+
 class JsonFormatter(logging.Formatter):
     """One JSON object per line, in the field names Cloud Logging understands."""
 
@@ -94,10 +107,13 @@ class JsonFormatter(logging.Formatter):
             "timestamp": datetime.fromtimestamp(record.created, UTC).isoformat(),
             "logger": record.name,
         }
-        for field in ("request_id", "user_hash"):
+        for field in ("request_id", "uid_hash"):
             value = getattr(record, field, None)
             if value is not None:
                 payload[field] = value
+        feature = _feature_of(record)
+        if feature is not None:
+            payload["feature"] = feature
         trace_id = getattr(record, "trace_id", None)
         if trace_id is not None:
             # Links the line to the Cloud Run request log in the Logs Explorer.
@@ -119,7 +135,7 @@ class TextFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         tags = [
             f"{name}={getattr(record, field)}"
-            for name, field in (("req", "request_id"), ("user", "user_hash"))
+            for name, field in (("req", "request_id"), ("uid", "uid_hash"), ("feature", "feature"))
             if getattr(record, field, None)
         ]
         record.request_tags = f" [{' '.join(tags)}]" if tags else ""

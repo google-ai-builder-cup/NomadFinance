@@ -1,0 +1,31 @@
+{
+  "description": "Gemini calls that ended without an answer after every attempt, by feature, model and error class. A worker who went away (cancelled) or a stream the caller stopped (closed) is not a failure. NF-F0-016.",
+  "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND jsonPayload.message=~\"^gemini_call_failed \" AND jsonPayload.gemini_usage.outcome=\"failed\"",
+  "metricDescriptor": {
+    "metricKind": "DELTA",
+    "valueType": "INT64",
+    "unit": "1",
+    "labels": [
+      {
+        "key": "model",
+        "valueType": "STRING",
+        "description": "The Gemini model id"
+      },
+      {
+        "key": "feature",
+        "valueType": "STRING",
+        "description": "The product area of the operation"
+      },
+      {
+        "key": "error",
+        "valueType": "STRING",
+        "description": "The error class, e.g. GeminiRateLimitError"
+      }
+    ]
+  },
+  "labelExtractors": {
+    "model": "EXTRACT(jsonPayload.gemini_usage.model)",
+    "feature": "EXTRACT(jsonPayload.gemini_usage.feature)",
+    "error": "EXTRACT(jsonPayload.gemini_usage.error)"
+  }
+}

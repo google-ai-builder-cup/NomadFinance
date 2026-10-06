@@ -80,7 +80,7 @@ def test_completion_line_has_status_latency_and_id(
     assert [_field(record, n) for n in ("method", "path", "status")] == ["GET", "/api/v1/nope", 404]
     assert isinstance(_field(record, "latency_ms"), float) and _field(record, "latency_ms") >= 0
     assert _field(record, "request_id") == response.headers["X-Request-ID"]
-    assert _field(record, "user_hash") is None
+    assert _field(record, "uid_hash") is None
 
 
 def test_query_string_and_credentials_are_never_logged(
@@ -121,7 +121,7 @@ def test_signed_in_requests_carry_the_hashed_user_on_every_line(
     inside = next(r for r in caplog.records if r.getMessage() == "inside the handler")
     done = _completed(caplog)
     expected = hash_user_id(SECRET_UID)
-    assert _field(inside, "user_hash") == _field(done, "user_hash") == expected
+    assert _field(inside, "uid_hash") == _field(done, "uid_hash") == expected
     request_id = response.headers["X-Request-ID"]
     assert _field(inside, "request_id") == _field(done, "request_id") == request_id
     assert SECRET_UID not in caplog.text
@@ -153,3 +153,36 @@ def test_context_does_not_leak_into_the_next_request(
     logging.getLogger("test.after").info("outside any request")
 
     assert _field(caplog.records[0], "request_id") is None
+
+
+@pytest.mark.parametrize(
+    ("path", "feature"),
+    [
+        ("/api/v1/remittance/trends", "remittance"),
+        ("/api/v1/contracts/extract", "contract"),
+        ("/api/v1/radar/entities/x/reports", "radar"),
+        ("/api/v1/fib/report/export", "fib"),
+        ("/health", "platform"),
+    ],
+)
+def test_every_request_line_names_its_feature(
+    client: TestClient, caplog: pytest.LogCaptureFixture, path: str, feature: str
+) -> None:
+    with caplog.at_level(logging.DEBUG, logger="app.core.middleware"):
+        client.get(path)
+
+    assert _field(_completed(caplog), "feature") == feature
+
+
+@pytest.mark.parametrize(
+    ("path", "status_class"), [("/health", "2xx"), ("/api/v1/nope", "4xx")], ids=["ok", "missing"]
+)
+def test_every_request_line_has_its_status_class(
+    client: TestClient, caplog: pytest.LogCaptureFixture, path: str, status_class: str
+) -> None:
+    with caplog.at_level(logging.DEBUG, logger="app.core.middleware"):
+        client.get(path)
+
+    record = _completed(caplog)
+    assert _field(record, "status_class") == status_class
+    assert "status_class" not in record.getMessage()

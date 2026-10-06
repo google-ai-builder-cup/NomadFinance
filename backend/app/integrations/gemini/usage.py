@@ -63,7 +63,7 @@ def log_failure(
     error: BaseException | None,
     *,
     operation: str,
-    tier: ModelTier,
+    tier: ModelTier | None,
     model: str,
     latency_ms: int,
     attempts: int,
@@ -78,7 +78,7 @@ def log_failure(
     fields: dict[str, object] = {
         "operation": operation,
         "feature": feature_of(operation),
-        "tier": tier.value,
+        "tier": tier.value if tier else None,
         "model": model,
         "outcome": outcome,
         "error": type(error).__name__ if error is not None else None,
@@ -92,11 +92,29 @@ def log_failure(
     )
 
 
-def log_retry(retry_state: RetryCallState) -> None:
+def log_retry(
+    retry_state: RetryCallState, *, operation: str, tier: ModelTier | None, model: str
+) -> None:
+    """One `gemini_retry` line for an attempt that failed and will be tried again.
+
+    Every attempt is a request against the model's daily quota, so this carries the same
+    `gemini_usage` identity as `gemini_call` and `gemini_call_failed` (operation, feature, model):
+    a count of the three lines is the number of requests made. `tier` is None for embeddings.
+    """
     exc = retry_state.outcome.exception() if retry_state.outcome else None
+    fields: dict[str, object] = {
+        "operation": operation,
+        "feature": feature_of(operation),
+        "tier": tier.value if tier else None,
+        "model": model,
+        "outcome": "retry",
+        "error": type(exc).__name__ if exc is not None else None,
+        "attempt": retry_state.attempt_number,
+    }
     logger.warning(
         "gemini_retry attempt=%d error=%s: %s",
         retry_state.attempt_number,
         type(exc).__name__,
         exc,
+        extra={"gemini_usage": fields},
     )
