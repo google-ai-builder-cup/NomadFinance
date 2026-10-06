@@ -1,0 +1,328 @@
+{
+  "displayName": "NomadFinance: requests, errors and Gemini usage",
+  "labels": {
+    "nf": "observability"
+  },
+  "gridLayout": {
+    "columns": 2,
+    "widgets": [
+      {
+        "title": "About this dashboard",
+        "text": {
+          "content": "Built from log-based metrics `nf_*` (`infra/monitoring/`). **Feature** is the product area: contract, remittance, radar, fib, coach, scam, or platform (flags, users, health). Runbook: `docs/runbooks/NF-F0-016-ci-observability.md`. Production only: there is no staging.",
+          "format": "MARKDOWN"
+        }
+      },
+      {
+        "title": "Requests per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "requests",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Server errors (5xx) per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\" AND metric.label.status_class=\"5xx\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "errors",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Client errors (4xx) per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\" AND metric.label.status_class=\"4xx\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "errors",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Gemini requests per model (5 min), retries included",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_requests\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.model"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.model}"
+            }
+          ],
+          "yAxis": {
+            "label": "requests",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Gemini requests per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_requests\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "requests",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Gemini failures per feature and error (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_failures\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature",
+                      "metric.label.error"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature} / ${metric.label.error}"
+            }
+          ],
+          "yAxis": {
+            "label": "failed calls",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Gemini requests in a rolling 23.5 h, per model: the number the daily-limit alert watches",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_requests\"",
+                  "aggregation": {
+                    "alignmentPeriod": "84600s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.model"
+                    ]
+                  }
+                }
+              },
+              "plotType": "LINE",
+              "legendTemplate": "${metric.label.model}"
+            }
+          ],
+          "yAxis": {
+            "label": "requests",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Prompt tokens per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "prometheusQuery": "sum by (feature) (increase(logging_googleapis_com:user_nf_gemini_tokens_in_sum[5m]))"
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "tokens",
+            "scale": "LINEAR"
+          }
+        }
+      },
+      {
+        "title": "Answer + thinking tokens per feature (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "prometheusQuery": "sum by (feature) (increase(logging_googleapis_com:user_nf_gemini_tokens_out_sum[5m]))"
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "tokens",
+            "scale": "LINEAR"
+          }
+        }
+      },
+      {
+        "title": "Prompt tokens per call, mean, per feature",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_tokens_in\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "LINE",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "tokens per call",
+            "scale": "LINEAR"
+          }
+        }
+      },
+      {
+        "title": "Answer + thinking tokens per call, mean, per feature",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_tokens_out\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_MEAN",
+                    "groupByFields": [
+                      "metric.label.feature"
+                    ]
+                  }
+                }
+              },
+              "plotType": "LINE",
+              "legendTemplate": "${metric.label.feature}"
+            }
+          ],
+          "yAxis": {
+            "label": "tokens per call",
+            "scale": "LINEAR"
+          }
+        }
+      }
+    ]
+  }
+}

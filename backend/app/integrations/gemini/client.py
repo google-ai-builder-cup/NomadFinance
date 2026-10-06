@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 from collections.abc import Sequence
-from functools import lru_cache
+from functools import lru_cache, partial
 from typing import TypeVar
 
 from google import genai
@@ -198,7 +198,7 @@ class GeminiClient:
         )
         return await start_stream(
             self._sdk,
-            self._retrying(),
+            self._retrying(operation, tier, prepared.model),
             prepared,
             operation=operation,
             tier=tier,
@@ -215,7 +215,7 @@ class GeminiClient:
         timeout_seconds: float | None,
     ) -> types.GenerateContentResponse:
         """One non-streaming call with retries; logs a usage line, or a failure line."""
-        retrying = self._retrying()
+        retrying = self._retrying(operation, tier, model)
         started = time.perf_counter()
         try:
             response: types.GenerateContentResponse = await retrying(
@@ -241,12 +241,12 @@ class GeminiClient:
         )
         return response
 
-    def _retrying(self) -> AsyncRetrying:
+    def _retrying(self, operation: str, tier: ModelTier, model: str) -> AsyncRetrying:
         return AsyncRetrying(
             stop=stop_after_attempt(self._settings.gemini_max_attempts),
             wait=wait_random_exponential(multiplier=1, max=self._max_backoff_seconds),
             retry=retry_if_exception_type(_RETRYABLE),
-            before_sleep=log_retry,
+            before_sleep=partial(log_retry, operation=operation, tier=tier, model=model),
             reraise=True,
         )
 

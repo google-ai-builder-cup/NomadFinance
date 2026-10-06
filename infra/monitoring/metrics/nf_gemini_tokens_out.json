@@ -1,0 +1,33 @@
+{
+  "description": "Gemini answer plus thinking tokens (what Google bills as output) per answered call, by feature and model. The total is the distribution's sum. NF-F0-016.",
+  "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND jsonPayload.message=~\"^gemini_call \" AND jsonPayload.gemini_usage.tokens_out>=0",
+  "metricDescriptor": {
+    "metricKind": "DELTA",
+    "valueType": "DISTRIBUTION",
+    "unit": "1",
+    "labels": [
+      {
+        "key": "model",
+        "valueType": "STRING",
+        "description": "The Gemini model id"
+      },
+      {
+        "key": "feature",
+        "valueType": "STRING",
+        "description": "The product area of the operation"
+      }
+    ]
+  },
+  "labelExtractors": {
+    "model": "EXTRACT(jsonPayload.gemini_usage.model)",
+    "feature": "EXTRACT(jsonPayload.gemini_usage.feature)"
+  },
+  "valueExtractor": "EXTRACT(jsonPayload.gemini_usage.tokens_out)",
+  "bucketOptions": {
+    "exponentialBuckets": {
+      "numFiniteBuckets": 24,
+      "growthFactor": 1.6,
+      "scale": 10
+    }
+  }
+}

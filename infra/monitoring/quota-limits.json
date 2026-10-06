@@ -1,0 +1,22 @@
+{
+  "_how_to_fill": "rpd is the model's requests per day. Read it in Google AI Studio, Rate limits page, for the project of the GEMINI_API_KEY secret. It is not in the repository because the free-tier numbers differ by account and change. Leave null until you have read it: setup-monitoring.sh then skips that model's alert and says so. Keep the model ids in step with GEMINI_MODEL_* in app/config.py.",
+  "alert_at_fraction": 0.8,
+  "models": {
+    "gemini-3.5-flash": {
+      "tier": "REASONING",
+      "rpd": null
+    },
+    "gemini-3.5-flash-lite": {
+      "tier": "EXTRACTION",
+      "rpd": null
+    },
+    "gemini-3.1-flash-lite": {
+      "tier": "CLASSIFICATION",
+      "rpd": null
+    },
+    "gemini-embedding-001": {
+      "tier": "EMBEDDING",
+      "rpd": null
+    }
+  }
+}

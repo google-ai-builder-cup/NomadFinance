@@ -76,7 +76,7 @@ def test_json_line_carries_request_context_and_trace() -> None:
         reset_request_context(token)
 
     assert payload["request_id"] == "req-12345678"
-    assert payload["user_hash"] == hash_user_id("some-uid")
+    assert payload["uid_hash"] == hash_user_id("some-uid")
     assert payload["logging.googleapis.com/trace"] == f"projects/proj-x/traces/{TRACE}"
     assert "some-uid" not in json.dumps(payload)
 
@@ -107,7 +107,7 @@ def test_text_line_shows_request_tags_only_inside_a_request() -> None:
         reset_request_context(token)
 
     assert outside.endswith("test.logging: hello")
-    assert inside.endswith(f"hello [req=req-12345678 user={hash_user_id('some-uid')}]")
+    assert inside.endswith(f"hello [req=req-12345678 uid={hash_user_id('some-uid')}]")
 
 
 def test_bind_user_outside_a_request_does_nothing() -> None:
@@ -144,3 +144,42 @@ def test_http_client_url_logging_is_silenced_because_urls_can_hold_api_keys(
 
     assert not logging.getLogger("httpx").isEnabledFor(logging.INFO)
     assert not logging.getLogger("httpcore").isEnabledFor(logging.INFO)
+
+
+def test_json_line_carries_the_requests_feature() -> None:
+    token = set_request_context(RequestContext("req-12345678", feature="remittance"))
+    try:
+        payload = json.loads(JsonFormatter("proj-x").format(_record()))
+    finally:
+        reset_request_context(token)
+
+    assert payload["feature"] == "remittance"
+
+
+def test_a_gemini_lines_own_feature_beats_the_requests() -> None:
+    token = set_request_context(RequestContext("req-12345678", feature="platform"))
+    try:
+        record = _record(extra={"gemini_usage": {"feature": "contract", "model": "m"}})
+        payload = json.loads(JsonFormatter("proj-x").format(record))
+    finally:
+        reset_request_context(token)
+
+    assert payload["feature"] == "contract"
+    assert payload["gemini_usage"]["feature"] == "contract"
+
+
+def test_a_line_outside_any_request_has_no_feature() -> None:
+    payload = json.loads(JsonFormatter("proj-x").format(_record()))
+
+    assert "feature" not in payload
+    assert "uid_hash" not in payload
+
+
+def test_text_line_shows_the_feature_too() -> None:
+    token = set_request_context(RequestContext("req-12345678", feature="radar"))
+    try:
+        line = TextFormatter().format(_record("hello"))
+    finally:
+        reset_request_context(token)
+
+    assert line.endswith("hello [req=req-12345678 feature=radar]")

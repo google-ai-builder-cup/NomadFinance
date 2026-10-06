@@ -4,6 +4,7 @@ import asyncio
 import logging
 import math
 import time
+from functools import partial
 
 import httpx
 from google import genai
@@ -18,13 +19,14 @@ from tenacity import (
 
 from app.config import Settings
 from app.integrations.gemini.errors import (
+    GeminiError,
     GeminiRateLimitError,
     GeminiRequestError,
     GeminiResponseError,
     GeminiTimeoutError,
     GeminiUnavailableError,
 )
-from app.integrations.gemini.usage import feature_of
+from app.integrations.gemini.usage import feature_of, log_failure, log_retry
 
 logger = logging.getLogger(__name__)
 
@@ -52,17 +54,30 @@ async def embed_text(
         GeminiTimeoutError: Every attempt timed out.
         GeminiResponseError: The answer had no vector, or one of the wrong size.
     """
+    model = settings.gemini_model_embedding
     retrying = AsyncRetrying(
         stop=stop_after_attempt(settings.gemini_max_attempts),
         wait=wait_random_exponential(multiplier=1, max=max_backoff_seconds),
         retry=retry_if_exception_type(_RETRYABLE),
+        # Every attempt counts against the embedding model's daily quota (NF-F0-016).
+        before_sleep=partial(log_retry, operation=operation, tier=None, model=model),
         reraise=True,
     )
     started = time.perf_counter()
-    response: types.EmbedContentResponse = await retrying(_call, sdk, settings, text)
+    try:
+        response: types.EmbedContentResponse = await retrying(_call, sdk, settings, text)
+    except GeminiError as exc:
+        log_failure(
+            exc,
+            operation=operation,
+            tier=None,
+            model=model,
+            latency_ms=round((time.perf_counter() - started) * 1000),
+            attempts=retrying.statistics.get("attempt_number", 1),
+        )
+        raise
     latency_ms = round((time.perf_counter() - started) * 1000)
 
-    model = settings.gemini_model_embedding
     values = response.embeddings[0].values if response.embeddings else None
     if not values or len(values) != EMBEDDING_DIMENSION:
         raise GeminiResponseError(f"{model} returned no {EMBEDDING_DIMENSION}-number vector")
@@ -75,6 +90,17 @@ async def embed_text(
         len(text),
         latency_ms,
         retrying.statistics.get("attempt_number", 1),
+        extra={
+            "gemini_usage": {
+                "operation": operation,
+                "feature": feature_of(operation),
+                "tier": None,
+                "model": model,
+                "input_chars": len(text),
+                "latency_ms": latency_ms,
+                "attempts": retrying.statistics.get("attempt_number", 1),
+            }
+        },
     )
     return _normalize(values, model)
 
