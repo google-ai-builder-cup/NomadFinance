@@ -102,7 +102,19 @@ export default function FinancialTimeline({ income, bills, currency }: Financial
       </div>
 
       {(!currency || !hasData) && (
-        <p className="text-sm text-muted-foreground">{t("fib.timeline.empty")}</p>
+        <div className="space-y-4 pt-1">
+          {/* Ghost bars hint at the chart that fills in once there is something to plot. */}
+          <div aria-hidden="true" className="flex h-28 items-end gap-2.5 border-b px-1">
+            {[38, 62, 46, 80, 54, 92, 66].map((h, i) => (
+              <span
+                key={h}
+                className="flex-1 rounded-t-md bg-gradient-to-t from-muted to-muted/30"
+                style={{ height: `${h}%`, opacity: 0.5 + (i % 3) * 0.2 }}
+              />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">{t("fib.timeline.empty")}</p>
+        </div>
       )}
 
       {currency && hasData && (
@@ -142,28 +154,34 @@ export default function FinancialTimeline({ income, bills, currency }: Financial
             </ResponsiveContainer>
           </div>
 
-          {/* A table alternative to the chart above, for screen readers and printed pages. */}
-          <table className="sr-only">
-            <caption>{t("fib.timeline.heading")}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{t("fib.timeline.tableMonth")}</th>
-                <th scope="col">{t("fib.timeline.income")}</th>
-                <th scope="col">{t("fib.timeline.expense")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.month}>
-                  <td>{monthLabel(row.month, language)}</td>
-                  <td>{formatMoney(row.income, currency, language, currencyDecimals(currency))}</td>
-                  <td>
-                    {formatMoney(row.expense, currency, language, currencyDecimals(currency))}
-                  </td>
+          {/* A table alternative to the chart above, for screen readers and printed pages. The
+              sr-only box is a div because a table ignores overflow clipping: its rows would
+              spill out and stretch the page's scroll height. */}
+          <div className="sr-only">
+            <table>
+              <caption>{t("fib.timeline.heading")}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{t("fib.timeline.tableMonth")}</th>
+                  <th scope="col">{t("fib.timeline.income")}</th>
+                  <th scope="col">{t("fib.timeline.expense")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.month}>
+                    <td>{monthLabel(row.month, language)}</td>
+                    <td>
+                      {formatMoney(row.income, currency, language, currencyDecimals(currency))}
+                    </td>
+                    <td>
+                      {formatMoney(row.expense, currency, language, currencyDecimals(currency))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </section>

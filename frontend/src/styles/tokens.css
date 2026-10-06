@@ -163,72 +163,73 @@
 }
 
 .dark {
-  --background: 199 35% 7%;
+  --background: 204 40% 7%;
   --foreground: 195 25% 94%;
-  --card: 199 32% 9%;
+  --card: 204 30% 12%;
   --card-foreground: 195 25% 94%;
-  --popover: 199 32% 9%;
+  --popover: 204 30% 14%;
   --popover-foreground: 195 25% 94%;
 
-  --primary: 193 70% 55%;
-  --primary-foreground: 199 45% 8%;
+  --primary: 189 78% 55%;
+  --primary-foreground: 204 50% 7%;
 
-  --secondary: 199 25% 16%;
+  --secondary: 204 24% 18%;
   --secondary-foreground: 195 25% 94%;
 
-  --muted: 199 25% 16%;
-  --muted-foreground: 197 15% 65%;
-  --subtle-foreground: 197 14% 52%;
+  --muted: 204 24% 17%;
+  --muted-foreground: 200 18% 72%;
+  --subtle-foreground: 200 14% 60%;
 
-  --accent: 199 25% 16%;
+  --accent: 204 28% 20%;
   --accent-foreground: 195 25% 94%;
 
   --destructive: 4 62% 42%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 199 25% 18%;
-  --input: 199 25% 18%;
-  --ring: 193 70% 55%;
+  --border: 204 22% 23%;
+  --input: 204 22% 25%;
+  --ring: 189 78% 55%;
 
   --brand-gold: 38 92% 55%;
   --gold-ink: 43 96% 56%;
-  --alt: 199 35% 10%;
+  --alt: 204 34% 10%;
 
   --safe: 158 64% 52%;
   --safe-ink: 158 64% 52%;
-  --safe-tint: 165 76% 10%;
+  --safe-tint: 163 50% 14%;
   --safe-tint-ink: 156 72% 67%;
   --caution: 43 96% 56%;
   --caution-ink: 43 96% 56%;
-  --caution-tint: 37 67% 12%;
+  --caution-tint: 38 50% 15%;
   --caution-tint-ink: 46 97% 65%;
   --danger: 0 91% 71%;
   --danger-ink: 0 91% 71%;
-  --danger-tint: 0 53% 15%;
+  --danger-tint: 0 38% 19%;
   --danger-tint-ink: 0 94% 82%;
   --info: 213 94% 68%;
   --info-ink: 213 94% 68%;
-  --info-tint: 218 67% 17%;
+  --info-tint: 218 46% 21%;
   --info-tint-ink: 212 96% 78%;
 
-  --heat-0: 197 14% 52%;
+  --heat-0: 200 14% 60%;
   --heat-1: 43 96% 56%;
   --heat-2: 21 90% 58%;
   --heat-3: 0 91% 71%;
 
-  --remit-tint: 192 70% 16%;
+  --remit-tint: 192 50% 17%;
   --remit-ink: 190 75% 68%;
-  --contract-tint: 244 47% 21%;
+  --contract-tint: 245 36% 22%;
   --contract-ink: 245 78% 82%;
-  --radar-tint: 314 57% 15%;
+  --radar-tint: 316 36% 19%;
   --radar-ink: 324 76% 81%;
-  --identity-tint: 78 67% 12%;
+  --identity-tint: 76 38% 16%;
   --identity-ink: 73 71% 62%;
 
   --gradient-hero:
-    radial-gradient(1100px 560px at 80% 0%, hsl(189 86% 40% / 0.22), transparent 62%),
-    linear-gradient(180deg, #071b2e, #0a2338 70%, #0c2a44);
-  --gradient-band: linear-gradient(180deg, #091c26, #0a2029);
+    radial-gradient(1000px 520px at 82% -6%, hsl(189 80% 42% / 0.26), transparent 62%),
+    radial-gradient(760px 420px at 0% 100%, hsl(221 70% 45% / 0.16), transparent 60%),
+    linear-gradient(180deg, #08141c, #0b1b26 70%, #0d2230);
+  --gradient-band: linear-gradient(180deg, #0a171f, #0c1d27);
   --gradient-border: linear-gradient(
     160deg,
     hsl(193 70% 55% / 0.35),
@@ -236,17 +237,17 @@
     hsl(38 92% 55% / 0.28)
   );
   --globe-hi: 192 55% 28%;
-  --globe-mid: 205 70% 14%;
-  --globe-lo: 209 74% 8%;
+  --globe-mid: 205 55% 16%;
+  --globe-lo: 207 55% 9%;
   --globe-dot: 188 75% 64%;
   --globe-label: 195 25% 94%;
-  --blob-a: hsl(191 86% 30% / 0.5);
-  --blob-b: hsl(221 83% 53% / 0.25);
-  --glass: hsl(199 35% 10% / 0.78);
+  --blob-a: hsl(189 80% 38% / 0.32);
+  --blob-b: hsl(38 92% 55% / 0.12);
+  --glass: hsl(204 38% 10% / 0.8);
 
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 14px -6px rgb(0 0 0 / 0.5);
-  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.4), 0 14px 34px -12px rgb(0 0 0 / 0.65);
-  --shadow-lg: 0 6px 12px rgb(0 0 0 / 0.4), 0 30px 60px -24px rgb(0 0 0 / 0.8);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.35), 0 6px 16px -8px rgb(0 0 0 / 0.55);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 34px -14px rgb(0 0 0 / 0.7);
+  --shadow-lg: 0 6px 12px rgb(0 0 0 / 0.35), 0 30px 60px -24px rgb(0 0 0 / 0.85);
   --shadow-glow: 0 0 0 1px hsl(var(--border)), 0 12px 36px -12px rgb(14 165 192 / 0.35);
 
   /* Same 8-hue order, stepped for the dark surface (own validator pass, not an automatic
