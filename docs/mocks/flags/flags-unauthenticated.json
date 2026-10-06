@@ -1,0 +1,11 @@
+{
+  "description": "No valid token: the standard v2 error envelope.",
+  "request": "GET /api/v2/flags",
+  "status": 401,
+  "headers": { "X-Request-ID": "7d2a9e41c5b84f0aa1e63b9d0c4f7e82" },
+  "body": {
+    "code": "unauthenticated",
+    "message": "Missing bearer token",
+    "request_id": "7d2a9e41c5b84f0aa1e63b9d0c4f7e82"
+  }
+}

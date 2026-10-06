@@ -1,0 +1,16 @@
+{
+  "operation": "contract.detect",
+  "kind": "structured",
+  "response": {
+    "language": "en",
+    "host_country": "SG",
+    "host_country_evidence": "governing law: Employment of Foreign Manpower Act",
+    "document_kind": "employment_contract",
+    "job_type": "domestic_worker",
+    "employer_name": "Sample Employer Pte Ltd",
+    "agency_name": null,
+    "salary_amount": 650.0,
+    "salary_currency": "SGD",
+    "salary_period": "month"
+  }
+}

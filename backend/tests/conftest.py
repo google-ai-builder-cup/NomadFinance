@@ -17,6 +17,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.core.rate_limit import reset_rate_limits  # noqa: E402
 from app.main import create_app  # noqa: E402
+from tests.fixtures.fake_gemini import FakeGemini  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -35,3 +36,13 @@ def client() -> Iterator[TestClient]:
 def anyio_backend() -> str:
     """Run `@pytest.mark.anyio` async tests on asyncio only (no trio in this project)."""
     return "asyncio"
+
+
+@pytest.fixture
+def recorded_gemini() -> FakeGemini:
+    """A `FakeGemini` that answers from `tests/fixtures/gemini/` (NF-F0-014).
+
+    Not named `fake_gemini`: several test files define their own fixture of that name for a
+    one-off scripted answer, and a shared one must not look like them.
+    """
+    return FakeGemini()
