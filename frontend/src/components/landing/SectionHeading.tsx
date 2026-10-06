@@ -9,12 +9,14 @@ export default function SectionHeading({
   title,
   lead,
   className,
+  leadClassName,
 }: {
   id: string;
   kicker: string;
   title: ReactNode;
   lead?: ReactNode;
   className?: string;
+  leadClassName?: string;
 }) {
   return (
     <div className={cn("mb-9 flex max-w-3xl flex-col gap-3.5", className)}>
@@ -25,7 +27,11 @@ export default function SectionHeading({
       >
         {title}
       </h2>
-      {lead && <p className="max-w-[62ch] text-base text-muted-foreground md:text-lg">{lead}</p>}
+      {lead && (
+        <p className={cn("max-w-[62ch] text-base text-muted-foreground md:text-lg", leadClassName)}>
+          {lead}
+        </p>
+      )}
     </div>
   );
 }

@@ -59,6 +59,14 @@
     mask-composite: exclude;
     pointer-events: none;
   }
+  /* In the dark theme a shadow alone cannot lift a card off the page, so cards also get a faint
+     top light and an inner edge. Tailwind's gradient utilities still override the background. */
+  .dark .card-surface {
+    background-image: linear-gradient(180deg, hsl(0 0% 100% / 0.035), transparent 55%);
+    box-shadow:
+      inset 0 1px 0 hsl(0 0% 100% / 0.06),
+      var(--shadow-sm);
+  }
   /* Glass is for overlays only (header, floating cards, sheets). */
   .glass {
     background: var(--glass);

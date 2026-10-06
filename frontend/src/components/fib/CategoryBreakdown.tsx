@@ -135,7 +135,19 @@ export default function CategoryBreakdown({ income, bills, currency }: CategoryB
         {t("fib.breakdown.heading")}
       </h2>
 
-      {empty && <p className="text-sm text-muted-foreground">{t("fib.breakdown.empty")}</p>}
+      {empty && (
+        <div className="space-y-4 pt-1">
+          <div aria-hidden="true" className="space-y-2.5">
+            {[84, 58, 36].map((w) => (
+              <div key={w} className="flex items-center gap-3">
+                <span className="h-3 w-3 rounded-full bg-muted" />
+                <span className="h-2.5 rounded-full bg-muted/70" style={{ width: `${w}%` }} />
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">{t("fib.breakdown.empty")}</p>
+        </div>
+      )}
 
       {currency && incomeRows.length > 0 && (
         <BreakdownList

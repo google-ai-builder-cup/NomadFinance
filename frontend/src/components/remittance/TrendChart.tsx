@@ -266,24 +266,28 @@ export default function TrendChart({ comparison }: TrendChartProps) {
             </ResponsiveContainer>
           </div>
 
-          {/* A table alternative to the chart above, for screen readers and printed pages. */}
-          <table className="sr-only">
-            <caption>{t("remittance.trend.heading")}</caption>
-            <thead>
-              <tr>
-                <th scope="col">{t("remittance.trend.tableDate")}</th>
-                <th scope="col">{t("remittance.trend.tableRate")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {trends.data.points.map((point) => (
-                <tr key={point.date}>
-                  <td>{mediumDate(point.date, language)}</td>
-                  <td>{formatRate(point.rate, language)}</td>
+          {/* A table alternative to the chart above, for screen readers and printed pages. The
+              sr-only box is a div because a table ignores overflow clipping: its ~90 rows would
+              spill out below the card and leave the page scrolling into empty space. */}
+          <div className="sr-only">
+            <table>
+              <caption>{t("remittance.trend.heading")}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{t("remittance.trend.tableDate")}</th>
+                  <th scope="col">{t("remittance.trend.tableRate")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {trends.data.points.map((point) => (
+                  <tr key={point.date}>
+                    <td>{mediumDate(point.date, language)}</td>
+                    <td>{formatRate(point.rate, language)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {trends.data.best_day ? (
             <div className="rounded-xl border border-gold/40 bg-gold/10 p-3 text-sm font-medium">

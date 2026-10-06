@@ -127,17 +127,43 @@ export default function ScoreMeter({ profile }: ScoreMeterProps) {
 
   if (profile === null) {
     return (
-      <section className="card-surface dotted flex flex-col items-center gap-3 p-8 text-center">
-        <div className="w-full max-w-[11rem]">
+      <section
+        aria-labelledby="fib-score-title"
+        className="card-surface card-edge relative grid items-center gap-6 overflow-hidden bg-gradient-to-br from-identity-tint via-card to-card p-6 md:p-8 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-10"
+      >
+        <div
+          aria-hidden="true"
+          className="dotted pointer-events-none absolute inset-0 [mask-image:linear-gradient(90deg,#000,transparent_70%)]"
+        />
+        <div className="relative mx-auto w-full max-w-[15rem] animate-float">
           <PillarIllustration pillar="identity" />
         </div>
-        <p className="max-w-sm text-sm text-muted-foreground">{t("fib.score.noProfile")}</p>
-        <Button
-          asChild
-          className="h-11 rounded-xl bg-identity-deep px-5 font-bold text-white hover:bg-identity-deep/90"
-        >
-          <Link to="/identity/log">{t("fib.score.logActivity")}</Link>
-        </Button>
+        <div className="relative space-y-5">
+          <div className="space-y-2">
+            <h2 id="fib-score-title" className="text-sm font-bold text-identity-ink">
+              {t("fib.score.overall")}
+            </h2>
+            <p className="max-w-prose text-base font-medium leading-relaxed text-foreground md:text-lg">
+              {t("fib.score.noProfile")}
+            </p>
+          </div>
+          {/* The four metrics the score will be made of, waiting for their first data. */}
+          <ul className="grid gap-2.5 sm:grid-cols-2">
+            {METRIC_KEYS.map((key) => (
+              <li key={key} className="space-y-2 rounded-xl border border-dashed bg-card/70 p-3">
+                <p className="text-sm font-bold">{t(`fib.score.metrics.${key}`)}</p>
+                <div className="h-1.5 w-full rounded-full bg-muted" />
+                <p className="text-xs text-muted-foreground">{t("fib.score.noData")}</p>
+              </li>
+            ))}
+          </ul>
+          <Button
+            asChild
+            className="h-11 rounded-xl bg-identity-deep px-5 font-bold text-white hover:bg-identity-deep/90"
+          >
+            <Link to="/identity/log">{t("fib.score.logActivity")}</Link>
+          </Button>
+        </div>
       </section>
     );
   }
