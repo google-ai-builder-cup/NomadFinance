@@ -1,3 +1,4 @@
+%% Dashed outlines and dotted edges involving P5 or P6 = future scope behind feature flags (docs/future-scope/design.md section 8).
 flowchart TB
     U([Migrant Worker])
 
@@ -5,6 +6,8 @@ flowchart TB
     U --> P2[Contract Shield]
     U --> P3[Exploitation Radar]
     U --> P4[Financial Identity]
+    U -.flag coach.-> P5[Financial Coach]
+    U -.flag scam.-> P6[Scam Analyzer]
 
     P1 -.Every transfer logged.-> P4
     P2 -.Employer flags feed radar.-> P3
@@ -12,10 +15,24 @@ flowchart TB
     P3 -.Verified bad agencies shown.-> P2
     P2 -.Verified employment adds.-> P4
 
+    P1 -.Cheapest provider per corridor.-> P5
+    P5 -.Deep link with corridor + amount.-> P1
+    P2 -.Salary + employer prefill, user confirms.-> P5
+    P2 -.Legal fee cap from labor laws.-> P5
+    P5 -.Plan targets become goals.-> P4
+    P5 -.Plan adherence signal, opt-in.-> P4
+
+    P6 -.One-tap anonymised scam report.-> P3
+    P3 -.Seen N times in your corridor.-> P6
+    P6 -.Scam-check activity signal, opt-in.-> P4
+
     P4 --> OUT([Portable Financial Identity])
     OUT --> MFI[MFI or Bank in Home Country]
 
     classDef pillar fill:#4285F4,stroke:#1a73e8,color:#fff
     classDef output fill:#34A853,stroke:#188038,color:#fff
+    classDef planned stroke-dasharray:5 3,stroke-width:2px
     class P1,P2,P3,P4 pillar
+    class P5,P6 pillar
+    class P5,P6 planned
     class OUT output

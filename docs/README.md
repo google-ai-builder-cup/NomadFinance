@@ -2,6 +2,7 @@
 
 ## Index
 •⁠  ⁠*design-doc/* — Master design document
+•  *future-scope/* — Design addendum for the flag-gated Financial Coach and Scam Analyzer
 •⁠  ⁠*architecture/* — System diagrams + stack decisions
 •⁠  ⁠*pipelines/* — Per-pillar agentic pipeline deep dives
 •⁠  ⁠*api/* — REST API contracts + OpenAPI export

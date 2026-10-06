@@ -22,7 +22,13 @@ flowchart LR
     S8 -.Save Analysis.-> L[(Firestore - users contracts)]
     S7 -.Anonymized Signal.-> RD[Feeds Exploitation Radar]
 
+    %% Future scope (flag coach): the Coach prefills salary and employer, and reads the legal fee cap.
+    L -.Latest salary + employer, user confirms.-> CO[Financial Coach]
+    S4 -.Legal fee cap.-> CO
+
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
     classDef data fill:#34A853,stroke:#188038,color:#fff
     class S2,S3,S5,S6,S9a gemini
     class S4,L data
+    classDef planned stroke-dasharray:5 3,stroke-width:2px
+    class CO planned

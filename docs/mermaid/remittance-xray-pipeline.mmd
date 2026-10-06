@@ -21,6 +21,10 @@ flowchart LR
     U -.Log Transfer.-> H[(Firestore - users transfers)]
     H -.Feeds.-> FI[Financial Identity Builder]
 
+    %% Future scope (flag coach): the Coach reads the cheapest provider and deep-links back in.
+    S6 -.Cheapest provider.-> CO[Financial Coach]
+    CO -.Deep link with corridor + amount.-> U
+
     subgraph CRON[Background Cron - Every 2 Hours]
         CS[Cloud Scheduler]
         CS -->|Trigger| RF[refresh_rates endpoint]
@@ -37,3 +41,5 @@ flowchart LR
     class S9,S10 gemini
     class S2,S3,S4,H,RC,RH data
     class FR,ER ext
+    classDef planned stroke-dasharray:5 3,stroke-width:2px
+    class CO planned
