@@ -1,6 +1,6 @@
 # Firestore schema
 
-Status: NF-P1-013, written 2026-09-25; extended for Future Scope by NF-F0-003, 2026-10-06 (eight new collections, the rows marked *Future Scope*). This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
+Status: NF-P1-013, written 2026-09-25; extended for Future Scope by NF-F0-003, 2026-10-06 (eight new collections, the rows marked *Future Scope*); rules and index entries for them added by NF-F0-004, 2026-10-06. This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
 
 How to read it: each collection group says where its shape comes from.
 
@@ -115,7 +115,7 @@ Input for the security rules task (NF-P1-014). It states intent. Backend access 
 | `scam_taxonomy`, `cost_baselines` (*Future Scope*) | Read (reference data) | Read | None |
 | `scam_patterns`, `scam_indicators`, `config` (*Future Scope*) | None | None | None |
 
-Future Scope adds one client-writable field: `users/{uid}.signal_sharing` (a map of two booleans, set from the profile page), which the rules must accept alongside the other profile fields. Rules for the new collections are NF-F0-004's. Whether a worker may delete one of their own scam checks from the browser is not decided (D-109).
+Future Scope adds one client-writable field: `users/{uid}.signal_sharing` (a map of two booleans, set from the profile page), which the rules accept alongside the other profile fields (`signal_sharing` may hold only the keys `coach` and `scam`, each a boolean; NF-F0-004). The rules for every collection above are in `frontend/firestore.rules` with an allow and a deny test each. A worker cannot delete a scam check or a Coach session from the browser: that stays an API matter (D-109).
 
 Entries created by the user (transfers, income, bills, savings) are written by the backend so the values can be validated and categorized. If a task needs the browser to write directly, that task must add the matching rule.
 
@@ -134,7 +134,7 @@ Not needed, although earlier versions of this page listed them (2026-10-01 bug f
 
 Existing copies of these three in a project do no harm.
 
-### Added by Future Scope (NF-F0-003; creating them is NF-F0-004)
+### Added by Future Scope (NF-F0-003; written into `frontend/firestore.indexes.json` by NF-F0-004)
 
 Two more indexes are needed, and one setting that is not an index:
 
@@ -143,7 +143,7 @@ Two more indexes are needed, and one setting that is not an index:
 | `scam_patterns`: vector, dimension 768, flat, on `embedding` | The nearest-3 search of NF-SA-010 | Vector fields are never indexed by default |
 | `coach_plans`: single field `departure_date`, ascending, **collection-group scope** | The daily check-in job (NF-FC-016) finds plans reaching day 30, 60 and 90 across all users: `departure_date ==` on the group `coach_plans` | Single-field indexes are created for one collection at a time; a query over a collection group needs the group scope on purpose |
 
-Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). `firestore.indexes.json` supports both as entries (`indexes` for the vector index, `fieldOverrides` for the group-scope field). Which of the two files deploys is still open (D-33, D-68); the one inside `frontend/` is the one the CLI reads.
+Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). Both are entries in `frontend/firestore.indexes.json` (`indexes` for the vector index, `fieldOverrides` for the group-scope field), and `frontend/firebase.json` now points at that file, so `firebase deploy --only firestore:indexes` creates them. No workflow runs that command yet, and the entries have not been deployed to any project (D-33, D-68); the file inside `frontend/` is the one the CLI reads, and `infra/firebase/firestore.indexes.json` is an empty stub.
 
 The same two as `gcloud` commands (syntax from `--help` on 2026-10-06; not run):
 
@@ -234,4 +234,4 @@ The join key for the two "shown in" links is the entity `slug` (a slugified name
 | 4 | Should signed-in users read `radar_reports` directly? | No, the backend serves them | NF-P1-014 |
 | 5 | *Future Scope.* Scam cache per user or shared? | Per user (`cache_key` on `scam_checks`); a shared cache would need a new collection and a retention rule | Decided in NF-F0-003; NF-SA-012 may revisit |
 | 6 | *Future Scope.* How does a scam report look in Radar? | `source: scam_check`, `entity_type: scam_type`, `violation_type: scam_message`, with the full scam details and the worker-confirmed indicators in `scam` (see [radar](collections/radar.md)) | Decided in NF-F0-003 |
-| 7 | *Future Scope.* Can a worker delete their own scam checks or a Coach session before the TTL? | Not specified | NF-F0-004 / NF-SA-012 (D-109) |
+| 7 | *Future Scope.* Can a worker delete their own scam checks or a Coach session before the TTL? | No: the rules deny every browser write and delete on these collections. NF-SA-012 may add a delete route to the API (D-109) | NF-SA-012 |

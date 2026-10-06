@@ -24,6 +24,7 @@ service cloud.firestore {
         'preferred_language',
         'onboarding_completed_at',
         'notification_prefs',
+        'signal_sharing',
         'fcm_tokens'
       ];
     }
@@ -37,6 +38,15 @@ service cloud.firestore {
             || (prefs.radar_corridors is list && prefs.radar_corridors.size() <= 6));
     }
 
+    // Opt-in switches for the Coach and scam-check signals in the Financial Identity report
+    // (NF-HR-001). Both keys are optional: an absent key means off.
+    function validSignalSharing(sharing) {
+      return sharing is map
+        && sharing.keys().hasOnly(['coach', 'scam'])
+        && (!('coach' in sharing) || sharing.coach is bool)
+        && (!('scam' in sharing) || sharing.scam is bool);
+    }
+
     // The browser writes this document directly, so the rules are the only validation.
     function validProfile(data) {
       return (!('home_country' in data) || data.home_country in ['PH', 'IN', 'ID', 'NP', 'BD'])
@@ -48,6 +58,7 @@ service cloud.firestore {
             || data.preferred_language in ['en', 'hi', 'tl', 'id', 'ne', 'bn'])
         && (!('onboarding_completed_at' in data) || data.onboarding_completed_at is timestamp)
         && (!('notification_prefs' in data) || validNotificationPrefs(data.notification_prefs))
+        && (!('signal_sharing' in data) || validSignalSharing(data.signal_sharing))
         && (!('fcm_tokens' in data)
             || (data.fcm_tokens is list && data.fcm_tokens.size() <= 5));
     }
@@ -83,13 +94,21 @@ service cloud.firestore {
           && (!('read_at' in request.resource.data) || request.resource.data.read_at is timestamp);
       }
 
-      // Written only by the backend (values validated and categorised there).
+      // Written only by the backend (values validated and categorised there). The Coach and
+      // scam-check collections hold the most sensitive text a worker types, and their state
+      // machine and rate limit live in the API, so the browser never writes them either.
       match /{collection}/{docId} {
         allow read: if isOwner(uid)
-          && collection in ['contracts', 'transfers', 'income', 'bills', 'savings', 'financial_profile'];
+          && collection in [
+               'contracts', 'transfers', 'income', 'bills', 'savings', 'financial_profile',
+               'coach_sessions', 'coach_plans', 'scam_checks'];
       }
 
       match /contracts/{contractId}/reports/{language} {
+        allow read: if isOwner(uid);
+      }
+
+      match /coach_plans/{planId}/translations/{language} {
         allow read: if isOwner(uid);
       }
     }
@@ -100,10 +119,12 @@ service cloud.firestore {
       allow read: if signedIn()
         && collection in [
              'corridors', 'rates_cache', 'rates_history', 'labor_laws', 'complaint_templates',
-             'radar_entities', 'radar_alerts'];
+             'radar_entities', 'radar_alerts', 'scam_taxonomy', 'cost_baselines'];
     }
 
-    // radar_reports and report_embeddings match nothing above, so they are denied: the
-    // backend serves reports through the API and hides reporter_hash.
+    // radar_reports, report_embeddings, scam_patterns, scam_indicators and config match nothing
+    // above, so they are denied: the backend serves reports through the API and hides
+    // reporter_hash, scam templates and indicator counts reach a browser only as API answers,
+    // and config holds the feature-flag allow-lists of other people's uids.
   }
 }

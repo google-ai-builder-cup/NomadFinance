@@ -269,6 +269,11 @@ describe("users/{uid} backend-written subcollections", () => {
     "users/alice/bills/b1",
     "users/alice/savings/s1",
     "users/alice/financial_profile/current",
+    // Future Scope (NF-F0-004)
+    "users/alice/coach_sessions/s1",
+    "users/alice/coach_plans/p1",
+    "users/alice/coach_plans/p1/translations/hi",
+    "users/alice/scam_checks/k1",
   ];
 
   beforeEach(async () => {
@@ -315,6 +320,11 @@ describe("shared reference data", () => {
     "radar_entities/quickremit",
     "radar_alerts/SG-PH",
     "radar_alerts/SG-PH/current/a1",
+    // Future Scope (NF-F0-004)
+    "scam_taxonomy/fake_job_offer",
+    "scam_taxonomy/_meta",
+    "cost_baselines/SG",
+    "cost_baselines/AU",
   ];
 
   beforeEach(async () => {
@@ -337,12 +347,131 @@ describe("shared reference data", () => {
 });
 
 describe("backend-only and unknown collections", () => {
-  it.each(["radar_reports/r1", "report_embeddings/r1", "admin/config"])(
-    "denies %s to signed-in users",
-    async (path) => {
+  it.each([
+    "radar_reports/r1",
+    "report_embeddings/r1",
+    "admin/config",
+    // Future Scope (NF-F0-004)
+    "scam_patterns/illegal_recruitment_fee-en-001",
+    "scam_indicators/8c83cb97151fd86a6c73ff5fa296244e",
+    "config/feature_flags",
+  ])("denies %s to signed-in users", async (path) => {
+    await seed(path, { schema_version: 1 });
+    await assertFails(getDoc(doc(db(ALICE), path)));
+    await assertFails(setDoc(doc(db(ALICE), path), { schema_version: 1 }));
+  });
+});
+
+describe("users/{uid}: signal_sharing (NF-F0-004)", () => {
+  beforeEach(async () => {
+    await seed("users/alice", SAVED_PROFILE);
+  });
+
+  it("lets the owner turn both signals on or off", async () => {
+    await assertSucceeds(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        signal_sharing: { coach: true, scam: false },
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+
+  it("accepts a map with only one key, which means the other is off", async () => {
+    await assertSucceeds(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        signal_sharing: { coach: true },
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+
+  it("accepts it on a new profile", async () => {
+    // Carol has no document yet, so this is a create (alice's is seeded above).
+    await assertSucceeds(
+      setDoc(
+        doc(db("carol"), "users/carol"),
+        newProfile({ signal_sharing: { coach: false, scam: false } })
+      )
+    );
+  });
+
+  it.each([
+    ["an unknown key", { coach: true, marketing: true }],
+    ["a non-boolean value", { coach: "yes" }],
+    ["a list instead of a map", [true, false]],
+    ["a bare boolean", true],
+  ])("rejects %s", async (_label, value) => {
+    await assertFails(
+      updateDoc(doc(db(ALICE), "users/alice"), {
+        signal_sharing: value,
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+
+  it("blocks another user from changing it", async () => {
+    await assertFails(
+      updateDoc(doc(db(BOB), "users/alice"), {
+        signal_sharing: { coach: true, scam: true },
+        updated_at: serverTimestamp(),
+      })
+    );
+  });
+});
+
+describe("Future Scope collections: writes and deletes from the browser (NF-F0-004)", () => {
+  const ownerPaths = [
+    "users/alice/coach_sessions/s1",
+    "users/alice/coach_plans/p1",
+    "users/alice/coach_plans/p1/translations/hi",
+    "users/alice/scam_checks/k1",
+  ];
+  const referencePaths = [
+    "scam_taxonomy/fake_job_offer",
+    "scam_taxonomy/_meta",
+    "cost_baselines/SG",
+  ];
+
+  beforeEach(async () => {
+    for (const path of [...ownerPaths, ...referencePaths]) {
       await seed(path, { schema_version: 1 });
-      await assertFails(getDoc(doc(db(ALICE), path)));
-      await assertFails(setDoc(doc(db(ALICE), path), { schema_version: 1 }));
+    }
+  });
+
+  // Worker-deletable history is an open question (D-109); until it is settled the answer is
+  // that every change goes through the API.
+  it.each(ownerPaths)("blocks the owner updating or deleting %s", async (path) => {
+    await assertFails(updateDoc(doc(db(ALICE), path), { schema_version: 2 }));
+    await assertFails(deleteDoc(doc(db(ALICE), path)));
+  });
+
+  it.each(referencePaths)("blocks a signed-in user updating or deleting %s", async (path) => {
+    await assertFails(updateDoc(doc(db(ALICE), path), { schema_version: 2 }));
+    await assertFails(deleteDoc(doc(db(ALICE), path)));
+  });
+
+  it("lets the owner list their own sessions, plans and checks, but nobody else", async () => {
+    for (const kind of ["coach_sessions", "coach_plans", "scam_checks"]) {
+      await assertSucceeds(getDocs(collection(db(ALICE), `users/alice/${kind}`)));
+      await assertFails(getDocs(collection(db(BOB), `users/alice/${kind}`)));
+      await assertFails(getDocs(collection(db(null), `users/alice/${kind}`)));
+    }
+    await assertSucceeds(getDocs(collection(db(ALICE), "users/alice/coach_plans/p1/translations")));
+    await assertFails(getDocs(collection(db(BOB), "users/alice/coach_plans/p1/translations")));
+  });
+
+  it("lets a signed-in user list the taxonomy and the baselines, but not a signed-out one", async () => {
+    await assertSucceeds(getDocs(collection(db(BOB), "scam_taxonomy")));
+    await assertSucceeds(getDocs(collection(db(BOB), "cost_baselines")));
+    await assertFails(getDocs(collection(db(null), "scam_taxonomy")));
+    await assertFails(getDocs(collection(db(null), "cost_baselines")));
+  });
+
+  it.each(["scam_patterns", "scam_indicators", "config"])(
+    "denies listing %s to a signed-in user",
+    async (name) => {
+      await seed(`${name}/x1`, { schema_version: 1 });
+      await assertFails(getDocs(collection(db(ALICE), name)));
     }
   );
 });

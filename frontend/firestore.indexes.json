@@ -15,7 +15,21 @@
         { "fieldPath": "corridor_id", "order": "ASCENDING" },
         { "fieldPath": "embedding", "vectorConfig": { "dimension": 768, "flat": {} } }
       ]
+    },
+    {
+      "collectionGroup": "scam_patterns",
+      "queryScope": "COLLECTION",
+      "fields": [{ "fieldPath": "embedding", "vectorConfig": { "dimension": 768, "flat": {} } }]
     }
   ],
-  "fieldOverrides": []
+  "fieldOverrides": [
+    {
+      "collectionGroup": "coach_plans",
+      "fieldPath": "departure_date",
+      "indexes": [
+        { "order": "ASCENDING", "queryScope": "COLLECTION" },
+        { "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }
+      ]
+    }
+  ]
 }
