@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import AccountMenu from "@/components/layout/AccountMenu";
 import LanguageSelector from "@/components/layout/LanguageSelector";
-import { HOME_ITEM, NAV_ITEMS, pillarForPath } from "@/components/layout/navItems";
+import { HOME_ITEM, MODULE_ITEMS, NAV_ITEMS, pillarForPath } from "@/components/layout/navItems";
 import ThemeToggle from "@/components/layout/ThemeToggle";
 import BrandMark from "@/components/visual/BrandMark";
 import { useI18n } from "@/hooks/useI18n";
@@ -16,7 +16,8 @@ function useCrumb(pathname: string): { section: string | null; title: string } {
   if (pillar) {
     return { section: t("layout.crumbTools"), title: t(pillar.nameKey) };
   }
-  const item = NAV_ITEMS.find(({ to }) => pathname === to) ?? HOME_ITEM;
+  // Every module is listed whatever its flag says: a page the worker can reach has a title.
+  const item = [...NAV_ITEMS, ...MODULE_ITEMS].find(({ to }) => pathname === to) ?? HOME_ITEM;
   // Home is its own top level: a "Home / Home" trail would only repeat itself.
   return {
     section: pathname === HOME_ITEM.to ? null : t("layout.crumbHome"),

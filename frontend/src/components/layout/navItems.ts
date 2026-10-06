@@ -1,6 +1,15 @@
-import { ArrowLeftRight, Fingerprint, LayoutDashboard, Radar, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Fingerprint,
+  GraduationCap,
+  LayoutDashboard,
+  Radar,
+  ScanSearch,
+  ShieldCheck,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import type { FeatureFlag, FeatureFlags } from "@/types/flags";
 import type { PillarKey } from "@/utils/pillars";
 
 export interface NavItem {
@@ -62,6 +71,23 @@ export const PILLAR_ITEMS: readonly PillarItem[] = [
 ];
 
 export const NAV_ITEMS: readonly NavItem[] = [HOME_ITEM, ...PILLAR_ITEMS];
+
+export interface ModuleItem extends NavItem {
+  /** The module is in the navigation only while this flag is on for the signed-in user. */
+  flag: FeatureFlag;
+}
+
+// Kept apart from PILLAR_ITEMS on purpose: that list also feeds the landing page, the dashboard
+// cards and analytics, which must stay exactly as v1.0 while a module ships dark (NF-F0-006).
+export const MODULE_ITEMS: readonly ModuleItem[] = [
+  { to: "/coach", icon: GraduationCap, labelKey: "nav.coach", flag: "coach" },
+  { to: "/scam-check", icon: ScanSearch, labelKey: "nav.scamCheck", flag: "scam" },
+];
+
+/** The sidebar and tab bar entries for this user: the v1.0 five, then each module that is on. */
+export function visibleNavItems(flags: FeatureFlags): readonly NavItem[] {
+  return [...NAV_ITEMS, ...MODULE_ITEMS.filter(({ flag }) => flags[flag])];
+}
 
 /** The pillar a path belongs to (`/radar/entity/x` is Radar), or null outside the four pillars. */
 export function pillarForPath(pathname: string): PillarItem | null {

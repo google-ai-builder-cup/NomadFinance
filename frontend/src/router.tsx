@@ -95,6 +95,13 @@ export const router = createBrowserRouter([
                         ...page(() => import("@/pages/fib/FIBExportReport")),
                       },
                       ...pillarRoutes,
+                      // The two Future Scope modules (NF-F0-006). Each route module holds its own
+                      // flag guard, so a user the flag is off for downloads nothing of the module.
+                      { path: "/coach", ...page(() => import("@/pages/coach/CoachRoute")) },
+                      {
+                        path: "/scam-check",
+                        ...page(() => import("@/pages/scam/ScamCheckRoute")),
+                      },
                     ],
                   },
                 ],
