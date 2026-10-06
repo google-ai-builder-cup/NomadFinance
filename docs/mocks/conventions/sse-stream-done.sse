@@ -1,0 +1,16 @@
+: ping
+
+event: token
+data: {"text":"How much do you "}
+
+event: token
+data: {"text":"send home each month?"}
+
+: ping
+
+event: slot_update
+data: {"slot":"monthly_remittance","value":{"amount":1200,"currency":"AUD"}}
+
+event: done
+data: {"message_id":"msg_01","stage":"obligations"}
+

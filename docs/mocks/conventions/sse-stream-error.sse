@@ -1,0 +1,6 @@
+event: token
+data: {"text":"Let me look at "}
+
+event: error
+data: {"code":"ai_timeout","message":"The AI service took too long to respond. Please try again.","request_id":"5b0e8d3a7f1c4296a4d7e2183c9f6b05"}
+

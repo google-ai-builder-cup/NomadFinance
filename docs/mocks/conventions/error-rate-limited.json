@@ -1,0 +1,15 @@
+{
+  "status": 429,
+  "headers": {
+    "X-Request-ID": "0d47e3b9a1c64825b9f2e86a35d1c7e4",
+    "Retry-After": "42",
+    "X-RateLimit-Limit": "60",
+    "X-RateLimit-Remaining": "0",
+    "X-RateLimit-Reset": "42"
+  },
+  "body": {
+    "code": "rate_limited",
+    "message": "Too many requests. Please wait a minute and try again.",
+    "request_id": "0d47e3b9a1c64825b9f2e86a35d1c7e4"
+  }
+}

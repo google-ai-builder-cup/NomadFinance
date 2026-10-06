@@ -2,7 +2,7 @@
 
 Base URL: the Cloud Run service URL (local: `http://127.0.0.1:8080`).
 
-All endpoints live under `/api/v1/` except `/health`. Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
+All endpoints in this file live under `/api/v1/` except `/health`. New Future Scope endpoints live under `/api/v2/` and follow `docs/api/v2-conventions.md` (error envelope, pagination, streaming, idempotency, deprecation); v1 behaviour is not changed by them. Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
 
 ## Authentication
 
@@ -52,7 +52,9 @@ must say so explicitly in their own doc section below.
 
 ## Error format
 
-Every error response is JSON with a single human-readable `detail` string, for example `{"detail": "The file is larger than 10 MB."}`. The frontend should pick its translated message by **status code** and treat `detail` as a fallback. Errors never contain stack traces, model names or Gemini API messages.
+This section describes `/api/v1`. Errors under `/api/v2` use a different body, `{code, message, request_id}`: see `docs/api/v2-conventions.md`, section 2.
+
+Every v1 error response is JSON with a single human-readable `detail` string, for example `{"detail": "The file is larger than 10 MB."}`. The frontend should pick its translated message by **status code** and treat `detail` as a fallback. Errors never contain stack traces, model names or Gemini API messages.
 
 Gemini failures (any endpoint that calls Gemini) map to (`app/core/errors.py`):
 

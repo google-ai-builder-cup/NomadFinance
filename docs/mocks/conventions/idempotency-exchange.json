@@ -1,0 +1,90 @@
+{
+  "key": "7c1f6d2e-5b3a-4e8f-9a04-d2b6c18e3f55",
+  "steps": [
+    {
+      "name": "first request: processed normally",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/example/items",
+        "headers": { "Idempotency-Key": "7c1f6d2e-5b3a-4e8f-9a04-d2b6c18e3f55" },
+        "body": { "label": "AUD 1,200 transfer to India" }
+      },
+      "response": {
+        "status": 201,
+        "headers": { "X-Request-ID": "a14c9e07d3b84f61b5e20c78d9f13a46" },
+        "body": { "id": "chk_0f3a", "label": "AUD 1,200 transfer to India" }
+      }
+    },
+    {
+      "name": "retry, same key and same body: stored response replayed",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/example/items",
+        "headers": { "Idempotency-Key": "7c1f6d2e-5b3a-4e8f-9a04-d2b6c18e3f55" },
+        "body": { "label": "AUD 1,200 transfer to India" }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "X-Request-ID": "e55b02c7a9d14836bf7a1d04c63e8b92",
+          "Idempotency-Replayed": "true"
+        },
+        "body": { "id": "chk_0f3a", "label": "AUD 1,200 transfer to India" }
+      }
+    },
+    {
+      "name": "same key, different body: refused",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/example/items",
+        "headers": { "Idempotency-Key": "7c1f6d2e-5b3a-4e8f-9a04-d2b6c18e3f55" },
+        "body": { "label": "AUD 9,000 transfer to India" }
+      },
+      "response": {
+        "status": 422,
+        "headers": { "X-Request-ID": "6a90d1f4b2c7485e8d3b0e19a7c25f68" },
+        "body": {
+          "code": "idempotency_key_reused",
+          "message": "This Idempotency-Key was already used with a different request.",
+          "request_id": "6a90d1f4b2c7485e8d3b0e19a7c25f68"
+        }
+      }
+    },
+    {
+      "name": "same key while the first request is still running",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/example/items",
+        "headers": { "Idempotency-Key": "7c1f6d2e-5b3a-4e8f-9a04-d2b6c18e3f55" },
+        "body": { "label": "AUD 1,200 transfer to India" }
+      },
+      "response": {
+        "status": 409,
+        "headers": { "X-Request-ID": "c3d8f60a1e9b47d2a5f4082b6e71c9d3", "Retry-After": "2" },
+        "body": {
+          "code": "request_in_progress",
+          "message": "A request with this Idempotency-Key is still being processed.",
+          "request_id": "c3d8f60a1e9b47d2a5f4082b6e71c9d3"
+        }
+      }
+    },
+    {
+      "name": "key missing on an endpoint that requires one",
+      "request": {
+        "method": "POST",
+        "path": "/api/v2/example/items",
+        "headers": {},
+        "body": { "label": "AUD 1,200 transfer to India" }
+      },
+      "response": {
+        "status": 400,
+        "headers": { "X-Request-ID": "91f2a7e4c0b34d58a6e3d1f90b82c745" },
+        "body": {
+          "code": "idempotency_key_invalid",
+          "message": "The Idempotency-Key header is required for this request.",
+          "request_id": "91f2a7e4c0b34d58a6e3d1f90b82c745"
+        }
+      }
+    }
+  ]
+}

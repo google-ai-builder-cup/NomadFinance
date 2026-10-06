@@ -1,0 +1,18 @@
+{
+  "note": "Sent on every response of a deprecated route until its sunset date; after that the route answers 410 gone.",
+  "request": "GET /api/v2/example/items",
+  "status": 200,
+  "headers": {
+    "Deprecation": "@1798761600",
+    "Sunset": "Thu, 01 Apr 2027 00:00:00 GMT",
+    "Link": "</api/v2/migration/example>; rel=\"deprecation\""
+  },
+  "after_sunset": {
+    "status": 410,
+    "body": {
+      "code": "gone",
+      "message": "This endpoint has been removed.",
+      "request_id": "d27e4b91a6c03f85b1e9407c3a58d6f2"
+    }
+  }
+}
