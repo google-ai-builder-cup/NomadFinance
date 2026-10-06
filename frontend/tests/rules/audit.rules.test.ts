@@ -88,8 +88,23 @@ describe("collection-group queries", () => {
     "bills",
     "savings",
     "financial_profile",
+    "coach_sessions",
+    "coach_plans",
+    "translations",
+    "scam_checks",
   ];
-  const sharedGroups = ["rules", "points", "current", "types", "_meta"];
+  const sharedGroups = [
+    "rules",
+    "points",
+    "current",
+    "types",
+    "_meta",
+    "scam_taxonomy",
+    "scam_patterns",
+    "scam_indicators",
+    "cost_baselines",
+    "config",
+  ];
 
   beforeEach(async () => {
     await seed("users/alice/notifications/n1", { title: "private" });
@@ -106,6 +121,15 @@ describe("collection-group queries", () => {
     await seed("radar_alerts/SG-PH/current/a1", { entity: "x" });
     await seed("complaint_templates/SG/types/t1", { body: "x" });
     await seed("labor_laws/SG/_meta/current", { version: 1 });
+    await seed("users/alice/coach_sessions/s1", { transcript: "private" });
+    await seed("users/alice/coach_plans/p1", { departure_date: "2026-12-01" });
+    await seed("users/alice/coach_plans/p1/translations/hi", { plan: "private" });
+    await seed("users/alice/scam_checks/k1", { redacted_text: "private" });
+    await seed("scam_taxonomy/fake_job_offer", { kind: "type" });
+    await seed("scam_patterns/p-en-001", { text: "template" });
+    await seed("scam_indicators/i1", { value: "private" });
+    await seed("cost_baselines/SG", { currency: "SGD" });
+    await seed("config/feature_flags", { flags: {} });
   });
 
   it.each([...userGroups, ...sharedGroups])(
