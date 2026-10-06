@@ -93,6 +93,12 @@ class Settings(BaseSettings):
     # no 300 s Cloud Run request limit to fit under, only the scheduler's own deadline.
     gemini_narrative_timeout_seconds: float = Field(default=90.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
+    # How much of a conversation a chat or streamed reply sends (NF-F0-007): the newest turns
+    # that fit both limits, never the whole transcript, so one turn stays inside the model's
+    # per-minute token quota. The caller summarises what is left out. The token figure is an
+    # estimate (3 characters a token), deliberately high for Hindi and Bengali.
+    gemini_chat_history_turns: int = Field(default=24, ge=1)
+    gemini_chat_history_tokens: int = Field(default=6000, ge=1)
 
     # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
     # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.

@@ -24,6 +24,7 @@ from app.integrations.gemini.errors import (
     GeminiTimeoutError,
     GeminiUnavailableError,
 )
+from app.integrations.gemini.usage import feature_of
 
 logger = logging.getLogger(__name__)
 
@@ -67,8 +68,9 @@ async def embed_text(
         raise GeminiResponseError(f"{model} returned no {EMBEDDING_DIMENSION}-number vector")
     # No token counts in an embedding response, so input size stands in for cost tracking.
     logger.info(
-        "gemini_call operation=%s model=%s input_chars=%d latency_ms=%d attempts=%d",
+        "gemini_call operation=%s feature=%s model=%s input_chars=%d latency_ms=%d attempts=%d",
         operation,
+        feature_of(operation),
         model,
         len(text),
         latency_ms,
