@@ -7,14 +7,18 @@ import uuid
 
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.exceptions import HTTPException
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from app.core.logging import RequestContext, reset_request_context, set_request_context
+from app.core.errors import error_response, is_v2_path
+from app.core.logging import (
+    REQUEST_ID_HEADER,
+    RequestContext,
+    reset_request_context,
+    set_request_context,
+)
 
 logger = logging.getLogger(__name__)
-
-REQUEST_ID_HEADER = "X-Request-ID"
 
 # A caller's own id is reused so one id can follow a request across systems, but only in a
 # shape that cannot forge log lines or fill the logs with junk.
@@ -49,6 +53,9 @@ class RequestLoggingMiddleware:
             request_id=supplied if _VALID_REQUEST_ID.match(supplied) else uuid.uuid4().hex,
             trace_id=trace.group(1).lower() if trace else None,
         )
+        # The 500 handler runs outside this middleware, after the context var is reset, so the
+        # id is also kept on the scope for error responses to read.
+        scope.setdefault("state", {})["request_id"] = context.request_id
         token = set_request_context(context)
         started = time.perf_counter()
         status_code: int | None = None
@@ -115,7 +122,12 @@ class BodySizeLimitMiddleware:
 
         declared = Headers(scope=scope).get("content-length", "")
         if declared.isdigit() and int(declared) > self.max_bytes:
-            response = JSONResponse(status_code=413, content={"detail": self._message()})
+            if is_v2_path(scope["path"]):
+                response: Response = error_response(
+                    scope, 413, "payload_too_large", self._message()
+                )
+            else:
+                response = JSONResponse(status_code=413, content={"detail": self._message()})
             await response(scope, receive, send)
             return
 

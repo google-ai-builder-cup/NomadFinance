@@ -1,0 +1,13 @@
+{
+  "request": "GET /api/v2/example/items?limit=3&cursor=eyJ0IjoiMjAyNi0xMC0yMVQwOTo0MDowMFoifQ",
+  "status": 200,
+  "body": {
+    "items": [
+      { "id": "chk_0f3a", "created_at": "2026-10-21T09:12:44Z", "label": "AUD 1,200 transfer to India" },
+      { "id": "chk_0f39", "created_at": "2026-10-20T18:03:10Z", "label": "AUD 400 transfer to Philippines" },
+      { "id": "chk_0f31", "created_at": "2026-10-19T07:55:02Z", "label": "AUD 850 transfer to India" }
+    ],
+    "next_cursor": "eyJ0IjoiMjAyNi0xMC0xOVQwNzo1NTowMloifQ"
+  },
+  "last_page_body": { "items": [], "next_cursor": null }
+}

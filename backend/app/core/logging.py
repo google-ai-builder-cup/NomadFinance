@@ -11,6 +11,9 @@ from typing import Any
 from app.config import Settings
 from app.utils.hashing import hash_user_id
 
+# Lives here, not in middleware.py, so app.core.errors can name it without an import cycle.
+REQUEST_ID_HEADER = "X-Request-ID"
+
 _CONTEXT_FIELDS = ("request_id", "user_hash", "trace_id")
 
 # Attributes every LogRecord has; anything else on a record came in through `extra=`.

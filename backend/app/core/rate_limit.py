@@ -11,10 +11,11 @@ from limits import RateLimitItem, parse_many
 from limits.storage import MemoryStorage
 from limits.strategies import MovingWindowRateLimiter
 from starlette.datastructures import Headers, MutableHeaders
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app.config import get_settings
+from app.core.errors import error_response, is_v2_path
 from app.utils.hashing import hash_user_id
 
 # Built on `limits`, the engine behind slowapi. slowapi 0.1.10's middleware cannot find
@@ -146,11 +147,20 @@ class RateLimitMiddleware:
         key = rate_limit_key(Headers(scope=scope), scope.get("client"))
         verdict = _check(settings.rate_limit_default, "api", key)
         if not verdict.allowed:
-            response = JSONResponse(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                content={"detail": TOO_MANY_REQUESTS},
-                headers=verdict.headers(),
-            )
+            if is_v2_path(path):
+                response: Response = error_response(
+                    scope,
+                    status.HTTP_429_TOO_MANY_REQUESTS,
+                    "rate_limited",
+                    TOO_MANY_REQUESTS,
+                    headers=verdict.headers(),
+                )
+            else:
+                response = JSONResponse(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    content={"detail": TOO_MANY_REQUESTS},
+                    headers=verdict.headers(),
+                )
             await response(scope, receive, send)
             return
 

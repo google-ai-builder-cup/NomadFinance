@@ -6,12 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router
 from app.config import get_settings
 from app.core.errors import register_exception_handlers
-from app.core.logging import configure_logging
-from app.core.middleware import (
-    REQUEST_ID_HEADER,
-    BodySizeLimitMiddleware,
-    RequestLoggingMiddleware,
-)
+from app.core.logging import REQUEST_ID_HEADER, configure_logging
+from app.core.middleware import BodySizeLimitMiddleware, RequestLoggingMiddleware
 from app.core.rate_limit import RateLimitMiddleware
 from app.schemas.common import HealthResponse
 
