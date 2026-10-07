@@ -8,7 +8,7 @@ What a correct Scam Analyzer should answer for 120 messages, written down before
 | `data-scripts/evals/scam_golden_tl_id.jsonl` | Tagalog, Bahasa Indonesia | NF-SA-004 | Aditya |
 | `data-scripts/evals/scam_golden_ne_bn.jsonl` | Nepali, Bengali | NF-SA-005 | Pranjal |
 
-The eval runner (NF-SA-014) feeds each `text` to the analyzer and compares the answer with the label. The bar it enforces is **F1 of at least 0.85 for scam against benign overall, and at least 0.75 in every language**, with 15 of 15 injection attempts still classified on content (NF-SA-020). The schema, the checks and the commands are in `data-scripts/src/validators/scam_golden.py`; this page is the rulebook for the labels.
+The eval runner (NF-SA-014) feeds each `text` to the analyzer and compares the answer with the label. The bar it enforces is **F1 of at least 0.85 for scam against benign overall, and at least 0.75 in every language**, with 15 of 15 injection attempts still classified on content (NF-SA-020). The schema, the checks and the commands are in `data-scripts/src/validators/scam_golden.py`; this page is the rulebook for the labels. The runner is `python -m evals.run_scam_eval` from `data-scripts/` (steps and how to read its report: `docs/runbooks/NF-SA-014-scam-eval-runner.md`).
 
 ## One row
 
@@ -93,4 +93,4 @@ A reviewer who reads the language checks the message itself; one who does not ch
 
 ## Changing a set
 
-Add or change rows, run the validator, and keep the ids contiguous. A change to a label after the eval runner has recorded a baseline is a change to the benchmark: say so in the pull request, and re-run the baseline in the same change (NF-SA-014).
+Add or change rows, run the validator, and keep the ids contiguous. A change to a label after the eval runner has recorded a baseline is a change to the benchmark: say so in the pull request, and re-run the baseline in the same change (NF-SA-014). Each report carries a fingerprint of the messages, routes and labels it scored: two reports with different fingerprints measured different sets.

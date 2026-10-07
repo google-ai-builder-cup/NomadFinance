@@ -213,3 +213,18 @@ python -m src.loaders.scam_patterns_check --firestore        # same, through Fir
 The loader is idempotent: a template whose text, labels, model and size are unchanged is neither embedded nor written, a template removed from the files is deleted, and every embedding is made before the first write. The check embeds the golden-set scams (the templates were not written from them) the way the analyzer will, redacted first, and asks for the 3 nearest templates; it must find a same-type template for each of 10 fixed held-out scams. Tests use a fake embedder, so CI never calls Gemini.
 
 Full steps and results: [`docs/runbooks/NF-SA-006-scam-patterns.md`](../docs/runbooks/NF-SA-006-scam-patterns.md).
+
+## Scam eval runner (NF-SA-014)
+Scores the Scam Analyzer's classifier on the 120 golden messages (the three `evals/scam_golden_*.jsonl` sets) and writes a report to `docs/evals/scam-eval-<date>.md`. The bar is F1 of scam against benign of at least 0.85 overall and at least 0.75 in every language. The report adds precision, recall and F1 per scam type and per language, a confusion matrix, and every wrong answer with the label's own reason.
+
+```bash
+python -m evals.run_scam_eval --limit 6    # try the setup on 6 messages: no report, no bar
+python -m evals.run_scam_eval              # the full run: 120 Gemini calls, report, exit code
+python -m evals.run_scam_eval --rpm 10     # the same, paced for a free-tier key
+```
+
+It runs the backend's own classifier (`classify_message`) after the same request model, masking and indicator steps a pasted message goes through, with the taxonomy read from `data/source/scam-taxonomy/` instead of Firestore. So the backend's packages must be in the same environment (`pip install -r ../backend/requirements.txt`, or use the backend's virtual environment) and `GEMINI_API_KEY` must be in the shell or in `backend/.env.local`. Exit code **0** the bar is met, **1** it is not (the report is still written), **2** not scored: a message got no answer (nothing is written, so a partial run is never mistaken for a baseline) or the setup is incomplete.
+
+Tests use a fake classifier and run in CI. `tests/test_scam_eval_backend.py` checks the wiring to the real classifier with only the Gemini call replaced; it needs the backend's packages, so it is skipped here in CI and runs with `pytest tests/test_scam_eval_backend.py` in an environment that has them. The manual GitHub workflow **Scam eval** (Actions tab) runs the same command and attaches the report; it needs a `GEMINI_API_KEY` repository secret.
+
+Full steps, how to read the report and its limits: [`docs/runbooks/NF-SA-014-scam-eval-runner.md`](../docs/runbooks/NF-SA-014-scam-eval-runner.md).
