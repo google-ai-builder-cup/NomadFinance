@@ -329,7 +329,7 @@ def test_the_spot_check_is_a_mixed_fixed_sample_of_the_asked_size() -> None:
 
 
 def test_the_command_lists_the_rows_to_review(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["--spot-check", "10"]) == 0
+    assert main([str(GOLDEN), "--spot-check", "10"]) == 0
 
     out = capsys.readouterr().out
     assert out.count("  gold-") == 10 and out.count("why:") == 10
