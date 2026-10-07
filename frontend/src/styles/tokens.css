@@ -88,6 +88,18 @@
   --identity-deep: 74 100% 23%;
   --identity-tint: 72 64% 91%;
   --identity-ink: 74 100% 22%;
+  /* The two Future Scope pillars (Scam Check, Financial Coach). Orange and purple are the hues
+     the first four leave free; the risk scale's amber and red stay away from them. */
+  --scam: 24 90% 46%;
+  --scam-soft: 26 95% 76%;
+  --scam-deep: 20 85% 31%;
+  --scam-tint: 27 100% 95%;
+  --scam-ink: 20 85% 31%;
+  --coach: 282 55% 52%;
+  --coach-soft: 283 70% 80%;
+  --coach-deep: 282 60% 34%;
+  --coach-tint: 284 70% 96%;
+  --coach-ink: 282 55% 38%;
 
   /* The logo mark is a fixed brand asset: it keeps its colours in the dark theme too. */
   --logo-from: 192 76% 33%;
@@ -224,6 +236,10 @@
   --radar-ink: 324 76% 81%;
   --identity-tint: 76 38% 16%;
   --identity-ink: 73 71% 62%;
+  --scam-tint: 22 40% 17%;
+  --scam-ink: 27 95% 74%;
+  --coach-tint: 282 32% 20%;
+  --coach-ink: 284 80% 82%;
 
   --gradient-hero:
     radial-gradient(1000px 520px at 82% -6%, hsl(189 80% 42% / 0.26), transparent 62%),

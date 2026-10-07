@@ -99,6 +99,8 @@ export default {
         contract: pillar("contract"),
         radar: pillar("radar"),
         identity: pillar("identity"),
+        scam: pillar("scam"),
+        coach: pillar("coach"),
         sdg: {
           8: "hsl(var(--sdg-8))",
           10: "hsl(var(--sdg-10))",

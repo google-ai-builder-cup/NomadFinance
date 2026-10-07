@@ -5,7 +5,7 @@ import SectionHeading from "@/components/landing/SectionHeading";
 import PillarIllustration from "@/components/visual/PillarIllustration";
 import Reveal from "@/components/visual/Reveal";
 import TiltCard from "@/components/visual/TiltCard";
-import { PILLAR_ITEMS, type PillarItem } from "@/components/layout/navItems";
+import { ALL_PILLAR_ITEMS, type PillarItem } from "@/components/layout/navItems";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import { PILLAR_STYLES } from "@/utils/pillars";
@@ -68,7 +68,7 @@ function PillarCard({ item }: { item: PillarItem }) {
   );
 }
 
-/** Four equal cards in a 2 x 2 grid on a wide screen; a swipeable row on a phone. */
+/** Six equal cards in a 3 x 2 grid on a wide screen; a swipeable row on a phone. */
 export default function PillarsSection() {
   const { t } = useI18n();
   return (
@@ -82,10 +82,10 @@ export default function PillarsSection() {
         <ul
           className={cn(
             "-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 md:-mx-8 md:px-8",
-            "lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0"
+            "lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-6 lg:overflow-visible lg:px-0 lg:pb-0"
           )}
         >
-          {PILLAR_ITEMS.map((item, i) => (
+          {ALL_PILLAR_ITEMS.map((item, i) => (
             <li
               key={item.to}
               className="w-[86%] max-w-[26rem] shrink-0 snap-center sm:w-[70%] lg:w-auto lg:max-w-none lg:shrink"

@@ -7,6 +7,9 @@ Gemini, so GEMINI_API_KEY must be in this shell or in backend/.env.local. Scores
 against the labels and writes the report to docs/evals/scam-eval-<date>.md.
 
   --report PATH     write the report here instead
+  --rows PATH       score the messages of this one file (a golden-format JSONL, such as the
+                    stress set evals/scam_stress_en_hi.jsonl) instead of the three golden sets.
+                    The bar then applies to the languages the file has
   --limit N         try the setup on N messages spread over the languages: nothing is scored
   --concurrency N   calls in flight at once (default 4)
   --rpm N           start at most N calls a minute (default no limit; a free-tier key needs
@@ -41,7 +44,7 @@ from src.scam_eval.metrics import (
 )
 from src.scam_eval.report import RunInfo, render_report
 from src.scam_eval.runner import Classifier, Progress, run_eval
-from src.validators.scam_golden import GoldenRow
+from src.validators.scam_golden import GoldenRow, load_rows
 from src.validators.scam_taxonomy import Taxonomy, load_taxonomy
 
 NOT_SCORED = 2
@@ -98,15 +101,19 @@ def run(
     ordered = sorted(taxonomy.types.items(), key=lambda item: item[1].order)
     classes = (*(name for name, _ in ordered), BENIGN)
     evaluation = evaluate(chosen, result.predictions, classes)
-    checks = gate(evaluation)
+    own_set: Path | None = getattr(args, "rows", None)
+    # A set of one or two languages is scored on those; the golden sets must cover all six.
+    checks = gate(evaluation, only_present=own_set is not None)
     info = RunInfo(
         when=started,
         model=classifier.model,
         prompt=classifier.prompt,
         taxonomy_hash=content_hash(taxonomy)[:12],
         golden_hash=fingerprint(chosen),
+        source=f"evals/{own_set.name}" if own_set is not None else RunInfo.source,
     )
-    path: Path = args.report or EVAL_REPORT_DIR / f"scam-eval-{started:%Y-%m-%d}.md"
+    name = f"scam-eval-{own_set.stem}-" if own_set is not None else "scam-eval-"
+    path: Path = args.report or EVAL_REPORT_DIR / f"{name}{started:%Y-%m-%d}.md"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(render_report(evaluation, checks, info).encode("utf-8"))
 
@@ -121,6 +128,7 @@ def run(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Score the scam classifier on the golden set.")
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--rows", type=Path, metavar="PATH")
     parser.add_argument("--limit", type=int, metavar="N")
     parser.add_argument("--concurrency", type=int, default=4)
     parser.add_argument("--rpm", type=int, default=0)
@@ -133,7 +141,12 @@ def main(argv: list[str] | None = None) -> int:
         reconfigure(encoding="utf-8")
 
     try:
-        rows = golden_rows()
+        if args.rows is not None:
+            rows, problems = load_rows(args.rows)
+            if problems or not rows:
+                raise ValueError(f"{args.rows.name}: {problems[0] if problems else 'no rows'}")
+        else:
+            rows = golden_rows()
         taxonomy = load_taxonomy()
         classifier = load_backend_classifier(taxonomy)
     except (SetupError, ValueError, OSError) as exc:

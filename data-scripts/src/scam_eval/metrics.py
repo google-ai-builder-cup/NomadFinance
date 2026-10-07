@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import statistics
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal, get_args
@@ -23,6 +24,9 @@ BENIGN = "benign"
 # The backend files a scam under this when the model names no type that exists.
 FALLBACK_TYPE = "other_scam"
 
+# The confidence under which the check screen tells the worker "we are not fully sure"
+# (frontend VerdictCard LOW_CONFIDENCE, and the classifier prompt's own advice).
+LOW_CONFIDENCE = 0.7
 OVERALL_F1_MIN = 0.85
 LANGUAGE_F1_MIN = 0.75
 LANGUAGES: tuple[str, ...] = get_args(Language)
@@ -84,6 +88,17 @@ class Mistake:
 
 
 @dataclass(frozen=True)
+class ConfidenceGroup:
+    """How sure the classifier said it was, for one kind of answer."""
+
+    name: str
+    count: int
+    lowest: float
+    median: float
+    under_low: int  # answers below LOW_CONFIDENCE: the screen would say "not fully sure"
+
+
+@dataclass(frozen=True)
 class Evaluation:
     """Every figure of one run."""
 
@@ -92,6 +107,7 @@ class Evaluation:
     by_language: dict[str, Counts]  # the same, per language present in the rows
     confusion: dict[str, dict[str, int]]  # confusion[label][what the classifier said]
     mistakes: list[Mistake]
+    confidence: tuple[ConfidenceGroup, ...] = ()
 
     def per_class(self, name: str) -> Counts:
         """One class against all the others, read off the confusion matrix."""
@@ -144,6 +160,39 @@ def _scam_counts(rows: Iterable[GoldenRow], predictions: Mapping[str, Prediction
     return Counts(tp, fp, fn, tn)
 
 
+def confidence_summary(
+    rows: Sequence[GoldenRow], predictions: Mapping[str, Prediction]
+) -> tuple[ConfidenceGroup, ...]:
+    """The confidence of right scams, right benign messages and wrong answers, kept apart.
+
+    A classifier that is right but unsure shows the worker "not fully sure" on a correct answer,
+    and one that is wrong but sure gives no warning at all: the two are different faults.
+    """
+    groups: dict[str, list[float]] = {
+        "Scams called a scam": [],
+        "Benign called benign": [],
+        "Wrong answers": [],
+    }
+    for row in rows:
+        prediction = predictions[row.id]
+        if true_class(row) != predicted_class(prediction):
+            groups["Wrong answers"].append(prediction.confidence)
+        elif row.is_scam:
+            groups["Scams called a scam"].append(prediction.confidence)
+        else:
+            groups["Benign called benign"].append(prediction.confidence)
+    return tuple(
+        ConfidenceGroup(
+            name,
+            len(values),
+            min(values) if values else 0.0,
+            statistics.median(values) if values else 0.0,
+            sum(v < LOW_CONFIDENCE for v in values),
+        )
+        for name, values in groups.items()
+    )
+
+
 def evaluate(
     rows: Sequence[GoldenRow], predictions: Mapping[str, Prediction], classes: Sequence[str]
 ) -> Evaluation:
@@ -183,13 +232,21 @@ def evaluate(
         by_language=by_language,
         confusion=confusion,
         mistakes=mistakes,
+        confidence=confidence_summary(rows, predictions),
     )
 
 
-def gate(evaluation: Evaluation) -> list[GateCheck]:
-    """The bar, overall first and then each of the six languages."""
+def gate(evaluation: Evaluation, *, only_present: bool = False) -> list[GateCheck]:
+    """The bar, overall first and then each of the six languages.
+
+    `only_present` leaves out a language the run had no message in, for a set that covers only
+    some of them (the stress set): the golden sets must cover all six, so there a missing
+    language fails the bar.
+    """
     checks = [GateCheck("overall", evaluation.overall.total, evaluation.overall.f1, OVERALL_F1_MIN)]
     for language in LANGUAGES:
+        if only_present and language not in evaluation.by_language:
+            continue
         counts = evaluation.by_language.get(language, Counts())
         checks.append(GateCheck(language, counts.total, counts.f1, LANGUAGE_F1_MIN))
     return checks

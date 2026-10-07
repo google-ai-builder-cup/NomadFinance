@@ -43,9 +43,9 @@
       }
     },
     "pillars": {
-      "heading": "Empat cara NomadFinance melindungimu",
+      "heading": "Enam cara NomadFinance melindungimu",
       "cta": "Masuk untuk mencoba",
-      "kicker": "Empat pilar",
+      "kicker": "Enam pilar",
       "items": {
         "remit": {
           "b1": "Bandingkan penyedia di 6 koridor",
@@ -66,6 +66,16 @@
           "b1": "Catat penghasilan, tagihan, dan tabungan; tagihan dari foto",
           "b2": "Pengukur skor dan lini masa kemajuan Anda",
           "b3": "Laporan PDF untuk bank dan pemberi pinjaman di kampung halaman"
+        },
+        "scam": {
+          "b1": "Tempel pesan atau unggah tangkapan layar",
+          "b2": "Lihat cara pesan itu menipumu dan langkah berikutnya",
+          "b3": "Peringatkan pekerja lain secara anonim lewat Radar"
+        },
+        "coach": {
+          "b1": "Wawancara yang ramah dalam bahasamu",
+          "b2": "Skor kesiapan dari 0 sampai 100",
+          "b3": "Rencana 90 hari yang bisa disimpan sebagai PDF"
         }
       }
     },
@@ -78,7 +88,7 @@
       "sections": "Bagian",
       "problem": "Mengapa penting",
       "performance": "Kinerja",
-      "pillars": "Empat pilar",
+      "pillars": "Enam pilar",
       "how": "Cara kerja",
       "impact": "Dampak",
       "signIn": "Masuk",
@@ -324,6 +334,12 @@
       "identity": {
         "open": "Buka Financial Identity",
         "empty": "Catat aktivitas untuk mulai membangun skor Anda."
+      },
+      "scam": {
+        "open": "Periksa pesan"
+      },
+      "coach": {
+        "open": "Buka Pelatih"
       }
     },
     "actions": {
@@ -414,6 +430,14 @@
     "identity": {
       "name": "Identitas Finansial",
       "description": "Bangun catatan portabel dari penghasilan dan tabungan Anda yang dapat digunakan bank di kampung halaman."
+    },
+    "scam": {
+      "name": "Cek Penipuan",
+      "description": "Tempel pesan atau tangkapan layar dan ketahui apakah itu penipuan, bagaimana ia menipumu, dan apa yang harus dilakukan, dalam bahasamu."
+    },
+    "coach": {
+      "name": "Pelatih Keuangan",
+      "description": "Bicarakan keuanganmu dalam bahasamu sendiri dan dapatkan skor kesiapan serta rencana 90 hari."
     }
   },
   "comingSoon": {
@@ -1153,7 +1177,9 @@
       "remit": "Ilustrasi: dua tumpukan koin dengan aliran koin di antaranya",
       "contract": "Ilustrasi: kontrak yang dipindai dan dilindungi perisai",
       "radar": "Ilustrasi: antena radar yang menyapu area dan menampakkan titik-titik",
-      "identity": "Ilustrasi: kartu identitas bertumpuk dengan sidik jari dan batang yang naik"
+      "identity": "Ilustrasi: kartu identitas bertumpuk dengan sidik jari dan batang yang naik",
+      "scam": "Ilustrasi: gelembung pesan dengan tanda peringatan di depan sebuah perisai",
+      "coach": "Ilustrasi: dua gelembung obrolan di samping tangga naik dengan bendera di puncak"
     },
     "status": {
       "notFound": "Ilustrasi: kubus dengan tanda tanya",

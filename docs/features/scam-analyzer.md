@@ -122,6 +122,7 @@ The tier is named in code (`ModelTier`), the model per tier is in settings, and 
 | Measure | Result | Where |
 |---|---|---|
 | **Golden set**: 120 invented messages, 20 per language, scam and benign look-alikes | **120 of 120 called correctly: F1 1.000 overall and in every language** (84 scams, 36 benign; bar 0.85 overall, 0.75 per language). 2026-10-07, `gemini-3.1-flash-lite`, `scam.classify v2` | [`docs/evals/scam-eval-2026-10-07.md`](../evals/scam-eval-2026-10-07.md); labels and rubric in [`docs/evals/scam-golden-set.md`](../evals/scam-golden-set.md) |
+| **Stress set**: 30 harder messages (16 harmless look-alikes and 14 scams that avoid the obvious words, English and Hindi) | **30 of 30 on scam against benign, F1 1.000** (2026-10-07; one scam filed under a different type). Labels still need an independent read (D-166) | `data-scripts/evals/scam_stress_en_hi.jsonl`, [`docs/evals/scam-eval-scam_stress_en_hi-2026-10-07.md`](../evals/scam-eval-scam_stress_en_hi-2026-10-07.md) |
 | **Prompt injection**: 15 messages that give orders to the analyzer, in all six languages | **15 of 15 judged on content, none echoed system prompt text** (2026-10-07, live Gemini) | [`docs/evals/scam-injection-2026-10-07.md`](../evals/scam-injection-2026-10-07.md) |
 | Browser tests | 15 tests on a desktop and a phone, against the emulators and the mock API | `frontend/e2e/scam-*.spec.ts` |
 | Accessibility | `axe` reports nothing serious or critical on any scam screen in six languages (jsdom); the real-device pass is by hand (D-161, D-163) | NF-SA-019 |

@@ -192,3 +192,41 @@ def test_the_fingerprint_follows_what_is_scored_and_nothing_else(rows: list[Gold
         assert fingerprint([row.model_copy(update=change), *rows[1:]]) != base
     retyped = "lottery" if row.scam_type != "lottery" else "loan_app_trap"
     assert fingerprint([row.model_copy(update={"scam_type": retyped}), *rows[1:]]) != base
+
+
+# --- confidence and a set that covers some languages (NF-SA-023) -------------------------------
+
+
+def test_confidence_is_kept_apart_for_right_scams_right_benign_and_wrong_answers(
+    rows: list[GoldenRow],
+) -> None:
+    scam, benign = first(rows, scam=True), first(rows, scam=False)
+    wrong = first(rows, scam=True, language="hi")
+    chosen = [scam, benign, wrong]
+    answers = {
+        scam.id: Prediction(True, scam.scam_type, 0.95),
+        benign.id: Prediction(False, None, 0.65),
+        wrong.id: Prediction(False, None, 0.99),
+    }
+
+    groups = {g.name: g for g in evaluate(chosen, answers, classes()).confidence}
+
+    assert (groups["Scams called a scam"].count, groups["Scams called a scam"].median) == (1, 0.95)
+    assert groups["Benign called benign"].under_low == 1  # 0.65 is under the screen's 0.7
+    assert (groups["Wrong answers"].count, groups["Wrong answers"].lowest) == (1, 0.99)
+
+
+def test_an_empty_confidence_group_reads_zero_not_an_error(rows: list[GoldenRow]) -> None:
+    groups = {g.name: g for g in evaluate(rows, oracle(rows), classes()).confidence}
+
+    assert groups["Wrong answers"].count == 0 and groups["Wrong answers"].lowest == 0.0
+
+
+def test_a_set_with_two_languages_is_gated_on_those_two_when_asked(rows: list[GoldenRow]) -> None:
+    two = [r for r in rows if r.language in ("en", "hi")]
+    evaluation = evaluate(two, oracle(two), classes())
+
+    assert [c.name for c in gate(evaluation, only_present=True)] == ["overall", "en", "hi"]
+    assert all(c.met for c in gate(evaluation, only_present=True))
+    # The golden sets must cover all six, so by default a missing language fails the bar.
+    assert not all(c.met for c in gate(evaluation))

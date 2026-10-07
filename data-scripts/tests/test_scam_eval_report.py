@@ -132,3 +132,26 @@ def test_the_report_holds_ids_but_never_a_message(rows: list[GoldenRow]) -> None
 
 def test_the_same_run_gives_the_same_report(rows: list[GoldenRow]) -> None:
     assert report_for(rows, oracle(rows)) == report_for(rows, oracle(rows))
+
+
+def test_the_report_has_a_confidence_section_with_the_screens_threshold(
+    rows: list[GoldenRow],
+) -> None:
+    report = report_for(rows, oracle(rows))
+
+    assert "## Confidence" in report
+    assert "| Scams called a scam | 84 |" in report
+    assert "Below 0.7 the check screen tells the worker" in report
+
+
+def test_the_report_names_where_the_messages_came_from(rows: list[GoldenRow]) -> None:
+    from dataclasses import replace
+
+    evaluation = evaluate(rows, oracle(rows), classes())
+
+    own = render_report(
+        evaluation, gate(evaluation), replace(INFO, source="evals/scam_stress_en_hi.jsonl")
+    )
+
+    assert "`data-scripts/evals/scam_stress_en_hi.jsonl`" in own
+    assert "`data-scripts/evals/scam_golden_*.jsonl`" in report_for(rows, oracle(rows))
