@@ -196,3 +196,20 @@ The checker also guards against real data: a link must be on a reserved name (`.
 Full steps and results: [`docs/runbooks/NF-SA-003-scam-golden-en-hi.md`](../docs/runbooks/NF-SA-003-scam-golden-en-hi.md).
 
 `evals/scam_golden_ne_bn.jsonl` (NF-SA-005, 40 messages, Nepali and Bengali) follows the same format: 14 scams and 6 benign look-alikes per language, 17 rows in the language's own script and 3 typed in Latin letters, and a `corridor_id` only where the story fits one (none starts in Nepal or Bangladesh, so Nepali rows carry none and four Bengali rows carry SG-IN or AU-IN). Its 10 rows for the second reviewer: `python -m src.validators.scam_golden evals/scam_golden_ne_bn.jsonl --spot-check 10`. Full steps: [`docs/runbooks/NF-SA-005-scam-golden-ne-bn.md`](../docs/runbooks/NF-SA-005-scam-golden-ne-bn.md).
+
+## Scam pattern library (NF-SA-006)
+480 synthetic scam templates, the nearest-neighbour search of the Scam Analyzer runs over: `data/source/scam-patterns/<scam_type>.jsonl`, 60 per type, 10 in each of the six languages, every corridor at least 3 times per type. Each is embedded with `gemini-embedding-001` at 768 numbers (the tracker still says `text-embedding-004`, which is wrong; see ADR-002) and loaded into Firestore `scam_patterns/`.
+
+```bash
+python -m src.validators.scam_patterns                       # check the files (no network)
+python -m src.validators.scam_patterns --spot-check 10       # the 10 rows a second teammate reviews
+python -m src.validators.scam_patterns --require-reviewed 10 # before merging
+python -m src.loaders.scam_patterns --dry-run                # validate, no Gemini, no Firestore
+python -m src.loaders.scam_patterns                          # embed and load (GEMINI_API_KEY + credentials)
+python -m src.loaders.scam_patterns_check                    # nearest-neighbour check, in memory
+python -m src.loaders.scam_patterns_check --firestore        # same, through Firestore vector search
+```
+
+The loader is idempotent: a template whose text, labels, model and size are unchanged is neither embedded nor written, a template removed from the files is deleted, and every embedding is made before the first write. The check embeds the golden-set scams (the templates were not written from them) the way the analyzer will, redacted first, and asks for the 3 nearest templates; it must find a same-type template for each of 10 fixed held-out scams. Tests use a fake embedder, so CI never calls Gemini.
+
+Full steps and results: [`docs/runbooks/NF-SA-006-scam-patterns.md`](../docs/runbooks/NF-SA-006-scam-patterns.md).
