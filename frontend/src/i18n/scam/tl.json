@@ -56,6 +56,82 @@
     "scammerWants": "Ang gusto ng nagpadala",
     "nextSteps": "Ano ang gagawin ngayon",
     "explainerUnavailable": "Hindi pa namin maisulat ang buong paliwanag ngayon. Suriin ulit ang parehong mensahe sa ilang sandali.",
-    "checkAnother": "Magsuri ng ibang mensahe"
+    "checkAnother": "Magsuri ng ibang mensahe",
+    "meterLabel": "Panganib ng scam",
+    "kindOfScam": "Uri ng scam",
+    "type": {
+      "fake_job_offer": "Pekeng alok na trabaho",
+      "illegal_recruitment_fee": "Ilegal na bayad sa recruitment",
+      "remittance_otp_phishing": "Pagnanakaw ng login sa bangko o code",
+      "loan_app_trap": "Bitag ng loan app",
+      "authority_impersonation": "Nagpapanggap na opisyal o bangko",
+      "investment_romance": "Scam sa investment o pag-ibig",
+      "lottery": "Pekeng premyo o lotto",
+      "other_scam": "Ibang scam"
+    },
+    "confidenceLow": "Hindi kami lubos na sigurado dito. Mag-ingat at ipasuri sa taong pinagkakatiwalaan mo.",
+    "tacticsTitle": "Paano ka nito nilolokohan",
+    "tacticsHint": "I-tap ang isang taktika para makita kung paano ito gumagana.",
+    "tactic": {
+      "urgency": {
+        "label": "Pinagmamadali ka",
+        "what": "Nagbibigay ang nagpadala ng maikling deadline para kumilos ka bago ka makapag-isip o makapagtanong."
+      },
+      "authority": {
+        "label": "Nagpapanggap na opisyal",
+        "what": "Kumikilos ang nagpadala na parang pulis, bangko, embahada o ahensya na dapat mong sundin."
+      },
+      "scarcity": {
+        "label": "Kaunti na lang ang natitira",
+        "what": "Sinasabi ng nagpadala na kaunti na lang ang trabaho o visa slot, kaya nagmamadali ka."
+      },
+      "fear": {
+        "label": "Tinatakot ka",
+        "what": "Tinatakot ka ng nagpadala ng pag-aresto, multa o pagkawala ng trabaho para sumunod ka."
+      },
+      "reciprocity": {
+        "label": "Utang na loob",
+        "what": "Nagbibigay muna ang nagpadala ng maliit na pabor o regalo para pakiramdam mo may utang ka sa kanya."
+      },
+      "social_proof": {
+        "label": "Ginawa na ng iba",
+        "what": "Sinasabi ng nagpadala na marami nang sumali o kumita, kaya mukhang ligtas."
+      }
+    },
+    "messageTitle": "Ang mensahe",
+    "messageLegend": "Ang mga salitang nagbigay-hinala ay makapal at may salungguhit.",
+    "phraseFlagged": "Kahina-hinalang salita:",
+    "token": {
+      "PHONE": "nakatagong numero ng telepono",
+      "EMAIL": "nakatagong email",
+      "ID": "nakatagong ID number",
+      "ACCOUNT": "nakatagong account number",
+      "URL": "nakatagong link"
+    },
+    "indicators": {
+      "title": "Mga contact sa mensahe",
+      "careful": "Huwag buksan ang mga link na ito, at huwag tumawag o sumagot sa mga contact na ito.",
+      "kind": {
+        "url": "Link",
+        "phone": "Numero ng telepono",
+        "email": "Email address",
+        "handle": "Chat account",
+        "sender": "Nagpadala"
+      },
+      "flag": {
+        "shortener": "Pinaikling link: itinatago nito kung saan talaga papunta",
+        "punycode": "Isinulat gamit ang magkakahawig na letra",
+        "lookalike": "Kinokopya ang tunay na website na {{domain}}",
+        "premium_rate": "Napakamahal tumawag sa numerong ito",
+        "unexpected_country": "Mula sa bansang labas sa ruta mo"
+      },
+      "flagged": "Naiulat ng ilang manggagawa",
+      "seen_one": "Naiulat ng mga manggagawa nang {{count}} beses",
+      "seen_other": "Naiulat ng mga manggagawa nang {{count}} beses"
+    },
+    "similarTitle": "Kahawig ng mga kilalang scam",
+    "corridorMax": "10 o higit pang ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo.",
+    "corridor_one": "{{count}} ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo.",
+    "corridor_other": "{{count}} ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo."
   }
 }

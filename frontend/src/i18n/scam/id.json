@@ -56,6 +56,80 @@
     "scammerWants": "Yang diinginkan pengirim",
     "nextSteps": "Yang perlu dilakukan sekarang",
     "explainerUnavailable": "Kami belum bisa menulis penjelasan lengkap sekarang. Periksa pesan yang sama lagi sebentar lagi.",
-    "checkAnother": "Periksa pesan lain"
+    "checkAnother": "Periksa pesan lain",
+    "meterLabel": "Risiko penipuan",
+    "kindOfScam": "Jenis penipuan",
+    "type": {
+      "fake_job_offer": "Tawaran kerja palsu",
+      "illegal_recruitment_fee": "Biaya perekrutan ilegal",
+      "remittance_otp_phishing": "Pencurian login bank atau kode",
+      "loan_app_trap": "Jebakan aplikasi pinjaman",
+      "authority_impersonation": "Berpura-pura jadi pejabat atau bank",
+      "investment_romance": "Penipuan investasi atau asmara",
+      "lottery": "Hadiah atau undian palsu",
+      "other_scam": "Penipuan lainnya"
+    },
+    "confidenceLow": "Kami tidak sepenuhnya yakin soal ini. Hati-hati dan tanyakan pada orang yang Anda percaya.",
+    "tacticsTitle": "Cara penipu mengelabui Anda",
+    "tacticsHint": "Ketuk satu trik untuk melihat cara kerjanya.",
+    "tactic": {
+      "urgency": {
+        "label": "Dipaksa terburu-buru",
+        "what": "Pengirim memberi batas waktu singkat agar Anda bertindak sebelum sempat berpikir atau bertanya."
+      },
+      "authority": {
+        "label": "Berpura-pura jadi pejabat",
+        "what": "Pengirim bersikap seperti polisi, bank, kedutaan, atau agen yang harus Anda patuhi."
+      },
+      "scarcity": {
+        "label": "Tinggal sedikit",
+        "what": "Pengirim bilang tinggal sedikit pekerjaan atau tempat visa, sehingga Anda buru-buru."
+      },
+      "fear": {
+        "label": "Menakut-nakuti",
+        "what": "Pengirim mengancam, misalnya penangkapan, denda, atau kehilangan pekerjaan, agar Anda menurut."
+      },
+      "reciprocity": {
+        "label": "Balas budi",
+        "what": "Pengirim lebih dulu memberi bantuan kecil atau hadiah agar Anda merasa berutang budi."
+      },
+      "social_proof": {
+        "label": "Semua orang sudah ikut",
+        "what": "Pengirim bilang banyak orang sudah bergabung atau untung, sehingga tampak aman."
+      }
+    },
+    "messageTitle": "Pesannya",
+    "messageLegend": "Kata-kata yang menimbulkan curiga dicetak tebal dan bergaris bawah.",
+    "phraseFlagged": "Kata mencurigakan:",
+    "token": {
+      "PHONE": "nomor telepon disembunyikan",
+      "EMAIL": "email disembunyikan",
+      "ID": "nomor identitas disembunyikan",
+      "ACCOUNT": "nomor rekening disembunyikan",
+      "URL": "tautan disembunyikan"
+    },
+    "indicators": {
+      "title": "Kontak dalam pesan",
+      "careful": "Jangan buka tautan ini, dan jangan telepon atau balas kontak ini.",
+      "kind": {
+        "url": "Tautan",
+        "phone": "Nomor telepon",
+        "email": "Alamat email",
+        "handle": "Akun obrolan",
+        "sender": "Pengirim"
+      },
+      "flag": {
+        "shortener": "Tautan dipendekkan: menyembunyikan tujuan sebenarnya",
+        "punycode": "Ditulis dengan huruf yang mirip",
+        "lookalike": "Meniru situs asli {{domain}}",
+        "premium_rate": "Menelepon nomor ini sangat mahal",
+        "unexpected_country": "Dari negara di luar rute Anda"
+      },
+      "flagged": "Dilaporkan beberapa pekerja",
+      "seen_other": "Dilaporkan pekerja {{count}} kali"
+    },
+    "similarTitle": "Mirip penipuan yang kami kenal",
+    "corridorMax": "Pekerja di rute Anda mengirim 10 laporan atau lebih seperti ini.",
+    "corridor_other": "Pekerja di rute Anda mengirim {{count}} laporan seperti ini."
   }
 }

@@ -5,9 +5,9 @@ import { useSearchParams } from "react-router-dom";
 
 import PageHeader from "@/components/common/PageHeader";
 import AnalyzingProgress from "@/components/scam/AnalyzingProgress";
-import InterimResult from "@/components/scam/InterimResult";
 import MessageInput from "@/components/scam/MessageInput";
 import ScamErrorNotice from "@/components/scam/ScamErrorNotice";
+import ScamResult from "@/components/scam/ScamResult";
 import ScreenshotPicker from "@/components/scam/ScreenshotPicker";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
@@ -100,7 +100,7 @@ export default function ScamCheckHome() {
       />
 
       {analyze.isSuccess ? (
-        <InterimResult result={analyze.data} onCheckAnother={startOver} />
+        <ScamResult result={analyze.data} onCheckAnother={startOver} />
       ) : analyze.isPending ? (
         <AnalyzingProgress />
       ) : (
