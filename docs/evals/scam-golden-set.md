@@ -18,7 +18,7 @@ One JSON object per line, `utf-8`, no comments.
 |---|---|
 | `id` | `gold-<language>-<nnn>`, numbered from 001 with no gap in each language |
 | `language` | `en`, `hi`, `tl`, `id`, `ne` or `bn`: the language of the message |
-| `script` | `native`, or `latin` for a message typed in Latin letters. Hindi is often written that way (Hinglish) and the analyzer must read it; English is always `latin` |
+| `script` | `native`, or `latin` for a message typed in Latin letters. Hindi is often written that way (Hinglish) and the analyzer must read it; English is always `latin`. Tagalog and Indonesian are written in Latin letters natively, so every `tl` and `id` row is `native` |
 | `text` | The message **as the worker would paste it**, before redaction. 10 to 4,000 characters |
 | `is_scam` | The label the analyzer is scored on |
 | `scam_type` | A taxonomy type id (`data-scripts/data/source/scam-taxonomy/types.json`) for a scam; `null` for a benign message |

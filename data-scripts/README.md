@@ -191,4 +191,6 @@ python -m src.validators.scam_golden --require-reviewed 10   # before merging a 
 
 The checker also guards against real data: a link must be on a reserved name (`.example`), an address too, and a long number must hold a run of zeros. `load_rows(path)` is what the eval runner (NF-SA-014) reads the files with. A test (`tests/test_scam_golden.py`) validates the committed files, so data CI fails on a bad row.
 
+`evals/scam_golden_tl_id.jsonl` (NF-SA-004, 40 messages, Tagalog and Indonesian) follows the same format: 14 scams and 6 benign look-alikes per language, every row `script: native` (both languages are written in Latin letters), routes SG-PH, JP-PH and AU-PH for Tagalog and MY-ID for Indonesian. Its 10 rows for the second reviewer: `python -m src.validators.scam_golden evals/scam_golden_tl_id.jsonl --spot-check 10`. Full steps: [`docs/runbooks/NF-SA-004-scam-golden-tl-id.md`](../docs/runbooks/NF-SA-004-scam-golden-tl-id.md).
+
 Full steps and results: [`docs/runbooks/NF-SA-003-scam-golden-en-hi.md`](../docs/runbooks/NF-SA-003-scam-golden-en-hi.md).

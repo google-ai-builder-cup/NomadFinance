@@ -7,7 +7,7 @@ Things found while working on a task but left out of it on purpose, so they are 
 - When an item is done, set its status to `Done (<task or PR>)`. Don't delete it.
 - Before starting a task, search this file for its task ID.
 
-Last updated: 2026-10-07, after NF-SA-003 (scam golden eval set, English and Hindi).
+Last updated: 2026-10-07, after NF-SA-004 (scam golden eval set, Tagalog and Indonesian).
 
 ## 1. Actions needed now (no code, a person has to do them)
 
@@ -43,6 +43,8 @@ Last updated: 2026-10-07, after NF-SA-003 (scam golden eval set, English and Hin
 | D-123 | NF-F0-016 | **Three things in the monitoring definitions are unconfirmed until the script has run once:** that Google accepts every file as written; that the two total-token charts, which use the Prometheus-style names `logging_googleapis_com:user_<metric>_sum`, show data (the mean-tokens-per-call charts beside them use the standard form and are the fallback); and that an alert window of 23.5 hours (`84600s`) is allowed. Each fails loudly or shows "no data", never silently wrong numbers. The metric filters and labels are checked against the real log lines by `backend/tests/unit/test_monitoring_definitions.py`. | A broken chart should be found on the first run, not during an incident. | Whoever runs D-122 | Open |
 | D-127 | NF-SA-003 | **Have a Hindi speaker read the 20 Hindi rows** of `data-scripts/evals/scam_golden_en_hi.jsonl`: the wording is natural, the Latin-letter (Hinglish) ones read like real messages, and the label in each row's English `rationale` is right. Written by the team, not by a translator (the same caveat as D-41 and D-97). An unnatural Hindi message, or a wrong label, would skew the Hindi F1 that gates the analyzer (0.75). | The Hindi score decides whether the Scam Analyzer ships. | Aditya or a Hindi-speaking teammate, or a translator | Open |
 | D-128 | NF-SA-003 | **Spot-check 10 labels** of the English and Hindi set before it merges (`python -m src.validators.scam_golden --spot-check 10` lists them; put your initials in `reviewed_by` on each, then `--require-reviewed 10` must pass). The tracker names Pranjal as reviewer. | The tracker's acceptance for the set; a label nobody else read is one person's opinion. | Pranjal | Open |
+| D-130 | NF-SA-004 | **Have a Tagalog speaker read the 20 Tagalog rows and an Indonesian speaker the 20 Indonesian rows** of `data-scripts/evals/scam_golden_tl_id.jsonl`: the wording is natural (Taglish where workers write it), the amounts and place names fit, and the label in each row's English `rationale` is right. Written by the team, not by a translator (the same caveat as D-127). An unnatural message, or a wrong label, would skew the per-language F1 that gates the analyzer (0.75). | The Tagalog and Indonesian scores decide whether the Scam Analyzer ships. | Aditya or a Tagalog and an Indonesian speaker, or a translator | Open |
+| D-131 | NF-SA-004 | **Spot-check 10 labels** of the Tagalog and Indonesian set before it merges (`python -m src.validators.scam_golden evals/scam_golden_tl_id.jsonl --spot-check 10` lists them; put your initials in `reviewed_by` on each, then `--require-reviewed 10` must pass). The reviewer can check the label from the English rationale even without reading the language. | The tracker's acceptance for the set; a label nobody else read is one person's opinion. | Devam or Pranjal | Open |
 
 ## 2. Code fixes scheduled into a later task
 
