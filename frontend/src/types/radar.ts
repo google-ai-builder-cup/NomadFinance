@@ -1,10 +1,17 @@
 import type { Timestamp } from "firebase/firestore";
 
 import type { CorridorId, HostCountry, LanguageCode } from "@/types/enums";
+import type { ScamIndicator } from "@/types/scam";
+import type { Severity } from "@/utils/risk";
 
 /** Same values as backend `RadarEntityType` (docs/data-model/collections/radar.md). */
 export const ENTITY_TYPES = ["money_transfer_operator", "recruitment_agency", "employer"] as const;
 export type EntityType = (typeof ENTITY_TYPES)[number];
+
+/** The profile of a kind of scam (a Scam Analyzer report, NF-SA-013). It is stored like a business
+ * but is not in `ENTITY_TYPES` on purpose: that list is what a worker may choose in the report
+ * form, and a worker's own form cannot produce a scam report. */
+export type ScamEntityType = "scam_type";
 
 /** Same values as backend `RadarViolationType`. The backend picks it; the form never sends it. */
 export type ViolationType =
@@ -16,6 +23,7 @@ export type ViolationType =
   | "contract_substitution"
   | "passport_retention"
   | "unlicensed_operator"
+  | "scam_message"
   | "other";
 
 /** Body of `POST /api/v1/radar/report`. */
@@ -48,7 +56,25 @@ export interface RadarEvidenceResponse {
   evidence_paths: string[];
 }
 
-export type ReportSource = "user" | "contract_signal" | "seed";
+export type ReportSource = "user" | "contract_signal" | "seed" | "scam_check";
+
+/** The `scam` map of a report made from a Scam Analyzer check (docs/data-model radar.md): what the
+ * worker confirmed on the sheet. The contacts are the ones left ticked, without an id or a count. */
+export interface RadarScamReport {
+  scam_type: string;
+  tactics: string[];
+  risk_level: Severity;
+  confidence: number;
+  trigger_phrases: string[];
+  /** Every key is optional: an absent key means unknown. */
+  details: {
+    payment_requested?: string;
+    amount_requested?: { amount: number; currency: string };
+  };
+  indicators: Omit<ScamIndicator, "id" | "seen">[];
+  message_language?: string | null;
+  input_type: "text" | "screenshot";
+}
 
 /** One entry of `GET /api/v1/radar/entities/{slug}/reports` (NF-P3-008). */
 export interface RadarReportSummary {
@@ -61,6 +87,8 @@ export interface RadarReportSummary {
   corridor_id: CorridorId | null;
   host_country: HostCountry | null;
   source: ReportSource;
+  /** Only on a report made from a scam check. */
+  scam?: RadarScamReport;
   created_at: string;
 }
 
@@ -79,7 +107,7 @@ export interface ReportDraft {
 export interface RadarEntityProfile {
   slug: string;
   name: string;
-  entity_type: EntityType;
+  entity_type: EntityType | ScamEntityType;
   /** Other spellings merged into this profile; the way to catch a name the slug misses. */
   aliases?: string[];
   corridors: CorridorId[];

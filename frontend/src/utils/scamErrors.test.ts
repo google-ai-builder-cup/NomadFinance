@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { ApiError } from "@/services/apiClient";
-import { scamErrorView } from "@/utils/scamErrors";
+import { scamErrorView, scamReportErrorView } from "@/utils/scamErrors";
 
 describe("scamErrorView", () => {
   it.each([
@@ -37,5 +37,28 @@ describe("scamErrorView", () => {
       messageKey: "errors.sessionExpired",
       canRetry: false,
     });
+  });
+});
+
+describe("scamReportErrorView", () => {
+  it.each([
+    [409, "not_a_scam", "report.errors.notAScam", false],
+    [422, "validation_failed", "report.errors.invalid", false],
+    [404, "not_found", "report.errors.expired", false],
+    [429, "rate_limited", "report.errors.rateLimited", true],
+  ])("%i %s", (status, detail, messageKey, canRetry) => {
+    expect(scamReportErrorView(new ApiError(status, detail))).toEqual({ messageKey, canRetry });
+  });
+
+  it("lets the worker try again after a server error or a lost connection", () => {
+    expect(scamReportErrorView(new ApiError(500, "internal_error")).canRetry).toBe(true);
+    expect(scamReportErrorView(new ApiError(0, "Network error"))).toEqual({
+      messageKey: "errors.offline",
+      canRetry: true,
+    });
+  });
+
+  it("treats an error that is not the API's as one to retry", () => {
+    expect(scamReportErrorView(new Error("boom")).canRetry).toBe(true);
   });
 });

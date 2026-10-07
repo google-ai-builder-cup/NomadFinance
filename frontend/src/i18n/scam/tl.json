@@ -139,5 +139,67 @@
     "corridorMax": "10 o higit pang ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo.",
     "corridor_one": "{{count}} ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo.",
     "corridor_other": "{{count}} ulat na tulad nito ang ipinadala ng mga manggagawa sa ruta mo."
+  },
+  "history": {
+    "title": "Ang mga sinuri mo",
+    "description": "Ang mga mensaheng sinuri mo sa nakaraang 90 araw. Ikaw lang ang makakakita ng listahang ito.",
+    "open": "Ang mga sinuri mo",
+    "checkNew": "Magsuri ng mensahe",
+    "loadError": "Hindi namin ma-load ang mga sinuri mo. Pakisubukan ulit.",
+    "empty": {
+      "title": "Wala ka pang sinuri",
+      "description": "Kapag nagsuri ka ng mensahe, lalabas ito dito sa loob ng 90 araw para mabasa mo ulit ang sagot."
+    },
+    "showMore": "Magpakita pa",
+    "loadingMore": "Naglo-load…",
+    "loadMoreError": "Hindi namin ma-load ang iba pang pagsusuri. Pakisubukan ulit.",
+    "notScam": "Hindi scam",
+    "pasted": "Idinikit na teksto",
+    "screenshot": "Screenshot",
+    "reported": "Binalaan mo ang ibang manggagawa",
+    "back": "Bumalik sa mga sinuri mo",
+    "detailTitle": "Pagsusuri noong {{date}}",
+    "keptUntil": "Nakatabi hanggang {{date}}, tapos buburahin.",
+    "notFound": {
+      "title": "Hindi namin makita ang pagsusuring ito",
+      "description": "Maaaring mahigit 90 araw na ito kaya binura na."
+    },
+    "detailLoadError": "Hindi namin ma-load ang pagsusuring ito. Pakisubukan ulit."
+  },
+  "report": {
+    "hint": "Tulungan ang ibang manggagawa na makilala ang scam na ito. Hindi lalabas ang pangalan mo.",
+    "button": "Balaan ang ibang manggagawa",
+    "buttonDone": "Binalaan mo na ang ibang manggagawa",
+    "thanks": "Salamat. Makikita na ng ibang manggagawa ang babala mo.",
+    "already": "Nabalaan mo na ang ibang manggagawa tungkol sa mensaheng ito.",
+    "seeInRadar": "Tingnan sa Radar",
+    "sheet": {
+      "title": "Balaan ang ibang manggagawa",
+      "intro": "Makikita ng ibang manggagawa ang nasa ibaba sa pahina ng Radar para sa “{{type}}”. Basahin ito at alisin ang ayaw mong ibahagi.",
+      "textLabel": "Ang mensaheng makikita ng ibang manggagawa",
+      "textHint": "Nakatago na ang mga numero ng telepono, account at link. Alisin ang anumang pangalang makikita mo.",
+      "contactsTitle": "Mga contact na ibabahagi",
+      "contactsHint": "Ang numero o address sa mensahe ay maaaring sa iyo. I-untick ang ayaw mong ibahagi.",
+      "contactsMax": "Hanggang {{max}} contact lang ang maibabahagi mo.",
+      "noContacts": "Walang nakitang numero ng telepono, link o address sa mensaheng ito.",
+      "alsoShared": "Ibinabahagi rin: gaano ito kapanganib, anong mga pandaraya ang ginamit at ang mga salitang nagbunyag dito.",
+      "anonymous": "Hindi nakikilala at hindi pa napatutunayan ang babalang ito. Hindi kailanman ibinabahagi ang pangalan mo, ang account mo at ang orihinal na mensahe.",
+      "send": "Ipadala ang babala",
+      "sending": "Ipinapadala…",
+      "cancel": "Kanselahin",
+      "close": "Isara"
+    },
+    "errors": {
+      "notAScam": "Mensaheng mukhang scam lang ang maaaring i-report.",
+      "invalid": "Hindi maipadala ang babalang ito. Tiyaking hindi walang laman ang mensahe at wala pang 1,000 character.",
+      "rateLimited": "Masyado kang mabilis magpadala. Maghintay ng isang minuto at subukan ulit.",
+      "expired": "Hindi na nakatabi ang pagsusuring ito, kaya hindi na ito maaaring i-report."
+    }
+  },
+  "radarReport": {
+    "tactics": "Mga pandaraya na ginamit",
+    "phrases": "Mga salitang nagbunyag dito",
+    "asked": "Ang hiningi nito",
+    "contacts": "Mga contact sa mensahe"
   }
 }

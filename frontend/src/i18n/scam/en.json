@@ -139,5 +139,67 @@
     "corridorMax": "Workers on your route sent 10 or more reports like this one.",
     "corridor_one": "Workers on your route sent {{count}} report like this one.",
     "corridor_other": "Workers on your route sent {{count}} reports like this one."
+  },
+  "history": {
+    "title": "Your checks",
+    "description": "The messages you checked in the last 90 days. Only you can see this list.",
+    "open": "Your checks",
+    "checkNew": "Check a message",
+    "loadError": "We could not load your checks. Please try again.",
+    "empty": {
+      "title": "No checks yet",
+      "description": "When you check a message, it is listed here for 90 days so you can read the answer again."
+    },
+    "showMore": "Show more",
+    "loadingMore": "Loading…",
+    "loadMoreError": "We could not load more checks. Please try again.",
+    "notScam": "Not a scam",
+    "pasted": "Pasted text",
+    "screenshot": "Screenshot",
+    "reported": "You warned other workers",
+    "back": "Back to your checks",
+    "detailTitle": "Check from {{date}}",
+    "keptUntil": "Saved until {{date}}, then removed.",
+    "notFound": {
+      "title": "We could not find this check",
+      "description": "It may be older than 90 days, so it was removed."
+    },
+    "detailLoadError": "We could not load this check. Please try again."
+  },
+  "report": {
+    "hint": "Help other workers spot this scam. Your warning is anonymous.",
+    "button": "Warn other workers",
+    "buttonDone": "You warned other workers",
+    "thanks": "Thank you. Other workers can now see your warning.",
+    "already": "You already warned other workers about this message.",
+    "seeInRadar": "See it in Radar",
+    "sheet": {
+      "title": "Warn other workers",
+      "intro": "Other workers will see what is below on the Radar page for “{{type}}”. Read it, and take out anything you do not want shared.",
+      "textLabel": "The message other workers will see",
+      "textHint": "Phone numbers, accounts and links are already hidden. Take out any name you see.",
+      "contactsTitle": "Contacts to share",
+      "contactsHint": "A number or address in the message may be your own. Untick anything you do not want shared.",
+      "contactsMax": "You can share up to {{max}} contacts.",
+      "noContacts": "No phone number, link or address was found in this message.",
+      "alsoShared": "Also shared: how risky it looks, the tricks it uses and the words that gave it away.",
+      "anonymous": "This warning is anonymous and not verified. Your name, your account and the original message are never shared.",
+      "send": "Send warning",
+      "sending": "Sending…",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "errors": {
+      "notAScam": "Only a message that looks like a scam can be reported.",
+      "invalid": "This warning cannot be sent. Make sure the message is not empty and is under 1,000 characters.",
+      "rateLimited": "You are sending too fast. Please wait a minute and try again.",
+      "expired": "This check is no longer saved, so it cannot be reported."
+    }
+  },
+  "radarReport": {
+    "tactics": "Tricks it used",
+    "phrases": "Words that gave it away",
+    "asked": "It asked for",
+    "contacts": "Contacts in the message"
   }
 }

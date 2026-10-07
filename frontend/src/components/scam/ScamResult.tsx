@@ -1,16 +1,18 @@
 import ExplainerSection from "@/components/scam/ExplainerSection";
+import ReportButton from "@/components/scam/ReportButton";
 import VerdictCard from "@/components/scam/VerdictCard";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
-import type { ScamAnalyzeResponse } from "@/types/scam";
+import type { ScamResultView } from "@/types/scam";
 
 export interface ScamResultProps {
-  result: ScamAnalyzeResponse;
-  onCheckAnother: () => void;
+  result: ScamResultView;
+  /** Omitted when the page has its own way on (a stored check opened from the history). */
+  onCheckAnother?: () => void;
 }
 
-/** What a worker sees after a check: the verdict card, the explanation under it, and a way to
- * check another message. The report to Radar and the history are NF-SA-018's. */
+/** What a worker sees for a check, fresh or stored: the verdict card, the explanation under it,
+ * "Warn other workers" for a scam, and a way to check another message. */
 export default function ScamResult({ result, onCheckAnother }: ScamResultProps) {
   const { t } = useI18n("scam");
 
@@ -18,9 +20,17 @@ export default function ScamResult({ result, onCheckAnother }: ScamResultProps) 
     <div className="space-y-4">
       <VerdictCard result={result} />
       <ExplainerSection explainer={result.explainer} />
-      <Button type="button" variant="outline" className="min-h-11 w-full" onClick={onCheckAnother}>
-        {t("result.checkAnother")}
-      </Button>
+      <ReportButton result={result} />
+      {onCheckAnother && (
+        <Button
+          type="button"
+          variant="outline"
+          className="min-h-11 w-full"
+          onClick={onCheckAnother}
+        >
+          {t("result.checkAnother")}
+        </Button>
+      )}
     </div>
   );
 }

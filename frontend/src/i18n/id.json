@@ -794,7 +794,8 @@
       "contract_substitution": "Kontrak diubah setelah ditandatangani",
       "passport_retention": "Paspor ditahan majikan atau agen",
       "unlicensed_operator": "Operator tanpa izin",
-      "other": "Masalah lain"
+      "other": "Masalah lain",
+      "scam_message": "Pesan penipuan"
     },
     "report": {
       "title": "Laporkan masalah",
@@ -811,7 +812,8 @@
         "types": {
           "money_transfer_operator": "Layanan kirim uang",
           "recruitment_agency": "Agen perekrutan",
-          "employer": "Majikan"
+          "employer": "Majikan",
+          "scam_type": "Jenis penipuan"
         },
         "hints": {
           "money_transfer_operator": "Toko atau aplikasi yang Anda pakai untuk kirim uang ke rumah",
@@ -935,7 +937,8 @@
       "reportSource": {
         "user": "Dilaporkan oleh pekerja",
         "contract_signal": "Ditemukan saat pemeriksaan kontrak",
-        "seed": "Data demo"
+        "seed": "Data demo",
+        "scam_check": "Dibagikan oleh seorang pekerja setelah memeriksa pesan. Belum diverifikasi."
       }
     },
     "alerts": {

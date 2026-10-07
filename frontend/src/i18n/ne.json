@@ -794,7 +794,8 @@
       "contract_substitution": "हस्ताक्षरपछि सम्झौता बदलियो",
       "passport_retention": "रोजगारदाता वा एजेन्टले राहदानी राख्यो",
       "unlicensed_operator": "अनुमति नभएको सञ्चालक",
-      "other": "अन्य समस्या"
+      "other": "अन्य समस्या",
+      "scam_message": "ठगी सन्देश"
     },
     "report": {
       "title": "समस्या रिपोर्ट गर्नुहोस्",
@@ -811,7 +812,8 @@
         "types": {
           "money_transfer_operator": "रकम पठाउने सेवा",
           "recruitment_agency": "भर्ना एजेन्सी",
-          "employer": "रोजगारदाता"
+          "employer": "रोजगारदाता",
+          "scam_type": "ठगीको प्रकार"
         },
         "hints": {
           "money_transfer_operator": "घरमा पैसा पठाउन तपाईंले प्रयोग गर्ने पसल वा एप",
@@ -935,7 +937,8 @@
       "reportSource": {
         "user": "कामदारले रिपोर्ट गरेको",
         "contract_signal": "सम्झौता जाँचको क्रममा फेला परेको",
-        "seed": "डेमो डेटा"
+        "seed": "डेमो डेटा",
+        "scam_check": "एक कामदारले सन्देश जाँचेपछि साझा गरेको। प्रमाणित गरिएको छैन।"
       }
     },
     "alerts": {

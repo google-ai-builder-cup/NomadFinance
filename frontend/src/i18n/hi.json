@@ -794,7 +794,8 @@
       "contract_substitution": "साइन करने के बाद बदला गया अनुबंध",
       "passport_retention": "नियोक्ता या एजेंट ने पासपोर्ट रखा",
       "unlicensed_operator": "बिना लाइसेंस का संचालक",
-      "other": "अन्य समस्या"
+      "other": "अन्य समस्या",
+      "scam_message": "स्कैम संदेश"
     },
     "report": {
       "title": "समस्या की रिपोर्ट करें",
@@ -811,7 +812,8 @@
         "types": {
           "money_transfer_operator": "मनी ट्रांसफर सेवा",
           "recruitment_agency": "भर्ती एजेंसी",
-          "employer": "नियोक्ता"
+          "employer": "नियोक्ता",
+          "scam_type": "स्कैम का प्रकार"
         },
         "hints": {
           "money_transfer_operator": "वह दुकान या ऐप जिससे आप घर पैसे भेजते हैं",
@@ -935,7 +937,8 @@
       "reportSource": {
         "user": "किसी मज़दूर ने रिपोर्ट की",
         "contract_signal": "अनुबंध की जांच के दौरान मिला",
-        "seed": "डेमो डेटा"
+        "seed": "डेमो डेटा",
+        "scam_check": "एक कामगार ने संदेश जाँचने के बाद साझा किया। सत्यापित नहीं।"
       }
     },
     "alerts": {

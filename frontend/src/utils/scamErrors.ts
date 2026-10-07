@@ -45,3 +45,27 @@ export function scamErrorView(error: unknown): ScamErrorView {
   }
   return { messageKey: errorMessageKey(error), canRetry: status === 0 || status >= 500 };
 }
+
+/** What to tell a worker whose warning could not be sent, by the backend's code (v2-scam.md). */
+export function scamReportErrorView(error: unknown): ScamErrorView {
+  if (!(error instanceof ApiError)) {
+    return { messageKey: errorMessageKey(error), canRetry: true };
+  }
+  const { status } = error;
+  if (status === 409) {
+    return { messageKey: "report.errors.notAScam", canRetry: false };
+  }
+  if (status === 422) {
+    return { messageKey: "report.errors.invalid", canRetry: false };
+  }
+  if (status === 404) {
+    return { messageKey: "report.errors.expired", canRetry: false };
+  }
+  if (status === 429) {
+    // The limit is per minute, so the same button works again soon.
+    return { messageKey: "report.errors.rateLimited", canRetry: true };
+  }
+  // A server error is also what the second of two simultaneous taps can get; trying again returns
+  // the first report (NF-SA-013), so it is safe to offer.
+  return { messageKey: errorMessageKey(error), canRetry: status === 0 || status >= 500 };
+}

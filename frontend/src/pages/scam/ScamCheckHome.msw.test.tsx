@@ -294,3 +294,13 @@ describe("when the check fails", () => {
     expect(screen.getByText(/could not write the full explanation/)).toBeTruthy();
   });
 });
+
+describe("the way to the history", () => {
+  it("links to the worker's past checks", () => {
+    renderPage();
+
+    expect(screen.getByRole("link", { name: "Your checks" }).getAttribute("href")).toBe(
+      "/scam-check/history"
+    );
+  });
+});

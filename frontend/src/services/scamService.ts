@@ -1,5 +1,12 @@
 import { ApiError, apiRequest } from "@/services/apiClient";
-import type { ScamAnalyzeResponse, ScamCheckRequest } from "@/types/scam";
+import type {
+  ScamAnalyzeResponse,
+  ScamCheckDetail,
+  ScamCheckList,
+  ScamCheckRequest,
+  ScamReportRequest,
+  ScamReportResponse,
+} from "@/types/scam";
 
 // docs/api/v2-scam.md: a scam waits for the explainer, which has taken 15 to 40 s, so a slow
 // answer is not a failure. The contract allows the client 60 s, but with Gemini rate-limited
@@ -47,4 +54,33 @@ export async function analyzeScam(request: ScamCheckRequest): Promise<ScamAnalyz
     }
     throw error;
   }
+}
+
+/** One page of the worker's history, newest first. `cursor` is the previous page's `next_cursor`. */
+export async function listChecks(limit: number, cursor?: string): Promise<ScamCheckList> {
+  const query = new URLSearchParams({ limit: String(limit) });
+  if (cursor !== undefined) {
+    query.set("cursor", cursor);
+  }
+  const response = await apiRequest(`/api/v2/scam/checks?${query}`);
+  return (await response.json()) as ScamCheckList;
+}
+
+/** One stored check. A missing, expired or someone else's check is the same 404. */
+export async function getCheck(id: string): Promise<ScamCheckDetail> {
+  const response = await apiRequest(`/api/v2/scam/checks/${encodeURIComponent(id)}`);
+  return (await response.json()) as ScamCheckDetail;
+}
+
+/** Report a scam to Exploitation Radar. 201 for a new report, 200 for one made before. */
+export async function reportCheck(
+  id: string,
+  body: ScamReportRequest
+): Promise<ScamReportResponse> {
+  const response = await apiRequest(`/api/v2/scam/checks/${encodeURIComponent(id)}/report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return (await response.json()) as ScamReportResponse;
 }
