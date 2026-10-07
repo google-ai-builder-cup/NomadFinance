@@ -1,0 +1,27 @@
+{
+  "operation": "scam.classify",
+  "kind": "structured",
+  "response": {
+    "is_scam": true,
+    "scam_type": "illegal_recruitment_fee",
+    "tactics": [
+      "urgency",
+      "scarcity"
+    ],
+    "risk_level": "high",
+    "confidence": 0.94,
+    "trigger_phrases": [
+      "processing fee",
+      "visa slot is cancelled"
+    ],
+    "message_language": "en",
+    "details": {
+      "claimed_identity": null,
+      "contact_channel": "whatsapp",
+      "payment_requested": "bank transfer",
+      "amount": 800,
+      "currency": "SGD",
+      "deadline_stated": true
+    }
+  }
+}

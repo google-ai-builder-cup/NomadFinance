@@ -261,6 +261,7 @@ AI_LIMITED = {
     ("POST", "/api/v1/fib/categorize"),
     ("POST", "/api/v1/radar/report"),
     ("POST", "/api/v1/remittance/recommend"),
+    ("POST", "/api/v2/scam/analyze"),
 }
 
 _PATH_VALUES = {"language": "en", "host_country": "SG", "slug": "example-agency"}
