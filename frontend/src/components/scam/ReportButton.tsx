@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import { useReportCheck } from "@/hooks/useScamChecks";
+import { trackScamReported } from "@/lib/analytics";
 import type { ScamReportRequest, ScamResultView } from "@/types/scam";
 import { scamEntitySlug } from "@/utils/scamReport";
 
@@ -45,7 +46,15 @@ export default function ReportButton({ result }: ReportButtonProps) {
     : null;
 
   function send(request: ScamReportRequest) {
-    report.mutate(request, { onSuccess: () => setOpen(false) });
+    report.mutate(request, {
+      onSuccess: (sent) => {
+        setOpen(false);
+        // A second tap that only found the first report is not a new warning.
+        if (!sent.already_reported && result.verdict.scam_type !== null) {
+          trackScamReported(result.verdict.scam_type);
+        }
+      },
+    });
   }
 
   return (

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import { useScamAnalyze } from "@/hooks/useScamAnalyze";
 import { useUserProfile } from "@/hooks/useUser";
+import { trackScamCheckSubmitted } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { CORRIDOR_IDS, isLanguageCode, type CorridorId } from "@/types/enums";
 import type { ScamCheckInput } from "@/types/scam";
@@ -71,6 +72,7 @@ export default function ScamCheckHome() {
 
   function submit(next: ScamCheckInput) {
     if (isSubmittable(next)) {
+      trackScamCheckSubmitted(next.kind, corridorId, language);
       analyze.mutate({ input: next, language, corridorId });
     }
   }

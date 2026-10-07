@@ -20,6 +20,7 @@ _BY_INTERNAL_JOB = {
     "refresh-rates": "remittance",
     "aggregate-radar": "radar",
     "recompute-fib-profiles": "fib",
+    "aggregate-scam-stats": "scam",
 }
 
 PLATFORM = "platform"

@@ -9,14 +9,23 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import ScamResult from "@/components/scam/ScamResult";
+import { trackScamVerdictViewed } from "@/lib/analytics";
 import { loadNamespace } from "@/lib/i18n";
 import { scamResult } from "@/mocks/scamResult";
+
+vi.mock("@/lib/analytics", () => ({
+  trackScamVerdictViewed: vi.fn(),
+  trackScamReported: vi.fn(),
+}));
 
 beforeAll(async () => {
   await loadNamespace("scam");
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 // The report button reads and writes through the API and links to Radar.
 function render(ui: ReactElement) {
@@ -92,5 +101,55 @@ describe("ScamResult", () => {
     render(<ScamResult result={scamResult("high")} />);
 
     expect(screen.queryByRole("button", { name: "Check another message" })).toBeNull();
+  });
+
+  describe("the verdict_viewed event (NF-SA-022)", () => {
+    it("says what the verdict was, once, for a check that has just finished", () => {
+      const result = scamResult("high", { cached: false });
+
+      const { rerender } = render(<ScamResult result={result} focusOnMount />);
+      rerender(
+        <QueryClientProvider client={new QueryClient()}>
+          <MemoryRouter>
+            <ScamResult result={{ ...result }} focusOnMount />
+          </MemoryRouter>
+        </QueryClientProvider>
+      );
+
+      expect(trackScamVerdictViewed).toHaveBeenCalledTimes(1);
+      expect(trackScamVerdictViewed).toHaveBeenCalledWith({
+        isScam: true,
+        riskLevel: "high",
+        scamType: "illegal_recruitment_fee",
+        cached: false,
+        source: "check",
+      });
+    });
+
+    it("calls a stored check opened from the history a history view, and a benign one no type", () => {
+      render(<ScamResult result={scamResult("benign", { cached: undefined })} />);
+
+      expect(trackScamVerdictViewed).toHaveBeenCalledWith({
+        isScam: false,
+        riskLevel: "low",
+        scamType: null,
+        cached: false,
+        source: "history",
+      });
+    });
+
+    it("sends nothing the worker wrote: only the fields of the verdict", () => {
+      render(<ScamResult result={scamResult("high")} focusOnMount />);
+
+      const sent = vi.mocked(trackScamVerdictViewed).mock.calls[0][0];
+      expect(Object.keys(sent).sort()).toEqual([
+        "cached",
+        "isScam",
+        "riskLevel",
+        "scamType",
+        "source",
+      ]);
+      expect(JSON.stringify(sent)).not.toContain(scamResult("high").redacted_text.slice(0, 20));
+    });
   });
 });

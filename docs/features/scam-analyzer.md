@@ -99,6 +99,8 @@ The tier is named in code (`ModelTier`), the model per tier is in settings, and 
 - **Never stored or logged:** the image, the raw message, the hash, or a link or number outside the indicators.
 - `scam_indicators/{id}` counts how often a contact was reported (written by reports, 1 year after the last report it stops being flagged). `scam_taxonomy` and `scam_patterns` are reference data written by `data-scripts/`.
 - A worker cannot delete one check before the TTL (D-109).
+- `scam_stats/{corridor}/weeks/{isoWeek}` holds **counts only** (checks, scams, benign, scams by type, text and screenshot, reported) per corridor and ISO week, for dashboards and the Partner API later. A Cloud Scheduler job (`scam-stats`, daily 01:30 UTC) recounts the current and previous week and replaces their documents, so it can run again at any time. Backend only; the Partner API must hide a count below 5 (D-165).
+- Three Firebase Analytics events, with coarse values only (never a message): `scam_check_submitted`, `scam_verdict_viewed`, `scam_reported`. See `docs/data-model/collections/scam.md`.
 
 ## Safety
 

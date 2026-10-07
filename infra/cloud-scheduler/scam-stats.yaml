@@ -1,0 +1,32 @@
+# Cloud Scheduler job: count the Scam Analyzer's checks per corridor, ISO week and kind of scam
+# into scam_stats/{corridor}/weeks/{iso_week} (NF-SA-022). Counts only: no message, no worker.
+#
+# Create (once):   gcloud scheduler jobs create http scam-stats --flags-file=infra/cloud-scheduler/scam-stats.yaml --headers=Content-Type=application/json
+# Apply a change:  gcloud scheduler jobs update http scam-stats --flags-file=infra/cloud-scheduler/scam-stats.yaml --update-headers=Content-Type=application/json
+# Run now:         gcloud scheduler jobs run scam-stats --project nomadfinance-prod --location asia-south1
+#
+# scheduler-deploy.yml creates or updates this job when the file is merged to main; the
+# Content-Type header is set there, not here (see radar-aggregation.yaml).
+#
+# Each run recounts the current and the previous ISO week and replaces their documents, so a run
+# can be repeated or retried at any time and never adds a check twice. An older week is left as
+# it was written: stored checks expire after 90 days, and recounting would make it shrink.
+# To change how often it runs, edit --schedule only (cron syntax, UTC).
+
+--project: nomadfinance-prod
+--location: asia-south1
+--schedule: "30 1 * * *"
+--time-zone: Etc/UTC
+--description: "Weekly Scam Analyzer counts per corridor and kind of scam (NF-SA-022)"
+--uri: https://nomadfinance-api-azewstzfaa-el.a.run.app/api/v1/internal/aggregate-scam-stats
+--http-method: POST
+# Google's front end rejects a POST without Content-Length (411); an empty JSON body avoids it.
+--message-body: "{}"
+# The endpoint accepts only an OIDC token for this service account and audience; they must
+# match CRON_SERVICE_ACCOUNT and CRON_AUDIENCE on the Cloud Run service (deploy_manual.sh).
+--oidc-service-account-email: nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com
+--oidc-token-audience: https://nomadfinance-api-azewstzfaa-el.a.run.app
+# Two weeks of one collection-group query each, then 14 small writes. Budget for a busy week.
+--attempt-deadline: 180s
+--max-retry-attempts: 2
+--min-backoff: 300s
