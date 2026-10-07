@@ -12,6 +12,8 @@ SCAM_TAXONOMY_DIR = DATA_DIR / "source" / "scam-taxonomy"
 SCAM_PATTERNS_DIR = DATA_DIR / "source" / "scam-patterns"
 # The golden eval sets of the Scam Analyzer (NF-SA-003 to -005): data-scripts/evals/.
 EVALS_DIR = Path(__file__).resolve().parent.parent / "evals"
+# Where the eval runner (NF-SA-014) writes its report: docs/evals/ at the repo root.
+EVAL_REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "evals"
 RADAR_SEED_FILE = DATA_DIR / "seed" / "radar-reports" / "seed_reports.json"
 SEED_USERS_DIR = DATA_DIR / "seed" / "users"
 SEED_CONTRACTS_DIR = DATA_DIR / "seed" / "contracts"

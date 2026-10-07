@@ -1,0 +1,41 @@
+name: Scam eval
+
+# Manual only: the run makes 120 Gemini calls, so it must never start by itself on a push or a
+# pull request. Run it from the Actions tab after a change to the classifier prompt, the
+# taxonomy or the golden set (NF-SA-014). It fails when the F1 of scam against benign is under
+# 0.85 overall or under 0.75 in any language, and the report is attached either way.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    # Not a required check, so unlike the CI jobs its name is not listed in branch protection.
+    name: Scam golden-set eval
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The runner calls the backend's own classifier, so both sets of packages are needed.
+      - run: pip install -r backend/requirements.txt -r data-scripts/requirements.txt
+
+      - name: Run the eval
+        working-directory: data-scripts
+        env:
+          APP_ENV: local
+          # Repository secret. The golden messages are invented, so a free-tier key is fine.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m evals.run_scam_eval --report /tmp/scam-eval.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scam-eval-report
+          path: /tmp/scam-eval.md
