@@ -123,20 +123,20 @@ The grounding the classifier and the explainer use (design 5.2), and the labels 
 | `label` | string | yes | English name, for example `Fake job offer`. It becomes the `entity_name` of a Radar report. |
 | `definition` | string | yes | One or two plain sentences |
 | `signs` | array of string | yes | Tell-tale signs, 3 to 6 |
-| `safe_response` | string | for `type` | What to do |
-| `how_it_works` | string | for `tactic` | Why it works on people |
-| `related_tactics` | array of string | no | For a `type`: ids of the tactics it usually uses |
+| `safe_response` | string | yes | For a `type`: what to do. For a `tactic`: how to resist the pressure. |
+| `how_it_works` | string | for `tactic` | Why it works on people. Not on a type. |
+| `related_tactics` | array of string | for `type` | Ids of the tactics the type usually uses. Not on a tactic. |
 | `default_risk` | string | for `type` | `low`, `medium`, `high`: the starting point for `risk_level` |
 | `order` | number | yes | Position in lists |
 | `sources` | array of map | yes | `{ "url", "publisher", "retrieved_on" }`, at least one. Every claim traces to a source. |
 | `curator` | string | yes | Initials of the person who curated it |
 | `schema_version` | number | yes | `1` |
 
-Starting ids (NF-SA-001 confirms; it should also add an `other_scam` type so a real scam outside the list is not forced into a wrong one): types `fake_job_offer`, `illegal_recruitment_fee`, `remittance_otp_phishing`, `loan_app_trap`, `authority_impersonation`, `investment_romance`, `lottery`; tactics `urgency`, `authority`, `scarcity`, `fear`, `reciprocity`, `social_proof`.
+Ids (confirmed by NF-SA-001, which added `other_scam` so a real scam outside the list is not forced into a wrong type): types `fake_job_offer`, `illegal_recruitment_fee`, `remittance_otp_phishing`, `loan_app_trap`, `authority_impersonation`, `investment_romance`, `lottery`, `other_scam`; tactics `urgency`, `authority`, `scarcity`, `fear`, `reciprocity`, `social_proof`.
 
 **Labels in other languages are not stored here.** The screens translate by id through the `scam` i18n namespace (`scam.types.<id>`, `scam.tactics.<id>`, NF-F0-013); the explainer text is written by the model in the worker's language.
 
-**`scam_taxonomy/_meta`** holds `{ "version": number, "content_hash": string, "updated_at": timestamp }`. The loader hashes the validated documents, and raises `version` by 1 only when the hash changes (the rule `labor_laws/{country}/_meta/current` follows). A stored check records `taxonomy_version`, and the cache ignores checks made under another version. Code that lists the taxonomy reads `where kind in ["type", "tactic"]`, which leaves `_meta` out.
+**`scam_taxonomy/_meta`** holds `{ "version": number, "content_hash": string, "updated_at": timestamp }`. The loader hashes the validated documents (without `sources` and `curator`, which do not change what a check says), and raises `version` by 1 only when the hash changes (the rule `labor_laws/{country}/_meta/current` follows). A stored check records `taxonomy_version`, and the cache ignores checks made under another version. Code that lists the taxonomy reads `where kind in ["type", "tactic"]`, which leaves `_meta` out.
 
 **Example** — `scam_taxonomy/illegal_recruitment_fee`
 
@@ -160,7 +160,7 @@ Starting ids (NF-SA-001 confirms; it should also add an `other_scam` type so a r
 }
 ```
 
-The text and the source are placeholders; real content is curated in NF-SA-001.
+The text and the source in this example are placeholders. The curated content is in `data-scripts/data/source/scam-taxonomy/` (NF-SA-001); the `curator` there is the initials of the person who curated it.
 
 **Access:** signed-in users read (reference data, no personal data); only the data script writes.
 

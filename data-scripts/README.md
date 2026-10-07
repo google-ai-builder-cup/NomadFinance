@@ -166,3 +166,16 @@ python -m src.loaders.seed                      # write all three histories (als
 A number that already signs in under another uid (someone signed in before the accounts were created) is reported and never taken over: load that worker with `seed --only <name> --uid <that uid>` instead. Needs `gcloud auth application-default login`, or `FIREBASE_AUTH_EMULATOR_HOST` and `FIRESTORE_EMULATOR_HOST` for emulators. After loading, run `gcloud scheduler jobs run fib-recompute` to build the profiles.
 
 Full steps, the story in each user's data and limits: [`docs/runbooks/NF-P3-021-demo-users.md`](../docs/runbooks/NF-P3-021-demo-users.md).
+
+## Scam taxonomy (NF-SA-001)
+The grounding for the Scam Analyzer: 8 scam types (the seven from the design plus `other_scam`) in `data/source/scam-taxonomy/types.json` and 6 manipulation tactics in `tactics.json`, each with a plain-English definition, 3 to 6 tell-tale signs, a safe response and at least one source (official advisories, read on the date in `retrieved_on`). The labels in other languages are not here: the screens translate by id through the `scam` i18n namespace.
+
+```bash
+python -m src.validators.scam_taxonomy        # check both files
+python -m src.loaders.scam_taxonomy --dry-run # validate only, no Firestore access
+python -m src.loaders.scam_taxonomy           # write
+```
+
+The loader writes `scam_taxonomy/{id}` (one document per type or tactic; the id is unique across both) and `scam_taxonomy/_meta` `{version, content_hash, updated_at}` in one batch, after both files have passed the checker's model; if either fails, nothing is written. `_meta.version` goes up by 1 only when the wording changes (sources and curator are not hashed), because a stored check records it as `taxonomy_version` and the check cache ignores checks made under another version. An id removed from the files is deleted from Firestore, and running it again is safe. Options: `--input-dir`, `--collection` (default `scam_taxonomy`). It is not part of `scripts/load_bootstrap.sh`; run it yourself when the files change. Same Firestore identity as the other loaders.
+
+Full steps and results: [`docs/runbooks/NF-SA-001-scam-taxonomy.md`](../docs/runbooks/NF-SA-001-scam-taxonomy.md).

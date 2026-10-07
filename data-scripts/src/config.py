@@ -8,6 +8,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 LABOR_LAWS_DIR = DATA_DIR / "source" / "labor-laws"
 COMPLAINT_TEMPLATES_DIR = DATA_DIR / "source" / "complaint-templates"
+SCAM_TAXONOMY_DIR = DATA_DIR / "source" / "scam-taxonomy"
 RADAR_SEED_FILE = DATA_DIR / "seed" / "radar-reports" / "seed_reports.json"
 SEED_USERS_DIR = DATA_DIR / "seed" / "users"
 SEED_CONTRACTS_DIR = DATA_DIR / "seed" / "contracts"
