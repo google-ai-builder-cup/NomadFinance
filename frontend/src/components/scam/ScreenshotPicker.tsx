@@ -150,7 +150,7 @@ export default function ScreenshotPicker({
       </label>
 
       {problemKey && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(problemKey)}
         </p>
       )}

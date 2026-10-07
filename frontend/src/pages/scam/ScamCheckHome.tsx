@@ -1,4 +1,4 @@
-import { ClipboardPaste, History, ImageIcon, ScanSearch, ShieldCheck } from "lucide-react";
+import { Check, ClipboardPaste, History, ImageIcon, ScanSearch, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
@@ -108,7 +108,7 @@ export default function ScamCheckHome() {
       />
 
       {analyze.isSuccess ? (
-        <ScamResult result={analyze.data} onCheckAnother={startOver} />
+        <ScamResult result={analyze.data} onCheckAnother={startOver} focusOnMount />
       ) : analyze.isPending ? (
         <AnalyzingProgress />
       ) : (
@@ -137,6 +137,8 @@ export default function ScamCheckHome() {
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
                 {t(labelKey)}
+                {/* The chosen mode is not told by colour alone (`aria-pressed` tells a screen reader). */}
+                {mode === value && <Check className="h-4 w-4" aria-hidden="true" />}
               </button>
             ))}
           </div>
@@ -154,7 +156,7 @@ export default function ScamCheckHome() {
             <ScreenshotPicker file={file} onSelect={setFile} onClear={() => setFile(null)} />
           )}
 
-          <Button type="submit" size="lg" className="w-full" disabled={!canSubmit}>
+          <Button type="submit" size="lg" className="min-h-11 w-full" disabled={!canSubmit}>
             {t("input.submit")}
           </Button>
 

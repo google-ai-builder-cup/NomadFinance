@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/services/apiClient";
 import { scamErrorView, scamReportErrorView } from "@/utils/scamErrors";
@@ -40,6 +40,10 @@ describe("scamErrorView", () => {
   });
 });
 
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe("scamReportErrorView", () => {
   it.each([
     [409, "not_a_scam", "report.errors.notAScam", false],
@@ -59,6 +63,10 @@ describe("scamReportErrorView", () => {
   });
 
   it("treats an error that is not the API's as one to retry", () => {
+    // These tests run in Node, which has no `navigator` before version 21 (CI is on 20), and the
+    // fallback message asks it whether the browser is online.
+    vi.stubGlobal("navigator", { onLine: true });
+
     expect(scamReportErrorView(new Error("boom")).canRetry).toBe(true);
   });
 });

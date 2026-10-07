@@ -7,6 +7,7 @@ import HighlightedMessage from "@/components/scam/HighlightedMessage";
 import IndicatorList from "@/components/scam/IndicatorList";
 import TacticChips from "@/components/scam/TacticChips";
 import { Badge } from "@/components/ui/badge";
+import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import type { ScamResultView } from "@/types/scam";
 
@@ -18,15 +19,18 @@ const REPORT_COUNT_CAP = 10;
 
 export interface VerdictCardProps {
   result: ScamResultView;
+  /** Move focus to the title when the card appears (a fresh check just finished). */
+  focusOnMount?: boolean;
 }
 
 /** The answer to "is this a scam": a risk meter and the kind of scam, the tricks it uses (tap to
  * see how each works), the message with the giveaway wording picked out, and the contact points
  * in it. The explanation and next steps are a separate section (NF-SA-017). Every state has an
  * icon and words, so colour is never the only signal. */
-export default function VerdictCard({ result }: VerdictCardProps) {
+export default function VerdictCard({ result, focusOnMount = false }: VerdictCardProps) {
   const { t } = useI18n("scam");
   const titleId = useId();
+  const titleRef = useFocusOnMount<HTMLHeadingElement>(focusOnMount);
   const { verdict, explainer } = result;
   const isScam = verdict.is_scam;
   const TitleIcon = isScam ? ShieldAlert : ShieldCheck;
@@ -48,7 +52,12 @@ export default function VerdictCard({ result }: VerdictCardProps) {
             }
             aria-hidden="true"
           />
-          <h2 id={titleId} className="text-lg font-extrabold leading-snug">
+          <h2
+            id={titleId}
+            ref={titleRef}
+            tabIndex={-1}
+            className="text-lg font-extrabold leading-snug focus:outline-none"
+          >
             {isScam ? t("result.scamTitle") : t("result.notScamTitle")}
           </h2>
         </div>
