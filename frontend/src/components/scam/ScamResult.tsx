@@ -1,4 +1,4 @@
-import ExplainerInterim from "@/components/scam/ExplainerInterim";
+import ExplainerSection from "@/components/scam/ExplainerSection";
 import VerdictCard from "@/components/scam/VerdictCard";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
@@ -17,7 +17,7 @@ export default function ScamResult({ result, onCheckAnother }: ScamResultProps) 
   return (
     <div className="space-y-4">
       <VerdictCard result={result} />
-      <ExplainerInterim explainer={result.explainer} />
+      <ExplainerSection explainer={result.explainer} />
       <Button type="button" variant="outline" className="min-h-11 w-full" onClick={onCheckAnother}>
         {t("result.checkAnother")}
       </Button>
