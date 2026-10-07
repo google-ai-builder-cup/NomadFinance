@@ -15,7 +15,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 | Route | State |
 |---|---|
 | `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` and `similar` empty (NF-SA-011, -010), `explainer: null` with `explainer_status: "unavailable"` (NF-SA-009), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
-| `POST /scam/analyze`, screenshot | Not built (NF-SA-008). A form body is not answered with `415` yet |
+| `POST /scam/analyze`, screenshot | Built (NF-SA-008). The image is shrunk, read once by Gemini Vision and dropped; the text read goes through the same redaction and classification as pasted text, and a visible sender is returned as the one `sender` indicator. A long conversation is cut to 4,000 characters after masking instead of refused. A cut-off image is read as far as it goes; HEIC is a `415` |
 | The three other routes | Not built (NF-SA-012, -013) |
 
 ## Routes

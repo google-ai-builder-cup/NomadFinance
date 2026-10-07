@@ -21,6 +21,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | `fib/categorize.v1` | Categories for a batch of entries (NF-P3-012) | classification | `entries_json` |
 | `fib/synthesize_narrative.v1` | Financial Identity report text (NF-P3-013) | reasoning | `report_language`, `profile_json` |
 | `scam/classify.v1` | Is a pasted message a scam: type, tactics, risk, trigger phrases, details (NF-SA-007) | classification | `taxonomy_json`, `message` |
+| `scam/read_screenshot.v1` | Transcribe a message screenshot: text and visible sender (NF-SA-008) | extraction | none: the image is a separate part |
 
 The fields each prompt asks for are the field names in `docs/data-model/collections/`. The step's Pydantic response model (the `response_schema`) must use the same names.
 
