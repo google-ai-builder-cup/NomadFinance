@@ -1,8 +1,8 @@
-"""An app wired for the Scam Analyzer's endpoint tests (NF-SA-007, NF-SA-008, NF-SA-010).
+"""An app wired for the Scam Analyzer's endpoint tests (NF-SA-007, -008, -010, -012).
 
-Auth, the `scam` flag, Gemini, the taxonomy and the similar-scam search are replaced; everything
-else (middleware, error handlers, rate limits, routing) is the real app, so a test sees what a
-client would.
+Auth, the `scam` flag, Gemini, the taxonomy, the similar-scam search and the stored checks are
+replaced; everything else (middleware, error handlers, rate limits, routing) is the real app,
+so a test sees what a client would.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from fastapi import FastAPI
 from app.dependencies import (
     get_current_user,
     get_feature_flag_service,
+    get_scam_check_store,
     get_similar_scam_finder,
 )
 from app.integrations.gemini import get_gemini_client
@@ -22,7 +23,9 @@ from app.repositories.scam_taxonomy_repo import ScamTaxonomy, get_scam_taxonomy_
 from app.schemas.errors import ErrorEnvelope
 from app.schemas.user import AuthenticatedUser
 from app.services.feature_flag_service import FeatureFlagService
+from app.services.scam.check_store import CheckStore
 from tests.fixtures.fake_gemini import FakeGemini
+from tests.fixtures.scam_checks import make_store
 from tests.fixtures.scam_classify import load_taxonomy
 from tests.fixtures.scam_similar import FakeFinder
 
@@ -50,18 +53,23 @@ def make_app(
     signed_in: bool = True,
     taxonomy: ScamTaxonomy | None = None,
     finder: FakeFinder | None = None,
+    store: CheckStore | None = None,
+    uid: str = "test-user",
 ) -> FastAPI:
     app = create_app()
     flags = FeatureFlagService(FakeFlags(flag_on))  # type: ignore[arg-type]
     app.dependency_overrides[get_feature_flag_service] = lambda: flags
     if signed_in:
-        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="test-user")
+        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid=uid)
     app.dependency_overrides[get_gemini_client] = lambda: gemini
     repo = FakeTaxonomyRepo(taxonomy or load_taxonomy())
     app.dependency_overrides[get_scam_taxonomy_repository] = lambda: repo
     # No Firestore and no embedding call in an endpoint test: the search is faked.
     fake_finder = finder or FakeFinder()
     app.dependency_overrides[get_similar_scam_finder] = lambda: fake_finder
+    # No Firestore either: checks are stored in memory, so each app starts with an empty history.
+    fake_store = store or make_store()
+    app.dependency_overrides[get_scam_check_store] = lambda: fake_store
     return app
 
 

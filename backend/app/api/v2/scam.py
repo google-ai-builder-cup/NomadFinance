@@ -9,8 +9,12 @@ from pydantic import BaseModel, ValidationError
 from starlette.datastructures import UploadFile
 
 from app.core.errors import ApiError
-from app.core.rate_limit import limit_ai_calls
-from app.dependencies import get_current_user, get_similar_scam_finder, require_flag
+from app.dependencies import (
+    get_current_user,
+    get_scam_check_store,
+    get_similar_scam_finder,
+    require_flag,
+)
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.scam_taxonomy_repo import (
     ScamTaxonomyRepository,
@@ -20,6 +24,7 @@ from app.schemas.scam import ScamAnalyzeResponse, ScamAnalyzeTextRequest
 from app.schemas.scam_screenshot import ScamAnalyzeFormFields
 from app.schemas.user import AuthenticatedUser
 from app.services.scam.analyzer import analyze_screenshot, analyze_text
+from app.services.scam.check_store import CheckStore
 from app.services.scam.retrieval import SimilarScamFinder
 from app.services.scam.screenshot import IMAGE_MIME_TYPES, MAX_IMAGE_BYTES, ImageUnreadableError
 from app.utils.validators import sniff_document_mime_type
@@ -44,7 +49,10 @@ _ANALYZE_RESPONSES: dict[int | str, dict[str, Any]] = {
         "description": "Empty text, text over 4,000 characters, a language outside the six, no "
         "image, or no message text could be read from the image (`image_unreadable`)"
     },
-    429: {"description": "Too many AI calls (default 10 a minute per user); see Retry-After"},
+    429: {
+        "description": "The worker has used 20 checks that call Gemini this hour (a repeated "
+        "message answered from storage does not count), or 60 calls a minute; see Retry-After"
+    },
     502: {"description": "Gemini returned an unusable answer"},
     503: {"description": "Gemini busy or unavailable; retry after the Retry-After header"},
     504: {"description": "Gemini timed out"},
@@ -132,7 +140,6 @@ async def _screenshot_request(request: Request) -> tuple[bytes, ScamAnalyzeFormF
     response_model=ScamAnalyzeResponse,
     responses=_ANALYZE_RESPONSES,
     summary="Check a pasted message or a screenshot for a scam",
-    dependencies=[Depends(limit_ai_calls)],
     openapi_extra=_ANALYZE_REQUEST_BODY,
 )
 async def analyze_scam_message(
@@ -141,6 +148,7 @@ async def analyze_scam_message(
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     taxonomy_repo: Annotated[ScamTaxonomyRepository, Depends(get_scam_taxonomy_repository)],
     finder: Annotated[SimilarScamFinder, Depends(get_similar_scam_finder)],
+    store: Annotated[CheckStore, Depends(get_scam_check_store)],
 ) -> ScamAnalyzeResponse:
     """Say whether a message is a scam, of which type, how risky, and which words gave it away.
 
@@ -151,15 +159,24 @@ async def analyze_scam_message(
     screenshot is read once and discarded; it is never stored. A scam also gets an explainer
     in the worker's language, and up to three known scams and Radar reports it resembles
     (`similar`, `corridor_report_count`); if either cannot be made it is left empty and the
-    verdict is still returned. Nothing is stored yet.
+    verdict is still returned.
+
+    The masked text is stored as the worker's check and found again by its hash: the same
+    message in the same language is answered from storage (`cached: true`) with no Gemini call
+    and no use of the hourly budget. A new message spends one of the worker's 20 checks an
+    hour; a screenshot always does, because it is read by Gemini first.
     """
     content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
     if content_type == "application/json":
-        return await analyze_text(await _text_request(request), gemini, taxonomy_repo, finder)
+        return await analyze_text(
+            await _text_request(request), user.uid, gemini, taxonomy_repo, finder, store
+        )
     if content_type == "multipart/form-data":
         image, fields = await _screenshot_request(request)
         try:
-            return await analyze_screenshot(image, fields, gemini, taxonomy_repo, finder)
+            return await analyze_screenshot(
+                image, fields, user.uid, gemini, taxonomy_repo, finder, store
+            )
         except ImageUnreadableError as exc:
             raise ApiError(422, "image_unreadable", _IMAGE_UNREADABLE) from exc
     raise ApiError(415, "unsupported_media_type", _UNSUPPORTED_MEDIA)

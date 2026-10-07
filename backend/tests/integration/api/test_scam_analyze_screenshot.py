@@ -340,11 +340,15 @@ def test_the_flag_and_the_token_guard_the_screenshot_path_too(gemini: FakeGemini
     assert gemini.calls == []
 
 
-def test_screenshots_share_the_ai_budget_with_pasted_text(api: TestClient) -> None:
-    statuses = [_send(api, chat_screenshot()).status_code for _ in range(11)]
+def test_a_screenshot_always_spends_the_hourly_budget_even_when_its_text_is_stored(
+    api: TestClient,
+) -> None:
+    # The same image 21 times: after the first its text is stored, yet Vision still reads each
+    # one first, so every one counts.
+    statuses = [_send(api, chat_screenshot()).status_code for _ in range(21)]
 
-    assert statuses[:10] == [200] * 10
-    assert statuses[10] == 429
+    assert statuses[:20] == [200] * 20
+    assert statuses[20] == 429
 
 
 def test_nothing_of_the_image_is_logged_or_returned(

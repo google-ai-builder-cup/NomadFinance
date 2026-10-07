@@ -24,10 +24,16 @@ from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.base import get_firestore_client
 from app.repositories.config_repo import get_config_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
+from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
+from app.repositories.scam_indicator_repo import (
+    ScamIndicatorRepository,
+    get_scam_indicator_repository,
+)
 from app.repositories.scam_pattern_repo import ScamPatternRepository, get_scam_pattern_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.feature_flag_service import FeatureFlagService, FlagName
+from app.services.scam.check_store import CheckStore
 from app.services.scam.retrieval import SimilarScamFinder
 
 logger = logging.getLogger(__name__)
@@ -162,6 +168,14 @@ def get_similar_scam_finder(
 ) -> SimilarScamFinder:
     """The Scam Analyzer's neighbour search (NF-SA-010), on the shared Gemini client."""
     return SimilarScamFinder(gemini, patterns, reports)
+
+
+def get_scam_check_store(
+    checks: Annotated[ScamCheckRepository, Depends(get_scam_check_repository)],
+    indicators: Annotated[ScamIndicatorRepository, Depends(get_scam_indicator_repository)],
+) -> CheckStore:
+    """The worker's stored scam checks and the cache over them (NF-SA-012)."""
+    return CheckStore(checks, indicators)
 
 
 def require_flag(flag: FlagName) -> Callable[..., Awaitable[None]]:

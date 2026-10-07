@@ -14,7 +14,7 @@ How a check reaches Radar (what is stored in `radar_reports`) is in [radar](rada
 
 ## `users/{uid}/scam_checks/{checkId}`
 
-One analysed message. Auto id. The image of a screenshot is **never stored**, only the text read from it (NF-SA-008).
+One analysed message. **The id is the first 32 hex characters of `cache_key`** (NF-SA-012), not an auto id: the same message in the same output language is found by one read, and a retried request writes the same document instead of a second one (contract: "a check is written under its hash"). The image of a screenshot is **never stored**, only the text read from it (NF-SA-008).
 
 | Field | Type | Required | Description |
 |---|---|---|---|

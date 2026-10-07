@@ -176,6 +176,21 @@ class RateLimitMiddleware:
         await self.app(scope, receive, send_with_headers)
 
 
+def consume_limit(limit: str, namespace: str, uid: str, message: str) -> None:
+    """Count one use against `limit` for a verified user, or refuse with a 429.
+
+    For a budget that only some requests spend, which a dependency cannot know (it runs before
+    the request is looked at): the caller decides when to spend. `uid` is the verified Firebase
+    uid, so unlike `rate_limit_key` there is no address in the key. The refusal carries
+    Retry-After and X-RateLimit-* for the limit it hit.
+    """
+    if not get_settings().rate_limit_enabled:
+        return
+    verdict = _check(limit, namespace, f"user:{hash_user_id(uid)}")
+    if not verdict.allowed:
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, message, headers=verdict.headers())
+
+
 async def limit_ai_calls(request: Request) -> None:
     """Stricter budget for endpoints that call Gemini (`RATE_LIMIT_AI`, 10 a minute).
 

@@ -139,6 +139,9 @@ class Settings(BaseSettings):
     rate_limit_default: str = "60/minute"
     # Endpoints that call Gemini share one free-tier quota across all users.
     rate_limit_ai: str = "10/minute"
+    # Checks that call Gemini on `POST /api/v2/scam/analyze` (NF-SA-012): per signed-in user, and
+    # a repeated message answered from the cache does not count. Memory storage, like the others.
+    rate_limit_scam_analyze: str = "20/hour"
 
     # Anti-abuse for POST /radar/report (NF-P3-025). Defaults off: enforcing before the
     # frontend has a real reCAPTCHA v3 site key configured would reject every real
@@ -173,7 +176,7 @@ class Settings(BaseSettings):
             # An origin is scheme://host[:port] exactly; browsers never send a path or "*".
             if not _ORIGIN.match(origin):
                 raise ValueError(f"CORS_ALLOWED_ORIGINS: {origin!r} is not an origin")
-        for name in ("rate_limit_default", "rate_limit_ai"):
+        for name in ("rate_limit_default", "rate_limit_ai", "rate_limit_scam_analyze"):
             try:
                 parse_many(getattr(self, name))
             except ValueError as exc:
