@@ -1,8 +1,61 @@
 {
   "home": {
     "title": "Cek penipuan",
-    "comingSoonTitle": "Segera hadir",
-    "comingSoonDescription": "Kami masih membangun bagian NomadFinance ini. Kunjungi lagi nanti.",
-    "backToDashboard": "Kembali ke beranda"
+    "description": "Ada pesan yang terasa janggal? Periksa di sini sebelum Anda membayar, mengeklik, atau membalas."
+  },
+  "input": {
+    "modeLabel": "Bagaimana Anda ingin memeriksanya?",
+    "modeText": "Tempel teks",
+    "modeScreenshot": "Tangkapan layar",
+    "textLabel": "Pesan yang Anda terima",
+    "placeholder": "Tempel pesan di sini, atau bagikan ke NomadFinance dari WhatsApp.",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "Pesan ini terlalu panjang. Simpan bagian yang meminta uang, tautan, atau data Anda.",
+    "shared": "Pesan yang Anda bagikan sudah kami tambahkan. Bacalah, lalu ketuk Periksa pesan ini.",
+    "submit": "Periksa pesan ini",
+    "privacy": "Nomor telepon, rekening bank, dan tautan disembunyikan sebelum pesan diperiksa. Tangkapan layar dibaca sekali dan tidak disimpan."
+  },
+  "screenshot": {
+    "dropzoneLabel": "Pilih tangkapan layar",
+    "dropzoneHint": "JPEG, PNG, atau WebP, maksimal 5 MB",
+    "takePhoto": "Ambil foto",
+    "remove": "Hapus tangkapan layar",
+    "errors": {
+      "tooLarge": "Gambar ini terlalu besar. Pakai gambar di bawah 5 MB.",
+      "badType": "Pakai gambar JPEG, PNG, atau WebP.",
+      "generic": "Kami tidak bisa memakai gambar ini. Coba gambar lain."
+    }
+  },
+  "analyze": {
+    "progress": {
+      "title": "Memeriksa pesan…",
+      "wait": "Biasanya hanya butuh beberapa detik.",
+      "slow": "Pesan yang mencurigakan bisa butuh sampai satu menit untuk dijelaskan. Mohon biarkan halaman ini tetap terbuka."
+    },
+    "errors": {
+      "tooLarge": "Gambar ini terlalu besar. Pakai gambar di bawah 5 MB.",
+      "unsupportedType": "Pakai tangkapan layar JPEG, PNG, atau WebP, atau tempel teksnya saja.",
+      "imageUnreadable": "Tidak ada pesan yang bisa dibaca dari gambar ini. Coba tangkapan layar yang lebih jelas atau tempel teksnya.",
+      "invalid": "Pesan ini tidak bisa diperiksa. Pastikan tidak kosong dan kurang dari 4.000 karakter.",
+      "rateLimited": "Pemeriksaan Anda untuk jam ini sudah habis. Silakan coba lagi nanti.",
+      "rateLimitedWait": "Pemeriksaan Anda untuk jam ini sudah habis. Coba lagi sekitar {{minutes}} menit lagi.",
+      "timeout": "Pemeriksaan terlalu lama. Silakan coba lagi.",
+      "busy": "Pemeriksa sedang sibuk. Silakan coba lagi sebentar lagi."
+    }
+  },
+  "result": {
+    "risk": {
+      "high": "Risiko tinggi",
+      "medium": "Risiko sedang",
+      "low": "Risiko rendah"
+    },
+    "notScam": "Tidak ada penipuan ditemukan",
+    "scamTitle": "Ini tampak seperti penipuan",
+    "notScamTitle": "Ini tidak tampak seperti penipuan",
+    "cached": "Anda sudah memeriksa pesan ini sebelumnya.",
+    "scammerWants": "Yang diinginkan pengirim",
+    "nextSteps": "Yang perlu dilakukan sekarang",
+    "explainerUnavailable": "Kami belum bisa menulis penjelasan lengkap sekarang. Periksa pesan yang sama lagi sebentar lagi.",
+    "checkAnother": "Periksa pesan lain"
   }
 }

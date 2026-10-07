@@ -1,8 +1,61 @@
 {
   "home": {
     "title": "Scam check",
-    "comingSoonTitle": "Malapit na",
-    "comingSoonDescription": "Ginagawa pa namin ang bahaging ito ng NomadFinance. Bumalik ulit sa lalong madaling panahon.",
-    "backToDashboard": "Bumalik sa home"
+    "description": "May mensaheng parang kakaiba? Suriin dito bago magbayad, mag-click o sumagot."
+  },
+  "input": {
+    "modeLabel": "Paano mo ito gustong suriin?",
+    "modeText": "I-paste ang teksto",
+    "modeScreenshot": "Screenshot",
+    "textLabel": "Ang mensaheng natanggap mo",
+    "placeholder": "I-paste dito ang mensahe, o i-share ito sa NomadFinance mula sa WhatsApp.",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "Masyadong mahaba ang mensahe. Iwanan ang bahaging humihingi ng pera, link o impormasyon mo.",
+    "shared": "Idinagdag namin ang mensaheng ni-share mo. Basahin ito, saka pindutin ang Suriin ang mensaheng ito.",
+    "submit": "Suriin ang mensaheng ito",
+    "privacy": "Itinatago ang mga numero ng telepono, bank account at link bago suriin ang mensahe. Minsan lang binabasa ang screenshot at hindi ito sine-save."
+  },
+  "screenshot": {
+    "dropzoneLabel": "Pumili ng screenshot",
+    "dropzoneHint": "JPEG, PNG o WebP, hanggang 5 MB",
+    "takePhoto": "Kumuha ng litrato",
+    "remove": "Alisin ang screenshot",
+    "errors": {
+      "tooLarge": "Masyadong malaki ang larawan. Gumamit ng mas maliit sa 5 MB.",
+      "badType": "Gumamit ng JPEG, PNG o WebP na larawan.",
+      "generic": "Hindi namin magamit ang larawang ito. Sumubok ng iba."
+    }
+  },
+  "analyze": {
+    "progress": {
+      "title": "Sinusuri ang mensahe…",
+      "wait": "Karaniwang ilang segundo lang ito.",
+      "slow": "Ang kahina-hinalang mensahe ay maaaring abutin ng hanggang isang minuto bago maipaliwanag. Pakibuksan lang ang pahinang ito."
+    },
+    "errors": {
+      "tooLarge": "Masyadong malaki ang larawan. Gumamit ng mas maliit sa 5 MB.",
+      "unsupportedType": "Gumamit ng JPEG, PNG o WebP na screenshot, o i-paste na lang ang teksto.",
+      "imageUnreadable": "Walang mabasang mensahe sa larawang ito. Gumamit ng mas malinaw na screenshot o i-paste ang teksto.",
+      "invalid": "Hindi masusuri ang mensaheng ito. Tiyaking hindi ito walang laman at wala pang 4,000 character.",
+      "rateLimited": "Naubos mo na ang mga pagsusuri mo para sa oras na ito. Subukan ulit mamaya.",
+      "rateLimitedWait": "Naubos mo na ang mga pagsusuri mo para sa oras na ito. Subukan ulit pagkatapos ng mga {{minutes}} min.",
+      "timeout": "Masyadong natagalan ang pagsusuri. Pakisubukan ulit.",
+      "busy": "Abala ang tagasuri ngayon. Pakisubukan ulit sa ilang sandali."
+    }
+  },
+  "result": {
+    "risk": {
+      "high": "Mataas na panganib",
+      "medium": "Katamtamang panganib",
+      "low": "Mababang panganib"
+    },
+    "notScam": "Walang nakitang scam",
+    "scamTitle": "Mukhang scam ito",
+    "notScamTitle": "Hindi ito mukhang scam",
+    "cached": "Nasuri mo na ang mensaheng ito dati.",
+    "scammerWants": "Ang gusto ng nagpadala",
+    "nextSteps": "Ano ang gagawin ngayon",
+    "explainerUnavailable": "Hindi pa namin maisulat ang buong paliwanag ngayon. Suriin ulit ang parehong mensahe sa ilang sandali.",
+    "checkAnother": "Magsuri ng ibang mensahe"
   }
 }

@@ -25,6 +25,14 @@ export default defineConfig({
         background_color: "#ffffff",
         // Brand primary "Nomad Teal" (NF-P1-024) — see docs/runbooks/NF-P1-024-brand-assets.md
         theme_color: "#0B5D71",
+        // Web Share Target (NF-SA-015): "Share" in WhatsApp lists the installed app and opens the
+        // scam check with the message in the address. GET and text only: a shared image needs a
+        // POST target, which generateSW cannot serve (it needs a hand-written service worker).
+        share_target: {
+          action: "/scam-check",
+          method: "GET",
+          params: { title: "title", text: "text", url: "url" },
+        },
         icons: [
           { src: "/icons/pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "/icons/pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },

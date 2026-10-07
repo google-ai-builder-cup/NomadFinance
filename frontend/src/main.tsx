@@ -13,9 +13,17 @@ import AuthProvider from "@/hooks/useAuth";
 import { toast } from "@/hooks/useToast";
 import { queryClient } from "@/lib/queryClient";
 import { router } from "@/router";
+import { stashSharedMessage } from "@/utils/scamInput";
 
 import "@/lib/i18n";
 import "@/styles/globals.css";
+
+// A message shared to the installed app (NF-SA-015) arrives as /scam-check?text=…, before the
+// router decides whether the worker is signed in. A signed-out worker is sent away from this
+// address, so the message is kept for the tab and the check screen picks it up later.
+if (window.location.pathname === "/scam-check") {
+  stashSharedMessage(window.location.search);
+}
 
 // People keep the installed app open for days; without a periodic check they would only
 // hear about a new version after closing it completely.
