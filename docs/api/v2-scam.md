@@ -14,7 +14,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 
 | Route | State |
 |---|---|
-| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` and `similar` empty (NF-SA-011, -010), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
+| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). `similar` and `corridor_report_count` are real (NF-SA-010: up to 3 known scams and Radar reports above a similarity cutoff, found beside the classification; empty and `null` if the search fails). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` empty (NF-SA-011), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
 | `POST /scam/analyze`, screenshot | Built (NF-SA-008). The image is shrunk, read once by Gemini Vision and dropped; the text read goes through the same redaction and classification as pasted text, and a visible sender is returned as the one `sender` indicator. A long conversation is cut to 4,000 characters after masking instead of refused. A cut-off image is read as far as it goes; HEIC is a `415` |
 | The three other routes | Not built (NF-SA-012, -013) |
 
@@ -79,8 +79,8 @@ The server resizes the image, reads the message text and any visible sender, red
 | `indicators` | array, at most 10 | Phone numbers, addresses and accounts found in the message |
 | `explainer` | object or `null` | See below |
 | `explainer_status` | `ready` or `unavailable` | `unavailable` exactly when `explainer` is `null` |
-| `similar` | array, at most 3 | Known scams that resemble it |
-| `corridor_report_count` | number or `null` | Radar reports on the worker's route when the check ran |
+| `similar` | array, at most 3 | Known scams that resemble it, closest first, one per source and scam type. Empty when nothing is close enough, and when the search failed |
+| `corridor_report_count` | number or `null` | How many of the 10 Radar reports on the worker's route that are nearest to the message are close enough to count (so 0 to 10), when the check ran. `null` when the check has no route, or the search failed |
 | `reported`, `report_id` | boolean, string or `null` | Whether the worker already warned others, and the report's id |
 | `created_at`, `expires_at` | timestamp | The check is deleted at `expires_at` (90 days after it was last checked) |
 

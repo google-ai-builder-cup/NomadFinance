@@ -10,7 +10,7 @@ from starlette.datastructures import UploadFile
 
 from app.core.errors import ApiError
 from app.core.rate_limit import limit_ai_calls
-from app.dependencies import get_current_user, require_flag
+from app.dependencies import get_current_user, get_similar_scam_finder, require_flag
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.scam_taxonomy_repo import (
     ScamTaxonomyRepository,
@@ -20,6 +20,7 @@ from app.schemas.scam import ScamAnalyzeResponse, ScamAnalyzeTextRequest
 from app.schemas.scam_screenshot import ScamAnalyzeFormFields
 from app.schemas.user import AuthenticatedUser
 from app.services.scam.analyzer import analyze_screenshot, analyze_text
+from app.services.scam.retrieval import SimilarScamFinder
 from app.services.scam.screenshot import IMAGE_MIME_TYPES, MAX_IMAGE_BYTES, ImageUnreadableError
 from app.utils.validators import sniff_document_mime_type
 
@@ -139,6 +140,7 @@ async def analyze_scam_message(
     user: Annotated[AuthenticatedUser, Depends(get_current_user)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     taxonomy_repo: Annotated[ScamTaxonomyRepository, Depends(get_scam_taxonomy_repository)],
+    finder: Annotated[SimilarScamFinder, Depends(get_similar_scam_finder)],
 ) -> ScamAnalyzeResponse:
     """Say whether a message is a scam, of which type, how risky, and which words gave it away.
 
@@ -146,16 +148,18 @@ async def analyze_scam_message(
     `multipart/form-data` (`image`, `language`, `corridor_id`). The message is masked (phone
     numbers, emails, IDs, accounts, links) before anything else happens, and only the masked
     text is returned. Its content is data: instructions inside it are never followed. A
-    screenshot is read once and discarded; it is never stored. The explainer and similar
-    scams are not filled yet (`explainer_status` is `unavailable`), and nothing is stored.
+    screenshot is read once and discarded; it is never stored. A scam also gets an explainer
+    in the worker's language, and up to three known scams and Radar reports it resembles
+    (`similar`, `corridor_report_count`); if either cannot be made it is left empty and the
+    verdict is still returned. Nothing is stored yet.
     """
     content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
     if content_type == "application/json":
-        return await analyze_text(await _text_request(request), gemini, taxonomy_repo)
+        return await analyze_text(await _text_request(request), gemini, taxonomy_repo, finder)
     if content_type == "multipart/form-data":
         image, fields = await _screenshot_request(request)
         try:
-            return await analyze_screenshot(image, fields, gemini, taxonomy_repo)
+            return await analyze_screenshot(image, fields, gemini, taxonomy_repo, finder)
         except ImageUnreadableError as exc:
             raise ApiError(422, "image_unreadable", _IMAGE_UNREADABLE) from exc
     raise ApiError(415, "unsupported_media_type", _UNSUPPORTED_MEDIA)

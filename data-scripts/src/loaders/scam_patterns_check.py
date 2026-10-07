@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.config import EVALS_DIR, SCAM_PATTERNS_DIR
-from src.embedding import Embedder
+from src.embedding import CachedEmbedder, Embedder, EmbeddingQuotaError
 from src.validators.scam_golden import GoldenRow, load_rows
 from src.validators.scam_patterns import LANGUAGES, check_library, load_all
 
@@ -187,18 +187,22 @@ def main(argv: list[str] | None = None) -> int:
         log.error("the pattern library is not valid: %s", problems[0])
         return 1
 
-    embedder = GeminiEmbedder()
-    if args.firestore:
-        search = _firestore_search(args.collection)
-    else:
-        vectors = embedder.embed([p.text for p in patterns])
-        library = [(p.id, v) for p, v in zip(patterns, vectors, strict=True)]
+    embedder = CachedEmbedder(GeminiEmbedder())
+    try:
+        if args.firestore:
+            search = _firestore_search(args.collection)
+        else:
+            vectors = embedder.embed([p.text for p in patterns])
+            library = [(p.id, v) for p, v in zip(patterns, vectors, strict=True)]
 
-        def search(vector: list[float]) -> Neighbours:
-            return cosine_neighbours(vector, library)
+            def search(vector: list[float]) -> Neighbours:
+                return cosine_neighbours(vector, library)
 
-    scams = golden_scams()
-    outcomes = evaluate(scams, embedder, search, load_redactor())
+        scams = golden_scams()
+        outcomes = evaluate(scams, embedder, search, load_redactor())
+    except EmbeddingQuotaError as exc:
+        log.error("%s", exc)
+        return 2  # not a failure of the data: run again later
     ok = report(outcomes, pick_held_out(scams, args.held_out))
     counts = Counter(o.hit for o in outcomes)
     log.info(
