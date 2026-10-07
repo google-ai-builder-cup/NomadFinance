@@ -1,0 +1,48 @@
+import { ApiError, apiRequest } from "@/services/apiClient";
+import type { ScamAnalyzeResponse, ScamCheckRequest } from "@/types/scam";
+
+// docs/api/v2-scam.md: a scam waits for the explainer, which has taken 15 to 40 s, so a slow
+// answer is not a failure. One minute is the contract's allowance for the client.
+export const ANALYZE_TIMEOUT_MS = 60_000;
+
+/** The body for the one analyze route: JSON for a message, a form for a screenshot. */
+export function buildAnalyzeInit({ input, language, corridorId }: ScamCheckRequest): RequestInit {
+  if (input.kind === "screenshot") {
+    // No Content-Type: the browser adds the multipart boundary itself.
+    const form = new FormData();
+    // The name is passed on purpose: a part without one is read as a text field, not a file.
+    form.append("image", input.file, input.file.name || "screenshot");
+    form.append("language", language);
+    if (corridorId !== undefined) {
+      form.append("corridor_id", corridorId);
+    }
+    return { method: "POST", body: form };
+  }
+  return {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: input.text.trim(),
+      language,
+      ...(corridorId !== undefined && { corridor_id: corridorId }),
+    }),
+  };
+}
+
+/** Check one message or screenshot. Pasting, uploading and sharing all end up here. */
+export async function analyzeScam(request: ScamCheckRequest): Promise<ScamAnalyzeResponse> {
+  const signal = AbortSignal.timeout(ANALYZE_TIMEOUT_MS);
+  try {
+    const response = await apiRequest("/api/v2/scam/analyze", {
+      ...buildAnalyzeInit(request),
+      signal,
+    });
+    return (await response.json()) as ScamAnalyzeResponse;
+  } catch (error) {
+    // apiClient reports any fetch failure as status 0; a spent timer is a slow answer instead.
+    if (error instanceof ApiError && error.status === 0 && signal.aborted) {
+      throw new ApiError(408, "timeout");
+    }
+    throw error;
+  }
+}

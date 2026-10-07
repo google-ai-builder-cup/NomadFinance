@@ -13,20 +13,32 @@ export class ApiError extends Error {
     /** HTTP status; 0 means the request never reached the backend (offline, blocked). */
     readonly status: number,
     /** The backend's `detail` text, or a code such as "recent_login_required". */
-    readonly detail: string
+    readonly detail: string,
+    /** Seconds the backend asked to wait (`Retry-After`), when it sent one. */
+    readonly retryAfterSeconds?: number
   ) {
     super(`API ${status}: ${detail}`);
     this.name = "ApiError";
   }
 }
 
+// v1 answers `{detail}`; v2 answers `{code, message, request_id}`. The code is what a screen
+// branches on, so it is kept when there is no `detail`.
 async function errorDetail(response: Response): Promise<string> {
   try {
-    const body = (await response.json()) as { detail?: unknown };
-    return typeof body.detail === "string" ? body.detail : response.statusText;
+    const body = (await response.json()) as { detail?: unknown; code?: unknown };
+    if (typeof body.detail === "string") {
+      return body.detail;
+    }
+    return typeof body.code === "string" ? body.code : response.statusText;
   } catch {
     return response.statusText;
   }
+}
+
+function retryAfterSeconds(response: Response): number | undefined {
+  const seconds = Number(response.headers.get("Retry-After"));
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : undefined;
 }
 
 /** Call a backend endpoint as the signed-in user. Throws ApiError for any failure. */
@@ -45,7 +57,7 @@ export async function apiRequest(path: string, init: RequestInit = {}): Promise<
     throw new ApiError(0, "Network error");
   }
   if (!response.ok) {
-    throw new ApiError(response.status, await errorDetail(response));
+    throw new ApiError(response.status, await errorDetail(response), retryAfterSeconds(response));
   }
   return response;
 }

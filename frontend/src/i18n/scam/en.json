@@ -1,8 +1,61 @@
 {
   "home": {
     "title": "Scam check",
-    "comingSoonTitle": "Coming soon",
-    "comingSoonDescription": "We're still building this part of NomadFinance. Check back soon.",
-    "backToDashboard": "Back to home"
+    "description": "Got a message that feels wrong? Check it here before you pay, click or reply."
+  },
+  "input": {
+    "modeLabel": "How do you want to check it?",
+    "modeText": "Paste text",
+    "modeScreenshot": "Screenshot",
+    "textLabel": "The message you received",
+    "placeholder": "Paste the message here, or share it to NomadFinance from WhatsApp.",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "This message is too long. Keep the part that asks for money, a link or your details.",
+    "shared": "We added the message you shared. Read it, then tap Check this message.",
+    "submit": "Check this message",
+    "privacy": "Phone numbers, bank accounts and links are hidden before the message is checked. A screenshot is read once and never saved."
+  },
+  "screenshot": {
+    "dropzoneLabel": "Choose a screenshot",
+    "dropzoneHint": "JPEG, PNG or WebP, up to 5 MB",
+    "takePhoto": "Take a photo",
+    "remove": "Remove screenshot",
+    "errors": {
+      "tooLarge": "This image is too large. Use one under 5 MB.",
+      "badType": "Use a JPEG, PNG or WebP image.",
+      "generic": "We could not use this image. Try another one."
+    }
+  },
+  "analyze": {
+    "progress": {
+      "title": "Checking the message…",
+      "wait": "This usually takes a few seconds.",
+      "slow": "A suspicious message can take up to a minute to explain. Please keep this page open."
+    },
+    "errors": {
+      "tooLarge": "This image is too large. Use one under 5 MB.",
+      "unsupportedType": "Use a JPEG, PNG or WebP screenshot, or paste the text instead.",
+      "imageUnreadable": "We could not read any message in this image. Try a clearer screenshot or paste the text.",
+      "invalid": "This message cannot be checked. Make sure it is not empty and is under 4,000 characters.",
+      "rateLimited": "You have used all your checks for this hour. Please try again later.",
+      "rateLimitedWait": "You have used all your checks for this hour. Try again in about {{minutes}} min.",
+      "timeout": "The check took too long. Please try again.",
+      "busy": "The checker is busy right now. Please try again in a moment."
+    }
+  },
+  "result": {
+    "risk": {
+      "high": "High risk",
+      "medium": "Medium risk",
+      "low": "Low risk"
+    },
+    "notScam": "No scam found",
+    "scamTitle": "This looks like a scam",
+    "notScamTitle": "This does not look like a scam",
+    "cached": "You checked this message before.",
+    "scammerWants": "What the sender wants",
+    "nextSteps": "What to do now",
+    "explainerUnavailable": "We could not write the full explanation right now. Check the same message again in a moment.",
+    "checkAnother": "Check another message"
   }
 }
