@@ -12,7 +12,8 @@ from app.repositories.scam_taxonomy_repo import get_scam_taxonomy_repository
 from app.schemas.scam import ScamAnalyzeResponse
 from tests.fixtures.fake_gemini import FakeGemini
 from tests.fixtures.scam_app import FakeTaxonomyRepo, assert_envelope, make_app
-from tests.fixtures.scam_classify import classify_recording, load_mock_body, model_answer
+from tests.fixtures.scam_classify import load_mock_body
+from tests.fixtures.scam_explain import recordings_for
 from tests.fixtures.scam_images import MESSAGES, chat_screenshot
 
 URL = "/api/v2/scam/analyze"
@@ -34,12 +35,7 @@ def _reading(**changes: Any) -> dict[str, Any]:
 
 
 def _gemini(**reading: Any) -> FakeGemini:
-    return FakeGemini(
-        {
-            "scam.read_screenshot": _reading(**reading),
-            "scam.classify": classify_recording(model_answer(load_mock_body("high"))),
-        }
-    )
+    return FakeGemini({"scam.read_screenshot": _reading(**reading)} | recordings_for("high"))
 
 
 @pytest.fixture
@@ -80,7 +76,8 @@ def test_a_screenshot_gets_the_same_answer_shape_as_pasted_text(api: TestClient)
     assert answer["language"] == "hi"
     assert answer["corridor_id"] == "SG-IN"
     assert answer["cached"] is False
-    assert answer["explainer_status"] == "unavailable"
+    assert answer["explainer"] == load_mock_body("high")["explainer"]
+    assert answer["explainer_status"] == "ready"
     assert set(answer) == set(load_mock_body("high"))
 
 
@@ -130,8 +127,16 @@ def test_vision_runs_first_on_the_extraction_tier_then_the_classifier(
 
     _send(api, original)
 
-    assert [c["operation"] for c in gemini.calls] == ["scam.read_screenshot", "scam.classify"]
-    assert [c["tier"] for c in gemini.calls] == [ModelTier.EXTRACTION, ModelTier.CLASSIFICATION]
+    assert [c["operation"] for c in gemini.calls] == [
+        "scam.read_screenshot",
+        "scam.classify",
+        "scam.explain",
+    ]
+    assert [c["tier"] for c in gemini.calls] == [
+        ModelTier.EXTRACTION,
+        ModelTier.CLASSIFICATION,
+        ModelTier.REASONING,
+    ]
     sent_image = gemini.calls[0]["contents"][0].inline_data
     assert sent_image.mime_type == "image/jpeg"
     assert len(sent_image.data) < len(original) or sent_image.data != original

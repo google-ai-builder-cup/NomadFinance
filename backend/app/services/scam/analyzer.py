@@ -20,6 +20,7 @@ from app.schemas.scam import (
 )
 from app.schemas.scam_screenshot import ScamAnalyzeFormFields
 from app.services.scam.classifier import classify_message
+from app.services.scam.explainer import explain_message
 from app.services.scam.screenshot import read_screenshot_message
 
 logger = logging.getLogger(__name__)
@@ -52,9 +53,11 @@ async def _check_message(
     """The steps both paths share, from the redacted message to the contract's answer.
 
     The parts other tasks own come back as the contract's "not available yet" values: no
-    explainer (NF-SA-009), no similar scams (NF-SA-010), and nothing is stored or cached
-    (NF-SA-012), so `id` identifies this answer only. Indicators other than a screenshot's
-    sender are NF-SA-011's.
+    similar scams (NF-SA-010), and nothing is stored or cached (NF-SA-012), so `id` identifies
+    this answer only. Indicators other than a screenshot's sender are NF-SA-011's.
+
+    The explainer is written after the verdict, in the worker's language. If it cannot be made
+    the worker still gets the verdict, with `explainer_status: "unavailable"`.
     """
     result = await classify_message(redacted_text, taxonomy, gemini)
     logger.info(
@@ -66,6 +69,22 @@ async def _check_message(
         result.verdict.risk_level,
         result.verdict.confidence,
         taxonomy.version,
+    )
+
+    explainer = await explain_message(
+        redacted_text,
+        result.verdict,
+        result.details,
+        language=language,
+        corridor_id=corridor_id,
+        taxonomy=taxonomy,
+        gemini=gemini,
+    )
+    logger.info(
+        "scam_explained input=%s kind=%s status=%s",
+        input_type,
+        "scam" if result.verdict.is_scam else "benign",
+        "ready" if explainer else "unavailable",
     )
 
     now = datetime.now(UTC)
@@ -80,8 +99,8 @@ async def _check_message(
         verdict=result.verdict,
         details=result.details,
         indicators=indicators,
-        explainer=None,
-        explainer_status="unavailable",
+        explainer=explainer,
+        explainer_status="ready" if explainer else "unavailable",
         similar=[],
         corridor_report_count=None,
         reported=False,

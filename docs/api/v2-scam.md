@@ -14,7 +14,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 
 | Route | State |
 |---|---|
-| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` and `similar` empty (NF-SA-011, -010), `explainer: null` with `explainer_status: "unavailable"` (NF-SA-009), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
+| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` and `similar` empty (NF-SA-011, -010), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
 | `POST /scam/analyze`, screenshot | Built (NF-SA-008). The image is shrunk, read once by Gemini Vision and dropped; the text read goes through the same redaction and classification as pasted text, and a visible sender is returned as the one `sender` indicator. A long conversation is cut to 4,000 characters after masking instead of refused. A cut-off image is read as far as it goes; HEIC is a `415` |
 | The three other routes | Not built (NF-SA-012, -013) |
 
@@ -214,7 +214,7 @@ The rules of the conventions (section 6) apply. Adding a field to a response, an
 
 | # | Point | Owner |
 |---|---|---|
-| 1 | The explainer's latency on the reasoning tier (D-115). The contract allows a slow answer and an `unavailable` explainer; the task decides the tier and the time-box | NF-SA-009 |
+| 1 | ~~The explainer's latency on the reasoning tier (D-115).~~ **Decided in NF-SA-009**: a scam is explained on the reasoning tier with a thinking budget of 256 tokens for at most 20 s, then, if that tier is busy, rate limited or slow, once on the classification tier; the whole step is time-boxed to 40 s, after which the answer carries `explainer: null` and `explainer_status: "unavailable"`; a message that is not a scam is reassured on the classification tier. The two numbers are first guesses, to be tuned from live timings (D-138). The contract did not change | NF-SA-009 |
 | 2 | iPhones can produce HEIC photos, which the image library cannot read without a new dependency. Browsers usually convert to JPEG on upload; if they do not, the answer is `415` | NF-SA-008, NF-SA-015 |
 | 3 | `Idempotency-Key` has no storage in the data model. If a later feature needs real keys (the Coach's plan may), the storage is designed then; this feature does not need it | NF-FC-002 |
 | 4 | Radar's existing `GET /api/v1/radar/entities/{slug}/reports` must return the `scam` map of a scam report (`radar.md`), without `reporter_hash`, for the entity page of a scam type | NF-SA-013, NF-SA-018 |
