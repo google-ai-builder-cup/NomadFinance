@@ -48,7 +48,7 @@ One analysed message. Auto id. The image of a screenshot is **never stored**, on
 | `id` | 8 hex characters: the first 8 of the indicator's key (below). Stable, so the report flow can name which indicators the worker confirmed. The first 32 hex of the same key are the id of its `scam_indicators` document. |
 | `kind` | `url`, `phone`, `email`, `handle` (a messaging or social account) or `sender` (the number or name a screenshot shows as the sender) |
 | `value` | `url`: **the host only** (lowercase; no path, query or fragment, which can carry tokens and personal ids). `phone`: digits with the country code. `email`, `handle`, `sender`: as written. |
-| `flags` | Array of `shortener`, `punycode`, `lookalike`, `premium_rate`, `unexpected_country`. May be empty. |
+| `flags` | Array of `shortener`, `punycode`, `lookalike`, `premium_rate`, `unexpected_country`. May be empty. Set by fixed rules at check time (NF-SA-011; the rules are in `docs/api/v2-scam.md`, "How the rules read the values"). |
 | `imitates` | When `flags` has `lookalike`: the real domain or brand it copies, for example `dbs.com.sg` |
 
 **The key of an indicator** is the SHA-256 (hex) of `kind`, a colon, and the value in normal form: a phone as digits with the country code; a URL as the lowercase host without a leading `www.`; an email lowercase; a handle lowercase without a leading `@`; a sender lowercase and trimmed. The same number written two ways gives the same key. The key is not a protection (the value is stored next to it); it only makes the lookup in `scam_indicators` a direct read.

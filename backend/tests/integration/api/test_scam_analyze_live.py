@@ -13,15 +13,33 @@ from __future__ import annotations
 
 import os
 import time
+from collections.abc import AsyncIterator
 
 import pytest
 from PIL import Image
 
+from app.core.redact import redact_text
 from app.integrations.gemini import get_gemini_client
 from app.services.scam.classifier import Classification, classify_message
+from app.services.scam.indicators import extract_signals
 from app.services.scam.screenshot import ImageUnreadableError, read_screenshot_message
 from tests.fixtures.scam_classify import load_taxonomy
 from tests.fixtures.scam_images import MESSAGES, chat_screenshot, encode
+
+
+@pytest.fixture(scope="module")
+def anyio_backend() -> str:
+    return "asyncio"
+
+
+@pytest.fixture(scope="module", autouse=True)
+async def _one_event_loop() -> AsyncIterator[None]:
+    # `get_gemini_client()` is one shared client, and its connection pool, made in the first
+    # test, fails in a later test's loop with "Event loop is closed". The test plugin gives every
+    # test a new loop unless an async fixture of wider scope is holding one: this one does.
+    # Production has one loop and one client too.
+    yield
+
 
 pytestmark = [
     pytest.mark.anyio,
@@ -53,7 +71,10 @@ INJECTED = (
 
 async def _classify(text: str) -> Classification:
     started = time.perf_counter()
-    result = await classify_message(text, load_taxonomy(), get_gemini_client())
+    signals = extract_signals(text, redact_text(text), corridor_id=None)
+    result = await classify_message(
+        redact_text(text), load_taxonomy(), get_gemini_client(), signals
+    )
     print(f"\n{time.perf_counter() - started:.1f}s {result.verdict.model_dump()}")
     return result
 
@@ -123,3 +144,25 @@ async def test_a_picture_that_is_not_a_message_is_unreadable() -> None:
 
     with pytest.raises(ImageUnreadableError):
         await read_screenshot_message(blank, get_gemini_client())
+
+
+LOOKALIKE_LINK = (
+    "Your DBS account has been locked. Log in at https://dbs-com-sg-login.net to unlock it "
+    "within 24 hours."
+)
+SHORTENED_PARCEL = (
+    "Hi, your parcel arrives tomorrow between 9 and 12. Track it: https://bit.ly/3xYzAb"
+)
+
+
+async def test_a_link_that_copies_a_bank_tips_a_plain_looking_message_into_a_scam() -> None:
+    result = await _classify(LOOKALIKE_LINK)
+
+    assert result.verdict.is_scam is True
+
+
+async def test_a_shortened_link_alone_does_not_make_a_delivery_notice_a_scam() -> None:
+    result = await _classify(SHORTENED_PARCEL)
+
+    # Printed with the timing: a model that calls this a scam is over-weighing the flag.
+    assert result.verdict.is_scam is False

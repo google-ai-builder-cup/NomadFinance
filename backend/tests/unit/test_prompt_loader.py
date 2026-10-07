@@ -27,7 +27,7 @@ EXPECTED_PROMPTS = {
     "fib/extract_bill.v1",
     "fib/categorize.v1",
     "fib/synthesize_narrative.v1",
-    "scam/classify.v1",
+    "scam/classify.v2",
     "scam/explain.v1",
     "scam/reassure.v1",
     "scam/read_screenshot.v1",

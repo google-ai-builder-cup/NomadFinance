@@ -14,7 +14,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 
 | Route | State |
 |---|---|
-| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). `similar` and `corridor_report_count` are real (NF-SA-010: up to 3 known scams and Radar reports above a similarity cutoff, found beside the classification; empty and `null` if the search fails). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` empty (NF-SA-011), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
+| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). `similar` and `corridor_report_count` are real (NF-SA-010: up to 3 known scams and Radar reports above a similarity cutoff, found beside the classification; empty and `null` if the search fails). `indicators` are real (NF-SA-011: the links, phone numbers, emails and handles in the message, found by fixed rules before it is masked and flagged; nothing is ever fetched or looked up; `seen` stays `null` until reports exist). Until the other tasks land the answer carries the "not yet" values the contract allows: `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
 | `POST /scam/analyze`, screenshot | Built (NF-SA-008). The image is shrunk, read once by Gemini Vision and dropped; the text read goes through the same redaction and classification as pasted text, and a visible sender is returned as the one `sender` indicator. A long conversation is cut to 4,000 characters after masking instead of refused. A cut-off image is read as far as it goes; HEIC is a `415` |
 | The three other routes | Not built (NF-SA-012, -013) |
 
@@ -76,7 +76,7 @@ The server resizes the image, reads the message text and any visible sender, red
 | `corridor_id` | string or `null` | |
 | `verdict` | object | See below |
 | `details` | object | What the message asks for. Every key optional; `{}` when nothing is known |
-| `indicators` | array, at most 10 | Phone numbers, addresses and accounts found in the message |
+| `indicators` | array, at most 10 | The links, phone numbers, emails and handles found in the message (and the sender a screenshot shows), in the order they appear, no repeats. When there are more than 10, the flagged ones are kept |
 | `explainer` | object or `null` | See below |
 | `explainer_status` | `ready` or `unavailable` | `unavailable` exactly when `explainer` is `null` |
 | `similar` | array, at most 3 | Known scams that resemble it, closest first, one per source and scam type. Empty when nothing is close enough, and when the search failed |
@@ -104,11 +104,17 @@ The server resizes the image, reads the message text and any visible sender, red
 | `id` | 8 hex characters, stable for the same kind and value. The report names indicators by it |
 | `kind` | `url`, `phone`, `email`, `handle` or `sender` |
 | `value` | A URL is its host only; a phone number is digits with the country code |
-| `flags` | Any of `shortener`, `punycode`, `lookalike`, `premium_rate`, `unexpected_country`; may be empty |
+| `flags` | Any of `shortener` (a link-shortening service), `punycode` (an address written with `xn--` look-alike letters), `lookalike` (copies a real organisation's address, see `imitates`), `premium_rate` (a number that bills the caller), `unexpected_country` (a number with a country code outside the worker's route). May be empty. Set by fixed rules, so they can be wrong in both directions: a flag is a reason to look twice, and no flag is not a promise |
 | `imitates` | The real domain a `lookalike` copies, for example `mom.gov.sg`. Only with that flag |
 | `seen` | `{reports, incidents, last_reported_at, flagged}`: how often workers reported it. `flagged` means at least 2 incidents. **`null` when it was never reported** (or an operator hid it) |
 
-The values are the scam's own contact points, shown to the worker who pasted them. A phone number in a message may be the worker's own, which is why none of it leaves the check until the worker confirms it (the report below). Nothing is ever fetched, opened or previewed.
+The values are the scam's own contact points, shown to the worker who pasted them. A phone number in a message may be the worker's own, which is why none of it leaves the check until the worker confirms it (the report below). Nothing is ever fetched, opened, resolved or previewed: the rules read the text of the address and nothing else, and a test fails if a lookup is made. The classifier is told the flags and the amounts (for example "a link that imitates mom.gov.sg", "a number from outside the route", "SGD 800"), never the links or numbers.
+
+How the rules read the values (`backend/app/services/scam/indicator_checks.py`, `indicator_data.json`):
+- **`phone`**: what the redactor masks as `[PHONE]`, as digits with the country code (`+65 9123 4567` and `+65-9123-4567` are one). A number written with no country code has no country to judge, so it is never `unexpected_country`. Expected countries are the corridor's two (for `SG-IN`: 65 and 91); with no corridor, all the project's countries plus Nepal and Bangladesh.
+- **`premium_rate`**: only ranges a regulator publishes: Singapore `1900` (11 digits, IMDA), Australia `190X XXX XXX` (ACMA) and the international range `+979` (ITU). Another country's premium numbers are not recognised yet (D-144).
+- **`url`**: the host only, lowercase, no `www.`, written in ASCII. A link to Telegram or WhatsApp is the person it names, as a `handle` or a `phone`.
+- **`lookalike`**: the host repeats a listed organisation's address inside a longer one (`mom.gov.sg.verify-now.com`), is one letter or look-alike character away from it (`rnaybank2u.com.my`, `d8s.com.sg`), or wraps a distinctive brand (`gcash-promo.xyz`). The listed domain, its subdomains, and any other host under a government-only suffix (`.gov.sg`, `.gov.au`, `.gov.in`, `.gov.ph`, `.gov.my`, `.go.id`, `.go.jp`) are never flagged.
 
 **`explainer`**, one of two shapes by `kind`, written in `language` at a grade-6 reading level:
 

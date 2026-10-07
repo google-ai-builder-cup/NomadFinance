@@ -29,6 +29,7 @@ from app.integrations.gemini import GeminiClient
 from app.schemas.scam import BenignExplainer, Explainer, Language, ScamExplainer
 from app.services.scam.classifier import classify_message
 from app.services.scam.explainer import STEP_TIMEOUT_SECONDS, explain_message
+from app.services.scam.indicators import extract_signals
 from tests.fixtures.scam_classify import load_taxonomy
 
 pytestmark = [
@@ -105,7 +106,9 @@ async def _explain(
     gemini: GeminiClient, text: str, language: Language, corridor: str | None = "SG-IN"
 ) -> tuple[Explainer, float]:
     taxonomy = load_taxonomy()
-    result = await classify_message(text, taxonomy, gemini)
+    result = await classify_message(
+        text, taxonomy, gemini, extract_signals(text, text, corridor_id=None)
+    )
     started = time.perf_counter()
     explainer = await explain_message(
         text,
