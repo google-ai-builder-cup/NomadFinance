@@ -68,7 +68,7 @@ One analysed message. Auto id. The image of a screenshot is **never stored**, on
   "input_type": "text",
   "language": "hi",
   "message_language": "en",
-  "redacted_text": "Congratulations! You are selected for a caregiver job in Singapore. Pay [AMOUNT] processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE].",
+  "redacted_text": "Congratulations! You are selected for a caregiver job in Singapore. Pay 800 SGD processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE] or apply at [URL].",
   "cache_key": "4e1d7a9c3b5f20e8d6c4a2b0f8e6d4c2a0b8f6e4d2c0a8b6f4e2d0c8a6b4f2e0",
   "corridor_id": "SG-IN",
   "verdict": {

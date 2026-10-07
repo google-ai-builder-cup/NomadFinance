@@ -1,0 +1,15 @@
+{
+  "description": "The worker confirmed the report: one Radar report was created (201). The sheet sent both indicator ids and the edited text.",
+  "request": "POST /api/v2/scam/checks/k_01/report",
+  "status": 201,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000f101"
+  },
+  "body": {
+    "report_id": "r_02",
+    "already_reported": false,
+    "entity_slug": "scam-illegal-recruitment-fee",
+    "entity_name": "Illegal recruitment fee",
+    "created_at": "2026-11-02T10:20:00Z"
+  }
+}

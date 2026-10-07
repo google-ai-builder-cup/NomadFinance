@@ -1,0 +1,15 @@
+{
+  "description": "A second tap on Warn other workers: the same report comes back (200), nothing new is written or counted.",
+  "request": "POST /api/v2/scam/checks/k_01/report",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000f102"
+  },
+  "body": {
+    "report_id": "r_02",
+    "already_reported": true,
+    "entity_slug": "scam-illegal-recruitment-fee",
+    "entity_name": "Illegal recruitment fee",
+    "created_at": "2026-11-02T10:20:00Z"
+  }
+}

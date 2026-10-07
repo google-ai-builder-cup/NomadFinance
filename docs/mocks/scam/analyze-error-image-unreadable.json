@@ -1,0 +1,13 @@
+{
+  "description": "A screenshot from which no message text could be read (blank, too dark, not a message).",
+  "request": "POST /api/v2/scam/analyze",
+  "status": 422,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e203"
+  },
+  "body": {
+    "code": "image_unreadable",
+    "message": "No message text could be read from this image. Try a clearer screenshot or paste the text.",
+    "request_id": "0000000000000000000000000000e203"
+  }
+}

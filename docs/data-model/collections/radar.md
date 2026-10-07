@@ -102,7 +102,7 @@ The `scam` map:
   "violation_type": "scam_message",
   "corridor_id": "SG-IN",
   "host_country": "SG",
-  "description": "Congratulations! You are selected for a caregiver job in Singapore. Pay [AMOUNT] processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE].",
+  "description": "Congratulations! You are selected for a caregiver job in Singapore. Pay 800 SGD processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE] or apply at [URL].",
   "language": "en",
   "cluster_id": "r_02",
   "source": "scam_check",

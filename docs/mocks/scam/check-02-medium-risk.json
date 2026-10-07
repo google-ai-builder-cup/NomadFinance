@@ -1,0 +1,81 @@
+{
+  "description": "The stored medium risk check `k_02`, as the owner reads it from the history. Same fields as the analyze answer without `cached`.",
+  "request": "GET /api/v2/scam/checks/k_02",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000d102"
+  },
+  "body": {
+    "id": "k_02",
+    "input_type": "text",
+    "language": "en",
+    "message_language": "tl",
+    "redacted_text": "Aprubado na ang loan mo na 5,000 PHP. I-download ang app: [URL]. Kapag hindi ka nagbayad sa loob ng 3 araw, ipapadala namin ang mga litrato mo sa lahat ng contacts mo.",
+    "corridor_id": "SG-PH",
+    "verdict": {
+      "is_scam": true,
+      "scam_type": "loan_app_trap",
+      "tactics": [
+        "fear",
+        "urgency"
+      ],
+      "risk_level": "medium",
+      "confidence": 0.78,
+      "trigger_phrases": [
+        "Aprubado na ang loan",
+        "ipapadala namin ang mga litrato mo sa lahat ng contacts mo"
+      ]
+    },
+    "details": {
+      "contact_channel": "sms",
+      "payment_requested": "repay the loan within 3 days",
+      "amount_requested": {
+        "amount": 5000,
+        "currency": "PHP"
+      },
+      "deadline_stated": true
+    },
+    "indicators": [
+      {
+        "id": "19a56992",
+        "kind": "url",
+        "value": "quickloan-ph.example",
+        "flags": [],
+        "seen": null
+      }
+    ],
+    "explainer": {
+      "kind": "scam",
+      "language": "en",
+      "why_it_works": [
+        {
+          "tactic": "fear",
+          "text": "The message threatens to send your photos to everyone you know. Fear makes people pay quickly and tell nobody."
+        },
+        {
+          "tactic": "urgency",
+          "text": "Three days is short on purpose. It stops you from asking a friend or checking the app first."
+        }
+      ],
+      "scammer_wants": "They want you to install an app that reads your phone, and to pay back much more than you borrowed.",
+      "next_steps": [
+        "Do not install the app or open the link.",
+        "Do not pay under threat. Keep the message as proof.",
+        "Tell a friend you trust, and use Warn other workers to report it."
+      ]
+    },
+    "explainer_status": "ready",
+    "similar": [
+      {
+        "source": "scam_pattern",
+        "scam_type": "loan_app_trap",
+        "score": 0.83
+      }
+    ],
+    "corridor_report_count": 2,
+    "reported": false,
+    "report_id": null,
+    "created_at": "2026-11-03T08:30:00Z",
+    "expires_at": "2027-02-01T08:30:00Z"
+  }
+}

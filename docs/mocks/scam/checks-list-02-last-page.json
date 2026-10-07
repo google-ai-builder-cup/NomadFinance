@@ -1,0 +1,25 @@
+{
+  "description": "The last page: `next_cursor` is null.",
+  "request": "GET /api/v2/scam/checks",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c102"
+  },
+  "body": {
+    "items": [
+      {
+        "id": "k_01",
+        "created_at": "2026-11-02T10:15:00Z",
+        "input_type": "text",
+        "language": "hi",
+        "is_scam": true,
+        "scam_type": "illegal_recruitment_fee",
+        "risk_level": "high",
+        "confidence": 0.94,
+        "excerpt": "Congratulations! You are selected for a caregiver job in Singapore. Pay 800 SGD processing fee to [ACCOUNT] today or the visa slot is cancel",
+        "reported": false
+      }
+    ],
+    "next_cursor": null
+  }
+}
