@@ -1,0 +1,102 @@
+{
+  "description": "The same message as the high-risk mock, sent again: the stored check comes back with `cached` true, no Gemini call is made and it does not use the hourly budget.",
+  "request": "POST /api/v2/scam/analyze",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000a105"
+  },
+  "body": {
+    "id": "k_01",
+    "input_type": "text",
+    "language": "hi",
+    "message_language": "en",
+    "redacted_text": "Congratulations! You are selected for a caregiver job in Singapore. Pay 800 SGD processing fee to [ACCOUNT] today or the visa slot is cancelled. WhatsApp [PHONE] or apply at [URL].",
+    "corridor_id": "SG-IN",
+    "verdict": {
+      "is_scam": true,
+      "scam_type": "illegal_recruitment_fee",
+      "tactics": [
+        "urgency",
+        "scarcity"
+      ],
+      "risk_level": "high",
+      "confidence": 0.94,
+      "trigger_phrases": [
+        "processing fee",
+        "visa slot is cancelled"
+      ]
+    },
+    "details": {
+      "contact_channel": "whatsapp",
+      "payment_requested": "bank transfer",
+      "amount_requested": {
+        "amount": 800,
+        "currency": "SGD"
+      },
+      "deadline_stated": true
+    },
+    "indicators": [
+      {
+        "id": "8c83cb97",
+        "kind": "phone",
+        "value": "6590000001",
+        "flags": [],
+        "seen": {
+          "reports": 5,
+          "incidents": 3,
+          "last_reported_at": "2026-11-20T07:05:00Z",
+          "flagged": true
+        }
+      },
+      {
+        "id": "f2c46aad",
+        "kind": "url",
+        "value": "sg-careers-visa.example",
+        "flags": [
+          "lookalike"
+        ],
+        "imitates": "mom.gov.sg",
+        "seen": null
+      }
+    ],
+    "explainer": {
+      "kind": "scam",
+      "language": "hi",
+      "why_it_works": [
+        {
+          "tactic": "urgency",
+          "text": "संदेश कहता है कि आज ही पैसे दो, वरना वीज़ा स्लॉट रद्द हो जाएगा। जल्दी में इंसान सोच नहीं पाता।"
+        },
+        {
+          "tactic": "scarcity",
+          "text": "वे कहते हैं कि सिर्फ़ एक जगह बची है, ताकि आप डरें कि मौका हाथ से निकल जाएगा।"
+        }
+      ],
+      "scammer_wants": "वे नौकरी के नाम पर आपसे पहले ही पैसे लेना चाहते हैं।",
+      "next_steps": [
+        "कोई पैसा न भेजें और लिंक न खोलें।",
+        "भर्ती एजेंसी का नाम अपने देश के लाइसेंस वाले रजिस्टर में जाँचें।",
+        "अगर आप पैसे भेज चुके हैं, तो अपने बैंक को तुरंत बताएं।"
+      ]
+    },
+    "explainer_status": "ready",
+    "similar": [
+      {
+        "source": "scam_pattern",
+        "scam_type": "illegal_recruitment_fee",
+        "score": 0.91
+      },
+      {
+        "source": "radar_report",
+        "scam_type": "illegal_recruitment_fee",
+        "score": 0.88
+      }
+    ],
+    "corridor_report_count": 7,
+    "reported": false,
+    "report_id": null,
+    "created_at": "2026-11-02T10:15:00Z",
+    "expires_at": "2027-01-31T10:15:00Z",
+    "cached": true
+  }
+}

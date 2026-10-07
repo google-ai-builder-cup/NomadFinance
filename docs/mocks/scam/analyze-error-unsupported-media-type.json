@@ -1,0 +1,13 @@
+{
+  "description": "A screenshot that is not a JPEG, PNG or WebP image, or a body that is neither JSON nor a form.",
+  "request": "POST /api/v2/scam/analyze",
+  "status": 415,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e202"
+  },
+  "body": {
+    "code": "unsupported_media_type",
+    "message": "Send the message as text, or the screenshot as a JPEG, PNG or WebP image.",
+    "request_id": "0000000000000000000000000000e202"
+  }
+}

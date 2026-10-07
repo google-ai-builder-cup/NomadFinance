@@ -1,0 +1,61 @@
+{
+  "description": "The stored low risk check `k_03`, as the owner reads it from the history. Same fields as the analyze answer without `cached`.",
+  "request": "GET /api/v2/scam/checks/k_03",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000d103"
+  },
+  "body": {
+    "id": "k_03",
+    "input_type": "text",
+    "language": "id",
+    "message_language": "id",
+    "redacted_text": "Selamat! Nomor Anda terpilih dalam undian hadiah bulan ini. Balas pesan ini untuk info hadiah.",
+    "corridor_id": "MY-ID",
+    "verdict": {
+      "is_scam": true,
+      "scam_type": "lottery",
+      "tactics": [
+        "authority"
+      ],
+      "risk_level": "low",
+      "confidence": 0.62,
+      "trigger_phrases": [
+        "terpilih dalam undian hadiah"
+      ]
+    },
+    "details": {
+      "contact_channel": "sms"
+    },
+    "indicators": [],
+    "explainer": {
+      "kind": "scam",
+      "language": "id",
+      "why_it_works": [
+        {
+          "tactic": "authority",
+          "text": "Pesan dibuat seperti pengumuman resmi supaya Anda percaya tanpa bertanya."
+        }
+      ],
+      "scammer_wants": "Mereka ingin Anda membalas supaya tahu nomor Anda aktif. Setelah itu biasanya diminta biaya untuk mengambil hadiah.",
+      "next_steps": [
+        "Jangan membalas pesan ini.",
+        "Jangan kirim uang atau data pribadi untuk mengambil hadiah.",
+        "Hapus pesan ini, atau laporkan jika Anda ingin memperingatkan pekerja lain."
+      ]
+    },
+    "explainer_status": "ready",
+    "similar": [
+      {
+        "source": "scam_pattern",
+        "scam_type": "lottery",
+        "score": 0.74
+      }
+    ],
+    "corridor_report_count": 0,
+    "reported": false,
+    "report_id": null,
+    "created_at": "2026-11-04T14:05:00Z",
+    "expires_at": "2027-02-02T14:05:00Z"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "A check that does not exist or is not the caller's: the same 404 either way, so a stranger cannot learn which ids exist.",
+  "request": "GET /api/v2/scam/checks/k_missing",
+  "status": 404,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e301"
+  },
+  "body": {
+    "code": "not_found",
+    "message": "Not Found",
+    "request_id": "0000000000000000000000000000e301"
+  }
+}

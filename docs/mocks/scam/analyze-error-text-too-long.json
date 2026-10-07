@@ -1,0 +1,19 @@
+{
+  "description": "A pasted message over 4,000 characters is refused, not cut: the payment request is often at the end.",
+  "request": "POST /api/v2/scam/analyze",
+  "status": 422,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e201"
+  },
+  "body": {
+    "code": "validation_failed",
+    "message": "The request is not valid.",
+    "request_id": "0000000000000000000000000000e201",
+    "details": [
+      {
+        "field": "body.text",
+        "issue": "String should have at most 4000 characters"
+      }
+    ]
+  }
+}

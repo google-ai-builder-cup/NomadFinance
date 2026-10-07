@@ -1,0 +1,49 @@
+{
+  "description": "The history, newest first, with a limit of 3: the first page and a cursor for the next.",
+  "request": "GET /api/v2/scam/checks",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c101"
+  },
+  "body": {
+    "items": [
+      {
+        "id": "k_04",
+        "created_at": "2026-11-05T09:20:00Z",
+        "input_type": "text",
+        "language": "en",
+        "is_scam": false,
+        "scam_type": null,
+        "risk_level": "low",
+        "confidence": 0.91,
+        "excerpt": "Hi, your parcel from the post office arrives tomorrow between 9 and 12. Reply STOP to opt out.",
+        "reported": false
+      },
+      {
+        "id": "k_03",
+        "created_at": "2026-11-04T14:05:00Z",
+        "input_type": "text",
+        "language": "id",
+        "is_scam": true,
+        "scam_type": "lottery",
+        "risk_level": "low",
+        "confidence": 0.62,
+        "excerpt": "Selamat! Nomor Anda terpilih dalam undian hadiah bulan ini. Balas pesan ini untuk info hadiah.",
+        "reported": false
+      },
+      {
+        "id": "k_02",
+        "created_at": "2026-11-03T08:30:00Z",
+        "input_type": "text",
+        "language": "en",
+        "is_scam": true,
+        "scam_type": "loan_app_trap",
+        "risk_level": "medium",
+        "confidence": 0.78,
+        "excerpt": "Aprubado na ang loan mo na 5,000 PHP. I-download ang app: [URL]. Kapag hindi ka nagbayad sa loob ng 3 araw, ipapadala namin ang mga litrato ",
+        "reported": false
+      }
+    ],
+    "next_cursor": "eyJ0IjoiMjAyNi0xMS0wM1QwODozMDowMFoifQ"
+  }
+}

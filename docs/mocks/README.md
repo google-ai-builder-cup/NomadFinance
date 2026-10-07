@@ -6,8 +6,35 @@ Sample requests and responses for the API, written before the endpoint exists. F
 |---|---|---|
 | `conventions/` | NF-F0-002 | One sample per `/api/v2` convention (`docs/api/v2-conventions.md`) |
 | `flags/` | NF-F0-014 | `GET /api/v2/flags`: both modules off, the Coach on, the Scam Analyzer on, and the 401 envelope |
+| `scam/` | NF-SA-002 | The Scam Analyzer API (`docs/api/v2-scam.md`): a check at each risk level and a benign one, the history, one stored check, a report, and every refusal |
 
-Feature mocks (coach, scam) get their own folder, added by their contract tasks (NF-FC-002, NF-SA-002).
+The Coach's mocks get their own folder, added by its contract task (NF-FC-002).
+
+## `scam/`
+
+Written for NF-SA-002 and checked against the backend's models by `backend/tests/unit/test_scam_mocks.py`: shape, taxonomy ids, redaction, indicator hashes and agreement between the history, the detail and the analyze answer. The numbered names make the default answer of a route the first by name: **the high-risk example is what the analyze route returns unless a test swaps another in**. The sample messages and numbers are invented (`.example` is a reserved name that never resolves).
+
+| File | Request | Shows |
+|---|---|---|
+| `analyze-01-high-risk.json` | `POST /api/v2/scam/analyze` | An illegal recruitment fee, in Hindi, on SG-IN, with a number reported 5 times (default) |
+| `analyze-02-medium-risk.json` | same | A loan-app threat in Tagalog, explained in English |
+| `analyze-03-low-risk.json` | same | A prize message in Indonesian that asks for nothing yet: a scam, low risk |
+| `analyze-04-benign.json` | same | Not a scam: a reassurance and a tip instead of next steps |
+| `analyze-05-cached.json` | same | The high-risk message sent again: `cached` true |
+| `analyze-06-explainer-unavailable.json` | same | Verdict without the explainer: `explainer` null, `explainer_status` unavailable |
+| `analyze-error-text-too-long.json` | same | 422, over 4,000 characters |
+| `analyze-error-unsupported-media-type.json` | same | 415 |
+| `analyze-error-image-unreadable.json` | same | 422, no text in the screenshot |
+| `analyze-error-rate-limited.json` | same | 429 with the hourly budget headers |
+| `checks-list-01-first-page.json`, `-02-last-page`, `-03-empty` | `GET /api/v2/scam/checks` | History, newest first, with and without a next page |
+| `check-01-high-risk.json` to `check-04-benign.json` | `GET /api/v2/scam/checks/k_01` to `k_04` | The four stored checks |
+| `check-error-not-found.json` | `GET /api/v2/scam/checks/k_missing` | 404 |
+| `report-01-created.json` | `POST /api/v2/scam/checks/k_01/report` | 201, with the Radar profile to link to (default) |
+| `report-02-already-reported.json` | same | 200, a second tap |
+| `report-error-validation.json` | same | 422, an indicator that is not in the check |
+| `report-error-not-a-scam.json` | `POST /api/v2/scam/checks/k_04/report` | 409 |
+
+The frontend serves them through `frontend/src/mocks/` (`scam.msw.test.ts` is the working example).
 
 ## `conventions/`
 

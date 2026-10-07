@@ -1,0 +1,63 @@
+{
+  "description": "The verdict worked but the explainer step failed (Gemini busy): a 200 with `explainer` null and `explainer_status` unavailable. The screen shows the verdict and offers to try again; the check is not served from the cache until it has an explainer.",
+  "request": "POST /api/v2/scam/analyze",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000a106"
+  },
+  "body": {
+    "id": "k_05",
+    "input_type": "text",
+    "language": "en",
+    "message_language": "tl",
+    "redacted_text": "Aprubado na ang loan mo na 5,000 PHP. I-download ang app: [URL]. Kapag hindi ka nagbayad sa loob ng 3 araw, ipapadala namin ang mga litrato mo sa lahat ng contacts mo.",
+    "corridor_id": "SG-PH",
+    "verdict": {
+      "is_scam": true,
+      "scam_type": "loan_app_trap",
+      "tactics": [
+        "fear",
+        "urgency"
+      ],
+      "risk_level": "medium",
+      "confidence": 0.78,
+      "trigger_phrases": [
+        "Aprubado na ang loan",
+        "ipapadala namin ang mga litrato mo sa lahat ng contacts mo"
+      ]
+    },
+    "details": {
+      "contact_channel": "sms",
+      "payment_requested": "repay the loan within 3 days",
+      "amount_requested": {
+        "amount": 5000,
+        "currency": "PHP"
+      },
+      "deadline_stated": true
+    },
+    "indicators": [
+      {
+        "id": "19a56992",
+        "kind": "url",
+        "value": "quickloan-ph.example",
+        "flags": [],
+        "seen": null
+      }
+    ],
+    "explainer": null,
+    "explainer_status": "unavailable",
+    "similar": [
+      {
+        "source": "scam_pattern",
+        "scam_type": "loan_app_trap",
+        "score": 0.83
+      }
+    ],
+    "corridor_report_count": 2,
+    "reported": false,
+    "report_id": null,
+    "created_at": "2026-11-06T11:00:00Z",
+    "expires_at": "2027-02-04T11:00:00Z",
+    "cached": false
+  }
+}
