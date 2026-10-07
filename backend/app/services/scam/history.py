@@ -28,6 +28,11 @@ DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
 
 
+def valid_check_id(check_id: str) -> bool:
+    """Whether `check_id` could be one of ours (the report route checks it too)."""
+    return _CHECK_ID.match(check_id) is not None
+
+
 class CheckNotFoundError(LookupError):
     """No such check for this worker: unknown, expired, or someone else's. All look the same."""
 

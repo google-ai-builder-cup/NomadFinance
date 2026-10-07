@@ -30,10 +30,17 @@ from app.repositories.scam_indicator_repo import (
     get_scam_indicator_repository,
 )
 from app.repositories.scam_pattern_repo import ScamPatternRepository, get_scam_pattern_repository
+from app.repositories.scam_report_repo import ScamReportRepository, get_scam_report_repository
+from app.repositories.scam_taxonomy_repo import (
+    ScamTaxonomyRepository,
+    get_scam_taxonomy_repository,
+)
+from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.feature_flag_service import FeatureFlagService, FlagName
 from app.services.scam.check_store import CheckStore
+from app.services.scam.report import ScamReporter
 from app.services.scam.retrieval import SimilarScamFinder
 
 logger = logging.getLogger(__name__)
@@ -176,6 +183,18 @@ def get_scam_check_store(
 ) -> CheckStore:
     """The worker's stored scam checks and the cache over them (NF-SA-012)."""
     return CheckStore(checks, indicators)
+
+
+def get_scam_reporter(
+    store: Annotated[CheckStore, Depends(get_scam_check_store)],
+    reports: Annotated[ScamReportRepository, Depends(get_scam_report_repository)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    taxonomy: Annotated[ScamTaxonomyRepository, Depends(get_scam_taxonomy_repository)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> ScamReporter:
+    """The one-tap report of a scam check to Exploitation Radar (NF-SA-013)."""
+    return ScamReporter(store, reports, radar, users, taxonomy, gemini)
 
 
 def require_flag(flag: FlagName) -> Callable[..., Awaitable[None]]:

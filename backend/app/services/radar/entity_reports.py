@@ -32,6 +32,7 @@ async def list_entity_reports(slug: str, radar: RadarRepository) -> list[RadarRe
                 corridor_id=report.corridor_id,
                 host_country=report.host_country,
                 source=report.source,
+                scam=report.scam,
                 created_at=report.created_at,
             )
         )

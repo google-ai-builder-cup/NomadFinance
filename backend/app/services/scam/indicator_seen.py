@@ -16,8 +16,15 @@ logger = logging.getLogger(__name__)
 
 def indicator_doc_id(indicator: ScamIndicator) -> str:
     """The `scam_indicators` id: the first 32 hex characters of the indicator's key. The 8 the
-    contract calls `id` are the first of the same key (scam.md, "The key of an indicator")."""
-    return hashlib.sha256(f"{indicator.kind}:{indicator.value}".encode()).hexdigest()[:32]
+    contract calls `id` are the first of the same key (scam.md, "The key of an indicator").
+
+    The key is of the value in normal form, which for a sender is lowercase and trimmed (the
+    other kinds already are, and a phone is digits): "LoanPH" and "loanph" are one sender.
+    The report route (NF-SA-013) writes the documents with this same function, so a count it
+    adds is the count a later check reads.
+    """
+    value = indicator.value.strip().lower()
+    return hashlib.sha256(f"{indicator.kind}:{value}".encode()).hexdigest()[:32]
 
 
 async def attach_seen(

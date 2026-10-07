@@ -15,6 +15,7 @@ from app.dependencies import (
     get_current_user,
     get_feature_flag_service,
     get_scam_check_store,
+    get_scam_reporter,
     get_similar_scam_finder,
 )
 from app.integrations.gemini import get_gemini_client
@@ -24,6 +25,7 @@ from app.schemas.errors import ErrorEnvelope
 from app.schemas.user import AuthenticatedUser
 from app.services.feature_flag_service import FeatureFlagService
 from app.services.scam.check_store import CheckStore
+from app.services.scam.report import ScamReporter
 from tests.fixtures.fake_gemini import FakeGemini
 from tests.fixtures.scam_checks import make_store
 from tests.fixtures.scam_classify import load_taxonomy
@@ -55,6 +57,7 @@ def make_app(
     finder: FakeFinder | None = None,
     store: CheckStore | None = None,
     uid: str = "test-user",
+    reporter: ScamReporter | None = None,
 ) -> FastAPI:
     app = create_app()
     flags = FeatureFlagService(FakeFlags(flag_on))  # type: ignore[arg-type]
@@ -70,6 +73,13 @@ def make_app(
     # No Firestore either: checks are stored in memory, so each app starts with an empty history.
     fake_store = store or make_store()
     app.dependency_overrides[get_scam_check_store] = lambda: fake_store
+    # The report route gets a reporter on in-memory storage unless a test brings its own world.
+    if reporter is None:
+        from tests.fixtures.scam_report import ReportWorld
+
+        reporter = ReportWorld().reporter
+    fake_reporter = reporter
+    app.dependency_overrides[get_scam_reporter] = lambda: fake_reporter
     return app
 
 

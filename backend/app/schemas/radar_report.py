@@ -6,7 +6,14 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.contract import HostCountryCode, ReportLanguage
-from app.schemas.radar import RadarEntityType, RadarReportSource, RadarViolationType
+from app.schemas.radar import (
+    RadarEntityType,
+    RadarReportSource,
+    RadarViolationType,
+    UserEntityType,
+    UserViolationType,
+)
+from app.schemas.radar_scam import RadarScamReport
 from app.schemas.remittance_compare import CorridorId
 
 # A worker's own account of an incident is often longer than a system-generated one
@@ -35,7 +42,7 @@ class RadarReportRequest(BaseModel):
     is preferred over what extraction finds on its own.
     """
 
-    entity_type: RadarEntityType | None = None
+    entity_type: UserEntityType | None = None
     entity_name: str | None = Field(default=None, max_length=MAX_ENTITY_NAME_CHARS)
     corridor_id: CorridorId | None = None
     host_country: HostCountryCode | None = None
@@ -89,6 +96,12 @@ class RadarReportSummary(BaseModel):
     corridor_id: CorridorId | None
     host_country: HostCountryCode | None
     source: RadarReportSource
+    scam: RadarScamReport | None = Field(
+        default=None,
+        description='A scam report\'s details (`radar.md`, "Scam reports"): the type, tactics, '
+        "trigger phrases, what the message asks for and the indicators the reporter confirmed. "
+        "Absent for every other report.",
+    )
     created_at: datetime
 
 
@@ -107,7 +120,7 @@ class ExtractedEntity(BaseModel):
         description="Lower case, legal suffixes and punctuation stripped; used for the "
         "slug so spelling variants of one business group together."
     )
-    entity_type: RadarEntityType
+    entity_type: UserEntityType
     corridor_id: CorridorId | None
     host_country: HostCountryCode | None
     amount: float | None = Field(
@@ -129,6 +142,6 @@ class ReportScreen(BaseModel):
 class ViolationClassification(BaseModel):
     """Step 4 (`categorize.v1.yaml`) response: the violation type actually stored."""
 
-    violation_type: RadarViolationType
+    violation_type: UserViolationType
     category_confidence: float = Field(ge=0, le=1)
     summary: str

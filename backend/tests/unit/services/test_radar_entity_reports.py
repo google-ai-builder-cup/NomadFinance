@@ -80,3 +80,67 @@ async def test_a_contract_signal_report_with_no_summary_is_kept_with_summary_non
 
     assert summaries[0].summary is None
     assert summaries[0].source == "contract_signal"
+
+
+# ---------------------------------------------------------------- scam reports (NF-SA-013)
+
+
+def _scam_report(**over: Any) -> dict[str, Any]:
+    return (
+        _report(
+            entity_type="scam_type",
+            entity_name="Illegal recruitment fee",
+            entity_slug="scam-illegal-recruitment-fee",
+            violation_type="scam_message",
+            source="scam_check",
+            reporter_hash=None,
+            summary=None,
+            scam={
+                "scam_type": "illegal_recruitment_fee",
+                "tactics": ["urgency", "scarcity"],
+                "risk_level": "high",
+                "confidence": 0.94,
+                "trigger_phrases": ["processing fee"],
+                "details": {"contact_channel": "whatsapp", "deadline_stated": True},
+                "indicators": [
+                    {"kind": "phone", "value": "6590000001", "flags": []},
+                    {
+                        "kind": "url",
+                        "value": "sg-careers-visa.example",
+                        "flags": ["lookalike"],
+                        "imitates": "mom.gov.sg",
+                    },
+                ],
+                "message_language": "en",
+                "input_type": "text",
+            },
+        )
+        | {}
+    )
+
+
+async def test_a_scam_report_comes_back_with_its_scam_map() -> None:
+    radar = FakeRadar([("r_02", _scam_report())])
+
+    (summary,) = await list_entity_reports(
+        "scam-illegal-recruitment-fee", cast(RadarRepository, radar)
+    )
+
+    assert (summary.source, summary.violation_type) == ("scam_check", "scam_message")
+    assert summary.scam is not None
+    assert summary.scam.scam_type == "illegal_recruitment_fee"
+    assert [(i.kind, i.value, i.imitates) for i in summary.scam.indicators] == [
+        ("phone", "6590000001", None),
+        ("url", "sg-careers-visa.example", "mom.gov.sg"),
+    ]
+    dumped = summary.model_dump(exclude_none=True)
+    assert dumped["scam"]["details"] == {"contact_channel": "whatsapp", "deadline_stated": True}
+    assert "reporter_hash" not in dumped and "validation" not in dumped
+
+
+async def test_a_report_that_is_not_a_scam_report_has_no_scam_map() -> None:
+    radar = FakeRadar([("r1", _report())])
+
+    (summary,) = await list_entity_reports("example-remit", cast(RadarRepository, radar))
+
+    assert summary.scam is None

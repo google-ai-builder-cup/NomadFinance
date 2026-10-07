@@ -71,7 +71,7 @@ How the common fields are filled:
 | `source` | `scam_check` |
 | `entity_type`, `entity_name`, `entity_slug` | `scam_type`; the taxonomy `label` (for example `Illegal recruitment fee`); `scam-` plus the type id with hyphens (`scam-illegal-recruitment-fee`). So the Radar profile page is "this kind of scam", and it lists every report of it with its details. The slug cannot clash with a provider or an employer: those slugs never start with `scam-` unless a business is called that. |
 | `violation_type` | `scam_message` |
-| `corridor_id`, `host_country` | The check's `corridor_id` if it has one; `host_country` from the worker's profile (a country, not an identity) |
+| `corridor_id`, `host_country` | The check's `corridor_id` if it has one; `host_country` from the worker's profile (a country, not an identity), else the corridor's host country. A check with neither is still reported: the alert job and the heatmap, which group by corridor or country, skip it |
 | `description` | The redacted message text **as the worker confirmed it** (they can edit it in the confirmation sheet; at most 1,000 characters). This is also the text that is embedded for similarity. |
 | `language` | `scam.message_language`, or the worker's language when that is `other` |
 | `validation` | `{ "spam_score": 0, "category_confidence": <the verdict's confidence>, "model": <the classifier model id> }`. There is no spam check, because the analyzer already classified the message; the confidence and model are the analyzer's real values, not invented ones. |

@@ -17,7 +17,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 | `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007), and so is the `explainer` (NF-SA-009: a scam gets why each tactic works, what the scammer wants and 3 next steps on the reasoning tier; a message that is not a scam gets a reassurance and a tip on the classification tier; if it cannot be made the answer is the contract's `explainer: null` with `explainer_status: "unavailable"`). `similar` and `corridor_report_count` are real (NF-SA-010: up to 3 known scams and Radar reports above a similarity cutoff, found beside the classification; empty and `null` if the search fails). `indicators` are real (NF-SA-011: the links, phone numbers, emails and handles in the message, found by fixed rules before it is masked and flagged; nothing is ever fetched or looked up; `seen` stays `null` until reports exist). **Stored, cached and limited (NF-SA-012)**: every check is stored under its hash (`id` is the first 32 hex characters of the cache key); the same message in the same language is answered from storage (`cached: true`, no Gemini call, no use of the hourly budget) as long as the taxonomy and the prompts it was made with are still current and it has an explainer; a new message spends one of the worker's 20 checks an hour (per verified uid, kept in each server instance's memory like the other limits). `indicators[].seen` is read live from `scam_indicators`, which nothing writes until NF-SA-013 |
 | `POST /scam/analyze`, screenshot | Built (NF-SA-008). The image is shrunk, read once by Gemini Vision and dropped; the text read goes through the same redaction and classification as pasted text, and a visible sender is returned as the one `sender` indicator. A long conversation is cut to 4,000 characters after masking instead of refused. A cut-off image is read as far as it goes; HEIC is a `415` |
 | `GET /scam/checks`, `GET /scam/checks/{id}` | Built (NF-SA-012). The history is newest first with a cursor tied to the worker; a check past `expires_at` is absent whether or not the TTL job has deleted it yet |
-| `POST /scam/checks/{id}/report` | Not built (NF-SA-013) |
+| `POST /scam/checks/{id}/report` | Built (NF-SA-013). One transaction writes the Radar report, adds one to each confirmed indicator's counters and marks the check as reported, so a check is reported once and the counters cannot drift. The text is masked again, embedded and clustered like any Radar report, and the report is folded into the profile `scam-<type>`. A repeat tap returns the first report with `200`. Two taps at the very same moment can leave one of them with a server error (never a second report or a second count): the worker's retry gets the first report. Uses the AI budget (10 a minute) because it embeds the text |
 
 ## Routes
 
@@ -26,7 +26,7 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 | `POST` | `/api/v2/scam/analyze` | Check a message or a screenshot | 20 an hour that call Gemini, plus 60 a minute API-wide |
 | `GET` | `/api/v2/scam/checks` | The worker's history, newest first | 60 a minute |
 | `GET` | `/api/v2/scam/checks/{id}` | One stored check | 60 a minute |
-| `POST` | `/api/v2/scam/checks/{id}/report` | Warn other workers: report it to Exploitation Radar | 60 a minute |
+| `POST` | `/api/v2/scam/checks/{id}/report` | Warn other workers: report it to Exploitation Radar | 10 a minute (the AI budget: it embeds the text) |
 
 ## What every route shares
 
@@ -189,7 +189,7 @@ Warn other workers: report the scam to Exploitation Radar. The app shows a **con
 1. Checks that the check is the caller's and that its verdict is a scam. Reporting a message the analyzer judged benign is `409 not_a_scam`.
 2. **Redacts `description` again.** The worker can type anything into the box, so what they send is never trusted to be clean. (Personal names are not masked by a pattern; the sheet is where the worker removes one, D-108.)
 3. Writes the Radar report, adds one to the counters of each confirmed indicator, and marks the check as reported, **in one transaction** (`radar.md`, "Scam reports"; `scam.md`, `scam_indicators`). No uid and no reporter hash is stored.
-4. If the check was already reported, returns the first report and writes nothing.
+4. If the check was already reported, returns the first report and writes nothing. A tap that arrives while another tap of the same check is still being written may be answered with a server error instead; the worker retries and gets the first report (docs/runbooks/NF-SA-013-scam-radar-report.md, "Two taps at once").
 
 **Response**, `ScamReportResponse`: `{report_id, already_reported, entity_slug, entity_name, created_at}`. **`201`** for a new report, **`200`** with `already_reported: true` for a repeat. `entity_slug` is the Radar profile of the scam type (`scam-illegal-recruitment-fee`): link to `/radar/entity/{entity_slug}`.
 
