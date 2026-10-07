@@ -14,7 +14,7 @@ The page is behind the `scam` feature flag, as before.
 | Paste | A text box with a counter (`80 / 4000`). Over 4,000 characters the box turns red, says so, and the button stays off. The message is never cut: the payment request is often at the end |
 | Screenshot | Drop zone, and a **Take a photo** button (`capture="environment"`). JPEG, PNG or WebP up to 5 MB, checked before upload; a preview with a remove button |
 | Send | **Check this message**, disabled until there is something valid to send |
-| Waiting | A spinner; after 8 s the text says a suspicious message can take up to a minute (the explainer has taken 15 to 40 s; the client allows 60 s) |
+| Waiting | A spinner; after 8 s the text says a suspicious message can take up to a minute (the explainer has taken 15 to 40 s; the client allows **90 s**: see below) |
 | Answer | A risk badge, the title, what the sender wants and 3 next steps (scam) or a reassurance and a tip (not a scam); a note when the explainer could not be written; **Check another message** |
 | Failure | A red notice in plain words, with **Try again** only where trying again can help |
 
@@ -28,7 +28,7 @@ Failure messages by backend code (`utils/scamErrors.ts`):
 | 422 other | Message empty or too long | no |
 | 429 | Used all checks this hour; **"about N min"** from `Retry-After` | no |
 | 502, 503 `ai_*` | Checker busy | yes |
-| 504, or the 60 s timer | Took too long | yes |
+| 504, or the 90 s timer | Took too long | yes |
 | no connection, 5xx, 401 | The shared `errors.*` messages | as `errors.ts` says |
 
 A failed check keeps what the worker typed or chose. **Nothing retries by itself**: a retry spends one of the 20 checks an hour (`retry: false`).
@@ -51,7 +51,7 @@ A worker who is signed out is sent away from this address by `ProtectedRoute`. `
 |---|---|
 | `src/pages/scam/ScamCheckHome.tsx` | The screen: mode, form state, share arrival, the one `submit` |
 | `src/components/scam/MessageInput.tsx`, `ScreenshotPicker.tsx`, `AnalyzingProgress.tsx`, `ScamErrorNotice.tsx`, `InterimResult.tsx` | The parts. `InterimResult` is replaced by NF-SA-016 |
-| `src/hooks/useScamAnalyze.ts`, `src/services/scamService.ts`, `src/types/scam.ts` | Mutation, request (JSON or form, 60 s timer) and the answer's types |
+| `src/hooks/useScamAnalyze.ts`, `src/services/scamService.ts`, `src/types/scam.ts` | Mutation, request (JSON or form, 90 s timer) and the answer's types |
 | `src/utils/scamInput.ts`, `src/utils/scamErrors.ts` | Limits and counting, share parsing and the kept message; error code to message |
 | `src/services/apiClient.ts` | Reads the **v2 error envelope** (`code`) when there is no v1 `detail`, and `Retry-After` (first step of D-99; v1 behaviour unchanged) |
 | `src/main.tsx` | Keeps a shared message across the sign-in redirect |
@@ -71,6 +71,7 @@ Not touched: `package.json`, the lock file, `tsconfig*`, workflows (react-dropzo
 | 4 | Corridor | The profile's host and home country as `SG-IN`, only when that is one of the six corridors; otherwise left out (the backend takes none) |
 | 5 | The `File` name | Sent explicitly in the form: a part without a file name is read as a text field |
 | 6 | Camera photos | `capture` does not enforce a type or size, so the same checks run on them. An iPhone photo that arrives as HEIC is told to use JPEG, PNG or WebP (the backend's own 415) |
+| 7 | Client timeout | **90 s, not the contract's 60 s.** On 2026-10-07, with the free-tier Gemini key rate-limited, one check took 73 s (verdict retry, then the explainer's fallback also limited, then the 40 s step budget) and still answered `200` with `explainer: null`; at 60 s the screen had already shown "took too long". A fix on the backend side (billing on the key) makes this rare |
 
 ## Manual test
 

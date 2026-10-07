@@ -2,8 +2,10 @@ import { ApiError, apiRequest } from "@/services/apiClient";
 import type { ScamAnalyzeResponse, ScamCheckRequest } from "@/types/scam";
 
 // docs/api/v2-scam.md: a scam waits for the explainer, which has taken 15 to 40 s, so a slow
-// answer is not a failure. One minute is the contract's allowance for the client.
-export const ANALYZE_TIMEOUT_MS = 60_000;
+// answer is not a failure. The contract allows the client 60 s, but with Gemini rate-limited
+// (retries on the verdict, then the explainer's fallback) the server has taken 73 s and still
+// answered 200; at 60 s the screen gave up on a check that had worked. 90 s covers that.
+export const ANALYZE_TIMEOUT_MS = 90_000;
 
 /** The body for the one analyze route: JSON for a message, a form for a screenshot. */
 export function buildAnalyzeInit({ input, language, corridorId }: ScamCheckRequest): RequestInit {

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, apiRequest } from "@/services/apiClient";
-import { analyzeScam, buildAnalyzeInit } from "@/services/scamService";
+import { ANALYZE_TIMEOUT_MS, analyzeScam, buildAnalyzeInit } from "@/services/scamService";
 
 vi.mock("@/services/apiClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/services/apiClient")>()),
@@ -68,6 +68,17 @@ describe("analyzeScam", () => {
 
     expect(result.id).toBe("k_01");
     expect(vi.mocked(apiRequest).mock.calls[0][0]).toBe("/api/v2/scam/analyze");
+  });
+
+  it("waits 90 s, longer than the slowest answer seen with Gemini rate-limited (73 s)", async () => {
+    vi.mocked(apiRequest).mockResolvedValue(Response.json({ id: "k_01" }));
+    const spy = vi.spyOn(AbortSignal, "timeout");
+
+    await analyzeScam({ input: { kind: "text", text: "hi" }, language: "en" });
+
+    expect(ANALYZE_TIMEOUT_MS).toBe(90_000);
+    expect(spy).toHaveBeenCalledWith(90_000);
+    spy.mockRestore();
   });
 
   it("reports a spent timer as a timeout, not as being offline", async () => {
