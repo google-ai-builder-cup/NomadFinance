@@ -1,0 +1,232 @@
+{
+  "kind": "type",
+  "entries": {
+    "fake_job_offer": {
+      "label": "Fake job offer",
+      "definition": "A job offer that is not real, or is not what was promised. It is used to take your money, your ID or your bank details.",
+      "signs": [
+        "Very high pay for easy work, or no skills or experience needed",
+        "The offer comes on WhatsApp, Telegram or social media from someone you do not know",
+        "No clear employer name, address or signed contract",
+        "You must pay first, or use your own money to do tasks for a commission",
+        "Asks for your bank login or ID details before any real interview"
+      ],
+      "safe_response": "Do not pay and do not send ID or bank details. Check the job with the employer using contact details you found yourself, not the ones in the message. Show the offer to someone you trust, or call your local anti-scam helpline (Singapore: ScamShield 1799).",
+      "related_tactics": ["scarcity", "urgency", "social_proof"],
+      "default_risk": "high",
+      "order": 1,
+      "sources": [
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/job-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://dmw.gov.ph/archives/poea/air/identify.html",
+          "publisher": "Department of Migrant Workers, Philippines (archived POEA page)",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "illegal_recruitment_fee": {
+      "label": "Illegal recruitment fee",
+      "definition": "A recruiter asks you to pay a fee for a job abroad that the law does not allow, or takes your money without a real, approved job. International labour guidance says workers should not pay recruitment fees.",
+      "signs": [
+        "Asks for money before any signed contract",
+        "The fee is called a processing, medical, training or visa slot charge",
+        "No official receipt, or payment to a personal account or in cash in a public place",
+        "The recruiter has no licence, or no approved job order for the job",
+        "Promises you will fly very soon, or tells you to travel on a tourist visa to work",
+        "In the Philippines, asks for more than one month of salary as a placement fee"
+      ],
+      "safe_response": "Do not pay. Ask for the agency licence number and check it on your government's official website. Pay nothing without a signed contract and an official receipt. If you already paid, keep your proof and report it to your government's migrant worker office.",
+      "related_tactics": ["urgency", "scarcity", "authority"],
+      "default_risk": "high",
+      "order": 2,
+      "sources": [
+        {
+          "url": "https://www.ilo.org/resource/ilos-2016-general-principles-and-operational-guidelines-fair-recruitment",
+          "publisher": "International Labour Organization",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://dmw.gov.ph/archives/poea/air/identify.html",
+          "publisher": "Department of Migrant Workers, Philippines (archived POEA page)",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://dmw.gov.ph/archives/poea/air/howtoavoid.html",
+          "publisher": "Department of Migrant Workers, Philippines (archived POEA page)",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "remittance_otp_phishing": {
+      "label": "Remittance or OTP phishing",
+      "definition": "A fake message, call or website that pretends to be your bank or money transfer app. It tries to steal your login, card details or one-time password (OTP).",
+      "signs": [
+        "Says your account is locked or a payment failed, and gives a link",
+        "Asks for your OTP, PIN or password",
+        "The link looks almost like the real bank or app, but is spelled a little differently",
+        "Tells you to install an app from outside the official app store",
+        "Comes from an unknown number or email address",
+        "Says to act today or you will lose money"
+      ],
+      "safe_response": "Never share an OTP, PIN or password with anyone. Do not tap the link. Open your bank or transfer app yourself, or call the number on your card. If you already shared a code, call your bank at once and ask them to stop the payments.",
+      "related_tactics": ["urgency", "authority", "fear"],
+      "default_risk": "high",
+      "order": 3,
+      "sources": [
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/phishing-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "loan_app_trap": {
+      "label": "Loan app trap",
+      "definition": "A loan offer that is a trap. Either you pay fees first and never get the loan, or an app or lender lends at a very high cost and then threatens you.",
+      "signs": [
+        "The loan offer comes in an unexpected message, ad or social media post",
+        "The loan is approved without meeting you or checking anything",
+        "Asks you to pay a fee first, such as a processing, insurance or account clearance fee",
+        "Tells you to install an app from a link",
+        "Threatens or harasses you when you are late to pay",
+        "The lender is not on your country's official list of licensed lenders"
+      ],
+      "safe_response": "Do not pay any fee to get a loan. Check the lender on your country's official list of licensed lenders. Do not install apps from links. If someone threatens you, do not pay more. Keep the messages and tell the police or a migrant worker group.",
+      "related_tactics": ["fear", "urgency"],
+      "default_risk": "high",
+      "order": 4,
+      "sources": [
+        {
+          "url": "https://www.police.gov.sg/media-hub/news/2025/07/20250716_police_advisory_on_loan_scams",
+          "publisher": "Singapore Police Force",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.police.gov.sg/Advisories/Unlicensed-Moneylending",
+          "publisher": "Singapore Police Force",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "authority_impersonation": {
+      "label": "Embassy or authority impersonation",
+      "definition": "Someone pretends to be from the police, immigration, your embassy, your bank or another official office. They say you are in trouble and must pay or give your details.",
+      "signs": [
+        "An unexpected call or message says you are linked to a crime or a visa problem",
+        "Says the case is secret and you must not tell family, your employer or anyone else",
+        "Tells you to move money to a safe account or to give your bank login",
+        "Passes your call to a more senior officer, or to the police",
+        "Sends official-looking papers, such as a warrant or an investigation notice",
+        "Asks you to install an app from outside the official app store"
+      ],
+      "safe_response": "Hang up. Real officials do not ask you to transfer money or give your bank login. Call the office yourself, using a number from its official website. Talk to someone you trust before you do anything. Call your local anti-scam helpline (Singapore: ScamShield 1799).",
+      "related_tactics": ["authority", "fear", "urgency"],
+      "default_risk": "high",
+      "order": 5,
+      "sources": [
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/government-officials-impersonation-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.police.gov.sg/media-hub/news/2025/11/20251107_police_advisory_on_government_official_impersonation_scams_involving_officers",
+          "publisher": "Singapore Police Force",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "investment_romance": {
+      "label": "Investment or romance scam",
+      "definition": "Someone you met online builds trust through friendship or love, or shows you big profits. Then they ask you to send money or to put it into a fake investment or crypto account.",
+      "signs": [
+        "A stranger online says they love you, or want a deep friendship, very fast",
+        "They refuse video calls or to meet in person",
+        "Promises high returns with little or no risk",
+        "Shows screenshots of other people's profits, or lets you take out a small early profit",
+        "Asks for money for an emergency or a last chance to invest",
+        "The firm or app is not on your country's official regulator list"
+      ],
+      "safe_response": "Do not send money to someone you have not met. Check any investment firm on your country's financial regulator list before you pay. If you cannot take your money out, stop and do not add more. Tell someone you trust and report it to the police.",
+      "related_tactics": ["reciprocity", "social_proof", "scarcity"],
+      "default_risk": "high",
+      "order": 6,
+      "sources": [
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/investment-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/internet-love-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/cryptocurrency-related-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "lottery": {
+      "label": "Lottery or prize scam",
+      "definition": "A message says you won a lottery, prize or gift that you never entered. To get it, you must pay a fee or give your bank details.",
+      "signs": [
+        "You won something you never entered",
+        "You must pay a tax, fee or courier charge before you get the prize",
+        "Asks for your bank, card or ID details to release the prize",
+        "Official-looking certificates, logos or websites",
+        "Says you must reply fast or lose the prize"
+      ],
+      "safe_response": "Do not pay to collect a prize. Real lotteries do not ask winners for fees. Do not send bank or ID details. Block the sender and delete the message.",
+      "related_tactics": ["urgency", "authority"],
+      "default_risk": "medium",
+      "order": 7,
+      "sources": [
+        {
+          "url": "https://www.scamwatch.gov.au/types-of-scams/unexpected-money-scams",
+          "publisher": "Scamwatch, National Anti-Scam Centre, Australia",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "other_scam": {
+      "label": "Other scam",
+      "definition": "A message that tries to get your money, your ID or your login by a trick, but does not fit the other scam types.",
+      "signs": [
+        "Asks for money or secret codes in a hurry",
+        "Comes from someone you do not know, or from someone pretending to be a person you know",
+        "Has a link or app from outside the official stores, or an offer that is too good to be true"
+      ],
+      "safe_response": "Do not reply, pay or tap any link. Check with the real person or office, using a number you find yourself. Ask someone you trust, or call your local anti-scam helpline (Singapore: ScamShield 1799).",
+      "related_tactics": ["urgency", "authority"],
+      "default_risk": "medium",
+      "order": 8,
+      "sources": [
+        {
+          "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+          "publisher": "National Cyber Security Centre, UK",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    }
+  }
+}

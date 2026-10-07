@@ -1,0 +1,177 @@
+{
+  "kind": "tactic",
+  "entries": {
+    "urgency": {
+      "label": "Urgency",
+      "definition": "The scammer sets a short deadline so you act before you can think or ask anyone.",
+      "signs": [
+        "\"Within 24 hours\", \"today only\" or \"last chance\"",
+        "A warning that something bad happens if you wait, such as a closed account",
+        "Pressure to reply or pay right now",
+        "A request to keep it secret so nobody can stop you"
+      ],
+      "how_it_works": "When you are in a rush, you use feelings and not checks. A deadline takes away the time you need to ask a friend or look the offer up.",
+      "safe_response": "Stop. A real job, bank or office will wait one day. Take your time, check by yourself and ask someone you trust.",
+      "order": 1,
+      "sources": [
+        {
+          "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+          "publisher": "National Cyber Security Centre, UK",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.cl.cam.ac.uk/~fms27/scams/",
+          "publisher": "University of Cambridge Computer Laboratory (Stajano and Wilson, 2009)",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "authority": {
+      "label": "Authority",
+      "definition": "The scammer pretends to be someone you should obey, such as the police, a bank, an embassy, immigration or a licensed agency.",
+      "signs": [
+        "Says they are from the police, a bank, an embassy, immigration or an agency",
+        "Official-looking logos, case numbers, badge numbers or certificates",
+        "Formal or legal words, and a tone that says you did something wrong",
+        "Passes you to a \"senior officer\" and does not let you hang up and check"
+      ],
+      "how_it_works": "Most people are taught to follow officials and experts. A scammer borrows that trust, so you do what you are told and do not question it.",
+      "safe_response": "A title can be faked. Hang up and call the office yourself, using a number from its official website. Real officials never ask for OTPs, passwords or a money transfer.",
+      "order": 2,
+      "sources": [
+        {
+          "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+          "publisher": "National Cyber Security Centre, UK",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://montgomerycountymd.gov/pol/fraud/influence.html",
+          "publisher": "Montgomery County Police Department, Maryland, USA",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/government-officials-impersonation-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "scarcity": {
+      "label": "Scarcity",
+      "definition": "The scammer says there is very little left, such as a few jobs, visa slots or places, so you rush to take one.",
+      "signs": [
+        "\"Only 3 visa slots left\" or \"limited places\"",
+        "A special offer for you only",
+        "\"Others are waiting for your place\"",
+        "The first person to pay gets the job"
+      ],
+      "how_it_works": "People fear missing out on a rare chance. When a good job seems to be running out, you may pay before you check that it is real.",
+      "safe_response": "A good job or deal is still there tomorrow. If it only exists when you pay now, walk away.",
+      "order": 3,
+      "sources": [
+        {
+          "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+          "publisher": "National Cyber Security Centre, UK",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://montgomerycountymd.gov/pol/fraud/influence.html",
+          "publisher": "Montgomery County Police Department, Maryland, USA",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "fear": {
+      "label": "Fear",
+      "definition": "The scammer scares you with a threat, such as arrest, a fine, losing your job or visa, or a hacked account.",
+      "signs": [
+        "Threats of arrest, a fine, or losing your job or visa",
+        "A claim that your bank account was hacked or will be closed",
+        "A threat to tell your employer or family",
+        "A threatening tone, or shouting in capital letters"
+      ],
+      "how_it_works": "Fear makes it hard to think. A scared person wants the problem to go away fast, and the scammer offers a way out that costs money.",
+      "safe_response": "Fear is a push, not proof. Breathe, hang up and check with the real office. Authorities do not threaten arrest by chat or ask for payment by transfer.",
+      "order": 4,
+      "sources": [
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/government-officials-impersonation-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+          "publisher": "National Cyber Security Centre, UK",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.police.gov.sg/Advisories/Unlicensed-Moneylending",
+          "publisher": "Singapore Police Force",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "reciprocity": {
+      "label": "Reciprocity",
+      "definition": "The scammer does you a small favour or gives you a gift first, so you feel you owe them something back.",
+      "signs": [
+        "Free help with forms, a visa or a job search",
+        "A small gift, or a small payment at the start of a task",
+        "\"I helped you, now please help me\"",
+        "Shares a \"secret\" tip to show that they trust you"
+      ],
+      "how_it_works": "People feel they should repay a kindness. The scammer gives a little first, then asks for much more, and it feels rude to say no.",
+      "safe_response": "A favour does not mean you owe money. You can say no and stop. Be careful with anyone who helps you first and then asks for money.",
+      "order": 5,
+      "sources": [
+        {
+          "url": "https://montgomerycountymd.gov/pol/fraud/influence.html",
+          "publisher": "Montgomery County Police Department, Maryland, USA",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/investment-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    },
+    "social_proof": {
+      "label": "Social proof",
+      "definition": "The scammer shows that many other people joined, won or earned money, so the scam looks safe.",
+      "signs": [
+        "Screenshots of people earning money or saying thank you",
+        "A group chat full of members who praise the offer",
+        "\"Everyone from your town or community has joined\"",
+        "Many reviews, likes or followers on a new account",
+        "A friend's hacked account that recommends the offer"
+      ],
+      "how_it_works": "People copy what others do. Fake reviews and group chats make a scam look popular, so you trust it without checking.",
+      "safe_response": "Screenshots, likes and group chats can be faked. Check official lists, and ask people you know in person. Do not join only because others did.",
+      "order": 6,
+      "sources": [
+        {
+          "url": "https://montgomerycountymd.gov/pol/fraud/influence.html",
+          "publisher": "Montgomery County Police Department, Maryland, USA",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.cl.cam.ac.uk/~fms27/scams/",
+          "publisher": "University of Cambridge Computer Laboratory (Stajano and Wilson, 2009)",
+          "retrieved_on": "2026-10-07"
+        },
+        {
+          "url": "https://www.scamshield.gov.sg/i-want-protection-from-scams/learn-to-recognise-scams/investment-scams/",
+          "publisher": "ScamShield, Singapore",
+          "retrieved_on": "2026-10-07"
+        }
+      ],
+      "curator": "AB"
+    }
+  }
+}
