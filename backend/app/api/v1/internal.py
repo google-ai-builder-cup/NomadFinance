@@ -12,13 +12,16 @@ from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
+from app.repositories.scam_stats_repo import ScamStatsRepository, get_scam_stats_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.fib_profile import RecomputeResponse
 from app.schemas.radar_alert import AggregateRadarResponse
 from app.schemas.remittance import RefreshRatesResponse
+from app.schemas.scam_stats import AggregateScamStatsResponse
 from app.services.fib.profile_builder import recompute_all
 from app.services.radar.alerts import run_aggregation
 from app.services.remittance.rates import refresh_rates
+from app.services.scam.stats import run_scam_stats
 
 # Called by Cloud Scheduler only (infra/cloud-scheduler/). Hidden from the public API docs,
 # and never rate limited (RateLimitMiddleware skips /api/v1/internal/).
@@ -74,3 +77,21 @@ async def recompute_fib_profiles_endpoint(
     user keeps the previous profile. A retry would run (and pay for) every other user again.
     """
     return await recompute_all(gemini, fib, users, rates, datetime.now(UTC))
+
+
+@router.post(
+    "/aggregate-scam-stats", response_model=AggregateScamStatsResponse, responses=_RESPONSES
+)
+async def aggregate_scam_stats_endpoint(
+    _caller: Annotated[str, Depends(require_cloud_scheduler)],
+    stats: Annotated[ScamStatsRepository, Depends(get_scam_stats_repository)],
+) -> JSONResponse:
+    """Weekly Scam Analyzer counts per corridor and type for the current and previous ISO week
+    (NF-SA-022), written to `scam_stats/{corridor}/weeks/{iso_week}`: counts only.
+
+    A week that could not be read or written makes the answer a 503, so Cloud Scheduler logs a
+    failed run and retries. Repeating is harmless: every run replaces what it writes.
+    """
+    result, complete = await run_scam_stats(stats, datetime.now(UTC))
+    code = status.HTTP_200_OK if complete else status.HTTP_503_SERVICE_UNAVAILABLE
+    return JSONResponse(result.model_dump(mode="json"), status_code=code)

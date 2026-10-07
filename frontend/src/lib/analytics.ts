@@ -83,6 +83,49 @@ export function trackRemittanceCompared(corridorId: CorridorId): void {
   track("remittance_compared", { corridor_id: corridorId });
 }
 
+/**
+ * A worker sent a message or a screenshot to the Scam Analyzer (NF-SA-022). What kind of input,
+ * the route they are on, and the language: never the message, its words, or anything in it.
+ */
+export function trackScamCheckSubmitted(
+  inputType: "text" | "screenshot",
+  corridorId: CorridorId | undefined,
+  language: LanguageCode
+): void {
+  track("scam_check_submitted", {
+    input_type: inputType,
+    corridor_id: corridorId ?? "none",
+    language,
+  });
+}
+
+export interface ScamVerdictViewed {
+  isScam: boolean;
+  riskLevel: "low" | "medium" | "high";
+  /** A taxonomy id such as "lottery"; null for a message that is not a scam. */
+  scamType: string | null;
+  /** The answer came from an earlier check of the same message. */
+  cached: boolean;
+  /** A check that has just finished, or a stored one opened from the history. */
+  source: "check" | "history";
+}
+
+/** A verdict was put in front of a worker (NF-SA-022): what it said, not what it was about. */
+export function trackScamVerdictViewed(view: ScamVerdictViewed): void {
+  track("scam_verdict_viewed", {
+    is_scam: view.isScam,
+    risk_level: view.riskLevel,
+    scam_type: view.scamType ?? "none",
+    cached: view.cached,
+    source: view.source,
+  });
+}
+
+/** A worker warned others about a scam, through "Warn other workers" (NF-SA-022). The kind only. */
+export function trackScamReported(scamType: string): void {
+  track("scam_reported", { scam_type: scamType });
+}
+
 export function trackLogin(method: "google" | "phone"): void {
   track("login", { method });
 }

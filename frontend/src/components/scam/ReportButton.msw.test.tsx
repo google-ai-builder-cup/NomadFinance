@@ -9,6 +9,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import ReportButton from "@/components/scam/ReportButton";
+import { trackScamReported } from "@/lib/analytics";
 import { loadNamespace } from "@/lib/i18n";
 import { jsonMocks } from "@/mocks/files";
 import { server, setupMockServer } from "@/mocks/server";
@@ -19,13 +20,18 @@ import { MAX_REPORT_CHARS } from "@/utils/scamReport";
 vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { uid: "alice" }, loading: false }) }));
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
 
+vi.mock("@/lib/analytics", () => ({ trackScamReported: vi.fn() }));
+
 setupMockServer();
 
 beforeAll(async () => {
   await loadNamespace("scam");
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 interface Sent {
   path: string;
@@ -295,6 +301,29 @@ describe("after the warning is sent", () => {
 
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(screen.queryByRole("button", { name: "Warn other workers" })).toBeNull();
+  });
+
+  it("records one scam_reported event, with the kind of scam, for a new warning", async () => {
+    answerWith("scam/report-01-created.json");
+    renderButton();
+    await openSheet();
+    expect(trackScamReported).not.toHaveBeenCalled();
+
+    await userEvent.click(send());
+    await screen.findByText(/Other workers can now see your warning/);
+
+    expect(trackScamReported).toHaveBeenCalledTimes(1);
+    expect(trackScamReported).toHaveBeenCalledWith("illegal_recruitment_fee");
+  });
+
+  it("records nothing when the report was refused or the server only had it already", async () => {
+    answerWith("scam/report-02-already-reported.json");
+    renderButton();
+    await openSheet();
+    await userEvent.click(send());
+    await screen.findByText(/already warned other workers/);
+
+    expect(trackScamReported).not.toHaveBeenCalled();
   });
 
   it("says so when the server had the report already, and links to it all the same", async () => {

@@ -12,6 +12,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { jsonMocks } from "@/mocks/files";
 import { handlerForMock } from "@/mocks/handlers";
 import { server, setupMockServer } from "@/mocks/server";
+import { trackScamCheckSubmitted } from "@/lib/analytics";
 import { loadNamespace } from "@/lib/i18n";
 import ScamCheckHome from "@/pages/scam/ScamCheckHome";
 import { MAX_MESSAGE_CHARS, stashSharedMessage } from "@/utils/scamInput";
@@ -20,6 +21,12 @@ vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { uid: "alice" }, lo
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
 vi.mock("@/hooks/useUser", () => ({
   useUserProfile: () => ({ data: { host_country: "SG", home_country: "IN" } }),
+}));
+
+vi.mock("@/lib/analytics", () => ({
+  trackScamCheckSubmitted: vi.fn(),
+  trackScamVerdictViewed: vi.fn(),
+  trackScamReported: vi.fn(),
 }));
 
 setupMockServer();
@@ -78,8 +85,60 @@ const submitButton = () => screen.getByRole("button", { name: "Check this messag
 const messageBox = () => screen.getByLabelText("The message you received");
 const png = () => new File(["fake image"], "chat.png", { type: "image/png" });
 
-beforeEach(() => sessionStorage.clear());
+beforeEach(() => {
+  sessionStorage.clear();
+  vi.clearAllMocks();
+});
 afterEach(cleanup);
+
+describe("the scam_check_submitted event (NF-SA-022)", () => {
+  it("is sent with the kind of input, the route and the language when a message is sent", async () => {
+    answerWith("scam/analyze-01-high-risk.json");
+    const user = userEvent.setup();
+    renderPage();
+    await user.type(messageBox(), "Pay 800 SGD today");
+    expect(trackScamCheckSubmitted).not.toHaveBeenCalled();
+
+    await user.click(submitButton());
+
+    expect(trackScamCheckSubmitted).toHaveBeenCalledTimes(1);
+    expect(trackScamCheckSubmitted).toHaveBeenCalledWith("text", "SG-IN", "en");
+  });
+
+  it("says screenshot for a picture, and is not sent for a message that cannot be sent", async () => {
+    answerWith("scam/analyze-01-high-risk.json");
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(messageBox());
+    await user.paste("a".repeat(MAX_MESSAGE_CHARS + 1));
+    expect((submitButton() as HTMLButtonElement).disabled).toBe(true);
+    expect(trackScamCheckSubmitted).not.toHaveBeenCalled();
+    await user.clear(messageBox());
+
+    await user.click(screen.getByRole("button", { name: "Screenshot" }));
+    await user.upload(screen.getByLabelText("Choose a screenshot"), png());
+    await user.click(submitButton());
+
+    expect(trackScamCheckSubmitted).toHaveBeenCalledTimes(1);
+    expect(trackScamCheckSubmitted).toHaveBeenCalledWith("screenshot", "SG-IN", "en");
+  });
+
+  it("is not counted a second time when the worker only taps Try again after a failure", async () => {
+    server.use(
+      http.post("*/api/v2/scam/analyze", () =>
+        HttpResponse.json({ code: "ai_busy", message: "busy", request_id: "r" }, { status: 503 })
+      )
+    );
+    const user = userEvent.setup();
+    renderPage();
+    await user.type(messageBox(), "hello");
+    await user.click(submitButton());
+
+    await user.click(await screen.findByRole("button", { name: "Try again" }));
+
+    expect(trackScamCheckSubmitted).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe("pasting a message", () => {
   it("sends it as JSON with the worker's language and route, then shows the answer", async () => {

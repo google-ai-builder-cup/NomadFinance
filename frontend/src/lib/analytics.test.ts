@@ -110,4 +110,85 @@ describe("analytics", () => {
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });
+
+  describe("the Scam Analyzer events (NF-SA-022)", () => {
+    async function configured() {
+      return loadModule({ VITE_FIREBASE_MEASUREMENT_ID: "G-TEST" });
+    }
+
+    it("sends scam_check_submitted with the kind of input, the route and the language only", async () => {
+      const analytics = await configured();
+
+      analytics.trackScamCheckSubmitted("screenshot", "SG-IN", "hi");
+      analytics.trackScamCheckSubmitted("text", undefined, "en");
+      await settle();
+
+      expect(sdk.logEvent).toHaveBeenNthCalledWith(1, expect.anything(), "scam_check_submitted", {
+        input_type: "screenshot",
+        corridor_id: "SG-IN",
+        language: "hi",
+      });
+      expect(sdk.logEvent).toHaveBeenNthCalledWith(2, expect.anything(), "scam_check_submitted", {
+        input_type: "text",
+        corridor_id: "none",
+        language: "en",
+      });
+    });
+
+    it("sends scam_verdict_viewed with what the verdict said, never what it was about", async () => {
+      const analytics = await configured();
+
+      analytics.trackScamVerdictViewed({
+        isScam: true,
+        riskLevel: "high",
+        scamType: "illegal_recruitment_fee",
+        cached: false,
+        source: "check",
+      });
+      analytics.trackScamVerdictViewed({
+        isScam: false,
+        riskLevel: "low",
+        scamType: null,
+        cached: true,
+        source: "history",
+      });
+      await settle();
+
+      expect(sdk.logEvent).toHaveBeenNthCalledWith(1, expect.anything(), "scam_verdict_viewed", {
+        is_scam: true,
+        risk_level: "high",
+        scam_type: "illegal_recruitment_fee",
+        cached: false,
+        source: "check",
+      });
+      expect(sdk.logEvent).toHaveBeenNthCalledWith(2, expect.anything(), "scam_verdict_viewed", {
+        is_scam: false,
+        risk_level: "low",
+        scam_type: "none",
+        cached: true,
+        source: "history",
+      });
+    });
+
+    it("sends scam_reported with the kind of scam", async () => {
+      const analytics = await configured();
+
+      analytics.trackScamReported("lottery");
+      await settle();
+
+      expect(sdk.logEvent).toHaveBeenCalledWith(expect.anything(), "scam_reported", {
+        scam_type: "lottery",
+      });
+    });
+
+    it("sends none of them without a measurement ID", async () => {
+      const analytics = await loadModule({});
+
+      analytics.trackScamCheckSubmitted("text", "SG-IN", "en");
+      analytics.trackScamReported("lottery");
+      await settle();
+
+      expect(sdk.logEvent).not.toHaveBeenCalled();
+    });
+  });
 });

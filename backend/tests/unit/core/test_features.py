@@ -24,6 +24,7 @@ from app.main import create_app
         ("/api/v1/internal/refresh-rates", "remittance"),
         ("/api/v1/internal/aggregate-radar", "radar"),
         ("/api/v1/internal/recompute-fib-profiles", "fib"),
+        ("/api/v1/internal/aggregate-scam-stats", "scam"),
         ("/api/v1/internal/something-new", PLATFORM),
         ("/api/v1/internal", PLATFORM),
         ("/api/v2/flags", PLATFORM),

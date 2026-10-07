@@ -8,6 +8,7 @@ scam_taxonomy/{id}                    scam types and manipulation tactics (data 
 scam_taxonomy/_meta                   version of the taxonomy
 scam_patterns/{id}                    canonical scam templates with vectors (backend only)
 scam_indicators/{id}                  how often one phone number, address or account was reported (backend only)
+scam_stats/{corridor}/weeks/{isoWeek} counts of checks per corridor and ISO week (a scheduled job writes; backend only)
 ```
 
 How a check reaches Radar (what is stored in `radar_reports`) is in [radar](radar.md), "Scam reports".
@@ -240,6 +241,64 @@ The number is invented; the id is the real key of that invented number, so the f
 
 **Access:** no client access; backend only. The values reach a browser only through the API, for the indicators of a check the worker owns, and inside Radar reports.
 
+## `scam_stats/{corridor}/weeks/{isoWeek}`
+
+Counts of the week's checks for one corridor, for dashboards and the Partner API later (NF-SA-022). **Counts only**: no message, no link or number, no worker, no check id. Written by `POST /api/v1/internal/aggregate-scam-stats` (Cloud Scheduler job `scam-stats`, daily at 01:30 UTC).
+
+`{corridor}` is one of the six corridor ids (`SG-PH`, `SG-IN`, `AU-IN`, `MY-ID`, `JP-PH`, `AU-PH`) or `none` for a worker whose route is none of them. `{isoWeek}` is the ISO 8601 week in UTC, `2026-W45`: Monday 00:00 up to the next Monday. The corridor's own document `scam_stats/{corridor}` holds `corridor_id` and `updated_at` only, so the collection can be listed.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `corridor_id` | string | yes | The corridor, or `none` |
+| `iso_week` | string | yes | `2026-W45` |
+| `week_start`, `week_end` | timestamp | yes | The week's bounds, `week_end` not included |
+| `checks` | number | yes | Stored checks created in the week for this corridor |
+| `scams`, `benign` | number | yes | `checks` split by the verdict; they add up to `checks` |
+| `by_type` | map | yes | Scams by taxonomy type id, for example `{ "lottery": 2, "loan_app_trap": 1 }`. Only types that occurred; a scam with no type counts as `other_scam`. Adds up to `scams` |
+| `by_input` | map | yes | `{ "text": n, "screenshot": n }` |
+| `reported` | number | yes | Of the week's checks, how many the worker has since warned others about |
+| `computed_at` | timestamp | yes | When the job wrote it |
+| `schema_version` | number | yes | `1` |
+
+**How it is written.** Every run counts the current and the previous ISO week (a collection-group query on `scam_checks.created_at`, with a field mask so only `corridor_id`, `verdict.is_scam`, `verdict.scam_type`, `input_type` and `reported_at` are read) and **replaces** the 7 corridor documents of each week. Because it recounts and replaces, a run can be repeated or retried and never counts a check twice. Older weeks are not touched again: checks are deleted 90 days after they were made, and recounting would make a week shrink.
+
+**What a count means.** One stored check is one message of one worker in that language: checking the same message again increments `check_count` on the stored check but is not a new count. A check replaced because it was stale (an older prompt version) is counted in the week it was replaced. A worker who closes their account takes their checks with them, so the current and previous week can go down by that much.
+
+**Small groups.** A week with one check on one corridor describes one person. The collection is backend-only and holds exact counts. **The Partner API must not return a cell below 5** (D-165).
+
+**Index.** A collection-group query on `created_at` needs `scam_checks.created_at` ascending at collection-group scope (`fieldOverrides` in `frontend/firestore.indexes.json`; create it once in production, D-164).
+
+**Access:** no client access (no rule matches `scam_stats`); backend only.
+
+**Example** — `scam_stats/SG-IN/weeks/2026-W45`
+
+```json
+{
+  "corridor_id": "SG-IN",
+  "iso_week": "2026-W45",
+  "week_start": "2026-11-02T00:00:00Z",
+  "week_end": "2026-11-09T00:00:00Z",
+  "checks": 4,
+  "scams": 3,
+  "benign": 1,
+  "by_type": { "illegal_recruitment_fee": 1, "loan_app_trap": 2 },
+  "by_input": { "text": 3, "screenshot": 1 },
+  "reported": 1,
+  "computed_at": "2026-11-04T01:30:02Z",
+  "schema_version": 1
+}
+```
+
+## Analytics events
+
+Three Firebase Analytics events (NF-SA-022, `frontend/src/lib/analytics.ts`). Only coarse values, never a message or anything from it, and none is sent in emulator mode or without a measurement id.
+
+| Event | When | Parameters |
+|---|---|---|
+| `scam_check_submitted` | The worker taps **Check this message** (once; a retry after a failure is not a new submission) | `input_type` (`text`, `screenshot`), `corridor_id` (a corridor id or `none`), `language` |
+| `scam_verdict_viewed` | A verdict is put on the screen, once per check | `is_scam`, `risk_level`, `scam_type` (taxonomy id or `none`), `cached`, `source` (`check` for one that has just finished, `history` for a stored one) |
+| `scam_reported` | A new warning was sent (not a second tap that found the first report) | `scam_type` |
+
 ## Tasks that use it
 
-NF-SA-001 (taxonomy), NF-SA-006 (patterns), NF-SA-007 (verdict), NF-SA-008 (screenshot), NF-SA-009 (explainer), NF-SA-010 (similar), NF-SA-011 (indicators), NF-SA-012 (history, cache), NF-SA-013 (report to Radar, writes `scam_indicators`), NF-SA-010 and NF-SA-016 (show "reported N times"), NF-SA-015 to -019 (screens), NF-HR-001 (Financial Identity signal).
+NF-SA-001 (taxonomy), NF-SA-006 (patterns), NF-SA-007 (verdict), NF-SA-008 (screenshot), NF-SA-009 (explainer), NF-SA-010 (similar), NF-SA-011 (indicators), NF-SA-012 (history, cache), NF-SA-022 (stats and events), NF-SA-013 (report to Radar, writes `scam_indicators`), NF-SA-010 and NF-SA-016 (show "reported N times"), NF-SA-015 to -019 (screens), NF-HR-001 (Financial Identity signal).
