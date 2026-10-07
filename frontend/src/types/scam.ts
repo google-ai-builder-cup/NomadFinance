@@ -43,6 +43,15 @@ export type ScamExplainer =
     }
   | { kind: "benign"; language: string; reassurance: string; tip: string };
 
+/** A known scam or a worker's report that the message resembles. No id and no text: only what
+ * the card shows. */
+export interface ScamSimilar {
+  source: "scam_pattern" | "radar_report";
+  /** Taxonomy id, or null for a report that is not about a kind of scam. */
+  scam_type: string | null;
+  score: number;
+}
+
 export interface ScamAnalyzeResponse {
   id: string;
   cached: boolean;
@@ -53,6 +62,7 @@ export interface ScamAnalyzeResponse {
   corridor_id: string | null;
   verdict: ScamVerdict;
   indicators: ScamIndicator[];
+  similar: ScamSimilar[];
   explainer: ScamExplainer | null;
   explainer_status: "ready" | "unavailable";
   corridor_report_count: number | null;

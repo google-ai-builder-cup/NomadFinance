@@ -56,6 +56,82 @@
     "scammerWants": "What the sender wants",
     "nextSteps": "What to do now",
     "explainerUnavailable": "We could not write the full explanation right now. Check the same message again in a moment.",
-    "checkAnother": "Check another message"
+    "checkAnother": "Check another message",
+    "meterLabel": "Scam risk",
+    "kindOfScam": "Kind of scam",
+    "type": {
+      "fake_job_offer": "Fake job offer",
+      "illegal_recruitment_fee": "Illegal recruitment fee",
+      "remittance_otp_phishing": "Stealing your bank login or code",
+      "loan_app_trap": "Loan app trap",
+      "authority_impersonation": "Pretending to be an official or bank",
+      "investment_romance": "Investment or romance scam",
+      "lottery": "Fake prize or lottery",
+      "other_scam": "Other scam"
+    },
+    "confidenceLow": "We are not fully sure about this one. Be careful and check it with someone you trust.",
+    "tacticsTitle": "How it tries to trick you",
+    "tacticsHint": "Tap a trick to see how it works.",
+    "tactic": {
+      "urgency": {
+        "label": "Pressure to hurry",
+        "what": "The sender gives a short deadline so you act before you can think or ask anyone."
+      },
+      "authority": {
+        "label": "Pretending to be an official",
+        "what": "The sender acts like someone you must obey, such as the police, a bank, an embassy or an agency."
+      },
+      "scarcity": {
+        "label": "Only a few left",
+        "what": "The sender says there is very little left, such as a few jobs or visa places, so you rush."
+      },
+      "fear": {
+        "label": "Scaring you",
+        "what": "The sender threatens you, for example with arrest, a fine or losing your job, so you give in."
+      },
+      "reciprocity": {
+        "label": "A favour to repay",
+        "what": "The sender does you a small favour or gives a gift first, so you feel you owe them."
+      },
+      "social_proof": {
+        "label": "Everyone else did it",
+        "what": "The sender says many people joined or earned money, so it looks safe."
+      }
+    },
+    "messageTitle": "The message",
+    "messageLegend": "Words that gave it away are bold and underlined.",
+    "phraseFlagged": "Suspicious words:",
+    "token": {
+      "PHONE": "phone number hidden",
+      "EMAIL": "email hidden",
+      "ID": "ID number hidden",
+      "ACCOUNT": "account number hidden",
+      "URL": "link hidden"
+    },
+    "indicators": {
+      "title": "Contacts in the message",
+      "careful": "Do not open these links, and do not call or reply to these contacts.",
+      "kind": {
+        "url": "Link",
+        "phone": "Phone number",
+        "email": "Email address",
+        "handle": "Chat account",
+        "sender": "Sender"
+      },
+      "flag": {
+        "shortener": "Shortened link: it hides where it really goes",
+        "punycode": "Written with look-alike letters",
+        "lookalike": "Copies the real website {{domain}}",
+        "premium_rate": "A call to this number costs a lot",
+        "unexpected_country": "From a country outside your route"
+      },
+      "flagged": "Reported by several workers",
+      "seen_one": "Reported by workers {{count}} time",
+      "seen_other": "Reported by workers {{count}} times"
+    },
+    "similarTitle": "Looks like scams we know",
+    "corridorMax": "Workers on your route sent 10 or more reports like this one.",
+    "corridor_one": "Workers on your route sent {{count}} report like this one.",
+    "corridor_other": "Workers on your route sent {{count}} reports like this one."
   }
 }
