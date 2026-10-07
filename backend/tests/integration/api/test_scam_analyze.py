@@ -5,67 +5,26 @@ from collections.abc import Iterator
 from typing import Any
 
 import pytest
-from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.dependencies import get_current_user, get_feature_flag_service
 from app.integrations.gemini import (
     GeminiRateLimitError,
     GeminiResponseError,
     GeminiTimeoutError,
     GeminiUnavailableError,
-    get_gemini_client,
 )
-from app.main import create_app
-from app.repositories.scam_taxonomy_repo import ScamTaxonomy, get_scam_taxonomy_repository
-from app.schemas.errors import ErrorEnvelope
+from app.repositories.scam_taxonomy_repo import get_scam_taxonomy_repository
 from app.schemas.scam import MAX_TEXT_CHARS, ScamAnalyzeResponse
-from app.schemas.user import AuthenticatedUser
-from app.services.feature_flag_service import FeatureFlagService
 from tests.fixtures.fake_gemini import FakeGemini
+from tests.fixtures.scam_app import FakeTaxonomyRepo, assert_envelope, make_app
 from tests.fixtures.scam_classify import (
     MOCK_FILES,
     classify_recording,
     load_mock_body,
-    load_taxonomy,
     model_answer,
 )
 
 URL = "/api/v2/scam/analyze"
-
-
-class _FakeFlags:
-    def __init__(self, enabled: bool) -> None:
-        self._enabled = enabled
-
-    def get_feature_flags(self) -> dict[str, Any]:
-        return {"flags": {"scam": {"enabled": self._enabled, "allow_uids": []}}}
-
-
-class _FakeTaxonomyRepo:
-    def __init__(self, taxonomy: ScamTaxonomy | None) -> None:
-        self._taxonomy = taxonomy
-
-    def get_taxonomy(self) -> ScamTaxonomy | None:
-        return self._taxonomy
-
-
-def _app(
-    gemini: FakeGemini,
-    *,
-    flag_on: bool = True,
-    signed_in: bool = True,
-    taxonomy: ScamTaxonomy | None = None,
-) -> FastAPI:
-    app = create_app()
-    flags = FeatureFlagService(_FakeFlags(flag_on))  # type: ignore[arg-type]
-    app.dependency_overrides[get_feature_flag_service] = lambda: flags
-    if signed_in:
-        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="test-user")
-    app.dependency_overrides[get_gemini_client] = lambda: gemini
-    repo = _FakeTaxonomyRepo(taxonomy or load_taxonomy())
-    app.dependency_overrides[get_scam_taxonomy_repository] = lambda: repo
-    return app
 
 
 @pytest.fixture
@@ -75,20 +34,12 @@ def gemini() -> FakeGemini:
 
 @pytest.fixture
 def api(gemini: FakeGemini) -> Iterator[TestClient]:
-    with TestClient(_app(gemini), raise_server_exceptions=False) as client:
+    with TestClient(make_app(gemini), raise_server_exceptions=False) as client:
         yield client
 
 
 def _body(text: str = "Pay the fee today", **changes: Any) -> dict[str, Any]:
     return {"text": text, "language": "hi", "corridor_id": "SG-IN"} | changes
-
-
-def _assert_envelope(response: Any, status: int, code: str) -> ErrorEnvelope:
-    assert response.status_code == status
-    envelope = ErrorEnvelope.model_validate(response.json())
-    assert envelope.code == code
-    assert envelope.request_id == response.headers["X-Request-ID"]
-    return envelope
 
 
 @pytest.mark.parametrize("case", MOCK_FILES)
@@ -98,7 +49,7 @@ def test_each_mock_case_gets_the_mocks_verdict(case: str) -> None:
     # The mocks hold the redacted text, which redaction leaves as it is.
     request = _body(mock["redacted_text"], language=mock["language"], corridor_id=None)
 
-    with TestClient(_app(fake)) as client:
+    with TestClient(make_app(fake)) as client:
         response = client.post(URL, json=request)
 
     assert response.status_code == 200
@@ -171,19 +122,19 @@ def test_instructions_inside_the_message_are_only_data(api: TestClient, gemini: 
 
 
 def test_no_token_is_a_401_before_anything_else(gemini: FakeGemini) -> None:
-    with TestClient(_app(gemini, signed_in=False)) as client:
+    with TestClient(make_app(gemini, signed_in=False)) as client:
         response = client.post(URL, json=_body())
 
-    _assert_envelope(response, 401, "unauthenticated")
+    assert_envelope(response, 401, "unauthenticated")
     assert gemini.calls == []
 
 
 def test_flag_off_is_the_404_an_unknown_path_gets(gemini: FakeGemini) -> None:
-    with TestClient(_app(gemini, flag_on=False)) as client:
+    with TestClient(make_app(gemini, flag_on=False)) as client:
         flag_off = client.post(URL, json=_body())
         unknown = client.post("/api/v2/scam/nothing", json=_body())
 
-    _assert_envelope(flag_off, 404, "not_found")
+    assert_envelope(flag_off, 404, "not_found")
     assert flag_off.json()["message"] == unknown.json()["message"]
     assert gemini.calls == []
 
@@ -191,7 +142,7 @@ def test_flag_off_is_the_404_an_unknown_path_gets(gemini: FakeGemini) -> None:
 def test_text_over_the_limit_is_a_422_and_never_cut(api: TestClient, gemini: FakeGemini) -> None:
     response = api.post(URL, json=_body("x" * (MAX_TEXT_CHARS + 1)))
 
-    envelope = _assert_envelope(response, 422, "validation_failed")
+    envelope = assert_envelope(response, 422, "validation_failed")
     assert envelope.details is not None and envelope.details[0].field == "body.text"
     assert "xxxx" not in response.text
     assert gemini.calls == []
@@ -213,7 +164,7 @@ def test_text_at_the_limit_is_accepted(api: TestClient) -> None:
 def test_a_bad_field_is_a_422(api: TestClient, gemini: FakeGemini, changes: dict[str, Any]) -> None:
     response = api.post(URL, json=_body(**changes))
 
-    _assert_envelope(response, 422, "validation_failed")
+    assert_envelope(response, 422, "validation_failed")
     assert gemini.calls == []
 
 
@@ -238,21 +189,21 @@ def test_a_gemini_failure_is_an_ai_error_and_nothing_else(
     )
     assert failure in {error.__name__ for error in fake_errors}
 
-    with TestClient(_app(fake), raise_server_exceptions=False) as client:
+    with TestClient(make_app(fake), raise_server_exceptions=False) as client:
         response = client.post(URL, json=_body("secret message text"))
 
-    _assert_envelope(response, status, code)
+    assert_envelope(response, status, code)
     assert "secret message text" not in response.text
 
 
 def test_missing_taxonomy_is_a_500_that_leaks_nothing(gemini: FakeGemini) -> None:
-    app = _app(gemini)
-    app.dependency_overrides[get_scam_taxonomy_repository] = lambda: _FakeTaxonomyRepo(None)
+    app = make_app(gemini)
+    app.dependency_overrides[get_scam_taxonomy_repository] = lambda: FakeTaxonomyRepo(None)
 
     with TestClient(app, raise_server_exceptions=False) as client:
         response = client.post(URL, json=_body())
 
-    _assert_envelope(response, 500, "internal_error")
+    assert_envelope(response, 500, "internal_error")
     assert "taxonomy" not in response.text.lower()
     assert gemini.calls == []
 

@@ -1,0 +1,63 @@
+"""An app wired for the Scam Analyzer's endpoint tests (NF-SA-007, NF-SA-008).
+
+Auth, the `scam` flag, Gemini and the taxonomy are replaced; everything else (middleware, error
+handlers, rate limits, routing) is the real app, so a test sees what a client would.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from fastapi import FastAPI
+
+from app.dependencies import get_current_user, get_feature_flag_service
+from app.integrations.gemini import get_gemini_client
+from app.main import create_app
+from app.repositories.scam_taxonomy_repo import ScamTaxonomy, get_scam_taxonomy_repository
+from app.schemas.errors import ErrorEnvelope
+from app.schemas.user import AuthenticatedUser
+from app.services.feature_flag_service import FeatureFlagService
+from tests.fixtures.fake_gemini import FakeGemini
+from tests.fixtures.scam_classify import load_taxonomy
+
+
+class FakeFlags:
+    def __init__(self, enabled: bool) -> None:
+        self._enabled = enabled
+
+    def get_feature_flags(self) -> dict[str, Any]:
+        return {"flags": {"scam": {"enabled": self._enabled, "allow_uids": []}}}
+
+
+class FakeTaxonomyRepo:
+    def __init__(self, taxonomy: ScamTaxonomy | None) -> None:
+        self._taxonomy = taxonomy
+
+    def get_taxonomy(self) -> ScamTaxonomy | None:
+        return self._taxonomy
+
+
+def make_app(
+    gemini: FakeGemini,
+    *,
+    flag_on: bool = True,
+    signed_in: bool = True,
+    taxonomy: ScamTaxonomy | None = None,
+) -> FastAPI:
+    app = create_app()
+    flags = FeatureFlagService(FakeFlags(flag_on))  # type: ignore[arg-type]
+    app.dependency_overrides[get_feature_flag_service] = lambda: flags
+    if signed_in:
+        app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="test-user")
+    app.dependency_overrides[get_gemini_client] = lambda: gemini
+    repo = FakeTaxonomyRepo(taxonomy or load_taxonomy())
+    app.dependency_overrides[get_scam_taxonomy_repository] = lambda: repo
+    return app
+
+
+def assert_envelope(response: Any, status: int, code: str) -> ErrorEnvelope:
+    assert response.status_code == status
+    envelope = ErrorEnvelope.model_validate(response.json())
+    assert envelope.code == code
+    assert envelope.request_id == response.headers["X-Request-ID"]
+    return envelope
