@@ -21,6 +21,9 @@ export default defineConfig({
   use: {
     baseURL: externalUrl ?? `http://127.0.0.1:${PREVIEW_PORT}`,
     trace: "on-first-retry",
+    // The app's service worker would answer from its cache before a test's own route handlers
+    // (page.route) could, so a mocked API answer could be bypassed or served stale.
+    serviceWorkers: "block",
   },
   // A phone and a desktop, both on Chromium: workers use phones first, so the phone is not a
   // second thought. Other browsers are a later decision (NF-HR-005 covers Safari and Firefox).

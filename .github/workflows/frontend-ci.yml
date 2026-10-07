@@ -92,12 +92,7 @@ jobs:
   e2e:
     name: Frontend end-to-end
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    env:
-      VITE_FIREBASE_API_KEY: ci-placeholder
-      VITE_FIREBASE_AUTH_DOMAIN: nomadfinance-prod.web.app
-      VITE_FIREBASE_PROJECT_ID: nomadfinance-prod
-      VITE_FIREBASE_APP_ID: ci-placeholder
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: frontend
@@ -114,11 +109,22 @@ jobs:
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
+      # The browser tests sign in through the Auth and Firestore emulators (as the rules job does).
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: npm install --global firebase-tools@15.31.0
+
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      # Emulator mode reads frontend/.env.emulator (demo values). The API address is the preview's
+      # own, because the tests answer every call to it from docs/mocks/ (e2e/support/mockApi.ts).
+      - run: pnpm exec vite build --mode emulator
+        env:
+          VITE_API_BASE_URL: http://127.0.0.1:4173
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm exec tsc -p e2e
-      - run: pnpm test:e2e
+      - run: firebase emulators:exec --only auth,firestore --project demo-nomadfinance "pnpm test:e2e"
 
       - uses: actions/upload-artifact@v4
         if: failure()
