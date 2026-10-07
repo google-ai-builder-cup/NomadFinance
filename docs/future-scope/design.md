@@ -370,7 +370,7 @@ Notes:
 - Retrieval runs **in parallel** with classification and its results are returned to the client, not fed into the classifier prompt [P]. This keeps the verdict independent of the neighbours (a poisoned pattern cannot steer it) and keeps p95 under the 6 s budget [T: NF-SA-007]. Retrieval failure returns an empty list [T: NF-SA-010].
 - The classifier treats the message as data. The adversarial suite (NF-SA-020) must show 15 of 15 injection attempts still classified on content and none echoing prompt text [T].
 - The taxonomy (`scam_taxonomy`) is the grounding. Scam types start with fake job offer, illegal recruitment fee, remittance or OTP phishing, loan-app trap, embassy or authority impersonation, investment or romance, and lottery; tactics are urgency, authority, scarcity, fear, reciprocity and social proof [T: NF-SA-001].
-- The explainer is skipped for benign verdicts, which also saves reasoning-tier quota.
+- A benign verdict gets a short reassurance and one tip on the `CLASSIFICATION` tier, not the explainer on the `REASONING` tier, which saves reasoning-tier quota. An explainer that fails or takes over 40 s is dropped and the verdict is still returned [T: NF-SA-009].
 - Cache key is the hash of the **normalised, redacted** text plus language. A repeat message costs zero Gemini calls [T: NF-SA-012]. Whether cache entries are shared across users is open (section 11).
 
 ### 5.3 Report to Exploitation Radar (sequence)

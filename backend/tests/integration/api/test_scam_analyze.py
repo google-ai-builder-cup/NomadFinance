@@ -17,19 +17,15 @@ from app.repositories.scam_taxonomy_repo import get_scam_taxonomy_repository
 from app.schemas.scam import MAX_TEXT_CHARS, ScamAnalyzeResponse
 from tests.fixtures.fake_gemini import FakeGemini
 from tests.fixtures.scam_app import FakeTaxonomyRepo, assert_envelope, make_app
-from tests.fixtures.scam_classify import (
-    MOCK_FILES,
-    classify_recording,
-    load_mock_body,
-    model_answer,
-)
+from tests.fixtures.scam_classify import MOCK_FILES, load_mock_body
+from tests.fixtures.scam_explain import recordings_for
 
 URL = "/api/v2/scam/analyze"
 
 
 @pytest.fixture
 def gemini() -> FakeGemini:
-    return FakeGemini({"scam.classify": classify_recording(model_answer(load_mock_body("high")))})
+    return FakeGemini(recordings_for("high"))
 
 
 @pytest.fixture
@@ -45,7 +41,7 @@ def _body(text: str = "Pay the fee today", **changes: Any) -> dict[str, Any]:
 @pytest.mark.parametrize("case", MOCK_FILES)
 def test_each_mock_case_gets_the_mocks_verdict(case: str) -> None:
     mock = load_mock_body(case)
-    fake = FakeGemini({"scam.classify": classify_recording(model_answer(mock))})
+    fake = FakeGemini(recordings_for(case))
     # The mocks hold the redacted text, which redaction leaves as it is.
     request = _body(mock["redacted_text"], language=mock["language"], corridor_id=None)
 
@@ -62,6 +58,9 @@ def test_each_mock_case_gets_the_mocks_verdict(case: str) -> None:
     assert answer["language"] == mock["language"]
     assert answer["input_type"] == "text"
     assert answer["cached"] is False
+    # The explainer is what the mock shows, and ready: the frontend builds on this JSON.
+    assert answer["explainer"] == mock["explainer"]
+    assert answer["explainer_status"] == "ready"
 
 
 def test_the_parts_other_tasks_own_are_the_contracts_not_yet_values(api: TestClient) -> None:
@@ -69,8 +68,7 @@ def test_the_parts_other_tasks_own_are_the_contracts_not_yet_values(api: TestCli
 
     assert answer["indicators"] == []
     assert answer["similar"] == []
-    assert answer["explainer"] is None
-    assert answer["explainer_status"] == "unavailable"
+    assert answer["explainer_status"] == "ready"
     assert answer["corridor_report_count"] is None
     assert (answer["reported"], answer["report_id"]) == (False, None)
     assert answer["corridor_id"] == "SG-IN"
@@ -213,3 +211,66 @@ def test_the_ai_budget_applies(api: TestClient) -> None:
 
     assert statuses[:10] == [200] * 10
     assert statuses[10] == 429
+
+
+@pytest.mark.parametrize(
+    "failure",
+    ["GeminiRateLimitError", "GeminiUnavailableError", "GeminiTimeoutError", "GeminiResponseError"],
+)
+def test_a_failed_explainer_still_returns_the_verdict_with_the_unavailable_shape(
+    failure: str,
+) -> None:
+    recordings = recordings_for("high")
+    recordings["scam.explain"] = {"kind": "structured", "error": failure}
+    fake = FakeGemini(recordings)
+
+    with TestClient(make_app(fake)) as client:
+        response = client.post(URL, json=_body(load_mock_body("high")["redacted_text"]))
+
+    assert response.status_code == 200
+    answer = response.json()
+    ScamAnalyzeResponse.model_validate(answer)
+    assert answer["verdict"] == load_mock_body("high")["verdict"]
+    assert (answer["explainer"], answer["explainer_status"]) == (None, "unavailable")
+
+
+def test_a_busy_reasoning_tier_still_gives_the_worker_an_explainer() -> None:
+    body = load_mock_body("high")
+    recordings = recordings_for("high")
+    recordings["scam.explain"] = {
+        "responses": [
+            {"kind": "structured", "error": "GeminiUnavailableError"},
+            recordings["scam.explain"],
+        ]
+    }
+    fake = FakeGemini(recordings)
+
+    with TestClient(make_app(fake)) as client:
+        answer = client.post(URL, json=_body(body["redacted_text"])).json()
+
+    assert answer["explainer"] == body["explainer"] and answer["explainer_status"] == "ready"
+
+
+def test_a_message_that_is_not_a_scam_is_reassured_and_the_scam_explainer_is_not_called() -> None:
+    fake = FakeGemini(recordings_for("benign"))
+    mock = load_mock_body("benign")
+
+    with TestClient(make_app(fake)) as client:
+        answer = client.post(URL, json=_body(mock["redacted_text"], language="en")).json()
+
+    assert [c["operation"] for c in fake.calls] == ["scam.classify", "scam.reassure"]
+    assert answer["explainer"]["kind"] == "benign" and answer["explainer_status"] == "ready"
+
+
+def test_the_raw_message_reaches_no_call_at_all_not_the_classifier_and_not_the_explainer() -> None:
+    fake = FakeGemini(recordings_for("high"))
+    text = "Pay now to account 123456789012, call +65 9123 4567, mail a.b@example.org"
+
+    with TestClient(make_app(fake)) as client:
+        client.post(URL, json=_body(text))
+
+    assert [c["operation"] for c in fake.calls] == ["scam.classify", "scam.explain"]
+    for call in fake.calls:
+        for secret in ("123456789012", "9123 4567", "a.b@example.org"):
+            assert secret not in call["contents"]
+        assert "[ACCOUNT]" in call["contents"] and "[PHONE]" in call["contents"]
