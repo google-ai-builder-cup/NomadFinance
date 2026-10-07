@@ -18,7 +18,7 @@ One JSON object per line, `utf-8`, no comments.
 |---|---|
 | `id` | `gold-<language>-<nnn>`, numbered from 001 with no gap in each language |
 | `language` | `en`, `hi`, `tl`, `id`, `ne` or `bn`: the language of the message |
-| `script` | `native`, or `latin` for a message typed in Latin letters. Hindi is often written that way (Hinglish) and the analyzer must read it; English is always `latin`. Tagalog and Indonesian are written in Latin letters natively, so every `tl` and `id` row is `native` |
+| `script` | `native`, or `latin` for a message typed in Latin letters. Hindi is often written that way (Hinglish) and the analyzer must read it; English is always `latin`. Tagalog and Indonesian are written in Latin letters natively, so every `tl` and `id` row is `native`. Nepali (Devanagari) and Bengali (Bengali script) are `native` in their own script and `latin` when typed in Latin letters, which workers often do ("Roman Nepali", "Banglish"); the Nepali and Bengali set has three of each in 20 |
 | `text` | The message **as the worker would paste it**, before redaction. 10 to 4,000 characters |
 | `is_scam` | The label the analyzer is scored on |
 | `scam_type` | A taxonomy type id (`data-scripts/data/source/scam-taxonomy/types.json`) for a scam; `null` for a benign message |
@@ -26,7 +26,7 @@ One JSON object per line, `utf-8`, no comments.
 | `risk_level` | `low`, `medium` or `high` (rubric below). Always `low` for a benign message |
 | `rationale` | One line, in English, 20 to 160 characters: why this label. A reviewer who does not read the language still checks the label from it |
 | `resembles` | Benign messages only: the scam type this look-alike imitates. A scam has `null` |
-| `corridor_id` | Optional: the worker's route, one of the six corridors |
+| `corridor_id` | Optional: the worker's route, one of the six corridors, **only where the message really fits one**. It is context, not something the analyzer is scored on, and no set has to cover every corridor (the three sets together do). `null` for a worker whose route is not one of the six, for example from Nepal or Bangladesh |
 | `channel` | `sms`, `whatsapp`, `email` or `social` |
 | `provenance` | `synthetic` (every row of the first release) or `anonymised` |
 | `curator` | Initials of who wrote and labelled it |
