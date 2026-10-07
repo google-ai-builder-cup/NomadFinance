@@ -179,3 +179,16 @@ python -m src.loaders.scam_taxonomy           # write
 The loader writes `scam_taxonomy/{id}` (one document per type or tactic; the id is unique across both) and `scam_taxonomy/_meta` `{version, content_hash, updated_at}` in one batch, after both files have passed the checker's model; if either fails, nothing is written. `_meta.version` goes up by 1 only when the wording changes (sources and curator are not hashed), because a stored check records it as `taxonomy_version` and the check cache ignores checks made under another version. An id removed from the files is deleted from Firestore, and running it again is safe. Options: `--input-dir`, `--collection` (default `scam_taxonomy`). It is not part of `scripts/load_bootstrap.sh`; run it yourself when the files change. Same Firestore identity as the other loaders.
 
 Full steps and results: [`docs/runbooks/NF-SA-001-scam-taxonomy.md`](../docs/runbooks/NF-SA-001-scam-taxonomy.md).
+
+## Scam golden eval sets (NF-SA-003)
+Labelled messages the Scam Analyzer is scored against: `evals/scam_golden_en_hi.jsonl` (40 messages, English and Hindi); the Tagalog and Indonesian (NF-SA-004) and Nepali and Bengali (NF-SA-005) sets use the same format and the same checker. The messages are invented; the rules for the labels are in [`docs/evals/scam-golden-set.md`](../docs/evals/scam-golden-set.md).
+
+```bash
+python -m src.validators.scam_golden                    # check every evals/scam_golden_*.jsonl
+python -m src.validators.scam_golden --spot-check 10    # the 10 rows a second teammate reviews
+python -m src.validators.scam_golden --require-reviewed 10   # before merging a set
+```
+
+The checker also guards against real data: a link must be on a reserved name (`.example`), an address too, and a long number must hold a run of zeros. `load_rows(path)` is what the eval runner (NF-SA-014) reads the files with. A test (`tests/test_scam_golden.py`) validates the committed files, so data CI fails on a bad row.
+
+Full steps and results: [`docs/runbooks/NF-SA-003-scam-golden-en-hi.md`](../docs/runbooks/NF-SA-003-scam-golden-en-hi.md).
