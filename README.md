@@ -13,6 +13,14 @@ Four interconnected pillars protect migrant workers across the financial vulnera
 3. **Exploitation Radar** — Crowdsourced database of bad actors with Gemini-driven validation, embedding-based clustering, and community heatmap.
 4. **Financial Identity Builder** — Portable financial profile with bill OCR, transaction categorization, and Gemini-synthesized narrative report for MFI/bank access at home.
 
+### Future Scope features
+
+Added behind feature flags, so they are off for everyone until switched on (`docs/api/v2-flags.md`).
+
+| Feature | What it does | Docs |
+|---|---|---|
+| **Scam Analyzer** | A worker pastes a message or uploads a screenshot and gets a verdict, the tricks used and safe next steps in their own language, and can warn other workers through Exploitation Radar. | [Feature doc](./docs/features/scam-analyzer.md) · [Prompt notes](./docs/gemini-prompts.md) · [API contract](./docs/api/v2-scam.md) |
+
 ## Google Cloud Services
 
 - **Firebase Authentication** — Google + Phone OTP sign-in
