@@ -166,20 +166,22 @@ The text and the source in this example are placeholders. The curated content is
 
 ## `scam_patterns/{id}`
 
-Canonical scam templates, each with a vector. The analyzer embeds an incoming message and searches here for the nearest ones (NF-SA-010). Written by the NF-SA-006 script, idempotently by id. Target: at least 60 per scam type.
+Canonical scam templates, each with a vector. The analyzer embeds an incoming message and searches here for the nearest ones (NF-SA-010). Written by the NF-SA-006 script (`python -m src.loaders.scam_patterns`, in `data-scripts/`), idempotently by id. Loaded: 480 templates, **60 per scam type and 10 per language in each type**, and every corridor in at least 3 per type. A template spells contact points the way the redactor does (`[PHONE]`, `[EMAIL]`, `[ID]`, `[ACCOUNT]`, `[URL]`) because the analyzer embeds the redacted message.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `scam_type` | string | yes | Taxonomy `type` id |
 | `tactics` | array of string | no | Taxonomy `tactic` ids |
 | `language` | string | yes | `en`, `hi`, `tl`, `id`, `ne`, `bn` |
+| `corridor_id` | string | no | The route the template is written for (one of the six corridors); absent for a worker whose route is not one of them. Kept for coverage and later analysis; a search does not filter on it. |
 | `text` | string | yes | The template. Synthetic, with placeholders such as `[AGENCY]`, `[AMOUNT]`. **Never a real message or a real number.** |
 | `embedding` | vector | yes | **768 numbers**, normalised, stored with the SDK's `Vector` type |
 | `embedding_model` | string | yes | `gemini-embedding-001` |
 | `dimension` | number | yes | `768` |
 | `source` | string | yes | `curated` |
 | `curator` | string | yes | Initials |
-| `created_at` | timestamp | yes | |
+| `content_hash` | string | yes | SHA-256 of the text, labels, model and size the vector depends on. The loader skips a template whose hash is unchanged, so a second run makes no Gemini call and no write. |
+| `created_at` | timestamp | yes | Set when the template is first loaded and kept when it is re-embedded |
 | `schema_version` | number | yes | `1` |
 
 The id is `<scam_type>-<language>-<nnn>`, for example `illegal_recruitment_fee-en-004`. The vector size and model are the same as `report_embeddings` (see [radar](radar.md), why 768), because a search only compares vectors of one size. The search takes the nearest 3 of any type and language: no filter, so no composite vector index is needed, only the plain one in `firestore-schema.md`. If NF-SA-006 finds a filter by language helps, it adds the composite index at that point.
