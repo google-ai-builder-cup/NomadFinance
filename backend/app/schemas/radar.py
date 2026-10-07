@@ -5,12 +5,20 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.schemas.radar_scam import RadarScamReport
+
 # Same values on radar_entities and every radar_reports document (docs/data-model/
 # collections/radar.md). Contract Shield (NF-P2-021) only ever produces "employer" or
 # "recruitment_agency"; "money_transfer_operator" comes from a worker's own report (NF-P3-001).
-RadarEntityType = Literal["money_transfer_operator", "recruitment_agency", "employer"]
+#
+# "scam_type" (an entity that is a kind of scam, not a business), "scam_message" and
+# "scam_check" belong to reports made from a Scam Analyzer check (NF-SA-013). A worker's own
+# report form and the models that read it must never produce them, so those keep the narrower
+# `User...` types: a model that answered "scam_message" would file a report as a scam type.
+UserEntityType = Literal["money_transfer_operator", "recruitment_agency", "employer"]
+RadarEntityType = UserEntityType | Literal["scam_type"]
 
-RadarViolationType = Literal[
+UserViolationType = Literal[
     "hidden_fees",
     "exchange_rate_markup",
     "illegal_recruitment_fee",
@@ -21,8 +29,9 @@ RadarViolationType = Literal[
     "unlicensed_operator",
     "other",
 ]
+RadarViolationType = UserViolationType | Literal["scam_message"]
 
-RadarReportSource = Literal["user", "contract_signal", "seed"]
+RadarReportSource = Literal["user", "contract_signal", "seed", "scam_check"]
 
 RadarRiskLevel = Literal["low", "medium", "high"]
 
@@ -61,6 +70,10 @@ class RadarReport(BaseModel):
         "None for contract_signal/seed reports, which have no free text to summarize.",
     )
     validation: RadarValidation
+    scam: RadarScamReport | None = Field(
+        default=None,
+        description="The details of a scam report (`source` is `scam_check`); absent otherwise.",
+    )
     created_at: datetime
     schema_version: int = 1
 

@@ -261,6 +261,8 @@ AI_LIMITED = {
     ("POST", "/api/v1/fib/categorize"),
     ("POST", "/api/v1/radar/report"),
     ("POST", "/api/v1/remittance/recommend"),
+    # Embeds the report text (a Gemini call) before it writes the Radar report (NF-SA-013).
+    ("POST", "/api/v2/scam/checks/{check_id}/report"),
 }
 
 # Calls Gemini but spends its own budget inside the handler (20 an hour per worker, and only for
