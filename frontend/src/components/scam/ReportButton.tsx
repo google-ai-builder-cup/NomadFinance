@@ -4,10 +4,20 @@ import { Link } from "react-router-dom";
 
 import ReportSheet from "@/components/scam/ReportSheet";
 import { Button } from "@/components/ui/button";
+import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import { useReportCheck } from "@/hooks/useScamChecks";
 import type { ScamReportRequest, ScamResultView } from "@/types/scam";
 import { scamEntitySlug } from "@/utils/scamReport";
+
+function SentMessage({ children }: { children: string }) {
+  const ref = useFocusOnMount<HTMLParagraphElement>();
+  return (
+    <p ref={ref} role="status" tabIndex={-1} className="text-sm font-semibold focus:outline-none">
+      {children}
+    </p>
+  );
+}
 
 export interface ReportButtonProps {
   result: ScamResultView;
@@ -48,11 +58,7 @@ export default function ReportButton({ result }: ReportButtonProps) {
             <CircleCheck className="h-4 w-4" aria-hidden="true" />
             {t("report.buttonDone")}
           </Button>
-          {message !== null && (
-            <p role="status" className="text-sm font-semibold">
-              {message}
-            </p>
-          )}
+          {message !== null && <SentMessage>{message}</SentMessage>}
           <Button asChild variant="outline" className="min-h-11 w-full">
             <Link to={`/radar/entity/${slug}`}>{t("report.seeInRadar")}</Link>
           </Button>

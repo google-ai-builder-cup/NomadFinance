@@ -10,6 +10,7 @@ import { MemoryRouter, useLocation } from "react-router-dom";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { jsonMocks } from "@/mocks/files";
+import { handlerForMock } from "@/mocks/handlers";
 import { server, setupMockServer } from "@/mocks/server";
 import { loadNamespace } from "@/lib/i18n";
 import ScamCheckHome from "@/pages/scam/ScamCheckHome";
@@ -302,5 +303,86 @@ describe("the way to the history", () => {
     expect(screen.getByRole("link", { name: "Your checks" }).getAttribute("href")).toBe(
       "/scam-check/history"
     );
+  });
+});
+
+describe("for a keyboard and a screen reader (NF-SA-019)", () => {
+  it("puts focus on the progress while the answer is awaited, then on the verdict when it comes", async () => {
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    server.use(
+      http.post("*/api/v2/scam/analyze", async () => {
+        await gate;
+        return HttpResponse.json(
+          jsonMocks.get("scam/analyze-01-high-risk.json")?.body as JsonBodyType
+        );
+      })
+    );
+    renderPage("/scam-check?text=Pay%20800%20SGD%20now");
+
+    await userEvent.click(submitButton());
+    // The button that was pressed is gone, so focus must not fall back to the top of the page.
+    // (The location probe above is an <output>, which is a status too: find this one by its words.)
+    const progress = (await screen.findByText("Checking the message…")).closest("[role=status]");
+    expect(document.activeElement).toBe(progress);
+
+    release();
+    const verdict = await screen.findByRole("heading", {
+      level: 2,
+      name: "This looks like a scam",
+    });
+    expect(document.activeElement).toBe(verdict);
+  });
+
+  it("puts focus on the error when the check fails", async () => {
+    server.use(handlerForMock("scam/analyze-error-rate-limited.json", "POST /api/v2/scam/analyze"));
+    renderPage("/scam-check?text=Pay%20800%20SGD%20now");
+
+    await userEvent.click(submitButton());
+
+    const alert = await screen.findByRole("alert");
+    expect(document.activeElement).toBe(alert);
+  });
+
+  it("does not take focus when the screen simply opens", () => {
+    renderPage();
+
+    expect(document.activeElement).toBe(document.body);
+  });
+
+  it("shows the chosen mode with a tick as well as colour", async () => {
+    renderPage();
+    const paste = screen.getByRole("button", { name: "Paste text" });
+    const shot = screen.getByRole("button", { name: "Screenshot" });
+
+    expect(paste.getAttribute("aria-pressed")).toBe("true");
+    expect(paste.querySelectorAll("svg")).toHaveLength(2);
+    expect(shot.querySelectorAll("svg")).toHaveLength(1);
+
+    await userEvent.click(shot);
+
+    expect(shot.querySelectorAll("svg")).toHaveLength(2);
+    expect(paste.querySelectorAll("svg")).toHaveLength(1);
+  });
+
+  it("keeps the main button at the 44 px every control on these screens has", () => {
+    renderPage();
+
+    expect(submitButton().className).toContain("min-h-11");
+  });
+
+  it("keeps the retry button of an error notice at 44 px", async () => {
+    server.use(handlerForMock("scam/analyze-error-rate-limited.json", "POST /api/v2/scam/analyze"));
+    server.use(
+      http.post("*/api/v2/scam/analyze", () =>
+        HttpResponse.json({ code: "ai_busy", message: "busy" }, { status: 503 })
+      )
+    );
+    renderPage("/scam-check?text=Pay%20800%20SGD%20now");
+
+    await userEvent.click(submitButton());
+
+    const retry = await screen.findByRole("button", { name: "Try again" });
+    expect(retry.className).toContain("min-h-11");
   });
 });

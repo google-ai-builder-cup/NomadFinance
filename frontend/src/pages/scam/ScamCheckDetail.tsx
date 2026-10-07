@@ -53,7 +53,9 @@ export default function ScamCheckDetail() {
         {back}
         <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center">
           <p className="text-sm text-muted-foreground">{t("history.detailLoadError")}</p>
-          <Button onClick={() => void check.refetch()}>{t("common.retry")}</Button>
+          <Button className="min-h-11" onClick={() => void check.refetch()}>
+            {t("common.retry")}
+          </Button>
         </div>
       </div>
     );

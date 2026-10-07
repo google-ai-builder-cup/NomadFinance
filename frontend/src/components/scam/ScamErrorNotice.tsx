@@ -1,6 +1,7 @@
 import { CircleAlert } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import { scamErrorView } from "@/utils/scamErrors";
 
@@ -13,17 +14,20 @@ export interface ScamErrorNoticeProps {
 export default function ScamErrorNotice({ error, onRetry }: ScamErrorNoticeProps) {
   const { t } = useI18n("scam");
   const view = scamErrorView(error);
+  const ref = useFocusOnMount<HTMLDivElement>();
 
   return (
     <div
+      ref={ref}
       role="alert"
-      className="flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/5 p-4"
+      tabIndex={-1}
+      className="flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/5 p-4 focus:outline-none"
     >
-      <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
+      <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-danger-ink" aria-hidden="true" />
       <div className="min-w-0 flex-1 space-y-3">
         <p className="text-sm font-semibold">{t(view.messageKey, { minutes: view.waitMinutes })}</p>
         {view.canRetry && (
-          <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+          <Button type="button" size="sm" variant="outline" className="min-h-11" onClick={onRetry}>
             {t("common.retry")}
           </Button>
         )}

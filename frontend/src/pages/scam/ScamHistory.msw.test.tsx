@@ -194,3 +194,30 @@ describe("with nothing to show", () => {
     expect(await screen.findByText("Fake prize or lottery")).toBeTruthy();
   });
 });
+
+describe("for a keyboard and a screen reader (NF-SA-019)", () => {
+  it("moves focus to the first new row after Show more, so it is not lost when the button goes", async () => {
+    paged([], { [FIRST.next_cursor as string]: LAST });
+    renderPage();
+    await screen.findAllByRole("listitem");
+
+    await userEvent.click(screen.getByRole("button", { name: "Show more" }));
+
+    await screen.findByText("Illegal recruitment fee");
+    expect(screen.queryByRole("button", { name: "Show more" })).toBeNull();
+    expect(document.activeElement).toBe(within(rows()[3]).getByRole("link"));
+  });
+
+  it("keeps the retry button at 44 px", async () => {
+    server.use(
+      http.get("*/api/v2/scam/checks", () =>
+        HttpResponse.json({ code: "internal_error", message: "x" }, { status: 500 })
+      )
+    );
+    renderPage();
+
+    const retry = await screen.findByRole("button", { name: "Try again" });
+
+    expect(retry.className).toContain("min-h-11");
+  });
+});

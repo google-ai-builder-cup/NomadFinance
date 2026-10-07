@@ -198,4 +198,4 @@ A friendly "nothing here yet" block (NF-P1-026), already used on several pages. 
 | 360 px, dark theme, right-to-left | Looked at in the browser preview with a temporary page, in light and dark and with `dir="rtl"`; the page was removed afterwards (see the runbook) |
 | Keyboard order and screen-reader names | The test queries use `getByRole(..., { name })`, which is how a screen reader finds them; focus order was tried by hand with Tab in the preview |
 
-A real screen reader (VoiceOver, TalkBack) was **not** run. Each Future Scope screen's accessibility pass (NF-SA-019, NF-FC-023) re-checks the finished pages with `axe` and a screen reader.
+The Scam Analyzer's screens had their accessibility pass in NF-SA-019: `axe` with every rule on, in a real browser, in both themes, and the automatic checks that keep it true (`docs/runbooks/NF-SA-019-scam-i18n-a11y.md`). A real screen reader (VoiceOver, TalkBack) was still **not** run (D-161). The Coach's pass (NF-FC-023) is still to do.

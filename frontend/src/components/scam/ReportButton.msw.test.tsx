@@ -384,3 +384,39 @@ describe("when the report fails", () => {
     expect(sheet().queryByRole("alert")).toBeNull();
   });
 });
+
+describe("for a keyboard and a screen reader (NF-SA-019)", () => {
+  it("puts focus on the confirmation once the warning is sent, because the button that opened the sheet is gone", async () => {
+    answerWith("scam/report-01-created.json");
+    renderButton();
+    await openSheet();
+
+    await userEvent.click(send());
+
+    const thanks = await screen.findByText(/Other workers can now see your warning/);
+    expect(document.activeElement).toBe(thanks);
+  });
+
+  it("tabs through the sheet in the order it is drawn: Cancel, then Send", async () => {
+    renderButton();
+    await openSheet();
+
+    const cancel = sheet().getByRole("button", { name: "Cancel" });
+    const sendButton = sheet().getByRole("button", { name: "Send warning" });
+
+    // Next in the tab order, and next down the screen: nothing reorders them on a phone.
+    expect(
+      cancel.compareDocumentPosition(sendButton) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(dialog().innerHTML).not.toMatch(/reverse/);
+  });
+
+  it("keeps the buttons of the sheet at 44 px", async () => {
+    renderButton();
+    await openSheet();
+
+    for (const name of ["Cancel", "Send warning", "Close"]) {
+      expect(sheet().getByRole("button", { name }).className, name).toMatch(/min-h-11|h-11/);
+    }
+  });
+});

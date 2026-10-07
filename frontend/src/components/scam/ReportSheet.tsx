@@ -168,7 +168,7 @@ export default function ReportSheet({ result, pending, error, onSend, onClose }:
               rows={6}
               aria-describedby={`${ids}-text-hint`}
               className={cn(
-                "min-h-36 w-full resize-y rounded-xl border border-input bg-background px-3 py-2 text-base",
+                "min-h-36 w-full resize-y rounded-xl border border-muted-foreground/80 bg-background px-3 py-2 text-base",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
               )}
             />
@@ -242,17 +242,14 @@ export default function ReportSheet({ result, pending, error, onSend, onClose }:
               role="alert"
               className="flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-sm font-semibold"
             >
-              <CircleAlert
-                className="mt-0.5 h-4 w-4 shrink-0 text-destructive"
-                aria-hidden="true"
-              />
+              <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-danger-ink" aria-hidden="true" />
               {t(errorView.messageKey)}
             </p>
           )}
 
           {/* Stuck to the bottom of the sheet, so on a short phone the button that sends is never
               below the fold. */}
-          <div className="sticky bottom-0 -mx-5 flex flex-col-reverse gap-2 border-t bg-card px-5 pb-5 pt-3 sm:flex-row sm:justify-end">
+          <div className="sticky bottom-0 -mx-5 flex flex-col gap-2 border-t bg-card px-5 pb-5 pt-3 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="outline"

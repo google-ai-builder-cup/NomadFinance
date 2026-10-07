@@ -35,12 +35,13 @@ export default function MessageInput({ value, onChange, disabled = false }: Mess
           "min-h-44 w-full resize-y rounded-xl border bg-card px-4 py-3 text-base shadow-sm",
           "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "disabled:opacity-60",
-          tooLong ? "border-destructive" : "border-input"
+          // The default field border is 1.3:1 against the card; an empty box is found by its outline.
+          tooLong ? "border-danger-ink" : "border-muted-foreground/80"
         )}
       />
       <div id={`${id}-count`} className="flex flex-wrap items-start justify-between gap-2 text-xs">
         {tooLong ? (
-          <p role="alert" className="font-semibold text-destructive">
+          <p role="alert" className="font-semibold text-danger-ink">
             {t("input.tooLong")}
           </p>
         ) : (
@@ -49,7 +50,7 @@ export default function MessageInput({ value, onChange, disabled = false }: Mess
         <span
           className={cn(
             "tabular-nums",
-            tooLong ? "font-bold text-destructive" : "text-muted-foreground"
+            tooLong ? "font-bold text-danger-ink" : "text-muted-foreground"
           )}
         >
           {t("input.counter", { count, max: MAX_MESSAGE_CHARS })}

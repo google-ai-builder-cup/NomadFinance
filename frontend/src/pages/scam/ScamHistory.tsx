@@ -1,4 +1,5 @@
 import { History, ScanSearch } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
@@ -16,6 +17,21 @@ export default function ScamHistory() {
   const { t } = useI18n("scam");
   const history = useScamHistory();
   const checks = history.data?.pages.flatMap((page) => page.items) ?? [];
+  const list = useRef<HTMLUListElement>(null);
+  // The index of the first row the next page will add, until focus has been moved to it.
+  const focusRow = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (focusRow.current !== null && checks.length > focusRow.current) {
+      list.current?.querySelectorAll("a")[focusRow.current]?.focus();
+      focusRow.current = null;
+    }
+  }, [checks.length]);
+
+  function showMore() {
+    focusRow.current = checks.length;
+    void history.fetchNextPage();
+  }
 
   const checkNew = (
     <Button asChild variant="outline" className="min-h-11 rounded-xl bg-card font-bold">
@@ -39,7 +55,9 @@ export default function ScamHistory() {
       ) : history.isError && checks.length === 0 ? (
         <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center">
           <p className="text-sm text-muted-foreground">{t("history.loadError")}</p>
-          <Button onClick={() => void history.refetch()}>{t("common.retry")}</Button>
+          <Button className="min-h-11" onClick={() => void history.refetch()}>
+            {t("common.retry")}
+          </Button>
         </div>
       ) : checks.length === 0 ? (
         <EmptyState
@@ -54,7 +72,7 @@ export default function ScamHistory() {
         />
       ) : (
         <>
-          <ul className="space-y-3">
+          <ul ref={list} className="space-y-3">
             {checks.map((check) => (
               <li key={check.id}>
                 <HistoryItem check={check} />
@@ -63,7 +81,7 @@ export default function ScamHistory() {
           </ul>
 
           {history.isFetchNextPageError && (
-            <p role="alert" className="text-center text-sm font-semibold text-destructive">
+            <p role="alert" className="text-center text-sm font-semibold text-danger-ink">
               {t("history.loadMoreError")}
             </p>
           )}
@@ -73,7 +91,7 @@ export default function ScamHistory() {
               variant="outline"
               className="min-h-11 w-full"
               disabled={history.isFetchingNextPage}
-              onClick={() => void history.fetchNextPage()}
+              onClick={showMore}
             >
               {history.isFetchingNextPage ? t("history.loadingMore") : t("history.showMore")}
             </Button>
