@@ -94,3 +94,15 @@ A reviewer who reads the language checks the message itself; one who does not ch
 ## Changing a set
 
 Add or change rows, run the validator, and keep the ids contiguous. A change to a label after the eval runner has recorded a baseline is a change to the benchmark: say so in the pull request, and re-run the baseline in the same change (NF-SA-014). Each report carries a fingerprint of the messages, routes and labels it scored: two reports with different fingerprints measured different sets.
+
+## The stress set (NF-SA-023)
+
+`data-scripts/evals/scam_stress_en_hi.jsonl` holds 30 messages (20 English, 10 Hindi) that the golden sets under-test, because the golden sets passed 120 of 120 and so cannot show a weakness:
+
+- **16 harmless look-alikes**, harder than the golden ones: a bank's own fraud alert, a remittance receipt, a payroll notice, an agency interview reminder, a government approval, a lender's due-date reminder, a friend asking to borrow money, a workplace raffle, a bank's maturity notice, an embassy warning, a ride notice, and the Hindi and Hinglish equivalents. They resemble 6 or more scam types.
+- **14 scams that avoid the obvious words**: a polite "refundable deposit", a friendly investment opener with no payment asked, a loan app that wants contacts and photos, a calm request for a passport photo, a "refund by mistake" code request, a prize that asks only for a reply, a passport and selfie "application", a customs handling fee, a supervisor who changed his bank, and Hindi and Hinglish scams.
+
+It uses the golden row format and the same per-row checks (`load_rows`), so the rules above about labels and invented contact points apply. What differs: **ids start at 101** (`gold-en-101`, `gold-hi-101`) so they never clash with a golden id; the size and mix rules of "What a set must contain" are for the golden sets only; and `reviewed_by` is `PP`, with `NF` as curator (the validator needs two different people). The set is scored with `python -m evals.run_scam_eval --rows evals/scam_stress_en_hi.jsonl`, on the same bar for the two languages it has. It is not part of the baseline `scam_golden_*.jsonl` run.
+
+Add to it when a real miss or false alarm is found: it is the place for a case the golden sets did not catch. A message added here is not used to tune a prompt before it has been scored once (a case written to fix a prompt proves nothing about the prompt).
+

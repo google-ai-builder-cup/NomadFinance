@@ -43,9 +43,9 @@
       }
     },
     "pillars": {
-      "heading": "Four ways NomadFinance has your back",
+      "heading": "Six ways NomadFinance has your back",
       "cta": "Sign in to try it",
-      "kicker": "Four pillars",
+      "kicker": "Six pillars",
       "items": {
         "remit": {
           "b1": "Compare providers across 6 corridors",
@@ -66,6 +66,16 @@
           "b1": "Log income, bills and savings, bills from a photo",
           "b2": "A score meter and a timeline of your progress",
           "b3": "A PDF report for banks and lenders back home"
+        },
+        "scam": {
+          "b1": "Paste a message or upload a screenshot",
+          "b2": "See how it tries to trick you and what to do next",
+          "b3": "Warn other workers anonymously through the Radar"
+        },
+        "coach": {
+          "b1": "A friendly interview in your language",
+          "b2": "A preparedness score from 0 to 100",
+          "b3": "A 90-day plan you can keep as a PDF"
         }
       }
     },
@@ -324,6 +334,12 @@
       "identity": {
         "open": "Open Financial Identity",
         "empty": "Log activity to start building your score."
+      },
+      "scam": {
+        "open": "Check a message"
+      },
+      "coach": {
+        "open": "Open the Coach"
       }
     },
     "actions": {
@@ -414,6 +430,14 @@
     "identity": {
       "name": "Financial Identity",
       "description": "Build a portable record of your income and savings that banks back home can use."
+    },
+    "scam": {
+      "name": "Scam Check",
+      "description": "Paste a message or a screenshot and learn whether it is a scam, how it tries to trick you and what to do, in your language."
+    },
+    "coach": {
+      "name": "Financial Coach",
+      "description": "Talk through your money in your own language and get a preparedness score and a 90-day plan."
     }
   },
   "comingSoon": {
@@ -1153,7 +1177,9 @@
       "remit": "Illustration: two stacks of coins with a stream of coins moving between them",
       "contract": "Illustration: a contract being scanned and protected by a shield",
       "radar": "Illustration: a radar dish sweeping an area and revealing blips",
-      "identity": "Illustration: layered ID cards with a fingerprint and rising bars"
+      "identity": "Illustration: layered ID cards with a fingerprint and rising bars",
+      "scam": "Illustration: a message bubble with a warning sign in front of a shield",
+      "coach": "Illustration: two chat bubbles beside rising steps with a flag on top"
     },
     "status": {
       "notFound": "Illustration: a cube with a question mark",

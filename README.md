@@ -6,16 +6,18 @@ Built for the Google Cloud AI Builder Cup 2026 — BFSI Track (JAPAC).
 
 ## What It Does
 
-Four interconnected pillars protect migrant workers across the financial vulnerability lifecycle:
+Six interconnected pillars protect migrant workers across the financial vulnerability lifecycle:
 
 1. **Remittance X-Ray** — Real-time comparison of transfer providers using World Bank RPW data + live FX rates from a 4-provider failover chain (Frankfurter → ExchangeRate-API → CurrencyFreaks → Wise).
 2. **Contract Shield** — 6-step Gemini-powered agentic pipeline: extracts contract text in any language, compares against curated ILO NATLEX labor laws for the host country, generates a risk-scored report and complaint template.
 3. **Exploitation Radar** — Crowdsourced database of bad actors with Gemini-driven validation, embedding-based clustering, and community heatmap.
 4. **Financial Identity Builder** — Portable financial profile with bill OCR, transaction categorization, and Gemini-synthesized narrative report for MFI/bank access at home.
+5. **Scam Check** — A worker pastes a message or uploads a screenshot and gets a verdict, the tricks it uses and safe next steps in their own language, and can warn other workers through Exploitation Radar.
+6. **Financial Coach** — A guided interview in the worker's language that scores financial preparedness and produces a 90-day plan.
 
-### Future Scope features
+### Pillars 5 and 6: feature docs
 
-Added behind feature flags, so they are off for everyone until switched on (`docs/api/v2-flags.md`).
+Scam Check and Financial Coach are behind feature flags, so they are off for a worker until switched on (`docs/api/v2-flags.md`).
 
 | Feature | What it does | Docs |
 |---|---|---|

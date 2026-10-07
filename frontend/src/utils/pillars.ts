@@ -1,6 +1,6 @@
 // Tailwind only generates classes it can read as whole strings, so each pillar's accent classes
 // are spelled out here once instead of being built from the pillar name.
-export const PILLAR_KEYS = ["remit", "contract", "radar", "identity"] as const;
+export const PILLAR_KEYS = ["remit", "contract", "radar", "identity", "scam", "coach"] as const;
 export type PillarKey = (typeof PILLAR_KEYS)[number];
 
 export interface PillarStyle {
@@ -71,6 +71,30 @@ export const PILLAR_STYLES: Readonly<Record<PillarKey, PillarStyle>> = {
     base: "--identity",
     soft: "--identity-soft",
     deep: "--identity-deep",
+  },
+  scam: {
+    tile: "bg-scam text-white",
+    text: "text-scam-ink",
+    tint: "bg-scam-tint",
+    bar: "bg-scam",
+    border: "border-scam",
+    band: "bg-gradient-to-br from-scam-tint via-card to-card",
+    button: "bg-scam-deep text-white hover:bg-scam-deep/90",
+    base: "--scam",
+    soft: "--scam-soft",
+    deep: "--scam-deep",
+  },
+  coach: {
+    tile: "bg-coach text-white",
+    text: "text-coach-ink",
+    tint: "bg-coach-tint",
+    bar: "bg-coach",
+    border: "border-coach",
+    band: "bg-gradient-to-br from-coach-tint via-card to-card",
+    button: "bg-coach-deep text-white hover:bg-coach-deep/90",
+    base: "--coach",
+    soft: "--coach-soft",
+    deep: "--coach-deep",
   },
 };
 

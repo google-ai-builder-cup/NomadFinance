@@ -43,9 +43,9 @@
       }
     },
     "pillars": {
-      "heading": "Apat na paraan ng pagtulong ng NomadFinance sa iyo",
+      "heading": "Anim na paraan ng pagtulong ng NomadFinance sa iyo",
       "cta": "Mag-sign in para subukan",
-      "kicker": "Apat na haligi",
+      "kicker": "Anim na haligi",
       "items": {
         "remit": {
           "b1": "Ihambing ang mga provider sa 6 na corridor",
@@ -66,6 +66,16 @@
           "b1": "I-log ang kita, bayarin at ipon; bayarin mula sa litrato",
           "b2": "Metro ng iskor at timeline ng progreso mo",
           "b3": "PDF na ulat para sa mga bangko at nagpapautang sa bahay"
+        },
+        "scam": {
+          "b1": "I-paste ang mensahe o mag-upload ng screenshot",
+          "b2": "Alamin kung paano ka nilalansi at ano ang susunod na gagawin",
+          "b3": "Magbabala nang hindi nagpapakilala sa ibang manggagawa sa Radar"
+        },
+        "coach": {
+          "b1": "Magiliw na panayam sa iyong wika",
+          "b2": "Marka ng kahandaan mula 0 hanggang 100",
+          "b3": "90-araw na plano na maitatago mo bilang PDF"
         }
       }
     },
@@ -324,6 +334,12 @@
       "identity": {
         "open": "Buksan ang Financial Identity",
         "empty": "Mag-log ng aktibidad para simulan ang iyong score."
+      },
+      "scam": {
+        "open": "Suriin ang mensahe"
+      },
+      "coach": {
+        "open": "Buksan ang Coach"
       }
     },
     "actions": {
@@ -414,6 +430,14 @@
     "identity": {
       "name": "Financial Identity",
       "description": "Gumawa ng portable na record ng iyong kita at ipon na magagamit ng mga bangko sa bahay."
+    },
+    "scam": {
+      "name": "Scam Check",
+      "description": "I-paste ang mensahe o screenshot at alamin kung scam ito, paano ka nito nilalansi at ano ang gagawin, sa sarili mong wika."
+    },
+    "coach": {
+      "name": "Financial Coach",
+      "description": "Pag-usapan ang pera mo sa sarili mong wika at kumuha ng marka ng kahandaan at 90-araw na plano."
     }
   },
   "comingSoon": {
@@ -1153,7 +1177,9 @@
       "remit": "Larawan: dalawang tumpok ng barya na may mga baryang gumagalaw sa pagitan nila",
       "contract": "Larawan: isang kontratang ini-scan at pinoprotektahan ng kalasag",
       "radar": "Larawan: radar dish na sumusuri sa isang lugar at nagpapakita ng mga tuldok",
-      "identity": "Larawan: patong-patong na ID card na may fingerprint at tumataas na mga bar"
+      "identity": "Larawan: patong-patong na ID card na may fingerprint at tumataas na mga bar",
+      "scam": "Larawan: isang message bubble na may babala sa harap ng isang kalasag",
+      "coach": "Larawan: dalawang chat bubble sa tabi ng pataas na hagdan na may bandila sa taas"
     },
     "status": {
       "notFound": "Larawan: isang kubo na may tandang pananong",

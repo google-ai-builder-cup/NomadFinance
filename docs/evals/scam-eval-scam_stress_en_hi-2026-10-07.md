@@ -1,0 +1,90 @@
+# Scam analyzer eval, 2026-10-07
+
+**Bar met.** Every group reaches its F1.
+
+Scores the Scam Analyzer's classifier (`scam.classify`) on the messages in `data-scripts/evals/scam_stress_en_hi.jsonl`. Written by `python -m evals.run_scam_eval`; the steps are in `docs/runbooks/NF-SA-014-scam-eval-runner.md`.
+
+| | |
+|---|---|
+| Run at | 2026-10-07 18:44 UTC |
+| Classifier | `gemini-3.1-flash-lite`, prompt `scam.classify v2` |
+| Taxonomy | content hash `8a86c0dfb55d` |
+| Message set | 30 messages (14 scams, 16 benign), fingerprint `986f46550c88` |
+
+## Against the bar
+
+F1 of scam against benign: at least 0.85 overall and 0.75 in every language.
+
+| Group | Messages | F1 | Bar |  |
+|---|---|---|---|---|
+| Overall | 30 | 1.000 | 0.85 | met |
+| en | 20 | 1.000 | 0.75 | met |
+| hi | 10 | 1.000 | 0.75 | met |
+
+## Scam against benign, by language
+
+Caught: a scam called a scam. Missed: a scam called benign. False alarm: a benign message called a scam. Passed: a benign message called benign. Precision is Caught out of everything called a scam; recall is Caught out of every scam.
+
+| Language | Messages | Caught | Missed | False alarm | Passed | Precision | Recall | F1 |
+|---|---|---|---|---|---|---|---|---|
+| All | 30 | 14 | 0 | 0 | 16 | 1.000 | 1.000 | 1.000 |
+| en | 20 | 9 | 0 | 0 | 11 | 1.000 | 1.000 | 1.000 |
+| hi | 10 | 5 | 0 | 0 | 5 | 1.000 | 1.000 | 1.000 |
+
+## Per class
+
+One class against all the others. A scam called by the wrong type counts against both types. Read these as counts: a type has 6 to 12 messages in the whole set, so one message moves a figure by 8 points or more, and the bar is not set on them (D-129).
+
+| Class | Messages | Called right | Precision | Recall | F1 |
+|---|---|---|---|---|---|
+| fake_job_offer | 1 | 1 of 1 | 1.000 | 1.000 | 1.000 |
+| illegal_recruitment_fee | 2 | 2 of 2 | 1.000 | 1.000 | 1.000 |
+| remittance_otp_phishing | 2 | 2 of 2 | 1.000 | 1.000 | 1.000 |
+| loan_app_trap | 2 | 2 of 2 | 1.000 | 1.000 | 1.000 |
+| authority_impersonation | 1 | 1 of 1 | 1.000 | 1.000 | 1.000 |
+| investment_romance | 2 | 2 of 2 | 1.000 | 1.000 | 1.000 |
+| lottery | 2 | 1 of 2 | 1.000 | 0.500 | 0.667 |
+| other_scam | 2 | 2 of 2 | 0.667 | 1.000 | 0.800 |
+| benign | 16 | 16 of 16 | 1.000 | 1.000 | 1.000 |
+
+## Confidence
+
+How sure the classifier said it was. Below 0.7 the check screen tells the worker "we are not fully sure": on a right answer that is a mild fault, and a wrong answer given with high confidence gives the worker no warning at all.
+
+| Answers | Messages | Lowest | Median | Under 0.7 |
+|---|---|---|---|---|
+| Scams called a scam | 13 | 0.800 | 1.000 | 0 |
+| Benign called benign | 16 | 0.800 | 1.000 | 0 |
+| Wrong answers | 1 | 0.800 | 0.800 | 0 |
+
+## Confusion matrix
+
+Classes: 1 = fake_job_offer, 2 = illegal_recruitment_fee, 3 = remittance_otp_phishing, 4 = loan_app_trap, 5 = authority_impersonation, 6 = investment_romance, 7 = lottery, 8 = other_scam, 9 = benign.
+
+| Label \ Called | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 fake_job_offer | **1** | · | · | · | · | · | · | · | · |
+| 2 illegal_recruitment_fee | · | **2** | · | · | · | · | · | · | · |
+| 3 remittance_otp_phishing | · | · | **2** | · | · | · | · | · | · |
+| 4 loan_app_trap | · | · | · | **2** | · | · | · | · | · |
+| 5 authority_impersonation | · | · | · | · | **1** | · | · | · | · |
+| 6 investment_romance | · | · | · | · | · | **2** | · | · | · |
+| 7 lottery | · | · | · | · | · | · | **1** | 1 | · |
+| 8 other_scam | · | · | · | · | · | · | · | **2** | · |
+| 9 benign | · | · | · | · | · | · | · | · | **16** |
+
+## Wrong answers
+
+### False alarms: benign called a scam (0)
+
+None.
+
+### Missed scams: a scam called benign (0)
+
+None.
+
+### Called a scam, but the wrong type (1)
+
+| Message | Language | Label | Called | Confidence | Why the label is right |
+|---|---|---|---|---|---|
+| gold-en-117 | en | lottery | other_scam | 0.80 | A prize message that asks for nothing yet. |

@@ -1,69 +1,12 @@
 import { useId } from "react";
 
-import { makeIso, type FaceFills } from "@/components/visual/iso";
+import { makeIso } from "@/components/visual/iso";
 import { Box, Disc, IllustrationFrame } from "@/components/visual/IsoParts";
 import { useI18n } from "@/hooks/useI18n";
-import { PILLAR_STYLES, pillarVar, type PillarKey } from "@/utils/pillars";
-
-interface Palette {
-  base: string;
-  soft: string;
-  deep: string;
-  faces: FaceFills;
-  floor: FaceFills;
-  paper: FaceFills;
-  ink: string;
-  glow: string;
-}
-
-function palette(pillar: PillarKey): Palette {
-  const s = PILLAR_STYLES[pillar];
-  const base = pillarVar(s.base);
-  const soft = pillarVar(s.soft);
-  const deep = pillarVar(s.deep);
-  return {
-    base,
-    soft,
-    deep,
-    faces: { top: soft, left: base, right: deep },
-    floor: {
-      top: "hsl(var(--muted))",
-      left: "hsl(var(--border))",
-      right: "hsl(var(--subtle-foreground) / .45)",
-    },
-    paper: { top: "hsl(var(--card))", left: "hsl(var(--card))", right: "hsl(var(--border))" },
-    ink: "hsl(var(--subtle-foreground))",
-    glow: pillarVar(s.soft, 0.5),
-  };
-}
-
-const GOLD = "hsl(var(--brand-gold))";
-
-function Glow({
-  id,
-  color,
-  cy,
-  rx,
-  ry,
-}: {
-  id: string;
-  color: string;
-  cy: number;
-  rx: number;
-  ry: number;
-}) {
-  return (
-    <>
-      <defs>
-        <radialGradient id={id} cx=".5" cy=".5" r=".5">
-          <stop offset="0" stopColor={color} />
-          <stop offset="1" stopColor={color} stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="120" cy={cy} rx={rx} ry={ry} fill={`url(#${id})`} />
-    </>
-  );
-}
+import { CoachArt, ScamArt } from "@/components/visual/ModulePillarArt";
+import { Glow } from "@/components/visual/PillarArtParts";
+import { GOLD, palette } from "@/components/visual/pillarArtTokens";
+import type { PillarKey } from "@/utils/pillars";
 
 function RemittanceArt({ label }: { label: string }) {
   const id = useId().replace(/:/g, "");
@@ -414,6 +357,8 @@ const ART: Record<PillarKey, (props: { label: string }) => JSX.Element> = {
   contract: ContractArt,
   radar: RadarArt,
   identity: IdentityArt,
+  scam: ScamArt,
+  coach: CoachArt,
 };
 
 /** The isometric scene for one pillar, tinted with that pillar's accent. Idle motion is CSS

@@ -202,3 +202,49 @@ def test_a_backend_package_that_is_not_installed_says_how_to_install_it(
         backend.load_backend_classifier(load_taxonomy())
 
     assert re.search(r"'tenacity'.*pip install -r backend/requirements.txt", str(error.value))
+
+
+# --- scoring one file of messages (NF-SA-023) --------------------------------------------------
+
+
+STRESS = Path(__file__).resolve().parents[1] / "evals" / "scam_stress_en_hi.jsonl"
+
+
+def test_scoring_one_file_gates_only_the_languages_it_has(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    stress = [r for r in cli.load_rows(STRESS)[0]]
+    args = options(tmp_path, rows=STRESS)
+
+    code = cli.run(args, stress, load_taxonomy(), classifier())
+
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "[ 30/30]" in out and "en" in out and "ne " not in out
+    report = args.report.read_text(encoding="utf-8")
+    assert "`data-scripts/evals/scam_stress_en_hi.jsonl`" in report
+    assert "| ne |" not in report.split("## Scam against benign")[0]
+
+
+def test_the_default_report_of_one_file_is_named_after_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(cli, "EVAL_REPORT_DIR", tmp_path)
+    stress = cli.load_rows(STRESS)[0]
+
+    cli.run(options(tmp_path, report=None, rows=STRESS), stress, load_taxonomy(), classifier())
+
+    [written] = list(tmp_path.glob("*.md"))
+    assert written.name.startswith("scam-eval-scam_stress_en_hi-")
+
+
+def test_a_file_that_does_not_parse_is_not_scored(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    broken = tmp_path / "broken.jsonl"
+    broken.write_text('{"id": "x"}\n', encoding="utf-8")
+
+    code = cli.main(["--rows", str(broken)])
+
+    assert code == cli.NOT_SCORED
+    assert "FAIL broken.jsonl" in capsys.readouterr().out

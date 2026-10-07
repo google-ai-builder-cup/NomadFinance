@@ -72,17 +72,42 @@ export const PILLAR_ITEMS: readonly PillarItem[] = [
 
 export const NAV_ITEMS: readonly NavItem[] = [HOME_ITEM, ...PILLAR_ITEMS];
 
-export interface ModuleItem extends NavItem {
+export interface ModuleItem extends PillarItem {
   /** The module is in the navigation only while this flag is on for the signed-in user. */
   flag: FeatureFlag;
 }
 
-// Kept apart from PILLAR_ITEMS on purpose: that list also feeds the landing page, the dashboard
-// cards and analytics, which must stay exactly as v1.0 while a module ships dark (NF-F0-006).
+// The two Future Scope pillars. Kept apart from PILLAR_ITEMS: the navigation and the signed-in
+// dashboard show a module only while its flag is on for the worker (NF-F0-006), and the page
+// headers and analytics still know four pillars. The landing page shows all six, below.
 export const MODULE_ITEMS: readonly ModuleItem[] = [
-  { to: "/coach", icon: GraduationCap, labelKey: "nav.coach", flag: "coach" },
-  { to: "/scam-check", icon: ScanSearch, labelKey: "nav.scamCheck", flag: "scam" },
+  {
+    to: "/coach",
+    pillar: "coach",
+    icon: GraduationCap,
+    labelKey: "nav.coach",
+    nameKey: "pillars.coach.name",
+    descriptionKey: "pillars.coach.description",
+    flag: "coach",
+  },
+  {
+    to: "/scam-check",
+    pillar: "scam",
+    icon: ScanSearch,
+    labelKey: "nav.scamCheck",
+    nameKey: "pillars.scam.name",
+    descriptionKey: "pillars.scam.description",
+    flag: "scam",
+  },
 ];
+
+/** All six pillars, for the landing page: it is marketing, shown signed out to everyone. */
+export const ALL_PILLAR_ITEMS: readonly PillarItem[] = [...PILLAR_ITEMS, ...MODULE_ITEMS];
+
+/** The pillars a signed-in worker has: the four, then each module that is on for them. */
+export function visiblePillarItems(flags: FeatureFlags): readonly PillarItem[] {
+  return [...PILLAR_ITEMS, ...MODULE_ITEMS.filter(({ flag }) => flags[flag])];
+}
 
 /** The sidebar and tab bar entries for this user: the v1.0 five, then each module that is on. */
 export function visibleNavItems(flags: FeatureFlags): readonly NavItem[] {

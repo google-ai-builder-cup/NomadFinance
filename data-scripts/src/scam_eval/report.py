@@ -13,6 +13,7 @@ from datetime import datetime
 
 from src.scam_eval.metrics import (
     LANGUAGE_F1_MIN,
+    LOW_CONFIDENCE,
     OVERALL_F1_MIN,
     Counts,
     Evaluation,
@@ -30,6 +31,8 @@ class RunInfo:
     prompt: str  # e.g. "scam.classify v2"
     taxonomy_hash: str  # the loader's `_meta.content_hash`, first digits
     golden_hash: str  # `metrics.fingerprint` of the rows
+    # Where the messages came from; the stress set is scored with the same report.
+    source: str = "evals/scam_golden_*.jsonl"
 
 
 def _cell(text: str) -> str:
@@ -114,6 +117,22 @@ def _per_class(evaluation: Evaluation) -> list[str]:
     return _table(["Class", "Messages", "Called right", "Precision", "Recall", "F1"], rows)
 
 
+def _confidence(evaluation: Evaluation) -> list[str]:
+    if not evaluation.confidence:
+        return ["Not recorded."]
+    rows = [
+        [g.name, str(g.count), _f(g.lowest), _f(g.median), str(g.under_low)]
+        for g in evaluation.confidence
+    ]
+    return [
+        f"How sure the classifier said it was. Below {LOW_CONFIDENCE} the check screen tells the "
+        'worker "we are not fully sure": on a right answer that is a mild fault, and a wrong '
+        "answer given with high confidence gives the worker no warning at all.",
+        "",
+        *_table(["Answers", "Messages", "Lowest", "Median", f"Under {LOW_CONFIDENCE}"], rows),
+    ]
+
+
 def _confusion(evaluation: Evaluation) -> list[str]:
     classes = evaluation.classes
     legend = ", ".join(f"{i} = {name}" for i, name in enumerate(classes, start=1))
@@ -159,8 +178,8 @@ def render_report(evaluation: Evaluation, checks: Sequence[GateCheck], info: Run
         "",
         _headline(checks),
         "",
-        "Scores the Scam Analyzer's classifier (`scam.classify`) on the golden messages in "
-        "`data-scripts/evals/scam_golden_*.jsonl`. Written by `python -m evals.run_scam_eval`; "
+        "Scores the Scam Analyzer's classifier (`scam.classify`) on the messages in "
+        f"`data-scripts/{info.source}`. Written by `python -m evals.run_scam_eval`; "
         "the steps are in `docs/runbooks/NF-SA-014-scam-eval-runner.md`.",
         "",
         "| | |",
@@ -168,7 +187,7 @@ def render_report(evaluation: Evaluation, checks: Sequence[GateCheck], info: Run
         f"| Run at | {info.when:%Y-%m-%d %H:%M} UTC |",
         f"| Classifier | `{info.model}`, prompt `{info.prompt}` |",
         f"| Taxonomy | content hash `{info.taxonomy_hash}` |",
-        f"| Golden set | {evaluation.overall.total} messages ({scams} scams, {benign} benign), "
+        f"| Message set | {evaluation.overall.total} messages ({scams} scams, {benign} benign), "
         f"fingerprint `{info.golden_hash}` |",
         "",
         "## Against the bar",
@@ -193,6 +212,10 @@ def render_report(evaluation: Evaluation, checks: Sequence[GateCheck], info: Run
         "message moves a figure by 8 points or more, and the bar is not set on them (D-129).",
         "",
         *_per_class(evaluation),
+        "",
+        "## Confidence",
+        "",
+        *_confidence(evaluation),
         "",
         "## Confusion matrix",
         "",
