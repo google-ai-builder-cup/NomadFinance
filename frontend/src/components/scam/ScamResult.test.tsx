@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
-// What a worker sees after a check (NF-SA-016): the verdict card, the explanation under it and a way
-// to check another message.
-import { cleanup, render, screen } from "@testing-library/react";
+// What a worker sees for a check (NF-SA-016, NF-SA-018): the verdict card, the explanation under
+// it, "Warn other workers" for a scam, and a way to check another message.
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { cleanup, render as renderPlain, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ReactElement } from "react";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import ScamResult from "@/components/scam/ScamResult";
@@ -14,6 +17,15 @@ beforeAll(async () => {
 });
 
 afterEach(cleanup);
+
+// The report button reads and writes through the API and links to Radar.
+function render(ui: ReactElement) {
+  return renderPlain(
+    <QueryClientProvider client={new QueryClient()}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>
+  );
+}
 
 describe("ScamResult", () => {
   it("shows the card, then what the sender wants and what to do now", () => {
@@ -63,5 +75,22 @@ describe("ScamResult", () => {
     );
 
     expect(screen.getByText("You checked this message before.")).toBeTruthy();
+  });
+
+  it("offers to warn other workers about a scam, and not about a message that is not one", () => {
+    const { unmount } = render(
+      <ScamResult result={scamResult("high")} onCheckAnother={() => undefined} />
+    );
+    expect(screen.getByRole("button", { name: "Warn other workers" })).toBeTruthy();
+    unmount();
+
+    render(<ScamResult result={scamResult("benign")} onCheckAnother={() => undefined} />);
+    expect(screen.queryByRole("button", { name: "Warn other workers" })).toBeNull();
+  });
+
+  it("has no check-another button for a stored check, which has its own way on", () => {
+    render(<ScamResult result={scamResult("high")} />);
+
+    expect(screen.queryByRole("button", { name: "Check another message" })).toBeNull();
   });
 });

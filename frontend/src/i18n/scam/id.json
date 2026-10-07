@@ -137,5 +137,67 @@
     "similarTitle": "Mirip penipuan yang kami kenal",
     "corridorMax": "Pekerja di rute Anda mengirim 10 laporan atau lebih seperti ini.",
     "corridor_other": "Pekerja di rute Anda mengirim {{count}} laporan seperti ini."
+  },
+  "history": {
+    "title": "Pemeriksaan Anda",
+    "description": "Pesan yang Anda periksa dalam 90 hari terakhir. Hanya Anda yang bisa melihat daftar ini.",
+    "open": "Pemeriksaan Anda",
+    "checkNew": "Periksa pesan",
+    "loadError": "Kami tidak bisa memuat pemeriksaan Anda. Silakan coba lagi.",
+    "empty": {
+      "title": "Belum ada pemeriksaan",
+      "description": "Setelah Anda memeriksa pesan, pesan itu tercatat di sini selama 90 hari agar Anda bisa membaca jawabannya lagi."
+    },
+    "showMore": "Tampilkan lebih banyak",
+    "loadingMore": "Memuat…",
+    "loadMoreError": "Kami tidak bisa memuat pemeriksaan lain. Silakan coba lagi.",
+    "notScam": "Bukan penipuan",
+    "pasted": "Teks yang ditempel",
+    "screenshot": "Tangkapan layar",
+    "reported": "Anda sudah memperingatkan pekerja lain",
+    "back": "Kembali ke pemeriksaan Anda",
+    "detailTitle": "Pemeriksaan tanggal {{date}}",
+    "keptUntil": "Disimpan sampai {{date}}, lalu dihapus.",
+    "notFound": {
+      "title": "Pemeriksaan ini tidak ditemukan",
+      "description": "Mungkin sudah lebih dari 90 hari sehingga dihapus."
+    },
+    "detailLoadError": "Kami tidak bisa memuat pemeriksaan ini. Silakan coba lagi."
+  },
+  "report": {
+    "hint": "Bantu pekerja lain mengenali penipuan ini. Peringatan Anda anonim.",
+    "button": "Peringatkan pekerja lain",
+    "buttonDone": "Anda sudah memperingatkan pekerja lain",
+    "thanks": "Terima kasih. Pekerja lain kini bisa melihat peringatan Anda.",
+    "already": "Anda sudah memperingatkan pekerja lain tentang pesan ini.",
+    "seeInRadar": "Lihat di Radar",
+    "sheet": {
+      "title": "Peringatkan pekerja lain",
+      "intro": "Pekerja lain akan melihat isi di bawah ini di halaman Radar untuk “{{type}}”. Bacalah, lalu hapus apa pun yang tidak ingin Anda bagikan.",
+      "textLabel": "Pesan yang akan dilihat pekerja lain",
+      "textHint": "Nomor telepon, rekening, dan tautan sudah disembunyikan. Hapus nama yang Anda lihat.",
+      "contactsTitle": "Kontak yang dibagikan",
+      "contactsHint": "Nomor atau alamat di pesan mungkin milik Anda sendiri. Hapus centang pada yang tidak ingin Anda bagikan.",
+      "contactsMax": "Anda bisa membagikan paling banyak {{max}} kontak.",
+      "noContacts": "Tidak ada nomor telepon, tautan, atau alamat di pesan ini.",
+      "alsoShared": "Ikut dibagikan: seberapa berisiko pesan ini, trik yang dipakai, dan kata-kata yang membuatnya ketahuan.",
+      "anonymous": "Peringatan ini anonim dan belum diverifikasi. Nama, akun, dan pesan asli Anda tidak pernah dibagikan.",
+      "send": "Kirim peringatan",
+      "sending": "Mengirim…",
+      "cancel": "Batal",
+      "close": "Tutup"
+    },
+    "errors": {
+      "notAScam": "Hanya pesan yang tampak seperti penipuan yang bisa dilaporkan.",
+      "invalid": "Peringatan ini tidak bisa dikirim. Pastikan pesan tidak kosong dan kurang dari 1.000 karakter.",
+      "rateLimited": "Anda mengirim terlalu cepat. Tunggu semenit lalu coba lagi.",
+      "expired": "Pemeriksaan ini tidak lagi tersimpan, jadi tidak bisa dilaporkan."
+    }
+  },
+  "radarReport": {
+    "tactics": "Trik yang dipakai",
+    "phrases": "Kata-kata yang membuatnya ketahuan",
+    "asked": "Yang diminta",
+    "contacts": "Kontak dalam pesan"
   }
 }

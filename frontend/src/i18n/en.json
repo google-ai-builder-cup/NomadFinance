@@ -794,7 +794,8 @@
       "contract_substitution": "Contract changed after signing",
       "passport_retention": "Passport kept by employer or agent",
       "unlicensed_operator": "Unlicensed operator",
-      "other": "Other problem"
+      "other": "Other problem",
+      "scam_message": "Scam message"
     },
     "report": {
       "title": "Report a problem",
@@ -811,7 +812,8 @@
         "types": {
           "money_transfer_operator": "Money transfer service",
           "recruitment_agency": "Recruitment agency",
-          "employer": "Employer"
+          "employer": "Employer",
+          "scam_type": "Kind of scam"
         },
         "hints": {
           "money_transfer_operator": "The shop or app you send money home with",
@@ -935,7 +937,8 @@
       "reportSource": {
         "user": "Reported by a worker",
         "contract_signal": "Found during a contract review",
-        "seed": "Demo data"
+        "seed": "Demo data",
+        "scam_check": "Shared by a worker after checking a message. Not verified."
       }
     },
     "alerts": {

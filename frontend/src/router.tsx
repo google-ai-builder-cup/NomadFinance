@@ -102,6 +102,14 @@ export const router = createBrowserRouter([
                         path: "/scam-check",
                         ...page(() => import("@/pages/scam/ScamCheckRoute")),
                       },
+                      {
+                        path: "/scam-check/history",
+                        ...page(() => import("@/pages/scam/ScamHistoryRoute")),
+                      },
+                      {
+                        path: "/scam-check/history/:id",
+                        ...page(() => import("@/pages/scam/ScamCheckDetailRoute")),
+                      },
                     ],
                   },
                 ],

@@ -1,6 +1,18 @@
+import { lazy, Suspense } from "react";
+
 import { useI18n } from "@/hooks/useI18n";
-import i18n from "@/lib/i18n";
+import i18n, { loadNamespace } from "@/lib/i18n";
 import type { RadarReportSummary } from "@/types/radar";
+
+// The scam details use the scam module's strings and icons, which a worker who only reads the
+// heatmap never needs: fetched with the first scam report that is shown.
+const ScamReportDetails = lazy(async () => {
+  const [module] = await Promise.all([
+    import("@/components/radar/ScamReportDetails"),
+    loadNamespace("scam"),
+  ]);
+  return module;
+});
 
 export interface EntityReportListProps {
   reports: readonly RadarReportSummary[];
@@ -52,6 +64,11 @@ export default function EntityReportList({
               {t(`radar.entity.reportSource.${report.source}`)}
               {extra !== null && ` · ${extra}`}
             </p>
+            {report.scam && (
+              <Suspense fallback={null}>
+                <ScamReportDetails scam={report.scam} />
+              </Suspense>
+            )}
           </li>
         );
       })}

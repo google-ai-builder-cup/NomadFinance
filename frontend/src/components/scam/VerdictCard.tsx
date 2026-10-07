@@ -8,7 +8,7 @@ import IndicatorList from "@/components/scam/IndicatorList";
 import TacticChips from "@/components/scam/TacticChips";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/hooks/useI18n";
-import type { ScamAnalyzeResponse } from "@/types/scam";
+import type { ScamResultView } from "@/types/scam";
 
 /** Below this the card says it is not fully sure (the classifier's own advice: under 0.7 a message
  * is short, unclear or could be real). */
@@ -17,7 +17,7 @@ const LOW_CONFIDENCE = 0.7;
 const REPORT_COUNT_CAP = 10;
 
 export interface VerdictCardProps {
-  result: ScamAnalyzeResponse;
+  result: ScamResultView;
 }
 
 /** The answer to "is this a scam": a risk meter and the kind of scam, the tricks it uses (tap to

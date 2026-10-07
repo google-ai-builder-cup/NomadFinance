@@ -1,7 +1,7 @@
-import { ClipboardPaste, ImageIcon, ScanSearch, ShieldCheck } from "lucide-react";
+import { ClipboardPaste, History, ImageIcon, ScanSearch, ShieldCheck } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import PageHeader from "@/components/common/PageHeader";
 import AnalyzingProgress from "@/components/scam/AnalyzingProgress";
@@ -96,6 +96,14 @@ export default function ScamCheckHome() {
         icon={ScanSearch}
         title={t("home.title")}
         description={t("home.description")}
+        actions={
+          <Button asChild variant="outline" className="min-h-11 gap-2 rounded-xl bg-card font-bold">
+            <Link to="/scam-check/history">
+              <History className="h-4 w-4" aria-hidden="true" />
+              {t("history.open")}
+            </Link>
+          </Button>
+        }
         compact
       />
 

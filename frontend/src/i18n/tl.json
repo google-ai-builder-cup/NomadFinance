@@ -794,7 +794,8 @@
       "contract_substitution": "Binago ang kontrata pagkatapos pumirma",
       "passport_retention": "Kinuha ng employer o ahente ang pasaporte",
       "unlicensed_operator": "Walang lisensyang operator",
-      "other": "Iba pang problema"
+      "other": "Iba pang problema",
+      "scam_message": "Scam na mensahe"
     },
     "report": {
       "title": "Mag-ulat ng problema",
@@ -811,7 +812,8 @@
         "types": {
           "money_transfer_operator": "Serbisyo ng padala ng pera",
           "recruitment_agency": "Ahensya ng recruitment",
-          "employer": "Employer"
+          "employer": "Employer",
+          "scam_type": "Uri ng scam"
         },
         "hints": {
           "money_transfer_operator": "Ang tindahan o app na gamit mo sa pagpapadala ng pera sa inyo",
@@ -935,7 +937,8 @@
       "reportSource": {
         "user": "Iniulat ng isang manggagawa",
         "contract_signal": "Natukoy habang sinusuri ang isang kontrata",
-        "seed": "Demo data"
+        "seed": "Demo data",
+        "scam_check": "Ibinahagi ng isang manggagawa matapos suriin ang isang mensahe. Hindi pa napatutunayan."
       }
     },
     "alerts": {

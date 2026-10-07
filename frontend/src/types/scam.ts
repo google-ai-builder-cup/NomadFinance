@@ -71,3 +71,49 @@ export interface ScamAnalyzeResponse {
   created_at: string;
   expires_at: string;
 }
+
+/** One stored check, as `GET /scam/checks/{id}` returns it: the analyze answer without `cached`.
+ * `indicators[].seen` is read live, so it shows today's count. */
+export type ScamCheckDetail = Omit<ScamAnalyzeResponse, "cached">;
+
+/** What the result view draws: a fresh check (which may have come from the cache) or a stored one. */
+export type ScamResultView = ScamCheckDetail & { cached?: boolean };
+
+/** One row of the history: the verdict's headline and nothing more. */
+export interface ScamCheckSummary {
+  id: string;
+  created_at: string;
+  input_type: "text" | "screenshot";
+  language: string;
+  is_scam: boolean;
+  scam_type: string | null;
+  risk_level: Severity;
+  confidence: number;
+  /** The first 140 characters of the redacted message. */
+  excerpt: string;
+  reported: boolean;
+}
+
+export interface ScamCheckList {
+  items: ScamCheckSummary[];
+  /** Null on the last page. */
+  next_cursor: string | null;
+}
+
+/** What the confirmation sheet sends: exactly what it showed, nothing else. */
+export interface ScamReportRequest {
+  /** The contacts the worker left ticked; may be empty. */
+  indicator_ids: string[];
+  /** The message as the worker edited it, 1 to 1,000 characters. */
+  description: string;
+}
+
+export interface ScamReportResponse {
+  report_id: string;
+  /** True when the check had been reported already: the first report comes back, nothing is added. */
+  already_reported: boolean;
+  /** The Radar profile of this kind of scam: `/radar/entity/{entity_slug}`. */
+  entity_slug: string;
+  entity_name: string;
+  created_at: string;
+}
