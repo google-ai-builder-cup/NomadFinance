@@ -98,14 +98,25 @@ def test_the_raw_message_goes_neither_to_the_model_nor_back(
     caplog.set_level(logging.DEBUG)
 
     response = api.post(URL, json=_body(text))
+    sent = gemini.calls[0]["contents"]
 
     assert response.status_code == 200
-    sent = gemini.calls[0]["contents"]
-    for secret in ("123456789012", "9123 4567", "a.b@example.org"):
-        assert secret not in sent
-        assert secret not in response.text
+    answer = response.json()
+    # The phone number and the address are the contract's indicators, shown to the worker who
+    # pasted them, in normal form. Nowhere else: not in the model's prompt, not in the answer's
+    # text, not in a log. The account number is not an indicator at all.
+    for call in gemini.calls:
+        for secret in ("123456789012", "9123 4567", "6591234567", "a.b@example.org"):
+            assert secret not in call["contents"]
+    for secret in ("123456789012", "9123 4567", "6591234567", "a.b@example.org"):
+        assert secret not in answer["redacted_text"]
         assert secret not in caplog.text
-    assert "[ACCOUNT]" in response.json()["redacted_text"]
+    assert "123456789012" not in response.text
+    assert {(i["kind"], i["value"]) for i in answer["indicators"]} == {
+        ("phone", "6591234567"),
+        ("email", "a.b@example.org"),
+    }
+    assert "[ACCOUNT]" in answer["redacted_text"]
     assert "[PHONE]" in sent and "[EMAIL]" in sent
 
 
@@ -337,3 +348,73 @@ def test_a_failed_classification_does_not_wait_for_the_search() -> None:
 
     assert_envelope(response, 503, "ai_unavailable")
     assert elapsed < 5
+
+
+MESSAGE_WITH_SIGNALS = (
+    "Pay SGD 800 today at https://mom.gov.sg.verify-now.com/pay, then confirm on "
+    "https://bit.ly/secretpath or call +44 7911 123456"
+)
+
+
+def test_the_indicators_come_back_flagged_and_the_model_sees_flags_never_values() -> None:
+    fake = FakeGemini(recordings_for("high"))
+
+    with TestClient(make_app(fake)) as client:
+        answer = client.post(URL, json=_body(MESSAGE_WITH_SIGNALS, corridor_id="SG-IN")).json()
+
+    ScamAnalyzeResponse.model_validate(answer)
+    assert [(i["kind"], i["value"], i["flags"], i["imitates"]) for i in answer["indicators"]] == [
+        ("url", "mom.gov.sg.verify-now.com", ["lookalike"], "mom.gov.sg"),
+        ("url", "bit.ly", ["shortener"], None),
+        ("phone", "447911123456", ["unexpected_country"], None),
+    ]
+    assert all(len(i["id"]) == 8 and i["seen"] is None for i in answer["indicators"])
+    prompt = fake.calls[0]["contents"]
+    assert '"flags": ["lookalike"], "imitates": "mom.gov.sg"' in prompt
+    assert '"flags": ["shortener"]' in prompt and '"flags": ["unexpected_country"]' in prompt
+    assert '"amounts": [{"amount": 800.0, "currency": "SGD"}]' in prompt
+    for value in ("verify-now", "bit.ly", "secretpath", "7911", "447911123456"):
+        assert value not in prompt
+    # The classifier gets the signals before the message, and the message stays fenced as data.
+    assert prompt.index("<signals>") < prompt.index("<message>")
+
+
+def test_a_message_with_nothing_to_find_has_no_indicators_and_empty_signals() -> None:
+    fake = FakeGemini(recordings_for("high"))
+
+    with TestClient(make_app(fake)) as client:
+        answer = client.post(URL, json=_body("Pay the fee today")).json()
+
+    assert answer["indicators"] == []
+    assert "<signals>\n{}\n</signals>" in fake.calls[0]["contents"]
+
+
+def test_the_endpoint_never_resolves_or_opens_an_address_it_finds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import socket
+    import urllib.request
+
+    def forbidden(*args: Any, **kwargs: Any) -> Any:
+        raise AssertionError("an address from the message was looked up or opened")
+
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden)
+    monkeypatch.setattr(socket, "gethostbyname", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    monkeypatch.setattr(urllib.request, "urlopen", forbidden)
+    fake = FakeGemini(recordings_for("high"))
+
+    with TestClient(make_app(fake)) as client:
+        response = client.post(URL, json=_body(MESSAGE_WITH_SIGNALS))
+
+    assert response.status_code == 200 and len(response.json()["indicators"]) == 3
+
+
+def test_no_more_than_ten_indicators_are_returned() -> None:
+    text = " ".join(f"https://site{i}-job.example" for i in range(15))
+    fake = FakeGemini(recordings_for("high"))
+
+    with TestClient(make_app(fake)) as client:
+        answer = client.post(URL, json=_body(text)).json()
+
+    assert len(answer["indicators"]) == 10

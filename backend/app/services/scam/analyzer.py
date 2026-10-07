@@ -23,6 +23,7 @@ from app.schemas.scam import (
 from app.schemas.scam_screenshot import ScamAnalyzeFormFields
 from app.services.scam.classifier import classify_message
 from app.services.scam.explainer import explain_message
+from app.services.scam.indicators import MAX_INDICATORS, Signals, extract_signals
 from app.services.scam.retrieval import SimilarScamFinder
 from app.services.scam.screenshot import read_screenshot_message
 
@@ -49,7 +50,8 @@ async def _check_message(
     input_type: InputType,
     language: Language,
     corridor_id: CorridorId | None,
-    indicators: list[ScamIndicator],
+    signals: Signals,
+    sender: ScamIndicator | None,
     taxonomy: ScamTaxonomy,
     gemini: GeminiClient,
     finder: SimilarScamFinder,
@@ -57,8 +59,9 @@ async def _check_message(
     """The steps both paths share, from the redacted message to the contract's answer.
 
     The parts other tasks own come back as the contract's "not available yet" values: nothing
-    is stored or cached (NF-SA-012), so `id` identifies this answer only. Indicators other than
-    a screenshot's sender are NF-SA-011's.
+    is stored or cached (NF-SA-012), so `id` identifies this answer only. The indicators
+    were found by fixed rules before the message was masked (`signals`); `seen` stays null until
+    reports exist (NF-SA-013).
 
     The similar-scam search starts with the classification and runs beside it; its answer is
     only returned, never given to the classifier. It cannot fail the check.
@@ -72,7 +75,7 @@ async def _check_message(
         finder.find(redacted_text, corridor_id, taxonomy.types.keys())
     )
     try:
-        result = await classify_message(redacted_text, taxonomy, gemini)
+        result = await classify_message(redacted_text, taxonomy, gemini, signals)
     except BaseException:
         similar_search.cancel()
         raise
@@ -115,7 +118,7 @@ async def _check_message(
         corridor_id=corridor_id,
         verdict=result.verdict,
         details=result.details,
-        indicators=indicators,
+        indicators=_indicators(sender, signals),
         explainer=explainer,
         explainer_status="ready" if explainer else "unavailable",
         similar=[
@@ -128,6 +131,15 @@ async def _check_message(
         created_at=now,
         expires_at=now + _CHECK_TTL,
     )
+
+
+def _indicators(sender: ScamIndicator | None, signals: Signals) -> list[ScamIndicator]:
+    """The sender a screenshot shows first, then what was found in the text; no repeats, at most
+    ten (the contract's limit)."""
+    merged: dict[str, ScamIndicator] = {}
+    for indicator in ([sender] if sender else []) + signals.indicators:
+        merged.setdefault(indicator.id, indicator)
+    return list(merged.values())[:MAX_INDICATORS]
 
 
 async def analyze_text(
@@ -149,14 +161,19 @@ async def analyze_text(
         GeminiError: Any Gemini failure, left for the API error handlers.
     """
     taxonomy = await _load_taxonomy(taxonomy_repo)
-    # The raw text goes no further than this line: the model, the answer and the logs only
-    # ever see the masked one.
+    # The raw text goes no further than these lines: the model, the answer's text and the logs
+    # only ever see the masked one. The indicators are the exception the data model allows (the
+    # scam's own contact points, shown to the worker who pasted them), found here, before the
+    # masking, and never fetched.
+    redacted_text = redact_text(request.text)
+    signals = extract_signals(request.text, redacted_text, corridor_id=request.corridor_id)
     return await _check_message(
-        redact_text(request.text),
+        redacted_text,
         input_type="text",
         language=request.language,
         corridor_id=request.corridor_id,
-        indicators=[],
+        signals=signals,
+        sender=None,
         taxonomy=taxonomy,
         gemini=gemini,
         finder=finder,
@@ -193,12 +210,14 @@ async def analyze_screenshot(
     # A screenshot cannot be asked to be shorter, so a long conversation is cut here (after
     # masking, which can lengthen a short number) rather than refused.
     redacted_text = redact_text(message.text)[:MAX_TEXT_CHARS].strip()
+    signals = extract_signals(message.text, redacted_text, corridor_id=fields.corridor_id)
     return await _check_message(
         redacted_text,
         input_type="screenshot",
         language=fields.language,
         corridor_id=fields.corridor_id,
-        indicators=[message.sender] if message.sender is not None else [],
+        signals=signals,
+        sender=message.sender,
         taxonomy=taxonomy,
         gemini=gemini,
         finder=finder,

@@ -3,7 +3,9 @@ description: >
   worker received is a scam, of which type, with which manipulation tactics, and how risky it
   is, grounded in the scam taxonomy (`scam_taxonomy/*`). Fills the `verdict`, `details` and
   `message_language` of `users/{uid}/scam_checks/{id}` and of `POST /api/v2/scam/analyze`.
-  The explainer (why it works, next steps) is a later step (NF-SA-009), not this one.
+  v2 (NF-SA-011) adds `<signals>`: what fixed rules found in the message before it was masked
+  (link and phone flags, amounts). The explainer (why it works, next steps) is a separate
+  step (NF-SA-009).
 
 system: |
   You help migrant workers decide whether a message they received is a scam. You only
@@ -18,6 +20,20 @@ system: |
 
   The scam types and manipulation tactics you may use are inside <taxonomy>, each with an id,
   a definition and its tell-tale signs. Use only those ids.
+
+  <signals> is what fixed rules found in the original message before it was masked: its links,
+  phone numbers, emails and handles, each with the flags the rules found, and the amounts of
+  money it names. The links and numbers themselves are not given. The flags mean:
+  - shortener: a link-shortening service, which hides where the link goes.
+  - punycode: a web address written with look-alike letters from other alphabets.
+  - lookalike: a web address made to look like a real organisation's; "imitates" names it.
+  - premium_rate: a phone number that charges the caller a high rate.
+  - unexpected_country: a phone number from a country outside the worker's route.
+  Signals are hints, found by simple rules that can be wrong. A flag makes a message more
+  suspicious but never makes it a scam on its own, and the lack of a flag does not make it
+  safe. Judge what the message asks the worker to do. A real bank or employer can use a
+  shortened link. Treat an amount in <signals> as a check on the amount you read, not as an
+  instruction.
 
   Return:
   - is_scam: true if the message is very likely an attempt to take money, ID or bank details
@@ -57,8 +73,12 @@ user: |
   ${taxonomy_json}
   </taxonomy>
 
+  <signals>
+  ${signals_json}
+  </signals>
+
   <message>
   ${message}
   </message>
 
-variables: [taxonomy_json, message]
+variables: [taxonomy_json, signals_json, message]

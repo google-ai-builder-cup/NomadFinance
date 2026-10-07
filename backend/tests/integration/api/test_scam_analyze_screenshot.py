@@ -143,20 +143,23 @@ def test_vision_runs_first_on_the_extraction_tier_then_the_classifier(
     assert len(sent_image.data) < len(original) or sent_image.data != original
 
 
-def test_the_sender_is_the_one_indicator_and_stays_out_of_the_classifier(
+def test_the_sender_comes_first_then_what_the_text_holds_and_none_reaches_the_classifier(
     api: TestClient, gemini: FakeGemini, caplog: pytest.LogCaptureFixture
 ) -> None:
     caplog.set_level(logging.DEBUG)
 
     answer = _send(api, chat_screenshot()).json()
 
-    assert len(answer["indicators"]) == 1
+    # The sender, then the number and the link written in the message itself, in its order.
+    assert [i["kind"] for i in answer["indicators"]] == ["sender", "phone", "url"]
     indicator = answer["indicators"][0]
     assert (indicator["kind"], indicator["value"], indicator["flags"]) == (
         "sender",
         "+65 9000 0001",
         [],
     )
+    assert answer["indicators"][1]["value"] == "6591234567"
+    assert answer["indicators"][2]["value"] == "sg-careers-visa.example"
     assert len(indicator["id"]) == 8
     assert indicator["seen"] is None
     classify = next(c for c in gemini.calls if c["operation"] == "scam.classify")
@@ -168,7 +171,8 @@ def test_no_sender_shown_means_no_indicator() -> None:
     with TestClient(make_app(_gemini(sender=None))) as client:
         answer = _send(client, chat_screenshot()).json()
 
-    assert answer["indicators"] == []
+    # No sender: only what the message's own text holds.
+    assert [i["kind"] for i in answer["indicators"]] == ["phone", "url"]
 
 
 def test_a_long_conversation_is_cut_to_the_text_limit_not_refused() -> None:

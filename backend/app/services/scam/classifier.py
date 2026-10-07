@@ -17,10 +17,11 @@ from app.schemas.scam import (
     ScamVerdict,
 )
 from app.schemas.scam_classify import ClassifiedDetails, ScamClassification
+from app.services.scam.indicators import Signals
 
 # Loaded at import so a missing or malformed prompt file stops the app at startup. The check
 # records CLASSIFY_PROMPT.key / .version in `prompt_versions`.
-CLASSIFY_PROMPT = load_prompt("scam", "classify", 1)
+CLASSIFY_PROMPT = load_prompt("scam", "classify", 2)
 
 # A scam that fits no listed type is still a scam, never a wrong type (scam.md).
 FALLBACK_TYPE = "other_scam"
@@ -152,7 +153,7 @@ def _confidence(raw: float) -> float:
 
 
 async def classify_message(
-    redacted_text: str, taxonomy: ScamTaxonomy, gemini: GeminiClient
+    redacted_text: str, taxonomy: ScamTaxonomy, gemini: GeminiClient, signals: Signals
 ) -> Classification:
     """Decide whether a message is a scam, of which type, and how risky.
 
@@ -161,6 +162,8 @@ async def classify_message(
             model and highlighted back to the worker, and neither may carry identifiers.
         taxonomy: The scam types and tactics the model may name.
         gemini: Client for the classification-tier call.
+        signals: What fixed rules found in the unmasked message. The model sees the flags and
+            the amounts, never a link or a number (`Signals.for_prompt`).
 
     Returns:
         The verdict, what the message asks for, and its language. A scam always has a type
@@ -173,7 +176,9 @@ async def classify_message(
         operation=CLASSIFY_PROMPT.key,
         tier=ModelTier.CLASSIFICATION,
         contents=CLASSIFY_PROMPT.render_user(
-            taxonomy_json=_taxonomy_json(taxonomy), message=_fenced(redacted_text)
+            taxonomy_json=_taxonomy_json(taxonomy),
+            signals_json=json.dumps(signals.for_prompt(), ensure_ascii=False),
+            message=_fenced(redacted_text),
         ),
         response_model=ScamClassification,
         system_instruction=CLASSIFY_PROMPT.system,

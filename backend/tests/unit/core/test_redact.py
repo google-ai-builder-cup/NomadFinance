@@ -139,3 +139,38 @@ def test_long_inputs_are_not_quadratic(text: str) -> None:
     redact_text(text)
 
     assert time.perf_counter() - started < 3
+
+
+# ---------------------------------------------------------------- redact_values (NF-SA-011)
+
+
+def test_redact_values_gives_what_redact_masks_with_its_token() -> None:
+    from app.core.redact import redact_values
+
+    text = "Call +65 9123 4567, mail a.b@mail.example, open bit.ly/abc or pay account 123456789012"
+
+    found = {(v.token, v.value) for v in redact_values(text)}
+
+    assert found == {
+        ("[PHONE]", "+65 9123 4567"),
+        ("[EMAIL]", "a.b@mail.example"),
+        ("[URL]", "bit.ly/abc"),
+        ("[ACCOUNT]", "123456789012"),
+    }
+
+
+def test_redact_values_and_redact_agree_on_how_many_values_there_are() -> None:
+    from app.core.redact import redact, redact_values
+
+    text = "Tel 91234567, https://x.example/a, y@z.example, passport E1234567"
+
+    assert len(redact_values(text)) == sum(redact(text).counts.values())
+
+
+def test_redact_values_finds_nothing_in_plain_text_and_does_not_change_it() -> None:
+    from app.core.redact import redact_text, redact_values
+
+    text = "Your parcel arrives tomorrow."
+
+    assert redact_values(text) == []
+    assert redact_text(text) == text

@@ -149,6 +149,14 @@ _RULES: tuple[_Rule, ...] = (
 
 
 @dataclass(frozen=True)
+class MaskedValue:
+    """One value `redact` masked: the token that replaced it and the value itself."""
+
+    token: str
+    value: str
+
+
+@dataclass(frozen=True)
 class RedactionResult:
     """Masked text plus how many values of each kind were masked, safe to log or count."""
 
@@ -171,7 +179,9 @@ def _ascii_digits(text: str) -> str:
     return "".join(str(unicodedata.decimal(c)) if c.isdecimal() else c for c in text)
 
 
-def _mask(text: str, rule: _Rule, counts: Counter[str]) -> str:
+def _mask(
+    text: str, rule: _Rule, counts: Counter[str], found: list[MaskedValue] | None = None
+) -> str:
     parts: list[str] = []
     last = 0
     for match in rule.pattern.finditer(_ascii_digits(text)):
@@ -185,6 +195,8 @@ def _mask(text: str, rule: _Rule, counts: Counter[str]) -> str:
             continue
         parts.append(text[last:start])
         parts.append(rule.token)
+        if found is not None:
+            found.append(MaskedValue(rule.token, text[start:end]))
         last = end
         counts[rule.token] += 1
     if not parts:
@@ -202,6 +214,21 @@ def redact(text: str) -> RedactionResult:
     for rule in _RULES:
         text = _mask(text, rule, counts)
     return RedactionResult(text=text, counts=dict(counts))
+
+
+def redact_values(text: str) -> list[MaskedValue]:
+    """The values `redact` would mask in `text`, in the order its rules find them.
+
+    For code that must act on the values themselves (the Scam Analyzer's indicator extraction,
+    NF-SA-011) and wants the same idea of "a phone number" or "a link" as the masking, not a
+    second set of patterns that could disagree with it. The values are the worker's own
+    message: keep them out of logs and out of anything sent to a model.
+    """
+    found: list[MaskedValue] = []
+    counts: Counter[str] = Counter()
+    for rule in _RULES:
+        text = _mask(text, rule, counts, found)
+    return found
 
 
 def redact_text(text: str) -> str:
