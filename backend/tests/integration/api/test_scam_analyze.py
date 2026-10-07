@@ -82,9 +82,9 @@ def test_the_parts_other_tasks_own_are_the_contracts_not_yet_values(api: TestCli
     assert set(answer) == set(load_mock_body("high"))  # exactly the contract's fields
 
 
-def test_every_answer_has_its_own_id_and_a_90_day_expiry(api: TestClient) -> None:
-    first = api.post(URL, json=_body()).json()
-    second = api.post(URL, json=_body()).json()
+def test_a_new_message_gets_its_own_id_and_a_90_day_expiry(api: TestClient) -> None:
+    first = api.post(URL, json=_body("Pay the fee today")).json()
+    second = api.post(URL, json=_body("Send the deposit now")).json()
 
     assert first["id"] != second["id"]
     created = ScamAnalyzeResponse.model_validate(first)
@@ -224,11 +224,11 @@ def test_missing_taxonomy_is_a_500_that_leaks_nothing(gemini: FakeGemini) -> Non
     assert gemini.calls == []
 
 
-def test_the_ai_budget_applies(api: TestClient) -> None:
-    statuses = [api.post(URL, json=_body()).status_code for _ in range(11)]
+def test_the_hourly_budget_applies_to_new_messages(api: TestClient) -> None:
+    statuses = [api.post(URL, json=_body(f"Pay the fee number {i}")).status_code for i in range(21)]
 
-    assert statuses[:10] == [200] * 10
-    assert statuses[10] == 429
+    assert statuses[:20] == [200] * 20
+    assert statuses[20] == 429
 
 
 @pytest.mark.parametrize(

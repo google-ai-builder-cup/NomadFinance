@@ -261,8 +261,12 @@ AI_LIMITED = {
     ("POST", "/api/v1/fib/categorize"),
     ("POST", "/api/v1/radar/report"),
     ("POST", "/api/v1/remittance/recommend"),
-    ("POST", "/api/v2/scam/analyze"),
 }
+
+# Calls Gemini but spends its own budget inside the handler (20 an hour per worker, and only for
+# a check that needs a model, NF-SA-012). `limit_ai_calls` runs before the message is looked up,
+# so it would also count a repeat answered from storage, which the contract says is free.
+OWN_HOURLY_BUDGET = {("POST", "/api/v2/scam/analyze")}
 
 _PATH_VALUES = {"language": "en", "host_country": "SG", "slug": "example-agency"}
 
@@ -327,6 +331,7 @@ def test_the_public_routes_are_exactly_the_listed_ones() -> None:
 def test_ai_endpoints_carry_the_stricter_budget() -> None:
     limited = {(m, p) for m, p, r in ROUTES if "limit_ai_calls" in _dependency_names(r)}
     assert limited == AI_LIMITED
+    assert not limited & OWN_HOURLY_BUDGET
 
 
 # --- 2. bad tokens on every route behind sign-in ------------------------------------------
