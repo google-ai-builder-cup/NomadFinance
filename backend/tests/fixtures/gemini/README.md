@@ -8,3 +8,4 @@ real contract, no real message.
 |---|---|---|
 | `contract.detect.json` | `contract.detect` | structured: a detected employment contract |
 | `coach.reply.json` | `coach.reply` | text: one coach reply, used by both `chat` and `stream` |
+| `scam.classify.json` | `scam.classify` | structured: the high-risk mock of the Scam Analyzer (a recruitment-fee scam) |

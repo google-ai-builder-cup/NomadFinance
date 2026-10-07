@@ -10,6 +10,14 @@ The contract of the Scam Analyzer (NF-SA-002): a worker pastes a message or shar
 | `docs/data-model/collections/scam.md`, `radar.md` | Where a check is stored, for how long, and what a Radar report holds |
 | `data-scripts/data/source/scam-taxonomy/` | The scam types and tactics whose ids appear in answers (`illegal_recruitment_fee`, `urgency`, ...). The screens translate an id through the `scam` i18n namespace; the API never sends a label |
 
+## Implementation status
+
+| Route | State |
+|---|---|
+| `POST /scam/analyze`, pasted text | Verdict, `details` and `message_language` are real (NF-SA-007). Until the other tasks land the answer carries the "not yet" values the contract allows: `indicators` and `similar` empty (NF-SA-011, -010), `explainer: null` with `explainer_status: "unavailable"` (NF-SA-009), `cached: false` and an `id` that matches no stored check (NF-SA-012). Only the general 10-a-minute AI budget applies; the 20-an-hour limit is NF-SA-012 |
+| `POST /scam/analyze`, screenshot | Not built (NF-SA-008). A form body is not answered with `415` yet |
+| The three other routes | Not built (NF-SA-012, -013) |
+
 ## Routes
 
 | Method | Path | Does | Rate limit |

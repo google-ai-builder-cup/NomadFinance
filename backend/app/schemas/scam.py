@@ -10,9 +10,17 @@ long it is kept: `docs/data-model/collections/scam.md`.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field, StringConstraints, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    SerializerFunctionWrapHandler,
+    StringConstraints,
+    field_validator,
+    model_serializer,
+    model_validator,
+)
 
 Language = Literal["en", "hi", "tl", "id", "ne", "bn"]
 MessageLanguage = Literal["en", "hi", "tl", "id", "ne", "bn", "other"]
@@ -95,6 +103,12 @@ class ScamDetails(BaseModel):
     payment_requested: str | None = Field(default=None, max_length=120)
     amount_requested: ScamAmount | None = None
     deadline_stated: bool | None = None
+
+    @model_serializer(mode="wrap")
+    def _leave_out_what_is_unknown(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        # The contract says an absent key means unknown, so an unknown field is not sent as null.
+        known: dict[str, Any] = {k: v for k, v in handler(self).items() if v is not None}
+        return known
 
 
 class SeenCount(BaseModel):
