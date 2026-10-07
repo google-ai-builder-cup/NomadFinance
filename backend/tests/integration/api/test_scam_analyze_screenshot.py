@@ -15,6 +15,7 @@ from tests.fixtures.scam_app import FakeTaxonomyRepo, assert_envelope, make_app
 from tests.fixtures.scam_classify import load_mock_body
 from tests.fixtures.scam_explain import recordings_for
 from tests.fixtures.scam_images import MESSAGES, chat_screenshot
+from tests.fixtures.scam_similar import FakeFinder
 
 URL = "/api/v2/scam/analyze"
 FIVE_MB = 5 * 1024 * 1024
@@ -389,3 +390,18 @@ def test_the_openapi_body_offers_both_kinds(api: TestClient) -> None:
 
     assert set(content) == {"application/json", "multipart/form-data"}
     assert content["multipart/form-data"]["schema"]["required"] == ["image", "language"]
+
+
+def test_a_screenshots_text_is_searched_for_neighbours_redacted_like_pasted_text() -> None:
+    finder = FakeFinder()
+    gemini = _gemini()
+
+    with TestClient(make_app(gemini, finder=finder)) as client:
+        response = _send(client, chat_screenshot(), corridor_id="AU-PH")
+
+    assert response.status_code == 200
+    call = finder.calls[0]
+    assert call["text"] == response.json()["redacted_text"]
+    for secret in SECRETS:
+        assert secret not in call["text"]
+    assert call["corridor_id"] == "AU-PH"

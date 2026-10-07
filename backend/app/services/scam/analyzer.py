@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -17,10 +18,12 @@ from app.schemas.scam import (
     ScamAnalyzeResponse,
     ScamAnalyzeTextRequest,
     ScamIndicator,
+    SimilarScam,
 )
 from app.schemas.scam_screenshot import ScamAnalyzeFormFields
 from app.services.scam.classifier import classify_message
 from app.services.scam.explainer import explain_message
+from app.services.scam.retrieval import SimilarScamFinder
 from app.services.scam.screenshot import read_screenshot_message
 
 logger = logging.getLogger(__name__)
@@ -49,17 +52,30 @@ async def _check_message(
     indicators: list[ScamIndicator],
     taxonomy: ScamTaxonomy,
     gemini: GeminiClient,
+    finder: SimilarScamFinder,
 ) -> ScamAnalyzeResponse:
     """The steps both paths share, from the redacted message to the contract's answer.
 
-    The parts other tasks own come back as the contract's "not available yet" values: no
-    similar scams (NF-SA-010), and nothing is stored or cached (NF-SA-012), so `id` identifies
-    this answer only. Indicators other than a screenshot's sender are NF-SA-011's.
+    The parts other tasks own come back as the contract's "not available yet" values: nothing
+    is stored or cached (NF-SA-012), so `id` identifies this answer only. Indicators other than
+    a screenshot's sender are NF-SA-011's.
+
+    The similar-scam search starts with the classification and runs beside it; its answer is
+    only returned, never given to the classifier. It cannot fail the check.
 
     The explainer is written after the verdict, in the worker's language. If it cannot be made
     the worker still gets the verdict, with `explainer_status: "unavailable"`.
     """
-    result = await classify_message(redacted_text, taxonomy, gemini)
+    # Started first so it overlaps the classification and the explainer. It handles its own
+    # failures, so awaiting it later cannot raise; if the classification fails it is cancelled.
+    similar_search = asyncio.create_task(
+        finder.find(redacted_text, corridor_id, taxonomy.types.keys())
+    )
+    try:
+        result = await classify_message(redacted_text, taxonomy, gemini)
+    except BaseException:
+        similar_search.cancel()
+        raise
     logger.info(
         "scam_classified input=%s is_scam=%s scam_type=%s risk=%s confidence=%.2f "
         "taxonomy_version=%d",
@@ -87,6 +103,7 @@ async def _check_message(
         "ready" if explainer else "unavailable",
     )
 
+    retrieval = await similar_search
     now = datetime.now(UTC)
     return ScamAnalyzeResponse(
         id=uuid.uuid4().hex,
@@ -101,8 +118,11 @@ async def _check_message(
         indicators=indicators,
         explainer=explainer,
         explainer_status="ready" if explainer else "unavailable",
-        similar=[],
-        corridor_report_count=None,
+        similar=[
+            SimilarScam(source=m.source, scam_type=m.scam_type, score=m.score)
+            for m in retrieval.similar
+        ],
+        corridor_report_count=retrieval.corridor_report_count,
         reported=False,
         report_id=None,
         created_at=now,
@@ -111,7 +131,10 @@ async def _check_message(
 
 
 async def analyze_text(
-    request: ScamAnalyzeTextRequest, gemini: GeminiClient, taxonomy_repo: ScamTaxonomyRepository
+    request: ScamAnalyzeTextRequest,
+    gemini: GeminiClient,
+    taxonomy_repo: ScamTaxonomyRepository,
+    finder: SimilarScamFinder,
 ) -> ScamAnalyzeResponse:
     """Check one pasted message and answer in the shape of the v2 contract.
 
@@ -119,6 +142,7 @@ async def analyze_text(
         request: The validated body; `text` is the message as received.
         gemini: Client for the classification-tier call.
         taxonomy_repo: Where the scam types and tactics the model may name are read.
+        finder: The neighbour search over known scams and Radar reports.
 
     Raises:
         TaxonomyNotLoadedError: No taxonomy in Firestore.
@@ -135,6 +159,7 @@ async def analyze_text(
         indicators=[],
         taxonomy=taxonomy,
         gemini=gemini,
+        finder=finder,
     )
 
 
@@ -143,6 +168,7 @@ async def analyze_screenshot(
     fields: ScamAnalyzeFormFields,
     gemini: GeminiClient,
     taxonomy_repo: ScamTaxonomyRepository,
+    finder: SimilarScamFinder,
 ) -> ScamAnalyzeResponse:
     """Read a screenshot of a message, then check it exactly as pasted text is checked.
 
@@ -154,6 +180,7 @@ async def analyze_screenshot(
         fields: The form's `language` and `corridor_id`.
         gemini: Client for the Vision call and the classification call.
         taxonomy_repo: Where the scam types and tactics the model may name are read.
+        finder: The neighbour search over known scams and Radar reports.
 
     Raises:
         ImageUnreadableError: The file cannot be decoded, or shows no message text.
@@ -174,4 +201,5 @@ async def analyze_screenshot(
         indicators=[message.sender] if message.sender is not None else [],
         taxonomy=taxonomy,
         gemini=gemini,
+        finder=finder,
     )

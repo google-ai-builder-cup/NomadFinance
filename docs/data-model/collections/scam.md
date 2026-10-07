@@ -29,7 +29,7 @@ One analysed message. Auto id. The image of a screenshot is **never stored**, on
 | `indicators` | array of map | yes | Deterministic signals found in the message (NF-SA-011): `{ "id", "kind", "value", "flags", "imitates" }`. See below. May be empty. |
 | `explainer` | map | yes | For a scam: `{ "kind": "scam", "why_it_works": [ { "tactic": id, "text": string } ], "scammer_wants": string, "next_steps": [string, string, string], "language": ..., "model": ... }`. For a benign message (no reasoning-tier call): `{ "kind": "benign", "reassurance": string, "tip": string, "language": ... }`. Written at a grade-6 reading level (NF-SA-009). |
 | `similar` | array of map | no | Up to 3 neighbours: `{ "source": "scam_pattern" or "radar_report", "id", "scam_type", "score" }` |
-| `corridor_report_count` | number | no | How many Radar reports were found on the worker's corridor when the check ran. A snapshot, not kept up to date. |
+| `corridor_report_count` | number | no | How many Radar reports were found on the worker's corridor when the check ran: of the 10 reports on it whose vector is nearest to the message, those at or above the similarity cutoff, so 0 to 10. Absent when the check has no corridor or the search failed. A snapshot, not kept up to date. |
 | `reported_report_id` | string | no | Id of the `radar_reports` document made from this check. **Set once**: it is what makes a second tap on "Warn other workers" return the same report (NF-SA-013). |
 | `reported_at` | timestamp | no | |
 | `check_count` | number | yes | `1` on creation; +1 when the same message is checked again |

@@ -1,7 +1,8 @@
-"""An app wired for the Scam Analyzer's endpoint tests (NF-SA-007, NF-SA-008).
+"""An app wired for the Scam Analyzer's endpoint tests (NF-SA-007, NF-SA-008, NF-SA-010).
 
-Auth, the `scam` flag, Gemini and the taxonomy are replaced; everything else (middleware, error
-handlers, rate limits, routing) is the real app, so a test sees what a client would.
+Auth, the `scam` flag, Gemini, the taxonomy and the similar-scam search are replaced; everything
+else (middleware, error handlers, rate limits, routing) is the real app, so a test sees what a
+client would.
 """
 
 from __future__ import annotations
@@ -10,7 +11,11 @@ from typing import Any
 
 from fastapi import FastAPI
 
-from app.dependencies import get_current_user, get_feature_flag_service
+from app.dependencies import (
+    get_current_user,
+    get_feature_flag_service,
+    get_similar_scam_finder,
+)
 from app.integrations.gemini import get_gemini_client
 from app.main import create_app
 from app.repositories.scam_taxonomy_repo import ScamTaxonomy, get_scam_taxonomy_repository
@@ -19,6 +24,7 @@ from app.schemas.user import AuthenticatedUser
 from app.services.feature_flag_service import FeatureFlagService
 from tests.fixtures.fake_gemini import FakeGemini
 from tests.fixtures.scam_classify import load_taxonomy
+from tests.fixtures.scam_similar import FakeFinder
 
 
 class FakeFlags:
@@ -43,6 +49,7 @@ def make_app(
     flag_on: bool = True,
     signed_in: bool = True,
     taxonomy: ScamTaxonomy | None = None,
+    finder: FakeFinder | None = None,
 ) -> FastAPI:
     app = create_app()
     flags = FeatureFlagService(FakeFlags(flag_on))  # type: ignore[arg-type]
@@ -52,6 +59,9 @@ def make_app(
     app.dependency_overrides[get_gemini_client] = lambda: gemini
     repo = FakeTaxonomyRepo(taxonomy or load_taxonomy())
     app.dependency_overrides[get_scam_taxonomy_repository] = lambda: repo
+    # No Firestore and no embedding call in an endpoint test: the search is faked.
+    fake_finder = finder or FakeFinder()
+    app.dependency_overrides[get_similar_scam_finder] = lambda: fake_finder
     return app
 
 

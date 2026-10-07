@@ -20,11 +20,15 @@ from app.core.security import (
 )
 from app.integrations.cloud_storage import UserFileStore
 from app.integrations.firebase_auth import delete_firebase_user
+from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.base import get_firestore_client
 from app.repositories.config_repo import get_config_repository
+from app.repositories.radar_repo import RadarRepository, get_radar_repository
+from app.repositories.scam_pattern_repo import ScamPatternRepository, get_scam_pattern_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.feature_flag_service import FeatureFlagService, FlagName
+from app.services.scam.retrieval import SimilarScamFinder
 
 logger = logging.getLogger(__name__)
 
@@ -149,6 +153,15 @@ def get_account_service() -> AccountService:
 def get_feature_flag_service() -> FeatureFlagService:
     """One per process: the service holds the one-minute copy of `config/feature_flags`."""
     return FeatureFlagService(get_config_repository())
+
+
+def get_similar_scam_finder(
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    patterns: Annotated[ScamPatternRepository, Depends(get_scam_pattern_repository)],
+    reports: Annotated[RadarRepository, Depends(get_radar_repository)],
+) -> SimilarScamFinder:
+    """The Scam Analyzer's neighbour search (NF-SA-010), on the shared Gemini client."""
+    return SimilarScamFinder(gemini, patterns, reports)
 
 
 def require_flag(flag: FlagName) -> Callable[..., Awaitable[None]]:

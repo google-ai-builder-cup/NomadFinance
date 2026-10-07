@@ -31,7 +31,7 @@ from google.cloud.firestore import Client
 from google.cloud.firestore_v1.vector import Vector
 
 from src.config import SCAM_PATTERNS_DIR
-from src.embedding import Embedder, GeminiEmbedder
+from src.embedding import CachedEmbedder, Embedder, EmbeddingQuotaError, GeminiEmbedder
 from src.firestore_client import get_firestore_client
 from src.validators.scam_patterns import PatternRow, check_library, load_all
 
@@ -180,9 +180,17 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    result = load_pattern_docs(
-        get_firestore_client(), rows, GeminiEmbedder(), collection=args.collection
-    )
+    try:
+        result = load_pattern_docs(
+            get_firestore_client(),
+            rows,
+            CachedEmbedder(GeminiEmbedder()),
+            collection=args.collection,
+        )
+    except EmbeddingQuotaError as exc:
+        # Every embedding is made before the first write, so nothing was written.
+        log.error("%s", exc)
+        return 2  # not a failure of the data: run again later
     log.info(
         "Loaded %r: %d new, %d changed, %d unchanged, %d removed (%d embedded)",
         args.collection,

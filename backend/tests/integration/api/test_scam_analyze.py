@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Iterator
 from typing import Any
@@ -19,6 +20,7 @@ from tests.fixtures.fake_gemini import FakeGemini
 from tests.fixtures.scam_app import FakeTaxonomyRepo, assert_envelope, make_app
 from tests.fixtures.scam_classify import MOCK_FILES, load_mock_body
 from tests.fixtures.scam_explain import recordings_for
+from tests.fixtures.scam_similar import FakeFinder, retrieval_from_mock
 
 URL = "/api/v2/scam/analyze"
 
@@ -42,10 +44,11 @@ def _body(text: str = "Pay the fee today", **changes: Any) -> dict[str, Any]:
 def test_each_mock_case_gets_the_mocks_verdict(case: str) -> None:
     mock = load_mock_body(case)
     fake = FakeGemini(recordings_for(case))
+    finder = FakeFinder(retrieval_from_mock(mock))
     # The mocks hold the redacted text, which redaction leaves as it is.
     request = _body(mock["redacted_text"], language=mock["language"], corridor_id=None)
 
-    with TestClient(make_app(fake)) as client:
+    with TestClient(make_app(fake, finder=finder)) as client:
         response = client.post(URL, json=request)
 
     assert response.status_code == 200
@@ -61,6 +64,10 @@ def test_each_mock_case_gets_the_mocks_verdict(case: str) -> None:
     # The explainer is what the mock shows, and ready: the frontend builds on this JSON.
     assert answer["explainer"] == mock["explainer"]
     assert answer["explainer_status"] == "ready"
+    # And the neighbours: the contract's `similar` carries no ids and no text.
+    assert answer["similar"] == mock["similar"]
+    assert answer["corridor_report_count"] == mock["corridor_report_count"]
+    assert finder.calls[0]["corridor_id"] is None
 
 
 def test_the_parts_other_tasks_own_are_the_contracts_not_yet_values(api: TestClient) -> None:
@@ -274,3 +281,59 @@ def test_the_raw_message_reaches_no_call_at_all_not_the_classifier_and_not_the_e
         for secret in ("123456789012", "9123 4567", "a.b@example.org"):
             assert secret not in call["contents"]
         assert "[ACCOUNT]" in call["contents"] and "[PHONE]" in call["contents"]
+
+
+def test_the_search_gets_the_redacted_text_the_corridor_and_the_taxonomys_types() -> None:
+    fake = FakeGemini(recordings_for("high"))
+    finder = FakeFinder()
+    text = "Pay now to account 123456789012, call +65 9123 4567, mail a.b@example.org"
+
+    with TestClient(make_app(fake, finder=finder)) as client:
+        response = client.post(URL, json=_body(text, corridor_id="SG-IN"))
+
+    assert response.status_code == 200
+    call = finder.calls[0]
+    for secret in ("123456789012", "9123 4567", "a.b@example.org"):
+        assert secret not in call["text"]
+    assert "[ACCOUNT]" in call["text"] and "[PHONE]" in call["text"]
+    assert call["corridor_id"] == "SG-IN"
+    assert {"fake_job_offer", "lottery", "other_scam"} <= call["known_types"]
+
+
+def test_the_neighbours_in_the_answer_carry_no_id_and_no_text() -> None:
+    mock = load_mock_body("high")
+    finder = FakeFinder(retrieval_from_mock(mock))
+
+    with TestClient(make_app(FakeGemini(recordings_for("high")), finder=finder)) as client:
+        answer = client.post(URL, json=_body(mock["redacted_text"])).json()
+
+    assert answer["similar"]
+    for neighbour in answer["similar"]:
+        assert set(neighbour) == {"source", "scam_type", "score"}
+    assert "mock-0" not in str(answer)
+
+
+def test_a_search_that_finds_nothing_leaves_the_rest_of_the_answer_alone(api: TestClient) -> None:
+    answer = api.post(URL, json=_body()).json()
+
+    assert answer["similar"] == [] and answer["corridor_report_count"] is None
+    assert answer["verdict"]["is_scam"] is True and answer["explainer_status"] == "ready"
+
+
+def test_a_failed_classification_does_not_wait_for_the_search() -> None:
+    import time
+
+    class SlowFinder(FakeFinder):
+        async def find(self, *args: Any, **kwargs: Any) -> Any:
+            await asyncio.sleep(30)
+            return await super().find(*args, **kwargs)
+
+    fake = FakeGemini({"scam.classify": {"kind": "structured", "error": "GeminiUnavailableError"}})
+
+    with TestClient(make_app(fake, finder=SlowFinder()), raise_server_exceptions=False) as client:
+        started = time.perf_counter()
+        response = client.post(URL, json=_body())
+        elapsed = time.perf_counter() - started
+
+    assert_envelope(response, 503, "ai_unavailable")
+    assert elapsed < 5
