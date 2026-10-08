@@ -1,0 +1,328 @@
+{
+  "description": "A plan with no debt and no quote: Nepal to South Korea is not one of the six corridors, so `remittance.provider` is null and `debt` is null. The screen must draw both.",
+  "request": "POST /api/v2/coach/sessions/s_06/plan",
+  "status": 201,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c402"
+  },
+  "body": {
+    "id": "e75fa9f24fd3159ad83d",
+    "session_id": "s_06",
+    "language": "en",
+    "available_languages": [
+      "en"
+    ],
+    "host_country": "KR",
+    "home_country": "NP",
+    "corridor_id": null,
+    "departure_date": "2026-11-20",
+    "reporting_currency": "KRW",
+    "slots": {
+      "destination_country": "KR",
+      "job_type": "manufacturing_worker",
+      "departure_date": "2026-11-20",
+      "monthly_salary": {
+        "amount": 2400000,
+        "currency": "KRW",
+        "period": "month"
+      },
+      "dependents": 1,
+      "remittance_target": {
+        "amount": 600000,
+        "currency": "KRW",
+        "period": "month"
+      },
+      "recruitment_fee_paid": {
+        "amount": 0,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "debt_outstanding": {
+        "amount": 0,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "savings": {
+        "amount": 3000000,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "bank_or_wallet": "both"
+    },
+    "rates_as_of": "2026-10-22T09:08:30Z",
+    "score": {
+      "total": 91,
+      "band": "well_prepared",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.0,
+          "score": 100,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 2.65,
+          "score": 70,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.25,
+          "score": 90,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 0.0,
+          "score": 100,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 100,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan": {
+      "summary": "You will earn about 2,400,000 KRW a month. After your costs you can send home 600,000 KRW, save 300,000 KRW and still have money left. You have no debt, which gives you a strong start.",
+      "monthly_budget": {
+        "income": {
+          "amount": 2400000,
+          "currency": "KRW"
+        },
+        "costs": [
+          {
+            "id": "accommodation",
+            "amount": {
+              "amount": 350000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "food",
+            "amount": {
+              "amount": 400000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "transport",
+            "amount": {
+              "amount": 80000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "phone_data",
+            "amount": {
+              "amount": 30000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "deductions",
+            "amount": {
+              "amount": 270000,
+              "currency": "KRW"
+            }
+          }
+        ],
+        "goals": [
+          {
+            "id": "remittance",
+            "amount": {
+              "amount": 600000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "emergency_fund",
+            "amount": {
+              "amount": 300000,
+              "currency": "KRW"
+            }
+          }
+        ],
+        "left_over": {
+          "amount": 370000,
+          "currency": "KRW"
+        },
+        "setup_costs": {
+          "amount": 800000,
+          "currency": "KRW"
+        }
+      },
+      "remittance": {
+        "corridor_id": null,
+        "monthly_amount": {
+          "amount": 600000,
+          "currency": "KRW"
+        },
+        "provider": null,
+        "schedule": [
+          {
+            "week": 5,
+            "amount": {
+              "amount": 600000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "week": 9,
+            "amount": {
+              "amount": 600000,
+              "currency": "KRW"
+            }
+          },
+          {
+            "week": 13,
+            "amount": {
+              "amount": 600000,
+              "currency": "KRW"
+            }
+          }
+        ]
+      },
+      "debt": null,
+      "emergency_fund": {
+        "target": {
+          "amount": 3390000,
+          "currency": "KRW"
+        },
+        "months_of_costs": 3,
+        "monthly_saving": {
+          "amount": 300000,
+          "currency": "KRW"
+        },
+        "weeks_to_target": 6
+      },
+      "weeks": [
+        {
+          "week": 1,
+          "title": "Arrive and settle",
+          "actions": [
+            "Keep your contract and ID card copies in one safe place.",
+            "Set aside 800,000 KRW for first-month costs."
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Set up your pay account",
+          "actions": [
+            "Give your employer the bank account for your pay.",
+            "Check that your first payslip matches your contract."
+          ]
+        },
+        {
+          "week": 3,
+          "title": "Learn your costs",
+          "actions": [
+            "Write down what you spend each day for one week."
+          ]
+        },
+        {
+          "week": 4,
+          "title": "Get your first pay",
+          "actions": [
+            "Check your pay against the 2,400,000 KRW in your contract."
+          ]
+        },
+        {
+          "week": 5,
+          "title": "Send money home",
+          "actions": [
+            "Send 600,000 KRW home. Compare two ways to send before you choose."
+          ]
+        },
+        {
+          "week": 6,
+          "title": "Start your emergency fund",
+          "actions": [
+            "Move 300,000 KRW each month into a separate savings account."
+          ]
+        },
+        {
+          "week": 7,
+          "title": "Check your first month",
+          "actions": [
+            "Compare what you spent with the plan.",
+            "Change the plan if rent or food cost more."
+          ]
+        },
+        {
+          "week": 8,
+          "title": "Keep saving",
+          "actions": [
+            "Keep moving 300,000 KRW into your emergency fund."
+          ]
+        },
+        {
+          "week": 9,
+          "title": "Send money home again",
+          "actions": [
+            "Send 600,000 KRW. Check the rate before you send."
+          ]
+        },
+        {
+          "week": 10,
+          "title": "Know your rights",
+          "actions": [
+            "Read the rules on pay, hours and days off in your contract."
+          ]
+        },
+        {
+          "week": 11,
+          "title": "Decide what is left",
+          "actions": [
+            "You should have about 370,000 KRW left each month. Decide how to use it."
+          ]
+        },
+        {
+          "week": 12,
+          "title": "Plan for hard days",
+          "actions": [
+            "Save the numbers of a worker support group and your embassy."
+          ]
+        },
+        {
+          "week": 13,
+          "title": "Review your plan",
+          "actions": [
+            "Look at this plan again and decide what to change for the next three months."
+          ]
+        }
+      ],
+      "warnings": [
+        {
+          "id": "no_provider_quote",
+          "severity": "info",
+          "text": "We cannot yet compare ways to send money to your home country. Compare two or three before you send."
+        }
+      ],
+      "checklist": [
+        {
+          "id": "keep_documents",
+          "text": "Keep copies of your contract and ID card."
+        },
+        {
+          "id": "track_spending",
+          "text": "Write down your spending for the first month."
+        },
+        {
+          "id": "compare_transfer_providers",
+          "text": "Compare ways to send money before each transfer."
+        },
+        {
+          "id": "save_helpline_numbers",
+          "text": "Save the numbers of a worker support group and your embassy."
+        }
+      ],
+      "disclaimer": "This plan is a guide to help you think ahead. It is not professional financial advice. Check important decisions with a trusted adviser or a worker support organisation."
+    },
+    "created_at": "2026-10-22T09:08:30Z"
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "description": "The review stage: every question is answered, the score is there, two answers (`debt_interest`, `savings`) are not confirmed yet, and the salary came from the worker's contract. Middle band.",
+  "request": "GET /api/v2/coach/sessions/s_03",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c203"
+  },
+  "body": {
+    "id": "s_03",
+    "status": "active",
+    "stage": "review",
+    "language": "en",
+    "slots": {
+      "destination_country": {
+        "value": "AU",
+        "confirmed": true,
+        "source": "user"
+      },
+      "job_type": {
+        "value": "care_worker",
+        "confirmed": true,
+        "source": "user"
+      },
+      "departure_date": {
+        "value": "2026-12-01",
+        "confirmed": true,
+        "source": "user"
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 4200,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "contract_prefill"
+      },
+      "dependents": {
+        "value": 3,
+        "confirmed": true,
+        "source": "user"
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 900,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "recruitment_fee_paid": {
+        "value": {
+          "amount": 150000,
+          "currency": "INR",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "debt_outstanding": {
+        "value": {
+          "amount": 120000,
+          "currency": "INR",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "debt_interest": {
+        "value": {
+          "rate_percent": 3,
+          "period": "month"
+        },
+        "confirmed": false,
+        "source": "user"
+      },
+      "savings": {
+        "value": {
+          "amount": 25000,
+          "currency": "INR",
+          "period": "once"
+        },
+        "confirmed": false,
+        "source": "user"
+      },
+      "bank_or_wallet": {
+        "value": "bank_account",
+        "confirmed": true,
+        "source": "user"
+      }
+    },
+    "messages": [
+      {
+        "id": "m_001",
+        "role": "coach",
+        "text": "Hello! I am your money coach. I will ask you a few simple questions, so you can plan your money before you leave. Which country are you going to work in? Singapore, South Korea, Malaysia, Japan, Hong Kong or Australia?",
+        "language": "en",
+        "at": "2026-10-20T08:02:05Z"
+      },
+      {
+        "id": "m_002",
+        "role": "user",
+        "text": "Australia",
+        "language": "en",
+        "at": "2026-10-20T08:02:40Z"
+      },
+      {
+        "id": "m_003",
+        "role": "coach",
+        "text": "Thank you. What kind of work will you do? For example: home work (domestic), factory work, care work, plantation work, construction, or a working holiday.",
+        "language": "en",
+        "at": "2026-10-20T08:02:45Z"
+      },
+      {
+        "id": "m_004",
+        "role": "user",
+        "text": "Care work",
+        "language": "en",
+        "at": "2026-10-20T08:03:20Z"
+      },
+      {
+        "id": "m_005",
+        "role": "coach",
+        "text": "Thank you. When do you plan to leave? A date is best. If you do not know yet, you can say so.",
+        "language": "en",
+        "at": "2026-10-20T08:03:25Z"
+      },
+      {
+        "id": "m_006",
+        "role": "user",
+        "text": "1 December 2026",
+        "language": "en",
+        "at": "2026-10-20T08:04:00Z"
+      },
+      {
+        "id": "m_007",
+        "role": "coach",
+        "text": "Thank you. How much will you earn each month? Please tell me the amount and the money, for example 1,200 Singapore dollars.",
+        "language": "en",
+        "at": "2026-10-20T08:04:05Z"
+      },
+      {
+        "id": "m_008",
+        "role": "user",
+        "text": "4,200 Australian dollars a month",
+        "language": "en",
+        "at": "2026-10-20T08:04:40Z"
+      },
+      {
+        "id": "m_009",
+        "role": "coach",
+        "text": "Thank you. How many people depend on your money? Count your children, your husband or wife, and your parents. If nobody, say 0.",
+        "language": "en",
+        "at": "2026-10-20T08:04:45Z"
+      },
+      {
+        "id": "m_010",
+        "role": "user",
+        "text": "3",
+        "language": "en",
+        "at": "2026-10-20T08:05:20Z"
+      },
+      {
+        "id": "m_011",
+        "role": "coach",
+        "text": "Thank you. How much money do you want to send home each month?",
+        "language": "en",
+        "at": "2026-10-20T08:05:25Z"
+      },
+      {
+        "id": "m_012",
+        "role": "user",
+        "text": "900 Australian dollars each month",
+        "language": "en",
+        "at": "2026-10-20T08:06:00Z"
+      },
+      {
+        "id": "m_013",
+        "role": "coach",
+        "text": "Thank you. How much did you pay, or do you have to pay, an agent or recruiter to get this job? Include fees for the visa, training and medical tests. If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-20T08:06:05Z"
+      },
+      {
+        "id": "m_014",
+        "role": "user",
+        "text": "150,000 rupees",
+        "language": "en",
+        "at": "2026-10-20T08:06:40Z"
+      },
+      {
+        "id": "m_015",
+        "role": "coach",
+        "text": "Thank you. Do you still owe money because of this move, to an agent, a lender or your family? How much? If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-20T08:06:45Z"
+      },
+      {
+        "id": "m_016",
+        "role": "user",
+        "text": "120,000 rupees",
+        "language": "en",
+        "at": "2026-10-20T08:07:20Z"
+      },
+      {
+        "id": "m_017",
+        "role": "coach",
+        "text": "Thank you. How much extra do you pay on this money (the interest)? For example, 5 percent each month. If it is free, say 0.",
+        "language": "en",
+        "at": "2026-10-20T08:07:25Z"
+      },
+      {
+        "id": "m_018",
+        "role": "user",
+        "text": "3 percent every month",
+        "language": "en",
+        "at": "2026-10-20T08:08:00Z"
+      },
+      {
+        "id": "m_019",
+        "role": "coach",
+        "text": "Thank you. How much money do you have saved now? Please tell me the amount and the money. If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-20T08:08:05Z"
+      },
+      {
+        "id": "m_020",
+        "role": "user",
+        "text": "25,000 rupees",
+        "language": "en",
+        "at": "2026-10-20T08:08:40Z"
+      },
+      {
+        "id": "m_021",
+        "role": "coach",
+        "text": "Thank you. Do you have a bank account or a mobile wallet for your money? You can say bank, wallet, both, or none.",
+        "language": "en",
+        "at": "2026-10-20T08:08:45Z"
+      },
+      {
+        "id": "m_022",
+        "role": "user",
+        "text": "I have a bank account",
+        "language": "en",
+        "at": "2026-10-20T08:09:20Z"
+      },
+      {
+        "id": "m_023",
+        "role": "coach",
+        "text": "Thank you. Here is what I understood: you will do care work in Australia, leaving on 1 December 2026, and earn 4,200 AUD a month. You support 3 people and want to send home 900 AUD a month. You paid 150,000 INR to an agent and still owe 120,000 INR, at 3% a month. You have 25,000 INR saved and a bank account. Is this right? Say yes, or tell me what to change.",
+        "language": "en",
+        "at": "2026-10-20T08:09:25Z"
+      }
+    ],
+    "next_slot": null,
+    "turn_count": 11,
+    "score": {
+      "total": 57,
+      "band": "getting_ready",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.52,
+          "score": 70,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 0.21,
+          "score": 30,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.21,
+          "score": 85,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 1.8,
+          "score": 30,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 100,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan_id": null,
+    "created_at": "2026-10-20T08:02:00Z",
+    "last_active": "2026-10-20T08:09:25Z"
+  }
+}

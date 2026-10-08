@@ -1,0 +1,22 @@
+{
+  "description": "A new session at the first question: nothing answered, no messages, no score. The default answer for `s_01`.",
+  "request": "GET /api/v2/coach/sessions/s_01",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c201"
+  },
+  "body": {
+    "id": "s_01",
+    "status": "active",
+    "stage": "intro",
+    "language": "en",
+    "slots": {},
+    "messages": [],
+    "next_slot": "destination_country",
+    "turn_count": 0,
+    "score": null,
+    "plan_id": null,
+    "created_at": "2026-10-20T08:00:00Z",
+    "last_active": "2026-10-20T08:00:00Z"
+  }
+}

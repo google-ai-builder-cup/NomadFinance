@@ -1,0 +1,19 @@
+{
+  "description": "An answer over 1,000 characters is refused, never cut: 422. The issue never contains the text that was sent.",
+  "request": "POST /api/v2/coach/sessions/s_01/messages",
+  "status": 422,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e104"
+  },
+  "body": {
+    "code": "validation_failed",
+    "message": "The request is not valid.",
+    "request_id": "0000000000000000000000000000e104",
+    "details": [
+      {
+        "field": "body.text",
+        "issue": "Value error, String should have at most 1000 characters"
+      }
+    ]
+  }
+}

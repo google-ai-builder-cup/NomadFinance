@@ -1,0 +1,13 @@
+{
+  "description": "The figures failed the check twice, so nothing was stored: 502. The worker may try again.",
+  "request": "POST /api/v2/coach/sessions/s_04/plan",
+  "status": 502,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e203"
+  },
+  "body": {
+    "code": "ai_bad_response",
+    "message": "The AI service returned an answer that could not be used. Please try again.",
+    "request_id": "0000000000000000000000000000e203"
+  }
+}

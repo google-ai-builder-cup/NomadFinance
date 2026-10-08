@@ -1,0 +1,27 @@
+event: slot_update
+data: {"slot":"bank_or_wallet","value":"bank_account","confirmed":true}
+
+event: token
+data: {"text":"Thank you. "}
+
+event: token
+data: {"text":"Here is what I understood: you will do care work in Australia, leaving on 1 December 2026, and earn 4,200 AUD a month. "}
+
+event: token
+data: {"text":"You support 3 people and want to send home 900 AUD a month. "}
+
+event: token
+data: {"text":"You paid 150,000 INR to an agent and still owe 120,000 INR, at 3% a month. "}
+
+event: token
+data: {"text":"You have 25,000 INR saved and a bank account. "}
+
+event: token
+data: {"text":"Is this right? "}
+
+event: token
+data: {"text":"Say yes, or tell me what to change."}
+
+event: done
+data: {"message_id":"m_023","stage":"review","next_slot":null,"turn_count":11}
+

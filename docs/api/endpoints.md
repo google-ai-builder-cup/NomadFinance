@@ -2,7 +2,7 @@
 
 Base URL: the Cloud Run service URL (local: `http://127.0.0.1:8080`).
 
-All endpoints in this file live under `/api/v1/` except `/health`. New Future Scope endpoints live under `/api/v2/` and follow `docs/api/v2-conventions.md` (error envelope, pagination, streaming, idempotency, deprecation); v1 behaviour is not changed by them. The v2 feature contracts: `docs/api/v2-flags.md` (feature flags) and `docs/api/v2-scam.md` (Scam Analyzer). Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
+All endpoints in this file live under `/api/v1/` except `/health`. New Future Scope endpoints live under `/api/v2/` and follow `docs/api/v2-conventions.md` (error envelope, pagination, streaming, idempotency, deprecation); v1 behaviour is not changed by them. The v2 feature contracts: `docs/api/v2-flags.md` (feature flags), `docs/api/v2-scam.md` (Scam Analyzer) and `docs/api/v2-coach.md` (Financial Coach). Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
 
 ## Authentication
 

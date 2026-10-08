@@ -1,0 +1,14 @@
+{
+  "description": "Another turn of this session is still running (a second tab, or a double tap that got a new key): 409 with `Retry-After`.",
+  "request": "POST /api/v2/coach/sessions/s_02/messages",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e102",
+    "Retry-After": "2"
+  },
+  "body": {
+    "code": "turn_in_progress",
+    "message": "Another message of this session is still being answered.",
+    "request_id": "0000000000000000000000000000e102"
+  }
+}

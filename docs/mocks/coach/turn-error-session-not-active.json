@@ -1,0 +1,13 @@
+{
+  "description": "A turn on a completed session (or an abandoned one): 409. The screen offers to start a new interview.",
+  "request": "POST /api/v2/coach/sessions/s_07/messages",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e101"
+  },
+  "body": {
+    "code": "session_not_active",
+    "message": "This session is closed. Start a new one.",
+    "request_id": "0000000000000000000000000000e101"
+  }
+}

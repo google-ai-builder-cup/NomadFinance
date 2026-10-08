@@ -1,0 +1,382 @@
+{
+  "description": "The worker pressed the call to action on `s_04`: the plan was made (201), in English. India to Australia, so there is a provider quote; the debt makes three warnings. The default answer of this route.",
+  "request": "POST /api/v2/coach/sessions/s_04/plan",
+  "status": 201,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c401"
+  },
+  "body": {
+    "id": "5a202702c922fc9b4fcf",
+    "session_id": "s_04",
+    "language": "en",
+    "available_languages": [
+      "en"
+    ],
+    "host_country": "AU",
+    "home_country": "IN",
+    "corridor_id": "AU-IN",
+    "departure_date": "2026-12-01",
+    "reporting_currency": "AUD",
+    "slots": {
+      "destination_country": "AU",
+      "job_type": "care_worker",
+      "departure_date": "2026-12-01",
+      "monthly_salary": {
+        "amount": 4200,
+        "currency": "AUD",
+        "period": "month"
+      },
+      "dependents": 3,
+      "remittance_target": {
+        "amount": 900,
+        "currency": "AUD",
+        "period": "month"
+      },
+      "recruitment_fee_paid": {
+        "amount": 150000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "debt_outstanding": {
+        "amount": 120000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "debt_interest": {
+        "rate_percent": 3,
+        "period": "month"
+      },
+      "savings": {
+        "amount": 25000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "bank_or_wallet": "bank_account"
+    },
+    "rates_as_of": "2026-10-20T08:00:00Z",
+    "score": {
+      "total": 57,
+      "band": "getting_ready",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.52,
+          "score": 70,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 0.21,
+          "score": 30,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.21,
+          "score": 85,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 1.8,
+          "score": 30,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 100,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan": {
+      "summary": "You will earn about 4,200 AUD a month. After your costs, you can send home 900 AUD, pay off your debt in about 5 months and start an emergency fund. Your debt costs 3% a month, so paying it first saves you the most money.",
+      "monthly_budget": {
+        "income": {
+          "amount": 4200,
+          "currency": "AUD"
+        },
+        "costs": [
+          {
+            "id": "accommodation",
+            "amount": {
+              "amount": 1100,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "food",
+            "amount": {
+              "amount": 450,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "transport",
+            "amount": {
+              "amount": 160,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "phone_data",
+            "amount": {
+              "amount": 45,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "deductions",
+            "amount": {
+              "amount": 400,
+              "currency": "AUD"
+            }
+          }
+        ],
+        "goals": [
+          {
+            "id": "remittance",
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "debt_payment",
+            "amount": {
+              "amount": 500,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "emergency_fund",
+            "amount": {
+              "amount": 400,
+              "currency": "AUD"
+            }
+          }
+        ],
+        "left_over": {
+          "amount": 245,
+          "currency": "AUD"
+        },
+        "setup_costs": {
+          "amount": 600,
+          "currency": "AUD"
+        }
+      },
+      "remittance": {
+        "corridor_id": "AU-IN",
+        "monthly_amount": {
+          "amount": 900,
+          "currency": "AUD"
+        },
+        "provider": {
+          "slug": "example-remit",
+          "name": "Example Remit",
+          "fee": {
+            "amount": 6,
+            "currency": "AUD"
+          },
+          "receives": {
+            "amount": 48991.2,
+            "currency": "INR"
+          },
+          "fx_rate": 54.8,
+          "quoted_at": "2026-10-20T09:08:10Z"
+        },
+        "schedule": [
+          {
+            "week": 5,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "week": 9,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "week": 13,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          }
+        ]
+      },
+      "debt": {
+        "outstanding": {
+          "amount": 2177.07,
+          "currency": "AUD"
+        },
+        "monthly_payment": {
+          "amount": 500,
+          "currency": "AUD"
+        },
+        "months_to_clear": 5
+      },
+      "emergency_fund": {
+        "target": {
+          "amount": 6465,
+          "currency": "AUD"
+        },
+        "months_of_costs": 3,
+        "monthly_saving": {
+          "amount": 400,
+          "currency": "AUD"
+        },
+        "weeks_to_target": 66
+      },
+      "weeks": [
+        {
+          "week": 1,
+          "title": "Arrive and settle",
+          "actions": [
+            "Keep your contract and passport copies in one safe place.",
+            "Set aside 600 AUD for first-month costs such as the room deposit and a phone plan."
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Open your pay account",
+          "actions": [
+            "Open a bank account that your employer can pay into.",
+            "Check that your first payslip matches your contract."
+          ]
+        },
+        {
+          "week": 3,
+          "title": "Learn your costs",
+          "actions": [
+            "Write down what you spend each day for one week.",
+            "Compare it with the budget in this plan."
+          ]
+        },
+        {
+          "week": 4,
+          "title": "Get your first pay",
+          "actions": [
+            "Check your pay against the 4,200 AUD in your contract.",
+            "Do not send money before you know your real pay."
+          ]
+        },
+        {
+          "week": 5,
+          "title": "Send your first money home",
+          "actions": [
+            "Send 900 AUD with Example Remit. The fee is 6 AUD.",
+            "Keep the receipt."
+          ]
+        },
+        {
+          "week": 6,
+          "title": "Start paying your debt",
+          "actions": [
+            "Pay 500 AUD towards your debt each month, starting with this pay.",
+            "Ask the lender for a written list of what you still owe."
+          ]
+        },
+        {
+          "week": 7,
+          "title": "Start your emergency fund",
+          "actions": [
+            "Move 400 AUD each month into a separate savings account."
+          ]
+        },
+        {
+          "week": 8,
+          "title": "Check your first month",
+          "actions": [
+            "Compare what you spent with the plan.",
+            "Change the plan if rent or food cost more."
+          ]
+        },
+        {
+          "week": 9,
+          "title": "Send money home again",
+          "actions": [
+            "Send 900 AUD. Check the rate before you send."
+          ]
+        },
+        {
+          "week": 10,
+          "title": "Keep paying your debt",
+          "actions": [
+            "Pay 500 AUD. Your debt is going down."
+          ]
+        },
+        {
+          "week": 11,
+          "title": "Look for a better rate",
+          "actions": [
+            "Compare two or three ways to send money. A small difference adds up over a year."
+          ]
+        },
+        {
+          "week": 12,
+          "title": "Plan for hard days",
+          "actions": [
+            "Save the numbers of a worker support group and your embassy.",
+            "Know what to do if your pay is late."
+          ]
+        },
+        {
+          "week": 13,
+          "title": "Review your plan",
+          "actions": [
+            "Send 900 AUD home.",
+            "Look at this plan again and decide what to change for the next three months."
+          ]
+        }
+      ],
+      "warnings": [
+        {
+          "id": "fee_above_legal_limit",
+          "severity": "urgent",
+          "text": "The fee you paid your agent (about 2,721 AUD) may be above the legal limit. Keep your receipts and ask a worker support group to check."
+        },
+        {
+          "id": "high_interest_debt",
+          "severity": "warning",
+          "text": "Your debt costs 3% each month. That is a lot. Pay it before you save more."
+        },
+        {
+          "id": "thin_emergency_fund",
+          "severity": "info",
+          "text": "You have about 454 AUD saved. Try to reach 3 months of costs over time."
+        }
+      ],
+      "checklist": [
+        {
+          "id": "keep_documents",
+          "text": "Keep copies of your contract, passport and agent receipts."
+        },
+        {
+          "id": "open_pay_account",
+          "text": "Open a bank account for your pay."
+        },
+        {
+          "id": "compare_transfer_providers",
+          "text": "Compare ways to send money before each transfer."
+        },
+        {
+          "id": "save_helpline_numbers",
+          "text": "Save the numbers of a worker support group and your embassy."
+        },
+        {
+          "id": "track_spending",
+          "text": "Write down your spending for the first month."
+        }
+      ],
+      "disclaimer": "This plan is a guide to help you think ahead. It is not professional financial advice. Check important decisions with a trusted adviser or a worker support organisation."
+    },
+    "created_at": "2026-10-20T09:08:30Z"
+  }
+}

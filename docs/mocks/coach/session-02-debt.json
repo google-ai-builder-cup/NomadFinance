@@ -1,0 +1,153 @@
+{
+  "description": "A Hindi interview in the debt stage: six answers so far, the fee question is next.",
+  "request": "GET /api/v2/coach/sessions/s_02",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c202"
+  },
+  "body": {
+    "id": "s_02",
+    "status": "active",
+    "stage": "debt",
+    "language": "hi",
+    "slots": {
+      "destination_country": {
+        "value": "AU",
+        "confirmed": true,
+        "source": "user"
+      },
+      "job_type": {
+        "value": "care_worker",
+        "confirmed": true,
+        "source": "user"
+      },
+      "departure_date": {
+        "value": "2026-12-01",
+        "confirmed": true,
+        "source": "user"
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 4200,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "dependents": {
+        "value": 3,
+        "confirmed": true,
+        "source": "user"
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 900,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      }
+    },
+    "messages": [
+      {
+        "id": "m_001",
+        "role": "coach",
+        "text": "नमस्ते! मैं आपका पैसों का साथी हूँ। मैं कुछ आसान सवाल पूछूँगा, ताकि आप जाने से पहले अपना पैसा अच्छे से सँभाल सकें। आप किस देश में काम करने जा रहे हैं? सिंगापुर, दक्षिण कोरिया, मलेशिया, जापान, हांगकांग या ऑस्ट्रेलिया?",
+        "language": "hi",
+        "at": "2026-10-20T08:02:00Z"
+      },
+      {
+        "id": "m_002",
+        "role": "user",
+        "text": "ऑस्ट्रेलिया",
+        "language": "hi",
+        "at": "2026-10-20T08:02:40Z"
+      },
+      {
+        "id": "m_003",
+        "role": "coach",
+        "text": "धन्यवाद। आप किस तरह का काम करेंगे? जैसे घरेलू काम, फ़ैक्टरी का काम, देखभाल का काम, बागान का काम, निर्माण, या वर्किंग हॉलिडे।",
+        "language": "hi",
+        "at": "2026-10-20T08:02:45Z"
+      },
+      {
+        "id": "m_004",
+        "role": "user",
+        "text": "देखभाल का काम",
+        "language": "hi",
+        "at": "2026-10-20T08:03:25Z"
+      },
+      {
+        "id": "m_005",
+        "role": "coach",
+        "text": "धन्यवाद। आप कब जाने की सोच रहे हैं? तारीख बताएँ तो बेहतर है। अगर अभी पता नहीं है, तो यह भी बता सकते हैं।",
+        "language": "hi",
+        "at": "2026-10-20T08:03:30Z"
+      },
+      {
+        "id": "m_006",
+        "role": "user",
+        "text": "1 दिसंबर 2026",
+        "language": "hi",
+        "at": "2026-10-20T08:04:10Z"
+      },
+      {
+        "id": "m_007",
+        "role": "coach",
+        "text": "धन्यवाद। हर महीने आप कितना कमाएँगे? कृपया रकम और पैसे की किस्म बताएँ, जैसे 1,200 सिंगापुर डॉलर।",
+        "language": "hi",
+        "at": "2026-10-20T08:04:15Z"
+      },
+      {
+        "id": "m_008",
+        "role": "user",
+        "text": "हर महीने 4,200 ऑस्ट्रेलियाई डॉलर",
+        "language": "hi",
+        "at": "2026-10-20T08:04:55Z"
+      },
+      {
+        "id": "m_009",
+        "role": "coach",
+        "text": "धन्यवाद। कितने लोग आपके पैसों पर निर्भर हैं? अपने बच्चों, पति या पत्नी और माता-पिता को गिनें। अगर कोई नहीं, तो 0 कहें।",
+        "language": "hi",
+        "at": "2026-10-20T08:05:00Z"
+      },
+      {
+        "id": "m_010",
+        "role": "user",
+        "text": "3",
+        "language": "hi",
+        "at": "2026-10-20T08:05:40Z"
+      },
+      {
+        "id": "m_011",
+        "role": "coach",
+        "text": "धन्यवाद। आप हर महीने घर कितना पैसा भेजना चाहते हैं?",
+        "language": "hi",
+        "at": "2026-10-20T08:05:45Z"
+      },
+      {
+        "id": "m_012",
+        "role": "user",
+        "text": "900 ऑस्ट्रेलियाई डॉलर",
+        "language": "hi",
+        "at": "2026-10-20T08:06:25Z"
+      },
+      {
+        "id": "m_013",
+        "role": "coach",
+        "text": "धन्यवाद। आपने इस नौकरी के लिए एजेंट या रिक्रूटर को कितना पैसा दिया है, या कितना देना है? वीज़ा, ट्रेनिंग और मेडिकल जाँच की फ़ीस भी जोड़ें। अगर कुछ नहीं, तो 0 कहें।",
+        "language": "hi",
+        "at": "2026-10-20T08:06:30Z"
+      }
+    ],
+    "next_slot": "recruitment_fee_paid",
+    "turn_count": 6,
+    "score": null,
+    "plan_id": null,
+    "created_at": "2026-10-20T08:02:00Z",
+    "last_active": "2026-10-20T08:06:30Z"
+  }
+}
