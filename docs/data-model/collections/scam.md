@@ -295,9 +295,11 @@ Three Firebase Analytics events (NF-SA-022, `frontend/src/lib/analytics.ts`). On
 
 | Event | When | Parameters |
 |---|---|---|
-| `scam_check_submitted` | The worker taps **Check this message** (once; a retry after a failure is not a new submission) | `input_type` (`text`, `screenshot`), `corridor_id` (a corridor id or `none`), `language` |
+| `scam_check_submitted` | The worker taps **Check this message** (once; a retry after a failure is not a new submission) | `input_type` (`text`, `screenshot`), `corridor_id` (a corridor id or `none`), `ui_language` |
 | `scam_verdict_viewed` | A verdict is put on the screen, once per check | `is_scam`, `risk_level`, `scam_type` (taxonomy id or `none`), `cached`, `source` (`check` for one that has just finished, `history` for a stored one) |
 | `scam_reported` | A new warning was sent (not a second tap that found the first report) | `scam_type` |
+
+**Two names Google owns.** The language parameter is `ui_language`, not `language`: a web stream already attaches the browser's `language` to every event, and a custom parameter of that name never showed in DebugView. Every event also sends `page_location` itself, because Google's own copy is the full address and the address can hold more than the app promises to send: the id of a stored check (`/scam-check/history/{id}`) and, for a message shared into the app, the message (`/scam-check?text=...`). The address sent has no query, no fragment and no id: `/scam-check/history/:id`. The same cleaning applies to `page_path`, to the page before this one when it is one of ours, and to the crash report. Register `ui_language` (not `language`) as the custom dimension.
 
 ## Tasks that use it
 
