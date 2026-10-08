@@ -1,0 +1,125 @@
+{
+  "host_country": "AU",
+  "currency": "AUD",
+  "categories": {
+    "accommodation": {
+      "low": 1192,
+      "typical": 1257,
+      "high": 2383,
+      "unit": "month",
+      "notes": "A room in a share house, weekly rent times 52/12. Low: Monash, 275 a week (Clayton, Melbourne). Typical: PropTrack national median room, 290 a week (December 2023). High: UTS, 550 a week (near UTS, Sydney). Bills and internet may cost extra.",
+      "source": {
+        "url": "https://www.proptrack.com.au/?p=5122",
+        "publisher": "PropTrack, article of 22 January 2024",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.monash.edu/study/why-choose-monash/our-locations/life-in-melbourne/cost-of-living",
+          "publisher": "Monash University, cost of living",
+          "retrieved_on": "2026-10-08"
+        },
+        {
+          "url": "https://www.uts.edu.au/for-students/international/life-in-sydney/cost-of-living",
+          "publisher": "University of Technology Sydney, cost of living in Sydney",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "food": {
+      "low": 400,
+      "typical": 600,
+      "high": 800,
+      "unit": "month",
+      "notes": "Food and groceries in Sydney, a monthly range that UTS bases on the Study Australia calculator; typical is the midpoint. Student-budget guidance: no worker-specific range was found.",
+      "source": {
+        "url": "https://www.uts.edu.au/for-students/international/life-in-sydney/cost-of-living",
+        "publisher": "University of Technology Sydney, cost of living in Sydney",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    },
+    "transport": {
+      "low": 108,
+      "typical": 163,
+      "high": 217,
+      "unit": "month",
+      "notes": "Public transport, 25 to 50 a week (Monash, Melbourne) times 52/12; typical is the midpoint. Sydney's Opal adult weekly cap is 50, the same top end. A car is not included.",
+      "source": {
+        "url": "https://www.monash.edu/study/why-choose-monash/our-locations/life-in-melbourne/cost-of-living",
+        "publisher": "Monash University, cost of living",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://transportnsw.info/tickets-fares/fares/adult-opal-fares",
+          "publisher": "Transport for NSW, adult Opal fares",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "phone_data": {
+      "low": 30,
+      "typical": 42,
+      "high": 80,
+      "unit": "month",
+      "notes": "Boost prepaid plans are 28 days: 28 (8GB), 39 (60GB) and 74 (150GB) a recharge, times 13/12 for a calendar month. Typical is the 39 plan. The larger data amounts are promotions for the first six recharges.",
+      "source": {
+        "url": "https://boost.com.au/prepaid-plans",
+        "publisher": "Boost Mobile, prepaid plans",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    },
+    "mandatory_deductions": {
+      "low": 15,
+      "typical": 15,
+      "high": 30,
+      "unit": "pct_of_wage",
+      "notes": "Tax withheld from a working holiday maker's pay from 1 July 2026: 15% up to 45,000 a year, 30% on each dollar above, so the share never passes 30%. A tax resident pays resident rates plus a 2% Medicare levy instead.",
+      "source": {
+        "url": "https://www.ato.gov.au/tax-rates-and-codes/schedule-15-tax-table-for-working-holiday-makers",
+        "publisher": "Australian Taxation Office, Schedule 15, published 17 June 2026",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.ato.gov.au/tax-rates-and-codes/tax-rates-australian-residents",
+          "publisher": "Australian Taxation Office, resident tax rates, updated 13 August 2026",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    }
+  },
+  "setup_costs": {
+    "rental_bond": {
+      "low": 1100,
+      "typical": 1160,
+      "high": 2200,
+      "unit": "one_off",
+      "notes": "Four weeks' rent, the most a NSW landlord may take as a bond, on the weekly rents behind accommodation (275, 290, 550). Other states have their own limits: not checked.",
+      "source": {
+        "url": "https://www.nsw.gov.au/housing-and-construction/rules/costs-at-start-of-a-residential-tenancy",
+        "publisher": "NSW Government (NSW Fair Trading), costs at the start of a tenancy",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    },
+    "sim_card": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "one_off",
+      "notes": "A Boost SIM or eSIM includes the first recharge, which is counted in phone_data.",
+      "source": {
+        "url": "https://boost.com.au/prepaid-plans",
+        "publisher": "Boost Mobile, prepaid plans",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    }
+  }
+}

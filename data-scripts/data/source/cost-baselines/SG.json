@@ -1,0 +1,150 @@
+{
+  "host_country": "SG",
+  "currency": "SGD",
+  "categories": {
+    "accommodation": {
+      "low": 420,
+      "typical": 450,
+      "high": 450,
+      "unit": "month",
+      "by_job_type": {
+        "domestic_worker": { "low": 0, "typical": 0, "high": 0 }
+      },
+      "notes": "Dormitory bed for a Work Permit holder: low is MOM's Q1 2023 median, typical its 2023 median. No newer or higher figure could be read, so high repeats typical. A worker pays what the employer deducts (at most 25% of salary). A live-in domestic worker pays 0: MOM puts housing on the employer.",
+      "source": {
+        "url": "https://www.mom.gov.sg/newsroom/parliament-questions-and-replies/2024/0205-written-answer-to-pq-on-av-occupancy-and-monthly-rental-rates-for-beds-at-dorms",
+        "publisher": "Ministry of Manpower (Singapore), parliamentary reply of 5 February 2024",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.mom.gov.sg/newsroom/parliament-questions-and-replies/2023/0802-written-answer-to-pq-on-mw-dormitory-bed-prices",
+          "publisher": "Ministry of Manpower (Singapore), parliamentary reply of 2 August 2023",
+          "retrieved_on": "2026-10-08"
+        },
+        {
+          "url": "https://www.mom.gov.sg/employment-practices/salary/salary-deductions",
+          "publisher": "Ministry of Manpower (Singapore), salary deductions",
+          "retrieved_on": "2026-10-08"
+        },
+        {
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/publications-and-resources/living-with-a-migrant-domestic-worker/paying-your-helpers-salary-on-time-and-in-full",
+          "publisher": "Ministry of Manpower (Singapore), paying a migrant domestic worker's salary",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "food": {
+      "low": 130,
+      "typical": 165,
+      "high": 200,
+      "unit": "month",
+      "by_job_type": {
+        "domestic_worker": { "low": 0, "typical": 0, "high": 0 }
+      },
+      "notes": "Catered meals in a dormitory, the monthly range TWC2 reported in 2023; typical is the midpoint. A worker who buys all their own meals is not covered. A live-in domestic worker pays 0: MOM puts meals on the employer.",
+      "source": {
+        "url": "https://twc2.org.sg/2023/05/07/the-price-of-labour-migration-dreadful-catered-meals/",
+        "publisher": "Transient Workers Count Too (TWC2), article of 7 May 2023",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-domestic-worker/publications-and-resources/living-with-a-migrant-domestic-worker/paying-your-helpers-salary-on-time-and-in-full",
+          "publisher": "Ministry of Manpower (Singapore), paying a migrant domestic worker's salary",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "transport": {
+      "low": 67,
+      "typical": 100,
+      "high": 134,
+      "unit": "month",
+      "notes": "Adult card fares on the PTC table (1.28 to 2.57 a journey) times 52 journeys (2 a day for 26 working days, assumed); typical is the midpoint. The monthly travel pass is for citizens and PRs only, so it is not used.",
+      "source": {
+        "url": "https://www.ptc.gov.sg/fares/public-transport-fares-and-passes/",
+        "publisher": "Public Transport Council (Singapore), page last updated 28 January 2026",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://simplygo.com.sg/concession-monthly-travel-cards/adult/adult-monthly-travel-card/",
+          "publisher": "SimplyGo, Adult Monthly Travel Card",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "phone_data": {
+      "low": 10,
+      "typical": 12,
+      "high": 20,
+      "unit": "month",
+      "notes": "30-day prepaid plans on SIMBA's page: 10 is its cheapest adult plan, 12 the one it labels Most Popular (a marketing label), 20 a plan with 800 call minutes. Singtel's hi! plans start at 15.",
+      "source": {
+        "url": "https://simba.sg/plans",
+        "publisher": "SIMBA Telecom, mobile plans",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.singtel.com/personal/products-services/mobile/prepaid-plans/hi-sim-cards",
+          "publisher": "Singtel, hi! prepaid plans",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    },
+    "mandatory_deductions": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "pct_of_wage",
+      "notes": "No CPF for foreign workers. Housing, food and transport deductions need the worker's written consent and sit in their own lines; levy, bonds and medical fees can never be deducted. Income tax was not checked.",
+      "source": {
+        "url": "https://www.mom.gov.sg/passes-and-permits/work-permit-for-foreign-worker/sector-specific-rules/paying-the-salary",
+        "publisher": "Ministry of Manpower (Singapore), paying a foreign worker's salary",
+        "retrieved_on": "2026-10-08"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.mom.gov.sg/employment-practices/salary/salary-deductions",
+          "publisher": "Ministry of Manpower (Singapore), salary deductions",
+          "retrieved_on": "2026-10-08"
+        }
+      ],
+      "curator": "DD"
+    }
+  },
+  "setup_costs": {
+    "transport_card": {
+      "low": 10,
+      "typical": 10,
+      "high": 10,
+      "unit": "one_off",
+      "notes": "SimplyGo EZ-Link adult card at a ticket office: 5 card cost plus 5 stored value, which the worker then spends on rides.",
+      "source": {
+        "url": "https://simplygo.com.sg/travel-cards/",
+        "publisher": "SimplyGo, travel cards",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    },
+    "sim_card": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "one_off",
+      "notes": "Singtel hi! plans: collecting the SIM is free. The first 30-day plan is counted in phone_data.",
+      "source": {
+        "url": "https://www.singtel.com/personal/products-services/mobile/prepaid-plans/hi-sim-cards",
+        "publisher": "Singtel, hi! prepaid plans",
+        "retrieved_on": "2026-10-08"
+      },
+      "curator": "DD"
+    }
+  }
+}
