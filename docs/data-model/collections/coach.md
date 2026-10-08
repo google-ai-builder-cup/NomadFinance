@@ -1,6 +1,6 @@
 # coach
 
-Financial Coach (Future Scope, NF-F0-003). Shape sources: the paths and what each holds are **[T]** (tracker NF-FC-008, NF-FC-012, NF-FC-014, NF-FC-016) and design addendum `docs/future-scope/design.md` sections 4 and 7. Field names, enums, TTLs and ids are **[P]**: owners of NF-FC-001 (slots), NF-FC-006 (score) and NF-FC-011/-012 (plan) fill in what is marked "defined by", and should tell the team when they change a field name here.
+Financial Coach (Future Scope, NF-F0-003). Shape sources: the paths and what each holds are **[T]** (tracker NF-FC-008, NF-FC-012, NF-FC-014, NF-FC-016) and design addendum `docs/future-scope/design.md` sections 4 and 7. Field names, enums, TTLs and ids are **[P]**: owners of NF-FC-006 (score) and NF-FC-011/-012 (plan) fill in what is marked "defined by", and should tell the team when they change a field name here. The slots are fixed by NF-FC-001 (next section).
 
 ```
 users/{uid}/coach_sessions/{sessionId}                  one interview (backend writes, owner reads)
@@ -9,6 +9,30 @@ users/{uid}/coach_plans/{planId}/translations/{lang}    the same plan in another
 ```
 
 All three sit under `users/{uid}`, so `DELETE /api/v1/users/me` removes them with the account (design 2.5). Nothing here is read or written before the `coach` flag is on.
+
+## The slots (NF-FC-001)
+
+Eleven answers the interview collects. The model is `CoachProfile` in `backend/app/schemas/coach_profile.py`; the questions, expected ranges, follow-ups and skip rules are in `backend/app/services/coach/question_bank.json`. `coach_sessions.slots` keeps each one in a `SlotRecord` (below); `coach_plans.slots` keeps the bare values. An unknown slot name is refused.
+
+| Slot | Value | Stage | Asked |
+|---|---|---|---|
+| `destination_country` | `SG`, `KR`, `MY`, `JP`, `HK`, `AU` | intro | always |
+| `job_type` | the seven job types of `users` (`domestic_worker` ... `other`) | intro | always |
+| `departure_date` | text `YYYY-MM-DD`, a real date in 2000 to 2100 | intro | always; **may stay empty** (no check-ins without it) |
+| `monthly_salary` | money, per `month`, `week` or `year`; more than 0 | income | always |
+| `dependents` | whole number, 0 to 20 | obligations | always |
+| `remittance_target` | money, per `month`, `week` or `year`; 0 is allowed | obligations | always |
+| `recruitment_fee_paid` | money, `once`; 0 is allowed | debt | always |
+| `debt_outstanding` | money, `once`; **0 means no debt** | debt | always |
+| `debt_interest` | `{ "rate_percent": 0 to 1000, "period": "month" or "year" }` | debt | **skipped when `debt_outstanding.amount` is 0** |
+| `savings` | money, `once`; 0 is allowed | savings | always |
+| `bank_or_wallet` | `bank_account`, `mobile_wallet`, `both`, `none` | savings | always |
+
+**Money** is always `{ "amount", "currency", "period" }` (never a bare number). Currencies: `SGD`, `KRW`, `MYR`, `JPY`, `HKD`, `AUD` (the hosts), `PHP`, `INR`, `IDR` (the corridors' homes), `NPR`, `BDT` (onboarding also offers Nepal and Bangladesh). `period` is `once` for a total and never `day` or `hour`: a worker paid by the day is asked for a normal month, the coach does not guess the working days. A value is **stored as the worker stated it**: a yearly figure stays `year`, and `Money.per_month()` converts it when a reader needs a month (a week is 52/12, a year 12).
+
+**Two kinds of limit.** The model refuses what cannot be true (a negative amount, 21 dependents, 13th month). The bank holds the *expected* range: outside it the coach asks again before keeping the value, and keeps it only when the worker confirms (`range_issue`). Money ranges are multiples of one rough "monthly pay" number per currency in the bank, to catch an extra zero or a yearly figure called monthly. They are not wage data.
+
+**One stored slot** (`SlotRecord`) has `value`, `confidence` (0 to 1), `source` (`user` or `contract_prefill`), `confirmed`, `updated_at` and `turn`. A slot that was not answered is not stored.
 
 ## `users/{uid}/coach_sessions/{sessionId}`
 
@@ -19,7 +43,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `status` | string | yes | `active`, `completed` (a plan was created), `abandoned` (idle past 14 days; set by the backend when it next reads the session, so a new one can start) |
 | `stage` | string | yes | `intro`, `income`, `obligations`, `debt`, `savings`, `review`, `plan`. Only the transitions of design 4.3 are allowed. |
 | `language` | string | yes | Language the coach replies in now. Changes when the worker switches language (NF-FC-018); slots are kept. |
-| `slots` | map | yes | Slot name to `{ "value", "confidence", "source", "confirmed", "updated_at", "turn" }`. `confidence` 0 to 1; `source` is `user` or `contract_prefill`; `confirmed` is `true` once the worker has confirmed it (always, for a prefill). Slot names, units and ranges are defined by NF-FC-001 (`CoachProfile`). A money slot holds `{ "amount", "currency", "period" }`, never a bare number. |
+| `slots` | map | yes | Slot name to `{ "value", "confidence", "source", "confirmed", "updated_at", "turn" }`. `confidence` 0 to 1; `source` is `user` or `contract_prefill`; `confirmed` is `true` once the worker has confirmed it (always, for a prefill). Slot names, units and limits: "The slots" above. A money slot holds `{ "amount", "currency", "period" }`, never a bare number. |
 | `messages` | array of map | yes | The transcript: `{ "id", "role", "text", "language", "at" }`, `role` is `user` or `coach`. **Text is stored with phone numbers, emails, ID and account numbers and URLs masked** (`app/core/redact.py`, NF-F0-008); amounts are left as written. At most 200 entries (an interview is about 25 turns); a longer session is refused. A turn is appended only after it completes. |
 | `summary` | string | no | Short English summary of turns older than the history window (Flash-Lite), so a long session fits the model's budget (NF-FC-009) |
 | `summarised_turns` | number | no | How many transcript entries the summary covers |
@@ -37,7 +61,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 
 **Retention.** A session is not needed once its plan exists (the plan keeps a copy of the slots), so 30 days after the last activity is a convenience window for "resume" and "view what I told the coach", not a record. TTL deletion is described in `firestore-schema.md`, "Time to live".
 
-**Example** — `users/uid_rajesh_demo/coach_sessions/s_01` (slot names are illustrative; NF-FC-001 fixes them)
+**Example** — `users/uid_rajesh_demo/coach_sessions/s_01` (only four of the eleven slots are answered so far)
 
 ```json
 {

@@ -13,11 +13,22 @@ The contract of the collection and the events is in `docs/data-model/collections
 
 | Event | Fired by | Parameters |
 |---|---|---|
-| `scam_check_submitted` | `ScamCheckHome`, when the worker taps Check. A "Try again" after a failure is the same submission and is not counted again | `input_type` (`text`, `screenshot`), `corridor_id` (id or `none`), `language` |
+| `scam_check_submitted` | `ScamCheckHome`, when the worker taps Check. A "Try again" after a failure is the same submission and is not counted again | `input_type` (`text`, `screenshot`), `corridor_id` (id or `none`), `ui_language` |
 | `scam_verdict_viewed` | `ScamResult`, once per check put on the screen | `is_scam`, `risk_level`, `scam_type` (id or `none`), `cached`, `source` (`check` = just finished, `history` = a stored check opened) |
 | `scam_reported` | `ReportButton`, when the report is created. Not when the server only returns the first report (`already_reported`) | `scam_type` |
 
 The functions are in `frontend/src/lib/analytics.ts` and take typed arguments, so a message cannot be passed to them by accident. A test checks the exact parameters of each. Nothing is sent in emulator mode or without `VITE_FIREBASE_MEASUREMENT_ID`, and Analytics is loaded only on first use, like the other events.
+
+### Two fixes found in DebugView (made in NF-FC-001)
+
+DebugView on the first production check showed two things the unit tests could not (they mock `logEvent`, so they only prove what the code passed, not what Google kept):
+
+1. **`language` never arrived.** Google attaches its own `language` (the browser's) to every web event, so the custom parameter of the same name was lost. It is now `ui_language`. A test lists the names Google adds itself or reserves ([auto-collected parameters](https://support.google.com/firebase/answer/6317485), [reserved names](https://support.google.com/analytics/answer/13316687)) and fails if any event uses one; it was shown to fail with `language` put back.
+2. **The address carried identifiers.** Google adds `page_location`, the full address, to every event. On a stored check that is `/scam-check/history/{checkId}`, and the same went for `/contract/{id}` and `/radar/entity/{slug}`. Worse, the installed app's share target opens `/scam-check?text=...`, so a shared message would have been in the address of the first events (`page_view`, and `session_start` that Google sends itself). Now every event sends its own `page_location`: origin and path only, with the id replaced by the route's shape (`/scam-check/history/:id`), and `page_path`, a same-origin `page_referrer` and the crash report get the same cleaning. The first address is also set when Analytics starts, for the events Google sends by itself.
+
+A new route with a `:parameter` has to be added to `IDENTIFYING_ROUTES` in `analytics.ts`. A test reads `router.tsx` and fails until it is.
+
+**What is still sent as it is:** an address that matches none of the three routes goes as typed, without its query (for example the path of a page that does not exist); a page before this one outside the app is left to Google; the events Google sends by itself after the first page keep the first page's address.
 
 ## The weekly counts
 
@@ -53,6 +64,8 @@ The functions are in `frontend/src/lib/analytics.ts` and take typed arguments, s
 3. Tap Warn other workers, Send warning: `scam_reported`, with the kind of scam.
 4. Open the history and a stored check: `scam_verdict_viewed`, `source: history`.
 5. Look at every parameter of every event: none holds any words of the message.
+6. After the fixes above: `scam_check_submitted` shows `ui_language` (and no `language` of yours), and on the stored check `page_location` ends in `/scam-check/history/:id`, with no query.
+7. Click both `scam_verdict_viewed` events: one says `source: check`, the other `source: history`. `scam_type`, `corridor_id` and `risk_level` are short ids (`lottery`, `SG-IN`, `high`), never words.
 
 **The job.** After the pull request is merged and deployed, and the index and dimensions of D-164 are done:
 
@@ -78,11 +91,11 @@ Then in Firestore open `scam_stats`: 7 documents (`SG-PH` to `AU-PH` and `none`)
 ## Definition of Done (Data task)
 
 - [x] Events fire with coarse parameters only
-- [ ] Events seen in DebugView (manual, above)
+- [ ] Events seen in DebugView (manual, above). First pass done; it found the two problems fixed in NF-FC-001. Closes when steps 6 and 7 are seen after the deploy
 - [x] Job idempotent (test) and counts only (tests)
 - [x] Behind Cloud Scheduler authentication
 - [x] Data model, runbook and deferred items updated
-- [ ] Index created in production, custom dimensions registered, job run once (D-164)
+- [ ] Index created in production, custom dimensions registered (`ui_language`, not `language`), job run once (D-164)
 - [ ] Reviewed by a teammate (Aditya)
 
 ## Commit

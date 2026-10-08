@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "curator": "Devam",
+  "scale_note": "Rough size of one month's pay for a low-paid migrant worker, in each currency (home currencies: that pay at a round rate). Only for catching slips such as an extra zero. Not wage statistics, not sourced.",
+  "monthly_pay_scale": {
+    "SGD": 1500,
+    "KRW": 2500000,
+    "MYR": 2000,
+    "JPY": 200000,
+    "HKD": 5000,
+    "AUD": 4500,
+    "PHP": 60000,
+    "INR": 100000,
+    "IDR": 8000000,
+    "NPR": 150000,
+    "BDT": 140000
+  },
+  "follow_up_defaults": {
+    "choice": [
+      { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch that. Can you say it again in a few words?" },
+      { "trigger": "low_confidence", "prompt_en": "Let me check that I understood you. Is that right?" }
+    ],
+    "date_window": [
+      { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch the date. Can you tell me the day, the month and the year?" },
+      { "trigger": "low_confidence", "prompt_en": "Let me check that I understood you. Is that date right?" },
+      { "trigger": "out_of_range", "prompt_en": "That date looks far from today. Can you check the day, the month and the year?" }
+    ],
+    "count": [
+      { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch that. Please tell me a number, for example 2." },
+      { "trigger": "low_confidence", "prompt_en": "Let me check that I understood you. Is that number right?" },
+      { "trigger": "out_of_range", "prompt_en": "That is a lot of people. Can you check the number for me?" }
+    ],
+    "money": [
+      { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch the amount. Please tell me a number and the money, for example 1,200 Singapore dollars. If there is nothing, say 0." },
+      { "trigger": "low_confidence", "prompt_en": "Let me check that I understood you. Is that amount right?" },
+      { "trigger": "out_of_range", "prompt_en": "That amount looks very different from what most workers tell me. Can you check it and say it again?" },
+      { "trigger": "missing_currency", "prompt_en": "Which money is that in? For example Singapore dollars, Philippine pesos or Indian rupees." },
+      { "trigger": "unclear_period", "prompt_en": "Is that amount each month, each week or each year?" }
+    ],
+    "rate": [
+      { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch that. Please tell me the percent, for example 5 percent each month. If it is free, say 0." },
+      { "trigger": "low_confidence", "prompt_en": "Let me check that I understood you. Is that percent right?" },
+      { "trigger": "out_of_range", "prompt_en": "That is much more than most loans cost. Can you check the percent for me?" },
+      { "trigger": "unclear_period", "prompt_en": "Is that percent each month or each year?" }
+    ]
+  },
+  "questions": [
+    {
+      "slot": "destination_country",
+      "stage": "intro",
+      "prompt_en": "Which country are you going to work in? Singapore, South Korea, Malaysia, Japan, Hong Kong or Australia?",
+      "why_en": "The rules, the costs and the pay are different in each country.",
+      "expected": {
+        "kind": "choice",
+        "options": ["SG", "KR", "MY", "JP", "HK", "AU"]
+      },
+      "follow_ups": [
+        { "trigger": "not_understood", "prompt_en": "I did not catch the country. Is it Singapore, South Korea, Malaysia, Japan, Hong Kong or Australia?" }
+      ]
+    },
+    {
+      "slot": "job_type",
+      "stage": "intro",
+      "prompt_en": "What kind of work will you do? For example: home work (domestic), factory work, care work, plantation work, construction, or a working holiday.",
+      "why_en": "Pay and rights are different for each kind of job.",
+      "expected": {
+        "kind": "choice",
+        "options": [
+          "domestic_worker",
+          "manufacturing_worker",
+          "care_worker",
+          "plantation_worker",
+          "construction_worker",
+          "working_holiday",
+          "other"
+        ]
+      },
+      "follow_ups": [
+        { "trigger": "not_understood", "prompt_en": "I did not catch the kind of work. Is it home work, factory work, care work, plantation work, construction, a working holiday, or something else?" }
+      ]
+    },
+    {
+      "slot": "departure_date",
+      "stage": "intro",
+      "prompt_en": "When do you plan to leave? A date is best. If you do not know yet, you can say so.",
+      "why_en": "So I can plan your first three months and remind you at the right times.",
+      "required": false,
+      "expected": {
+        "kind": "date_window",
+        "days": { "low": -30, "high": 730 }
+      },
+      "follow_ups": [
+        { "trigger": "not_understood", "prompt_en": "A date like 1 December 2026 is best. If you do not know yet, you can say you are not sure." }
+      ]
+    },
+    {
+      "slot": "monthly_salary",
+      "stage": "income",
+      "prompt_en": "How much will you earn each month? Please tell me the amount and the money, for example 1,200 Singapore dollars.",
+      "why_en": "To see how much you can spend, send home and save.",
+      "expected": {
+        "kind": "money",
+        "flow": true,
+        "scale_multiple": { "low": 0.25, "high": 5 }
+      },
+      "follow_ups": [
+        { "trigger": "not_understood", "prompt_en": "Sorry, I did not catch the amount. Please tell me what you earn each month and the money, for example 1,200 Singapore dollars." },
+        { "trigger": "unclear_period", "prompt_en": "Is that amount each month, each week or each year? If you are paid by the day, tell me what you get in a normal month." }
+      ]
+    },
+    {
+      "slot": "dependents",
+      "stage": "obligations",
+      "prompt_en": "How many people depend on your money? Count your children, your husband or wife, and your parents. If nobody, say 0.",
+      "why_en": "This helps me plan what your family needs each month.",
+      "expected": {
+        "kind": "count",
+        "bounds": { "low": 0, "high": 10 }
+      }
+    },
+    {
+      "slot": "remittance_target",
+      "stage": "obligations",
+      "prompt_en": "How much money do you want to send home each month?",
+      "why_en": "To plan your savings and to find the cheapest way to send it.",
+      "expected": {
+        "kind": "money",
+        "flow": true,
+        "scale_multiple": { "low": 0, "high": 5 }
+      }
+    },
+    {
+      "slot": "recruitment_fee_paid",
+      "stage": "debt",
+      "prompt_en": "How much did you pay, or do you have to pay, an agent or recruiter to get this job? Include fees for the visa, training and medical tests. If nothing, say 0.",
+      "why_en": "Some fees are against the law. I can check if yours is too high.",
+      "expected": {
+        "kind": "money",
+        "flow": false,
+        "scale_multiple": { "low": 0, "high": 12 }
+      }
+    },
+    {
+      "slot": "debt_outstanding",
+      "stage": "debt",
+      "prompt_en": "Do you still owe money because of this move, to an agent, a lender or your family? How much? If nothing, say 0.",
+      "why_en": "A debt changes how much you can save, so I need to plan for it.",
+      "expected": {
+        "kind": "money",
+        "flow": false,
+        "scale_multiple": { "low": 0, "high": 12 }
+      }
+    },
+    {
+      "slot": "debt_interest",
+      "stage": "debt",
+      "prompt_en": "How much extra do you pay on this money (the interest)? For example, 5 percent each month. If it is free, say 0.",
+      "why_en": "A high interest can make a debt grow fast.",
+      "expected": {
+        "kind": "rate",
+        "month": { "low": 0, "high": 20 },
+        "year": { "low": 0, "high": 240 }
+      },
+      "skip_if": [
+        { "slot": "debt_outstanding", "field": "amount", "equals": 0 }
+      ]
+    },
+    {
+      "slot": "savings",
+      "stage": "savings",
+      "prompt_en": "How much money do you have saved now? Please tell me the amount and the money. If nothing, say 0.",
+      "why_en": "Savings are your safety net if something goes wrong.",
+      "expected": {
+        "kind": "money",
+        "flow": false,
+        "scale_multiple": { "low": 0, "high": 24 }
+      }
+    },
+    {
+      "slot": "bank_or_wallet",
+      "stage": "savings",
+      "prompt_en": "Do you have a bank account or a mobile wallet for your money? You can say bank, wallet, both, or none.",
+      "why_en": "A bank account or a wallet makes it safer and cheaper to save and to send money.",
+      "expected": {
+        "kind": "choice",
+        "options": ["bank_account", "mobile_wallet", "both", "none"]
+      },
+      "follow_ups": [
+        { "trigger": "not_understood", "prompt_en": "I did not catch that. Do you have a bank account, a mobile wallet, both, or neither?" }
+      ]
+    }
+  ]
+}
