@@ -228,3 +228,19 @@ It runs the backend's own classifier (`classify_message`) after the same request
 Tests use a fake classifier and run in CI. `tests/test_scam_eval_backend.py` checks the wiring to the real classifier with only the Gemini call replaced; it needs the backend's packages, so it is skipped here in CI and runs with `pytest tests/test_scam_eval_backend.py` in an environment that has them. The manual GitHub workflow **Scam eval** (Actions tab) runs the same command and attaches the report; it needs a `GEMINI_API_KEY` repository secret.
 
 Full steps, how to read the report and its limits: [`docs/runbooks/NF-SA-014-scam-eval-runner.md`](../docs/runbooks/NF-SA-014-scam-eval-runner.md).
+
+## Cost baselines (NF-FC-003)
+Monthly cost-of-living figures for a migrant worker, one file per host country in `data/source/cost-baselines/{host}.json`: `SG.json` and `AU.json` (NF-FC-003); `KR`, `MY` (NF-FC-004) and `JP`, `HK` (NF-FC-005) follow. Each file has the five recurring costs (accommodation, food, transport, phone and data, mandatory deductions) and the one-off costs of the first month, each as low, typical and high in the country's currency. Every figure names the page it was read from (URL, publisher, the day it was read) and its curator; nothing is written from memory. The fields and how a figure is read are in [`docs/data-model/collections/cost_baselines.md`](../docs/data-model/collections/cost_baselines.md).
+
+```bash
+python -m src.validators.cost_baselines                # check every file
+python -m src.validators.cost_baselines --only KR MY   # check only yours
+python -m src.loaders.cost_baselines --dry-run         # validate, no Firestore access
+python -m src.loaders.cost_baselines                   # write
+```
+
+The loader validates every selected file first; if any fails, nothing is written. It then writes `cost_baselines/{host}` in one batch. Each document carries `version` and `content_hash`: the version goes up by 1 only when a figure, a unit, a job-type override or a note changes (sources and curator are not hashed, because the Coach plan records `grounding.baselines.version`). Running it again with nothing changed writes nothing, and a new source on the same figures is stored without a new version. Options: `--only SG AU`, `--input-dir`, `--collection` (default `cost_baselines`). A host without a file is left alone and nothing is ever deleted. It is not part of `scripts/load_bootstrap.sh`; run it yourself when the files change. Same Firestore identity as the other loaders.
+
+To add a country, copy `SG.json`, replace every figure, note and source, and run the checker. Keep to these rules (the checker enforces the ones it can): read the page, and do not fill a gap from memory; a figure of 0 needs a note that says why; low, typical and high are a published range or median, and a midpoint or a piece of arithmetic is said so in `notes`; set `retrieved_on` to the day you read the page; give a second page in `other_sources` when the range needs one.
+
+Full steps, the figures and their limits: [`docs/runbooks/NF-FC-003-cost-baselines-sg-au.md`](../docs/runbooks/NF-FC-003-cost-baselines-sg-au.md).

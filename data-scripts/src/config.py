@@ -9,6 +9,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 LABOR_LAWS_DIR = DATA_DIR / "source" / "labor-laws"
 COMPLAINT_TEMPLATES_DIR = DATA_DIR / "source" / "complaint-templates"
 SCAM_TAXONOMY_DIR = DATA_DIR / "source" / "scam-taxonomy"
+COST_BASELINES_DIR = DATA_DIR / "source" / "cost-baselines"
 SCAM_PATTERNS_DIR = DATA_DIR / "source" / "scam-patterns"
 # The golden eval sets of the Scam Analyzer (NF-SA-003 to -005): data-scripts/evals/.
 EVALS_DIR = Path(__file__).resolve().parent.parent / "evals"
