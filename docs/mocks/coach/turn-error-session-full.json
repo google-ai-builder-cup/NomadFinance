@@ -1,0 +1,13 @@
+{
+  "description": "The transcript holds 200 messages, the most a session keeps: 409. Starting again (`restart`) opens a new session.",
+  "request": "POST /api/v2/coach/sessions/s_02/messages",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e103"
+  },
+  "body": {
+    "code": "session_full",
+    "message": "This conversation is too long. Start a new one.",
+    "request_id": "0000000000000000000000000000e103"
+  }
+}

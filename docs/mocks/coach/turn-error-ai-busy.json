@@ -1,0 +1,14 @@
+{
+  "description": "Gemini was out of quota before any reply started, so the turn is an ordinary 503, not a stream. The session is intact: the worker retries the same turn with the same key.",
+  "request": "POST /api/v2/coach/sessions/s_01/messages",
+  "status": 503,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e106",
+    "Retry-After": "30"
+  },
+  "body": {
+    "code": "ai_busy",
+    "message": "The AI service is busy. Please try again in a moment.",
+    "request_id": "0000000000000000000000000000e106"
+  }
+}

@@ -1,0 +1,9 @@
+event: token
+data: {"text":"आपने 1,50,000 बताया। "}
+
+event: token
+data: {"text":"क्या यह रुपये में है, या किसी और पैसे में?"}
+
+event: done
+data: {"message_id":"m_015","stage":"debt","next_slot":"recruitment_fee_paid","turn_count":7}
+

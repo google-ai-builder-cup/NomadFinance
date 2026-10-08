@@ -1,0 +1,12 @@
+event: token
+data: {"text":"ठीक है, अब मैं हिंदी में बात करूँगा। "}
+
+event: token
+data: {"text":"आपने इस नौकरी के लिए एजेंट या रिक्रूटर को कितना पैसा दिया है, या कितना देना है? "}
+
+event: token
+data: {"text":"वीज़ा, ट्रेनिंग और मेडिकल जाँच की फ़ीस भी जोड़ें। अगर कुछ नहीं, तो 0 कहें।"}
+
+event: done
+data: {"message_id":"m_014","stage":"debt","next_slot":"recruitment_fee_paid","turn_count":6}
+

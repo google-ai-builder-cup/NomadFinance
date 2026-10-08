@@ -1,0 +1,12 @@
+{
+  "description": "A worker who never used the Coach: the card says Start.",
+  "request": "GET /api/v2/coach/overview",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c504"
+  },
+  "body": {
+    "session": null,
+    "plan": null
+  }
+}

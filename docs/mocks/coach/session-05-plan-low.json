@@ -1,0 +1,308 @@
+{
+  "description": "Stage `plan`, lowest band: a heavy debt, no savings and no account. The worker did not say when they leave, so there is no `departure_date`.",
+  "request": "GET /api/v2/coach/sessions/s_05",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c205"
+  },
+  "body": {
+    "id": "s_05",
+    "status": "active",
+    "stage": "plan",
+    "language": "en",
+    "slots": {
+      "destination_country": {
+        "value": "SG",
+        "confirmed": true,
+        "source": "user"
+      },
+      "job_type": {
+        "value": "domestic_worker",
+        "confirmed": true,
+        "source": "user"
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 650,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "dependents": {
+        "value": 4,
+        "confirmed": true,
+        "source": "user"
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 400,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "recruitment_fee_paid": {
+        "value": {
+          "amount": 3000,
+          "currency": "SGD",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "debt_outstanding": {
+        "value": {
+          "amount": 2400,
+          "currency": "SGD",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "debt_interest": {
+        "value": {
+          "rate_percent": 5,
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "savings": {
+        "value": {
+          "amount": 0,
+          "currency": "SGD",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "user"
+      },
+      "bank_or_wallet": {
+        "value": "none",
+        "confirmed": true,
+        "source": "user"
+      }
+    },
+    "messages": [
+      {
+        "id": "m_001",
+        "role": "coach",
+        "text": "Hello! I am your money coach. I will ask you a few simple questions, so you can plan your money before you leave. Which country are you going to work in? Singapore, South Korea, Malaysia, Japan, Hong Kong or Australia?",
+        "language": "en",
+        "at": "2026-10-21T09:00:05Z"
+      },
+      {
+        "id": "m_002",
+        "role": "user",
+        "text": "Singapore",
+        "language": "en",
+        "at": "2026-10-21T09:00:40Z"
+      },
+      {
+        "id": "m_003",
+        "role": "coach",
+        "text": "Thank you. What kind of work will you do? For example: home work (domestic), factory work, care work, plantation work, construction, or a working holiday.",
+        "language": "en",
+        "at": "2026-10-21T09:00:45Z"
+      },
+      {
+        "id": "m_004",
+        "role": "user",
+        "text": "Domestic work, in a home",
+        "language": "en",
+        "at": "2026-10-21T09:01:20Z"
+      },
+      {
+        "id": "m_005",
+        "role": "coach",
+        "text": "Thank you. When do you plan to leave? A date is best. If you do not know yet, you can say so.",
+        "language": "en",
+        "at": "2026-10-21T09:01:25Z"
+      },
+      {
+        "id": "m_006",
+        "role": "user",
+        "text": "I do not know yet",
+        "language": "en",
+        "at": "2026-10-21T09:02:00Z"
+      },
+      {
+        "id": "m_007",
+        "role": "coach",
+        "text": "Thank you. How much will you earn each month? Please tell me the amount and the money, for example 1,200 Singapore dollars.",
+        "language": "en",
+        "at": "2026-10-21T09:02:05Z"
+      },
+      {
+        "id": "m_008",
+        "role": "user",
+        "text": "650 Singapore dollars a month",
+        "language": "en",
+        "at": "2026-10-21T09:02:40Z"
+      },
+      {
+        "id": "m_009",
+        "role": "coach",
+        "text": "Thank you. How many people depend on your money? Count your children, your husband or wife, and your parents. If nobody, say 0.",
+        "language": "en",
+        "at": "2026-10-21T09:02:45Z"
+      },
+      {
+        "id": "m_010",
+        "role": "user",
+        "text": "4",
+        "language": "en",
+        "at": "2026-10-21T09:03:20Z"
+      },
+      {
+        "id": "m_011",
+        "role": "coach",
+        "text": "Thank you. How much money do you want to send home each month?",
+        "language": "en",
+        "at": "2026-10-21T09:03:25Z"
+      },
+      {
+        "id": "m_012",
+        "role": "user",
+        "text": "400 Singapore dollars each month",
+        "language": "en",
+        "at": "2026-10-21T09:04:00Z"
+      },
+      {
+        "id": "m_013",
+        "role": "coach",
+        "text": "Thank you. How much did you pay, or do you have to pay, an agent or recruiter to get this job? Include fees for the visa, training and medical tests. If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-21T09:04:05Z"
+      },
+      {
+        "id": "m_014",
+        "role": "user",
+        "text": "3,000 Singapore dollars",
+        "language": "en",
+        "at": "2026-10-21T09:04:40Z"
+      },
+      {
+        "id": "m_015",
+        "role": "coach",
+        "text": "Thank you. Do you still owe money because of this move, to an agent, a lender or your family? How much? If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-21T09:04:45Z"
+      },
+      {
+        "id": "m_016",
+        "role": "user",
+        "text": "2,400 Singapore dollars",
+        "language": "en",
+        "at": "2026-10-21T09:05:20Z"
+      },
+      {
+        "id": "m_017",
+        "role": "coach",
+        "text": "Thank you. How much extra do you pay on this money (the interest)? For example, 5 percent each month. If it is free, say 0.",
+        "language": "en",
+        "at": "2026-10-21T09:05:25Z"
+      },
+      {
+        "id": "m_018",
+        "role": "user",
+        "text": "5 percent every month",
+        "language": "en",
+        "at": "2026-10-21T09:06:00Z"
+      },
+      {
+        "id": "m_019",
+        "role": "coach",
+        "text": "Thank you. How much money do you have saved now? Please tell me the amount and the money. If nothing, say 0.",
+        "language": "en",
+        "at": "2026-10-21T09:06:05Z"
+      },
+      {
+        "id": "m_020",
+        "role": "user",
+        "text": "Nothing",
+        "language": "en",
+        "at": "2026-10-21T09:06:40Z"
+      },
+      {
+        "id": "m_021",
+        "role": "coach",
+        "text": "Thank you. Do you have a bank account or a mobile wallet for your money? You can say bank, wallet, both, or none.",
+        "language": "en",
+        "at": "2026-10-21T09:06:45Z"
+      },
+      {
+        "id": "m_022",
+        "role": "user",
+        "text": "I have neither",
+        "language": "en",
+        "at": "2026-10-21T09:07:20Z"
+      },
+      {
+        "id": "m_023",
+        "role": "coach",
+        "text": "Thank you. Here is what I understood: you will do domestic work in Singapore, and earn 650 SGD a month. You support 4 people and want to send home 400 SGD a month. You paid 3,000 SGD to an agent and still owe 2,400 SGD, at 5% a month. You have no savings and no bank account or wallet. Is this right? Say yes, or tell me what to change.",
+        "language": "en",
+        "at": "2026-10-21T09:07:25Z"
+      },
+      {
+        "id": "m_024",
+        "role": "user",
+        "text": "Yes, that is right.",
+        "language": "en",
+        "at": "2026-10-21T09:08:00Z"
+      },
+      {
+        "id": "m_025",
+        "role": "coach",
+        "text": "Thank you. Your answers are confirmed. You can see your score and make your plan now.",
+        "language": "en",
+        "at": "2026-10-21T09:08:05Z"
+      }
+    ],
+    "next_slot": null,
+    "turn_count": 12,
+    "score": {
+      "total": 7,
+      "band": "needs_work",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 3.69,
+          "score": 5,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 0.0,
+          "score": 0,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.62,
+          "score": 25,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 2.5,
+          "score": 10,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 0.0,
+          "score": 0,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan_id": null,
+    "created_at": "2026-10-21T09:00:00Z",
+    "last_active": "2026-10-21T09:08:05Z"
+  }
+}

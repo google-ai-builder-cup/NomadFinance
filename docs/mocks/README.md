@@ -7,8 +7,7 @@ Sample requests and responses for the API, written before the endpoint exists. F
 | `conventions/` | NF-F0-002 | One sample per `/api/v2` convention (`docs/api/v2-conventions.md`) |
 | `flags/` | NF-F0-014 | `GET /api/v2/flags`: both modules off, the Coach on, the Scam Analyzer on, and the 401 envelope |
 | `scam/` | NF-SA-002 | The Scam Analyzer API (`docs/api/v2-scam.md`): a check at each risk level and a benign one, the history, one stored check, a report, and every refusal |
-
-The Coach's mocks get their own folder, added by its contract task (NF-FC-002).
+| `coach/` | NF-FC-002 | The Financial Coach API (`docs/api/v2-coach.md`): a session at every stage, the three score bands, plans in English and Hindi, ten streamed turns, the dashboard overview, and every refusal |
 
 ## `scam/`
 
@@ -35,6 +34,52 @@ Written for NF-SA-002 and checked against the backend's models by `backend/tests
 | `report-error-not-a-scam.json` | `POST /api/v2/scam/checks/k_04/report` | 409 |
 
 The frontend serves them through `frontend/src/mocks/` (`scam.msw.test.ts` is the working example).
+
+## `coach/`
+
+Written for NF-FC-002 and checked against the backend's models by `backend/tests/unit/test_coach_mocks.py`: shape, the next question against the question bank, redaction of the transcript, the plan id against the real hash of the answers, the plan's arithmetic, the Hindi plan's numbers against the English one's, and agreement between the sessions, the overview and the streams. Every person, message and number is invented. Three workers appear: **A** from India to Australia (care work, a debt at 3% a month, the middle band; ids `s_03`, `s_04`, `s_07`), **B** from the Philippines to Singapore (a heavy debt, the lowest band, did not say when she leaves; `s_05`) and **C** from Nepal to South Korea (no debt, the highest band, not one of the six corridors; `s_06`).
+
+**The streams are written to the contract byte for byte; they were not captured from a running server**, because none exists yet. They are `.sse` files: the raw body of the response. A test replays one with `sseHandler(requestLine, "coach/<file>")`.
+
+The turn route has no default answer: a test always picks a stream. The JSON refusals declared on the same path (`turn-error-*.json`) are what a request gets if it does not.
+
+| File | Request | Shows |
+|---|---|---|
+| `sessions-create-01-new.json` | `POST /api/v2/coach/sessions` | 201, a new English session at the first question, no messages (default) |
+| `sessions-create-02-resumed.json` | same | 200, the open session comes back: Hindi, debt stage, the transcript so far |
+| `session-01-new.json` to `session-07-completed.json` | `GET /api/v2/coach/sessions/s_01` to `s_07` | New; Hindi in the debt stage; the review (two answers unconfirmed, a salary from a contract); stage `plan` at the middle, lowest and highest band; completed |
+| `session-error-not-found.json` | `GET /api/v2/coach/sessions/s_missing` | 404 |
+| `turn-error-session-not-active.json` | `POST /api/v2/coach/sessions/s_07/messages` | 409, the session is completed |
+| `turn-error-in-progress.json` | `POST /api/v2/coach/sessions/s_02/messages` | 409 with `Retry-After`, another turn is running |
+| `turn-error-session-full.json` | same | 409, 200 messages |
+| `turn-error-text-too-long.json` | `POST /api/v2/coach/sessions/s_01/messages` | 422, over 1,000 characters |
+| `turn-error-rate-limited.json` | same | 429, 10 a minute |
+| `turn-error-ai-busy.json` | same | 503 before any stream started |
+| `plan-01-created.json` | `POST /api/v2/coach/sessions/s_04/plan` | 201, worker A's plan in English (default) |
+| `plan-02-created-no-debt.json` | `POST /api/v2/coach/sessions/s_06/plan` | 201, worker C: no debt, no provider quote |
+| `plan-03-already-exists.json` | `POST /api/v2/coach/sessions/s_07/plan` | 200, the stored plan |
+| `plan-error-not-ready.json` | `POST /api/v2/coach/sessions/s_02/plan` | 409, the answers are not confirmed |
+| `plan-error-in-progress.json`, `plan-error-ai-bad-response.json` | `POST /api/v2/coach/sessions/s_04/plan` | 409 with `Retry-After`; 502, the figures failed the check twice |
+| `plan-get-01-english.json` | `GET /api/v2/coach/plans/5a202702c922fc9b4fcf` | Worker A's plan, English (default) |
+| `plan-get-02-hindi.json` | `GET /api/v2/coach/plans/5a202702c922fc9b4fcf?language=hi` | The same plan in Hindi, every figure unchanged |
+| `plan-get-03-no-debt.json` | `GET /api/v2/coach/plans/e75fa9f24fd3159ad83d` | Worker C's plan |
+| `plan-get-error-not-found.json` | `GET /api/v2/coach/plans/0123456789abcdef0123` | 404 |
+| `overview-01-active-session.json`, `-02-plan-only`, `-03-session-and-plan`, `-04-empty` | `GET /api/v2/coach/overview` | The four states of the dashboard card: Resume (default), View plan, both, Start |
+
+| Stream | Request to replay it on | Shows |
+|---|---|---|
+| `turn-01-start.sse` | `POST /api/v2/coach/sessions/s_01/messages` | The coach speaks first (the request has no `text`) |
+| `turn-02-answer.sse` | same | A fact is understood (`slot_update`), a heartbeat while the reply is slow, then the next question |
+| `turn-03-answer-hindi.sse` | `POST /api/v2/coach/sessions/s_02/messages` | The same in Hindi, with the amount in rupees |
+| `turn-04-clarify.sse` | same | The currency is missing: no `slot_update`, the same `next_slot` |
+| `turn-05-review.sse` | `POST /api/v2/coach/sessions/s_03/messages` | The last answer: stage `review`, no next slot; the text is the last message of `session-03-review.json` |
+| `turn-06-late-slot-update.sse` | `POST /api/v2/coach/sessions/s_01/messages` | The fact arrives after the words (design 4.2 fallback) |
+| `turn-07-redirect.sse` | same | An off-topic question is answered with a redirect, nothing stored |
+| `turn-08-language-switch.sse` | `POST /api/v2/coach/sessions/s_02/messages` | The request has no `text` and a new language: the current question again in Hindi |
+| `turn-error-midstream.sse` | `POST /api/v2/coach/sessions/s_01/messages` | Words, then an `error` event (`ai_timeout`) |
+| `turn-error-dropped.sse` | same | Words and then nothing: no `done`, no `error`. The client must retry with the same key |
+
+The plan's PDF has no mock yet (D-179): the loader reads JSON and `.sse` only.
 
 ## `conventions/`
 
@@ -87,4 +132,4 @@ server.use(handlerForMock("flags/flags-coach-on.json"));   // inside a test: pic
 
 When several mocks declare the same request (the three `flags` mocks do), the first by file name is the default and a test swaps in another with `server.use(...)`. `sseHandler("POST /api/v2/...", "conventions/sse-stream-done.sse")` replays a stream. A request no handler matches fails the test. A working example: `frontend/src/hooks/useFeatureFlags.msw.test.tsx`.
 
-**Backend.** `backend/tests/unit/test_flags_mocks.py` checks that each `flags/` mock parses as the real response model, so a mock cannot drift from the backend. The contract task that adds a new folder (NF-FC-002, NF-SA-002) adds the same kind of check for it.
+**Backend.** `backend/tests/unit/test_flags_mocks.py` checks that each `flags/` mock parses as the real response model, so a mock cannot drift from the backend. The contract tasks that added a folder (NF-SA-002 for `scam/`, NF-FC-002 for `coach/`) added the same kind of check for it.

@@ -1,0 +1,15 @@
+event: token
+data: {"text":"Thank you. "}
+
+event: token
+data: {"text":"When do you plan to leave? "}
+
+event: token
+data: {"text":"A date is best. If you do not know yet, you can say so."}
+
+event: slot_update
+data: {"slot":"job_type","value":"care_worker","confirmed":true}
+
+event: done
+data: {"message_id":"m_005","stage":"intro","next_slot":"departure_date","turn_count":2}
+

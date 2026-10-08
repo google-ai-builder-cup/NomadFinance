@@ -1,0 +1,17 @@
+{
+  "description": "More than 10 messages in a minute (the Gemini budget): 429 with the budget's headers.",
+  "request": "POST /api/v2/coach/sessions/s_01/messages",
+  "status": 429,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e105",
+    "Retry-After": "38",
+    "X-RateLimit-Limit": "10",
+    "X-RateLimit-Remaining": "0",
+    "X-RateLimit-Reset": "38"
+  },
+  "body": {
+    "code": "rate_limited",
+    "message": "Too many requests. Please wait a minute and try again.",
+    "request_id": "0000000000000000000000000000e105"
+  }
+}

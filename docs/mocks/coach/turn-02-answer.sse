@@ -1,0 +1,17 @@
+event: slot_update
+data: {"slot":"destination_country","value":"AU","confirmed":true}
+
+: ping
+
+event: token
+data: {"text":"Australia, thank you. "}
+
+event: token
+data: {"text":"What kind of work will you do? "}
+
+event: token
+data: {"text":"For example: home work (domestic), factory work, care work, plantation work, construction, or a working holiday."}
+
+event: done
+data: {"message_id":"m_003","stage":"intro","next_slot":"job_type","turn_count":1}
+

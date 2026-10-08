@@ -1,0 +1,383 @@
+{
+  "description": "The same plan with `?language=hi`: every sentence is Hindi and every figure, currency code and date is the same as in English.",
+  "request": "GET /api/v2/coach/plans/5a202702c922fc9b4fcf?language=hi",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c412"
+  },
+  "body": {
+    "id": "5a202702c922fc9b4fcf",
+    "session_id": "s_04",
+    "language": "hi",
+    "available_languages": [
+      "en",
+      "hi"
+    ],
+    "host_country": "AU",
+    "home_country": "IN",
+    "corridor_id": "AU-IN",
+    "departure_date": "2026-12-01",
+    "reporting_currency": "AUD",
+    "slots": {
+      "destination_country": "AU",
+      "job_type": "care_worker",
+      "departure_date": "2026-12-01",
+      "monthly_salary": {
+        "amount": 4200,
+        "currency": "AUD",
+        "period": "month"
+      },
+      "dependents": 3,
+      "remittance_target": {
+        "amount": 900,
+        "currency": "AUD",
+        "period": "month"
+      },
+      "recruitment_fee_paid": {
+        "amount": 150000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "debt_outstanding": {
+        "amount": 120000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "debt_interest": {
+        "rate_percent": 3,
+        "period": "month"
+      },
+      "savings": {
+        "amount": 25000,
+        "currency": "INR",
+        "period": "once"
+      },
+      "bank_or_wallet": "bank_account"
+    },
+    "rates_as_of": "2026-10-20T08:00:00Z",
+    "score": {
+      "total": 57,
+      "band": "getting_ready",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.52,
+          "score": 70,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 0.21,
+          "score": 30,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.21,
+          "score": 85,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 1.8,
+          "score": 30,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 100,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan": {
+      "summary": "आप लगभग 4,200 AUD प्रति माह कमाएँगे। खर्चों के बाद आप 900 AUD घर भेज सकते हैं, लगभग 5 महीनों में अपना कर्ज़ चुका सकते हैं और आपातकालीन बचत शुरू कर सकते हैं। आपके कर्ज़ पर हर महीने 3% ब्याज लगता है, इसलिए उसे पहले चुकाने से सबसे ज़्यादा पैसा बचता है।",
+      "monthly_budget": {
+        "income": {
+          "amount": 4200,
+          "currency": "AUD"
+        },
+        "costs": [
+          {
+            "id": "accommodation",
+            "amount": {
+              "amount": 1100,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "food",
+            "amount": {
+              "amount": 450,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "transport",
+            "amount": {
+              "amount": 160,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "phone_data",
+            "amount": {
+              "amount": 45,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "deductions",
+            "amount": {
+              "amount": 400,
+              "currency": "AUD"
+            }
+          }
+        ],
+        "goals": [
+          {
+            "id": "remittance",
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "debt_payment",
+            "amount": {
+              "amount": 500,
+              "currency": "AUD"
+            }
+          },
+          {
+            "id": "emergency_fund",
+            "amount": {
+              "amount": 400,
+              "currency": "AUD"
+            }
+          }
+        ],
+        "left_over": {
+          "amount": 245,
+          "currency": "AUD"
+        },
+        "setup_costs": {
+          "amount": 600,
+          "currency": "AUD"
+        }
+      },
+      "remittance": {
+        "corridor_id": "AU-IN",
+        "monthly_amount": {
+          "amount": 900,
+          "currency": "AUD"
+        },
+        "provider": {
+          "slug": "example-remit",
+          "name": "Example Remit",
+          "fee": {
+            "amount": 6,
+            "currency": "AUD"
+          },
+          "receives": {
+            "amount": 48991.2,
+            "currency": "INR"
+          },
+          "fx_rate": 54.8,
+          "quoted_at": "2026-10-20T09:08:10Z"
+        },
+        "schedule": [
+          {
+            "week": 5,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "week": 9,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          },
+          {
+            "week": 13,
+            "amount": {
+              "amount": 900,
+              "currency": "AUD"
+            }
+          }
+        ]
+      },
+      "debt": {
+        "outstanding": {
+          "amount": 2177.07,
+          "currency": "AUD"
+        },
+        "monthly_payment": {
+          "amount": 500,
+          "currency": "AUD"
+        },
+        "months_to_clear": 5
+      },
+      "emergency_fund": {
+        "target": {
+          "amount": 6465,
+          "currency": "AUD"
+        },
+        "months_of_costs": 3,
+        "monthly_saving": {
+          "amount": 400,
+          "currency": "AUD"
+        },
+        "weeks_to_target": 66
+      },
+      "weeks": [
+        {
+          "week": 1,
+          "title": "पहुँचें और बस जाएँ",
+          "actions": [
+            "अपने अनुबंध और पासपोर्ट की प्रतियाँ एक सुरक्षित जगह रखें।",
+            "पहले महीने के खर्चों, जैसे कमरे की जमा राशि और फ़ोन प्लान, के लिए 600 AUD अलग रखें।"
+          ]
+        },
+        {
+          "week": 2,
+          "title": "अपना वेतन खाता खोलें",
+          "actions": [
+            "ऐसा बैंक खाता खोलें जिसमें आपका नियोक्ता वेतन डाल सके।",
+            "जाँचें कि पहली वेतन पर्ची आपके अनुबंध से मेल खाती है।"
+          ]
+        },
+        {
+          "week": 3,
+          "title": "अपने खर्च समझें",
+          "actions": [
+            "एक हफ़्ते तक रोज़ का खर्च लिखें।",
+            "उसे इस योजना के बजट से मिलाएँ।"
+          ]
+        },
+        {
+          "week": 4,
+          "title": "पहला वेतन पाएँ",
+          "actions": [
+            "अपने वेतन को अनुबंध के 4,200 AUD से मिलाएँ।",
+            "असली वेतन जाने बिना पैसे न भेजें।"
+          ]
+        },
+        {
+          "week": 5,
+          "title": "घर पहला पैसा भेजें",
+          "actions": [
+            "Example Remit से 900 AUD भेजें। शुल्क 6 AUD है।",
+            "रसीद संभालकर रखें।"
+          ]
+        },
+        {
+          "week": 6,
+          "title": "कर्ज़ चुकाना शुरू करें",
+          "actions": [
+            "इस वेतन से शुरू करके हर महीने कर्ज़ में 500 AUD चुकाएँ।",
+            "लेनदार से लिखित सूची माँगें कि आपका कितना बाकी है।"
+          ]
+        },
+        {
+          "week": 7,
+          "title": "आपातकालीन बचत शुरू करें",
+          "actions": [
+            "हर महीने 400 AUD अलग बचत खाते में डालें।"
+          ]
+        },
+        {
+          "week": 8,
+          "title": "पहले महीने की जाँच करें",
+          "actions": [
+            "जो खर्च हुआ उसे योजना से मिलाएँ।",
+            "अगर किराया या खाना महँगा निकला तो योजना बदलें।"
+          ]
+        },
+        {
+          "week": 9,
+          "title": "फिर घर पैसा भेजें",
+          "actions": [
+            "900 AUD भेजें। भेजने से पहले दर देख लें।"
+          ]
+        },
+        {
+          "week": 10,
+          "title": "कर्ज़ चुकाते रहें",
+          "actions": [
+            "500 AUD चुकाएँ। आपका कर्ज़ घट रहा है।"
+          ]
+        },
+        {
+          "week": 11,
+          "title": "बेहतर दर खोजें",
+          "actions": [
+            "पैसा भेजने के दो-तीन तरीकों की तुलना करें। थोड़ा सा फ़र्क भी साल भर में बड़ा हो जाता है।"
+          ]
+        },
+        {
+          "week": 12,
+          "title": "मुश्किल दिनों की तैयारी",
+          "actions": [
+            "किसी मज़दूर सहायता संगठन और अपने दूतावास के नंबर सेव करें।",
+            "जानें कि वेतन देर से मिले तो क्या करना है।"
+          ]
+        },
+        {
+          "week": 13,
+          "title": "योजना की समीक्षा करें",
+          "actions": [
+            "900 AUD घर भेजें।",
+            "इस योजना को फिर देखें और तय करें कि अगले तीन महीनों के लिए क्या बदलना है।"
+          ]
+        }
+      ],
+      "warnings": [
+        {
+          "id": "fee_above_legal_limit",
+          "severity": "urgent",
+          "text": "एजेंट को दी गई आपकी फ़ीस (लगभग 2,721 AUD) कानूनी सीमा से ज़्यादा हो सकती है। अपनी रसीदें संभालकर रखें और किसी मज़दूर सहायता संगठन से जँचवाएँ।"
+        },
+        {
+          "id": "high_interest_debt",
+          "severity": "warning",
+          "text": "आपके कर्ज़ पर हर महीने 3% ब्याज लगता है। यह बहुत ज़्यादा है। ज़्यादा बचत करने से पहले इसे चुकाएँ।"
+        },
+        {
+          "id": "thin_emergency_fund",
+          "severity": "info",
+          "text": "आपके पास लगभग 454 AUD की बचत है। धीरे-धीरे 3 महीनों के खर्च तक पहुँचने की कोशिश करें।"
+        }
+      ],
+      "checklist": [
+        {
+          "id": "keep_documents",
+          "text": "अपने अनुबंध, पासपोर्ट और एजेंट की रसीदों की प्रतियाँ रखें।"
+        },
+        {
+          "id": "open_pay_account",
+          "text": "अपने वेतन के लिए बैंक खाता खोलें।"
+        },
+        {
+          "id": "compare_transfer_providers",
+          "text": "हर बार पैसा भेजने से पहले तरीकों की तुलना करें।"
+        },
+        {
+          "id": "save_helpline_numbers",
+          "text": "किसी मज़दूर सहायता संगठन और अपने दूतावास के नंबर सेव करें।"
+        },
+        {
+          "id": "track_spending",
+          "text": "पहले महीने का खर्च लिखें।"
+        }
+      ],
+      "disclaimer": "यह योजना आगे की सोचने में मदद के लिए एक मार्गदर्शिका है। यह पेशेवर वित्तीय सलाह नहीं है। ज़रूरी फ़ैसलों के बारे में किसी भरोसेमंद सलाहकार या मज़दूर सहायता संगठन से पूछें।"
+    },
+    "created_at": "2026-10-20T09:08:30Z"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "description": "The plan for these answers is still being made (a second tap): 409 with `Retry-After`. The screen keeps its progress state and asks again.",
+  "request": "POST /api/v2/coach/sessions/s_04/plan",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e202",
+    "Retry-After": "5"
+  },
+  "body": {
+    "code": "request_in_progress",
+    "message": "This plan is still being made.",
+    "request_id": "0000000000000000000000000000e202"
+  }
+}

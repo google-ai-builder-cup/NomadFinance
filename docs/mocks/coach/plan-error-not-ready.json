@@ -1,0 +1,13 @@
+{
+  "description": "The worker has not confirmed their answers yet (the session is not at stage `plan`): 409.",
+  "request": "POST /api/v2/coach/sessions/s_02/plan",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e201"
+  },
+  "body": {
+    "code": "plan_not_ready",
+    "message": "The worker has not confirmed their answers yet.",
+    "request_id": "0000000000000000000000000000e201"
+  }
+}

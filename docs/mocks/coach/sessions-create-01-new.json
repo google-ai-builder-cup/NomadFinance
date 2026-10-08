@@ -1,0 +1,23 @@
+{
+  "description": "A worker opens the Coach for the first time: a new session (201), in English, at the first question, with no messages yet. The interview starts with a turn that has no text. The default answer of the create route.",
+  "request": "POST /api/v2/coach/sessions",
+  "status": 201,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c101"
+  },
+  "body": {
+    "id": "s_01",
+    "status": "active",
+    "stage": "intro",
+    "language": "en",
+    "slots": {},
+    "messages": [],
+    "next_slot": "destination_country",
+    "turn_count": 0,
+    "score": null,
+    "plan_id": null,
+    "created_at": "2026-10-20T08:00:00Z",
+    "last_active": "2026-10-20T08:00:00Z",
+    "resumed": false
+  }
+}

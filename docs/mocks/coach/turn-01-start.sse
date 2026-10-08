@@ -1,0 +1,15 @@
+event: token
+data: {"text":"Hello! I am your money coach. "}
+
+event: token
+data: {"text":"I will ask you a few simple questions, so you can plan your money before you leave. "}
+
+event: token
+data: {"text":"Which country are you going to work in? "}
+
+event: token
+data: {"text":"Singapore, South Korea, Malaysia, Japan, Hong Kong or Australia?"}
+
+event: done
+data: {"message_id":"m_001","stage":"intro","next_slot":"destination_country","turn_count":0}
+

@@ -1,0 +1,18 @@
+event: slot_update
+data: {"slot":"recruitment_fee_paid","value":{"amount":150000,"currency":"INR","period":"once"},"confirmed":true}
+
+event: token
+data: {"text":"धन्यवाद। "}
+
+event: token
+data: {"text":"क्या आप पर इस सफ़र के लिए अब भी कर्ज़ बाकी है, "}
+
+event: token
+data: {"text":"एजेंट, किसी लेनदार या परिवार का? कितना? "}
+
+event: token
+data: {"text":"अगर कुछ नहीं, तो 0 कहें।"}
+
+event: done
+data: {"message_id":"m_015","stage":"debt","next_slot":"debt_outstanding","turn_count":7}
+

@@ -1,0 +1,9 @@
+event: slot_update
+data: {"slot":"destination_country","value":"AU","confirmed":true}
+
+event: token
+data: {"text":"Australia, thank you. "}
+
+event: token
+data: {"text":"What kind of"}
+

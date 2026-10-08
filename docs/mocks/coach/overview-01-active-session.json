@@ -1,0 +1,18 @@
+{
+  "description": "A worker in the middle of an interview and without a plan: the card says Resume. The default answer.",
+  "request": "GET /api/v2/coach/overview",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c501"
+  },
+  "body": {
+    "session": {
+      "id": "s_02",
+      "stage": "debt",
+      "language": "hi",
+      "turn_count": 6,
+      "last_active": "2026-10-20T08:06:30Z"
+    },
+    "plan": null
+  }
+}

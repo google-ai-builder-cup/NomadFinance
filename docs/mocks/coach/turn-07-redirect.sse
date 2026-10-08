@@ -1,0 +1,12 @@
+event: token
+data: {"text":"I can only help you plan your money before you leave, so I cannot say which phone to buy. "}
+
+event: token
+data: {"text":"Let us go back to my question: "}
+
+event: token
+data: {"text":"which country are you going to work in?"}
+
+event: done
+data: {"message_id":"m_003","stage":"intro","next_slot":"destination_country","turn_count":1}
+
