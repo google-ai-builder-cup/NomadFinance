@@ -8,7 +8,7 @@ import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { replayTurns, sessionFrom } from "@/mocks/coachTurns";
+import { replayOverview, replayTurns, sessionFrom } from "@/mocks/coachTurns";
 import { handlerForMock } from "@/mocks/handlers";
 import { server, setupMockServer } from "@/mocks/server";
 import { loadNamespace } from "@/lib/i18n";
@@ -172,5 +172,44 @@ describe("starting over", () => {
     await waitFor(() => expect(screen.queryByText(/This interview is finished/)).toBeNull());
     // The old interview's lines are gone: a new chat, not the old one with a new line.
     expect(screen.getByRole("log").textContent).not.toContain("नमस्ते");
+  });
+});
+
+describe("the way back to a plan", () => {
+  it("offers the plan the worker made, above the interview", async () => {
+    replayTurns("coach/turn-01-start.sse");
+    replayOverview("coach/overview-02-plan-only.json");
+
+    renderPage();
+
+    const link = await screen.findByRole("link", { name: "View my plan" });
+    expect(link.getAttribute("href")).toBe("/coach/plan/5a202702c922fc9b4fcf");
+    expect(screen.getByText("Your 90-day plan is ready")).toBeTruthy();
+    await inLog(/Which country are you going to work in\?/);
+  });
+
+  it("offers nothing when no plan was made", async () => {
+    replayTurns("coach/turn-01-start.sse");
+    replayOverview("coach/overview-04-empty.json");
+
+    renderPage();
+
+    await inLog(/Which country are you going to work in\?/);
+    expect(screen.queryByRole("link", { name: "View my plan" })).toBeNull();
+  });
+
+  it("leaves the page as it was when the overview cannot be read", async () => {
+    replayTurns("coach/turn-01-start.sse");
+    server.use(
+      http.get("*/api/v2/coach/overview", () =>
+        HttpResponse.json({ code: "internal", message: "x" }, { status: 500 })
+      )
+    );
+
+    renderPage();
+
+    await inLog(/Which country are you going to work in\?/);
+    expect(screen.queryByRole("link", { name: "View my plan" })).toBeNull();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 });

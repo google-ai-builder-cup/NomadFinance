@@ -1,7 +1,7 @@
-import { DRAFT_KEY_PREFIX, OUTBOX_DB_NAME } from "@/utils/coachStorageKeys";
+import { CHECKLIST_KEY_PREFIX, DRAFT_KEY_PREFIX, OUTBOX_DB_NAME } from "@/utils/coachStorageKeys";
 
 /**
- * Wipe what the Coach keeps on this phone: the drafts and any answer still waiting for a
+ * Wipe what the Coach keeps on this phone: the drafts, the plan checklists' ticks and any answer still waiting for a
  * connection (with the token it carries). Called on sign-out, since a phone is often shared and
  * the next person must not find the last one's words, and after an account is deleted. Small and
  * standing alone so the main bundle does not pull in the Coach to do it.
@@ -9,7 +9,7 @@ import { DRAFT_KEY_PREFIX, OUTBOX_DB_NAME } from "@/utils/coachStorageKeys";
 export function clearCoachLocalData(): void {
   try {
     for (const key of Object.keys(localStorage)) {
-      if (key.startsWith(DRAFT_KEY_PREFIX)) {
+      if (key.startsWith(DRAFT_KEY_PREFIX) || key.startsWith(CHECKLIST_KEY_PREFIX)) {
         localStorage.removeItem(key);
       }
     }

@@ -1,5 +1,6 @@
 import { CircleCheck, Loader2, TriangleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
@@ -52,7 +53,9 @@ export default function PlanButton({
           <p className="text-sm font-bold">{t("score.plan.readyTitle")}</p>
         </div>
         <p className="text-sm text-muted-foreground">{make.data.plan.summary}</p>
-        <p className="text-xs text-muted-foreground">{t("score.plan.readyNote")}</p>
+        <Button asChild className="min-h-11 w-full font-bold sm:w-auto">
+          <Link to={`/coach/plan/${make.data.id}`}>{t("score.plan.view")}</Link>
+        </Button>
       </div>
     );
   }

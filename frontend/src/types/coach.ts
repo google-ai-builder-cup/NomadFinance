@@ -71,13 +71,114 @@ export interface CoachScore {
   rubric_version: number;
 }
 
-/** What the screen reads of a made plan (`POST /coach/sessions/{id}/plan`); the plan view of
- * NF-FC-021 reads the rest of it. */
-export interface CoachPlanMade {
+/** A figure of the plan: always an amount and its money. */
+export interface PlanMoney {
+  amount: number;
+  currency: string;
+}
+export interface BudgetLine {
   id: string;
+  amount: PlanMoney;
+}
+export interface MonthlyBudget {
+  income: PlanMoney;
+  costs: BudgetLine[];
+  goals: BudgetLine[];
+  /** Income minus costs minus goals, exactly; negative is a gap. */
+  left_over: PlanMoney;
+  setup_costs?: PlanMoney | null;
+}
+export interface ProviderQuote {
+  slug: string;
+  name: string;
+  fee: PlanMoney;
+  /** What arrives at home, in the home currency. */
+  receives: PlanMoney;
+  fx_rate: number;
+  quoted_at: string;
+}
+export interface RemittancePlan {
+  corridor_id: string | null;
+  monthly_amount: PlanMoney;
+  provider: ProviderQuote | null;
+  schedule: { week: number; amount: PlanMoney }[];
+}
+export interface DebtPlan {
+  outstanding: PlanMoney;
+  monthly_payment: PlanMoney;
+  months_to_clear: number | null;
+}
+export interface EmergencyFundPlan {
+  target: PlanMoney;
+  months_of_costs: number;
+  monthly_saving: PlanMoney;
+  weeks_to_target: number | null;
+}
+export interface PlanWeek {
+  week: number;
+  title: string;
+  actions: string[];
+}
+export type WarningSeverity = "info" | "warning" | "urgent";
+export interface PlanWarning {
+  id: string;
+  severity: WarningSeverity;
+  text: string;
+}
+export interface PlanChecklistItem {
+  id: string;
+  text: string;
+}
+export interface CoachPlanBody {
+  summary: string;
+  monthly_budget: MonthlyBudget;
+  remittance: RemittancePlan;
+  debt: DebtPlan | null;
+  emergency_fund: EmergencyFundPlan;
+  weeks: PlanWeek[];
+  warnings: PlanWarning[];
+  checklist: PlanChecklistItem[];
+  disclaimer: string;
+}
+
+/** `POST /coach/sessions/{id}/plan` and `GET /coach/plans/{id}`: a stored plan in one language
+ * (`docs/api/v2-coach.md`). Every sentence is text in `language`; every figure is a `PlanMoney`. */
+export interface CoachPlanResponse {
+  id: string;
+  session_id: string | null;
   language: LanguageCode;
+  available_languages: LanguageCode[];
+  host_country: string;
+  home_country?: string;
+  corridor_id?: string;
+  departure_date?: string;
+  reporting_currency: string;
+  slots: Record<string, unknown>;
+  rates_as_of: string;
   score: CoachScore;
-  plan: { summary: string };
+  plan: CoachPlanBody;
+  created_at: string;
+}
+
+/** What the score screen reads of a made plan; the plan page reads all of it. */
+export type CoachPlanMade = CoachPlanResponse;
+
+/** `GET /coach/overview`: what the dashboard and the Coach page need to offer the right next step. */
+export interface CoachOverview {
+  session: {
+    id: string;
+    stage: CoachStage;
+    language: LanguageCode;
+    turn_count: number;
+    last_active: string;
+  } | null;
+  plan: {
+    id: string;
+    created_at: string;
+    score_total: number;
+    band: string;
+    departure_date?: string;
+  } | null;
 }
 
 export interface CoachSession {

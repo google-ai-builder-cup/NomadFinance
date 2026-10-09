@@ -140,3 +140,24 @@ export function compareFailure(
   }
   return { key: errorMessageKey(error) };
 }
+
+/** A link into Remittance X-Ray (`/remittance?corridor=SG-PH&amount=400`), such as the 90-day plan
+ * gives: the corridor and amount to fill in, or null when either is missing or not valid for it.
+ * A bad value never fills the form with something the worker did not choose. */
+export function parseCompareLink(params: URLSearchParams): {
+  corridorId: CorridorId;
+  amount: number;
+} | null {
+  const corridor = params.get("corridor");
+  const raw = params.get("amount");
+  if (
+    corridor === null ||
+    raw === null ||
+    !(CORRIDOR_IDS as readonly string[]).includes(corridor)
+  ) {
+    return null;
+  }
+  const corridorId = corridor as CorridorId;
+  const check = parseAmount(raw, CORRIDORS[corridorId]);
+  return check.ok ? { corridorId, amount: check.amount } : null;
+}

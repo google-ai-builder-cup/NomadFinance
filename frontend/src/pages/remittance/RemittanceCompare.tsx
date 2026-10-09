@@ -1,5 +1,6 @@
 import { ArrowLeftRight } from "lucide-react";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -17,7 +18,7 @@ import { toast } from "@/hooks/useToast";
 import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
 import type { ProviderResult, RemittanceComparison } from "@/types/remittance";
-import { compareFailure, defaultCorridor } from "@/utils/corridors";
+import { compareFailure, defaultCorridor, parseCompareLink } from "@/utils/corridors";
 import { errorMessageKey } from "@/utils/errors";
 
 // recharts is a sizeable chunk (D-45): loaded only once a comparison exists to show it for.
@@ -46,6 +47,18 @@ export default function RemittanceCompare() {
   const { t } = useI18n();
   const profile = useUserProfile();
   const compare = useCompareRemittance();
+  // A link from the Coach's plan carries the corridor and the amount to compare: the form shows
+  // them and the comparison runs once, so the worker lands on the answer.
+  const [searchParams] = useSearchParams();
+  const link = useMemo(() => parseCompareLink(searchParams), [searchParams]);
+  const linkStarted = useRef(false);
+  const startComparison = compare.mutate;
+  useEffect(() => {
+    if (link !== null && !linkStarted.current) {
+      linkStarted.current = true;
+      startComparison({ corridor_id: link.corridorId, amount: link.amount });
+    }
+  }, [link, startComparison]);
   const logTransfer = useLogTransfer();
   const [loggedRpwIds, setLoggedRpwIds] = useState<ReadonlySet<number>>(new Set());
   // Tracks which comparison `loggedRpwIds` belongs to, so a new one (new amount or corridor)
@@ -81,7 +94,8 @@ export default function RemittanceCompare() {
 
   const language = i18n.resolvedLanguage ?? "en";
   // Without the profile the form still works; it only starts on the first corridor.
-  const initialCorridor = defaultCorridor(profile.data?.host_country, profile.data?.home_country);
+  const initialCorridor =
+    link?.corridorId ?? defaultCorridor(profile.data?.host_country, profile.data?.home_country);
   const serverError =
     compare.isError && compare.variables
       ? compareFailure(compare.error, compare.variables.corridor_id, language)
@@ -100,6 +114,7 @@ export default function RemittanceCompare() {
         <div className="lg:sticky lg:top-24 lg:col-span-5 xl:col-span-4">
           <CorridorPicker
             initialCorridor={initialCorridor}
+            initialAmount={link?.amount}
             pending={compare.isPending}
             serverError={serverError}
             onSubmit={(request) => compare.mutate(request)}
