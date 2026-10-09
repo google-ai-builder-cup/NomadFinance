@@ -21,6 +21,7 @@ from app.schemas.radar_alert import AggregateRadarResponse
 from app.schemas.remittance import RefreshRatesResponse
 from app.schemas.scam_stats import AggregateScamStatsResponse
 from app.services.coach.checkin_job import send_checkins
+from app.services.coach.plan_goals import newest_plan_goals
 from app.services.feature_flag_service import FeatureFlagService
 from app.services.fib.profile_builder import recompute_all
 from app.services.radar.alerts import run_aggregation
@@ -74,13 +75,16 @@ async def recompute_fib_profiles_endpoint(
     users: Annotated[UserRepository, Depends(get_user_repository)],
     rates: Annotated[RateRepository, Depends(get_rate_repository)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
 ) -> RecomputeResponse:
     """Weekly Financial Identity recompute (NF-P3-013): metrics and narrative per user.
 
     Always 200: a failure for one user is caught and logged inside `recompute_all`, and that
     user keeps the previous profile. A retry would run (and pay for) every other user again.
     """
-    return await recompute_all(gemini, fib, users, rates, datetime.now(UTC))
+    return await recompute_all(
+        gemini, fib, users, rates, datetime.now(UTC), newest_plan_goals(plans)
+    )
 
 
 @router.post(

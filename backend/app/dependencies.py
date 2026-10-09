@@ -29,11 +29,13 @@ from app.repositories.coach_session_repo import (
     get_coach_session_repository,
 )
 from app.repositories.config_repo import get_config_repository
+from app.repositories.contract_repo import ContractRepository, get_contract_repository
 from app.repositories.corridor_repo import CorridorRepository, get_corridor_repository
 from app.repositories.cost_baseline_repo import (
     CostBaselineRepository,
     get_cost_baseline_repository,
 )
+from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
@@ -57,6 +59,7 @@ from app.services.coach.plan_files import PlanFiles
 from app.services.coach.plan_generator import CoachPlanWriter
 from app.services.coach.plan_service import CoachPlans
 from app.services.coach.plan_translator import CoachPlanTranslator
+from app.services.coach.prefill import contract_prefill_finder
 from app.services.coach.session_service import CoachSessions
 from app.services.coach.slot_extractor import CoachSlotExtractor
 from app.services.coach.turn_service import CoachTurns
@@ -213,10 +216,16 @@ def get_coach_sessions(
     baselines: Annotated[CostBaselineRepository, Depends(get_cost_baseline_repository)],
     laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
     rates: Annotated[RateRepository, Depends(get_rate_repository)],
+    contracts: Annotated[ContractRepository, Depends(get_contract_repository)],
 ) -> CoachSessions:
     """The worker's Financial Coach sessions and their state machine (NF-FC-008), with the
     preparedness score from `review` on (NF-FC-011)."""
-    return CoachSessions(sessions, plans, scorer=CoachScorer(baselines, laws, rates))
+    return CoachSessions(
+        sessions,
+        plans,
+        scorer=CoachScorer(baselines, laws, rates),
+        prefills=contract_prefill_finder(contracts),
+    )
 
 
 def get_coach_plans(
@@ -230,6 +239,7 @@ def get_coach_plans(
     users: Annotated[UserRepository, Depends(get_user_repository)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     exports: Annotated[ExportStore, Depends(get_export_store)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
 ) -> CoachPlans:
     """The 90-day plan of the Financial Coach (NF-FC-012): the figures in code, the sentences
     from Gemini, the cheapest provider from Remittance X-Ray; its translations and PDF
@@ -244,6 +254,7 @@ def get_coach_plans(
         rates,
         radar,
         PlanFiles(plans, CoachPlanTranslator(gemini), exports),
+        fib,
     )
 
 

@@ -12,6 +12,7 @@ from google.cloud.firestore import (
     CollectionReference,
     DocumentReference,
     FieldFilter,
+    Query,
     Transaction,
     transactional,
 )
@@ -47,6 +48,12 @@ class ContractRepository:
     def get(self, uid: str, contract_id: str) -> dict[str, Any] | None:
         snapshot = self._contract(uid, contract_id).get()
         return snapshot.to_dict() if snapshot.exists else None
+
+    def recent(self, uid: str, limit: int) -> list[tuple[str, dict[str, Any]]]:
+        """The worker's newest contracts as `(id, data)`, newest first (one field ordered, so no
+        composite index)."""
+        query = self._contracts(uid).order_by("created_at", direction=Query.DESCENDING)
+        return [(str(s.id), s.to_dict() or {}) for s in query.limit(limit).stream()]
 
     def find_by_hash(self, uid: str, content_hash: str) -> tuple[str, dict[str, Any]] | None:
         """This user's contract with these file bytes, if they uploaded the same file before."""

@@ -29,10 +29,18 @@ KEEP_FOR = timedelta(days=30)
 Scorer = Callable[[CoachProfile], Awaitable[CoachScore | None]]
 
 
-def new_document(language: ReportLanguage, now: datetime, bank: QuestionBank) -> dict[str, Any]:
-    """A session that has just been created: stage `intro`, nothing answered, no messages."""
+def new_document(
+    language: ReportLanguage,
+    now: datetime,
+    bank: QuestionBank,
+    prefill: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """A session that has just been created: stage `intro`, nothing answered, no messages.
+
+    `prefill` is the salary offered from the worker's contract (`prefill.py`, NF-FC-015).
+    """
     settings = get_settings()
-    return {
+    document: dict[str, Any] = {
         "status": "active",
         "stage": "intro",
         "language": language,
@@ -54,6 +62,9 @@ def new_document(language: ReportLanguage, now: datetime, bank: QuestionBank) ->
         "created_at": now,
         "schema_version": SCHEMA_VERSION,
     }
+    if prefill is not None:
+        document["prefill"] = prefill
+    return document
 
 
 def jsonable(value: object) -> object:

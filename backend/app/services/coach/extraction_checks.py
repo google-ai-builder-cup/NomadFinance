@@ -278,7 +278,10 @@ def _read(
     if candidate.confirms_pending and record is not None and not _has_value(candidate):
         # The worker agrees to the value we asked them to check: that value, now confirmed.
         confidence = max(float(record.get("confidence", 0.0)), candidate.confidence)
-        return _Outcome(update=SlotUpdate(slot, record["value"], confidence, True))
+        # The source stays what it was: a salary offered from a contract and now agreed to is still
+        # `contract_prefill`, confirmed.
+        source = record.get("source", "user")
+        return _Outcome(update=SlotUpdate(slot, record["value"], confidence, True, source))
     built = _value(slot, candidate, ctx, candidate.evidence)
     if built.problem is not None:
         logger.info("coach_extract_followup slot=%s trigger=%s", slot, built.problem)
