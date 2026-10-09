@@ -265,6 +265,8 @@ AI_LIMITED = {
     ("POST", "/api/v2/scam/checks/{check_id}/report"),
     # One turn of the Financial Coach: a streamed Gemini reply (NF-FC-009, 10 a minute).
     ("POST", "/api/v2/coach/sessions/{session_id}/messages"),
+    # The 90-day plan: one reasoning-tier call whose sentences are checked (NF-FC-012).
+    ("POST", "/api/v2/coach/sessions/{session_id}/plan"),
 }
 
 # Calls Gemini but spends its own budget inside the handler (20 an hour per worker, and only for

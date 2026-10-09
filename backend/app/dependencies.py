@@ -29,6 +29,7 @@ from app.repositories.coach_session_repo import (
     get_coach_session_repository,
 )
 from app.repositories.config_repo import get_config_repository
+from app.repositories.corridor_repo import CorridorRepository, get_corridor_repository
 from app.repositories.cost_baseline_repo import (
     CostBaselineRepository,
     get_cost_baseline_repository,
@@ -51,6 +52,8 @@ from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.coach.coach_scorer import CoachScorer
+from app.services.coach.plan_generator import CoachPlanWriter
+from app.services.coach.plan_service import CoachPlans
 from app.services.coach.session_service import CoachSessions
 from app.services.coach.slot_extractor import CoachSlotExtractor
 from app.services.coach.turn_service import CoachTurns
@@ -211,6 +214,31 @@ def get_coach_sessions(
     """The worker's Financial Coach sessions and their state machine (NF-FC-008), with the
     preparedness score from `review` on (NF-FC-011)."""
     return CoachSessions(sessions, plans, scorer=CoachScorer(baselines, laws, rates))
+
+
+def get_coach_plans(
+    sessions: Annotated[CoachSessions, Depends(get_coach_sessions)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    baselines: Annotated[CostBaselineRepository, Depends(get_cost_baseline_repository)],
+    laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
+    rates: Annotated[RateRepository, Depends(get_rate_repository)],
+    corridors: Annotated[CorridorRepository, Depends(get_corridor_repository)],
+    radar: Annotated[RadarRepository, Depends(get_radar_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+) -> CoachPlans:
+    """The 90-day plan of the Financial Coach (NF-FC-012): the figures in code, the sentences
+    from Gemini, the cheapest provider from Remittance X-Ray."""
+    return CoachPlans(
+        sessions,
+        plans,
+        CoachScorer(baselines, laws, rates),
+        CoachPlanWriter(gemini),
+        users,
+        corridors,
+        rates,
+        radar,
+    )
 
 
 def get_coach_turns(

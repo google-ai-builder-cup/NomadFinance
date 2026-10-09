@@ -34,20 +34,29 @@ class ScoreUnavailableError(RuntimeError):
         self.reason = reason
 
 
+def essential_lines(baseline: Mapping[str, Any], job_type: str) -> dict[str, float]:
+    """Typical monthly cost of each essential line, with the job's override.
+
+    Raises:
+        ScoreUnavailableError: A line is missing from the stored baseline.
+    """
+    lines: dict[str, float] = {}
+    for line in ESSENTIAL_LINES:
+        figure = baseline.get("categories", {}).get(line)
+        if not isinstance(figure, Mapping):
+            raise ScoreUnavailableError(f"baseline_line:{line}")
+        band = (figure.get("by_job_type") or {}).get(job_type, figure)
+        lines[line] = float(band["typical"])
+    return lines
+
+
 def essentials_from(baseline: Mapping[str, Any], job_type: str) -> float:
     """Typical accommodation + food + transport + phone for a month, with the job's override.
 
     Raises:
         ScoreUnavailableError: A line is missing from the stored baseline.
     """
-    total = 0.0
-    for line in ESSENTIAL_LINES:
-        figure = baseline.get("categories", {}).get(line)
-        if not isinstance(figure, Mapping):
-            raise ScoreUnavailableError(f"baseline_line:{line}")
-        band = (figure.get("by_job_type") or {}).get(job_type, figure)
-        total += float(band["typical"])
-    return total
+    return sum(essential_lines(baseline, job_type).values())
 
 
 def fee_cap_months(rules: Mapping[str, Mapping[str, Any]]) -> float:

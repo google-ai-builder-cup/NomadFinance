@@ -13,13 +13,13 @@ The contract of the Financial Coach (NF-FC-002): a worker who is about to leave 
 
 ## Implementation status
 
-The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. The turn route is built (NF-FC-009): `POST /coach/sessions/{id}/messages`, with the stream, the idempotency rules, the history window and the summary. **Slot extraction is built (NF-FC-010)**: each message is read by one structured call (`coach/extract.v1`) and by checks that keep only what the worker stated, so `slot_update` events are sent, answers are stored and the stage moves. A gap (a money or period not named, an amount outside the usual range, an unsure reading) is asked about with the bank's follow-up wording instead of being guessed. **The score is built (NF-FC-011)**: at `review` and `plan` the session carries it, worked out from the answers, the stored cost baselines, the legal fee cap and the stored exchange rates (`docs/features/coach-scoring.md`). When something it needs is missing (a rate, the host's cost baseline, an amount in a currency with no rate) `score` stays `null`, which the contract allows, and the reason is logged. The rest is specified only.
+The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. The turn route is built (NF-FC-009): `POST /coach/sessions/{id}/messages`, with the stream, the idempotency rules, the history window and the summary. **Slot extraction is built (NF-FC-010)**: each message is read by one structured call (`coach/extract.v1`) and by checks that keep only what the worker stated, so `slot_update` events are sent, answers are stored and the stage moves. A gap (a money or period not named, an amount outside the usual range, an unsure reading) is asked about with the bank's follow-up wording instead of being guessed. **The score is built (NF-FC-011)**: at `review` and `plan` the session carries it, worked out from the answers, the stored cost baselines, the legal fee cap and the stored exchange rates (`docs/features/coach-scoring.md`). When something it needs is missing (a rate, the host's cost baseline, an amount in a currency with no rate) `score` stays `null`, which the contract allows, and the reason is logged. **The plan is built (NF-FC-012)**: `POST /coach/sessions/{id}/plan` and `GET /coach/plans/{id}` return the plan in English, with every figure worked out in code and the sentences checked (`docs/features/coach-plan.md`). Until translation exists (NF-FC-014) the `language` of the request, and of `GET`, is accepted but the plan comes back in English (`language: "en"`, `available_languages: ["en"]`); the `.pdf` route is not built. The rest is specified only.
 
 | Route | Built by |
 |---|---|
 | `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (built), NF-FC-022 uses the overview |
 | `POST /coach/sessions/{id}/messages` | NF-FC-009 (the stream, built), NF-FC-010 (understanding the answer), NF-FC-013 (staying on topic) |
-| `POST /coach/sessions/{id}/plan`, `GET /coach/plans/{id}` | NF-FC-011 (score), NF-FC-012 (plan), NF-FC-014 (translation) |
+| `POST /coach/sessions/{id}/plan`, `GET /coach/plans/{id}` | NF-FC-011 (score, built), NF-FC-012 (plan, built), NF-FC-014 (translation) |
 | `GET /coach/plans/{id}.pdf` | NF-FC-014 |
 
 ## Routes
@@ -213,7 +213,8 @@ Make the plan from the confirmed answers. **Request**, `CoachPlanRequest`: `{"la
 | `409` | `request_in_progress` | The plan for these answers is still being made |
 | `422` | `validation_failed` | A language outside the six |
 | `429` | `rate_limited` | |
-| `502`, `503`, `504` | `ai_bad_response`, `ai_busy` or `ai_unavailable`, `ai_timeout` | Gemini failed, or the figures failed the check twice. Nothing is stored |
+| `502`, `503`, `504` | `ai_bad_response`, `ai_busy` or `ai_unavailable`, `ai_timeout` | Gemini failed, or the sentences failed the check twice. Nothing is stored |
+| `503` | `score_unavailable` | The score, so the plan, cannot be worked out now: an exchange rate, the host's cost baseline or the fee rule is missing. `Retry-After: 30`. Nothing is stored (added by NF-FC-012) |
 
 Samples: `plan-01-created.json` (the default), `plan-02-created-no-debt.json`, `plan-03-already-exists.json`, `plan-error-*.json`.
 
@@ -305,7 +306,7 @@ The rules of the conventions (section 6) apply. Adding a field to a response, an
 
 | # | Point | Owner |
 |---|---|---|
-| 1 | The score at `review` and the score in the plan are worked out at different times, so an exchange rate can move them apart. Freezing the score on the session when it reaches `review` and copying it into the plan would make them equal | NF-FC-011, NF-FC-012 |
+| 1 | The score at `review` and the score in the plan are worked out at different times, so an exchange rate can move them apart. Freezing the score on the session when it reaches `review` and copying it into the plan would make them equal. **NF-FC-012:** the plan stores the score it was made with; the session's is still worked out on each read (D-217) | NF-FC-012 |
 | 2 | The band ids and cut-offs of the samples are now the rubric's (NF-FC-006, `docs/features/coach-scoring.md`). The factor points and totals in the samples are still placeholders and differ from the rubric by up to 10 points, always within the same band (D-200) | NF-FC-011 |
 | 3 | Answers from the chips and fields are sent as text and understood again. A structured `answer` field (`{slot, value}`) would skip that and could be added later without breaking anything | NF-FC-010, NF-FC-017 |
 | 4 | Check-in routes (answering the three questions on day 30, 60 and 90) are specified when the reminder job is: new routes, and possibly a `checkins` field on the plan | NF-FC-016, NF-FC-022 |

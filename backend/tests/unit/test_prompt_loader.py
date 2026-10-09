@@ -32,6 +32,7 @@ EXPECTED_PROMPTS = {
     "scam/reassure.v1",
     "scam/read_screenshot.v1",
     "coach/extract.v1",
+    "coach/plan.v1",
     "coach/reply.v1",
     "coach/summarise.v1",
 }

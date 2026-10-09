@@ -9,6 +9,8 @@ shows `score: null`, which the contract allows ("try again").
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
@@ -31,6 +33,18 @@ from app.services.coach.scoring_inputs import (
 logger = logging.getLogger(__name__)
 
 
+@dataclass(frozen=True)
+class ScoringData:
+    """What the stored collections gave for one profile, so the plan reads the same figures."""
+
+    baseline: dict[str, Any]
+    law_version: int | None
+    rules: dict[str, dict[str, Any]]
+    rates: dict[str, float]
+    rate_times: dict[str, datetime | None]
+    rate_providers: dict[str, str]
+
+
 class CoachScorer:
     def __init__(
         self, baselines: CostBaselineRepository, laws: LaborLawRepository, rates: RateRepository
@@ -39,11 +53,11 @@ class CoachScorer:
         self._laws = laws
         self._rates = rates
 
-    async def score(self, profile: CoachProfile) -> CoachScore:
-        """The score of a complete profile.
+    async def load(self, profile: CoachProfile) -> ScoringData:
+        """The baseline, the law and the rates a profile needs.
 
         Raises:
-            ScoreUnavailableError: An answer, the baseline, the law or a rate is missing.
+            ScoreUnavailableError: An answer, the baseline or the fee rule is missing.
         """
         host, job = profile.destination_country, profile.job_type
         if host is None or job is None:
@@ -57,12 +71,21 @@ class CoachScorer:
         rules = await run_in_threadpool(self._laws.get_rules, host, version)
         if "recruitment_fees" not in rules:
             raise ScoreUnavailableError(f"no_fee_rule:{host}")
-        rates = await self._rates_for(profile, host)
+        rates, times, providers = await self._rates_for(profile, host)
+        return ScoringData(baseline, version, rules, rates, times, providers)
+
+    async def score(self, profile: CoachProfile) -> CoachScore:
+        """The score of a complete profile.
+
+        Raises:
+            ScoreUnavailableError: An answer, the baseline, the law or a rate is missing.
+        """
+        data = await self.load(profile)
         inputs = build_inputs(
             profile,
-            essentials=essentials_from(baseline, job),
-            cap_months=fee_cap_months(rules),
-            rates=rates,
+            essentials=essentials_from(data.baseline, profile.job_type or ""),
+            cap_months=fee_cap_months(data.rules),
+            rates=data.rates,
         )
         try:
             return score_inputs(inputs)
@@ -77,11 +100,18 @@ class CoachScorer:
             logger.warning("coach_score_unavailable reason=%s", exc.reason)
             return None
 
-    async def _rates_for(self, profile: CoachProfile, host: str) -> dict[str, float]:
+    async def _rates_for(
+        self, profile: CoachProfile, host: str
+    ) -> tuple[dict[str, float], dict[str, datetime | None], dict[str, str]]:
         rates: dict[str, float] = {}
+        times: dict[str, datetime | None] = {}
+        providers: dict[str, str] = {}
         for currency in sorted(currencies_to_convert(profile, host)):
             pair = f"{HOST_CURRENCY[host]}_{currency}"
             stored: dict[str, Any] | None = await run_in_threadpool(self._rates.get_rate, pair)
             if stored is not None and isinstance(stored.get("rate"), (int, float)):
                 rates[pair] = float(stored["rate"])
-        return rates
+                fetched = stored.get("fetched_at")
+                times[pair] = fetched if isinstance(fetched, datetime) else None
+                providers[pair] = str(stored.get("provider", ""))
+        return rates, times, providers

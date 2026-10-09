@@ -224,6 +224,7 @@ class CoachSessions:
         changes = {
             "status": status,
             "plan_id": plan_id,
+            "plan_lock": None,
             "completed_at": now,
             "expires_at": now + KEEP_FOR,
         }
@@ -256,6 +257,17 @@ class CoachSessions:
         """
         document = read if read is not None else await self._load(uid, session_id, now)
         await self._write_document(uid, session_id, document, {"last_turn": last_turn})
+
+    async def write_fields(
+        self, uid: str, session_id: str, changes: dict[str, Any], document: dict[str, Any]
+    ) -> None:
+        """Set fields that no turn owns (the plan lock), refused if the session changed since
+        `document` was read.
+
+        Raises:
+            SessionConflictError: The session changed since it was read.
+        """
+        await self._write_document(uid, session_id, document, changes)
 
     async def save_summary(
         self, uid: str, session_id: str, summary: str, turns: int, now: datetime

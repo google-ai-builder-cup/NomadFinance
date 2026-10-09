@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import lru_cache
 from typing import Any
 
-from google.api_core.exceptions import Aborted
+from google.api_core.exceptions import Aborted, AlreadyExists
 from google.cloud.firestore import (
     Client,
     CollectionReference,
@@ -138,14 +138,33 @@ class CoachSessionRepository:
 
 
 class CoachPlanRepository:
-    """users/{uid}/coach_plans/{planId}, read-only here: the newest plan, for the overview."""
+    """users/{uid}/coach_plans/{planId}: a stored plan, found by the hash of the answers."""
 
     def __init__(self, client: Client | None = None) -> None:
         self._client = client or get_firestore_client()
 
+    def _plans(self, uid: str) -> CollectionReference:
+        plans: CollectionReference = (
+            self._client.collection("users").document(uid).collection("coach_plans")
+        )
+        return plans
+
+    def get(self, uid: str, plan_id: str) -> dict[str, Any] | None:
+        snapshot = self._plans(uid).document(plan_id).get()
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def create(self, uid: str, plan_id: str, document: dict[str, Any]) -> bool:
+        """Store a new plan; False if one with this id already exists (it is left as it is)."""
+        try:
+            self._plans(uid).document(plan_id).create(document)
+        except AlreadyExists:
+            return False
+        return True
+
     def newest(self, uid: str) -> tuple[str, dict[str, Any]] | None:
-        plans = self._client.collection("users").document(uid).collection("coach_plans")
-        for snapshot in plans.order_by("created_at", direction=Query.DESCENDING).limit(1).stream():
+        for snapshot in (
+            self._plans(uid).order_by("created_at", direction=Query.DESCENDING).limit(1).stream()
+        ):
             return str(snapshot.id), snapshot.to_dict() or {}
         return None
 

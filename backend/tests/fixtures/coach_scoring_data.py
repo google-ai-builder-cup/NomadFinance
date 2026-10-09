@@ -7,6 +7,7 @@ cost baselines and the real labor-law rules, in the shape the repositories retur
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -51,8 +52,18 @@ class FakeLaws:
 
 
 class FakeRates:
-    def __init__(self, rates: dict[str, float]) -> None:
+    """`rates_cache`: a pair gives a rate fetched an hour before `fetched_at`."""
+
+    def __init__(self, rates: dict[str, float], fetched_at: datetime | None = None) -> None:
         self.rates = rates
+        self.fetched_at = fetched_at or datetime(2026, 10, 9, 7, 0, tzinfo=UTC)
 
     def get_rate(self, pair_id: str) -> dict[str, Any] | None:
-        return {"rate": self.rates[pair_id]} if pair_id in self.rates else None
+        if pair_id not in self.rates:
+            return None
+        return {
+            "rate": self.rates[pair_id],
+            "provider": "frankfurter",
+            "rate_date": self.fetched_at.date().isoformat(),
+            "fetched_at": self.fetched_at,
+        }
