@@ -123,7 +123,17 @@ The cap is the most the host's law lets an agent charge a worker, written as mon
 | JP | A placement provider may not charge a job seeker; a supervising organisation may not charge a technical intern. No number | **0** |
 | AU | An employer cannot make a worker pay unreasonably for a job; paying for sponsorship is illegal. No cap found | **0**, with low confidence (D-199) |
 
-Rule for the engine: a `unit` of `months` is used as it is, `percent` is divided by 100, and a rule with no number gives 0. Fees paid in the home country fall under the home country's law, so the explanation says "more than the host country usually allows an agent to charge", not "illegal".
+Rule for the engine: a `unit` of `months` is used as it is, `percent` is divided by 100, and a rule with no number gives 0. The engine looks only at the variant that applies to `all` workers, and only at these keys of its `limits`, in this order; any other limit of the same rule (a refund share, a registration fee in money) is not a cap:
+
+| Key | Unit | Used by |
+|---|---|---|
+| `maximum_agency_fee` | months | SG |
+| `placement_fee_non_citizen` | months | MY |
+| `maximum_commission` | percent of the first month's wages | HK |
+
+A new host law with another key must be added to `FEE_CAP_KEYS` in `backend/app/services/coach/scoring_inputs.py` (and to this table), or its cap reads as 0. A test holds the six real files to the table above.
+
+Fees paid in the home country fall under the home country's law, so the explanation says "more than the host country usually allows an agent to charge", not "illegal".
 
 ## The total and the bands
 
@@ -189,6 +199,7 @@ The `low` row: debt 2,400 SGD / 650 = 3.69 months gives 53.08, minus 20 for 5% a
 ## For the screen and for the tests
 
 - **Words.** The explanation of a factor ("what this means", "how to improve") is chosen by factor and level, not written per score: level `strong` for 70 or more points, `fair` for 40 to 69, `weak` for under 40. NF-FC-020 and NF-FC-023 hold the six languages.
+- **Built (NF-FC-011).** `backend/app/services/coach/scoring.py` is the pure engine (no I/O, `mypy --strict`); `scoring_inputs.py` turns a profile and the stored data into its inputs; `coach_scorer.py` reads the data. All twelve personas match (`tests/unit/services/test_coach_scoring_personas.py`).
 - **Hand-computed checks (NF-FC-007, NF-FC-011).** Each persona's expected score is worked out with this page and stored in `backend/tests/fixtures/coach_personas.json`; the engine must match all twelve (see `docs/runbooks/NF-FC-007-coach-personas.md`). Properties to test: the total is a whole number from 0 to 100; each factor's points are a whole number from 0 to 100; the weights add up to 1; more debt, less savings, a higher fee or no account never raises the score; the same answers always give the same score; the band follows the table and the floor rule.
 - **Rounding of values.** `value` is reported to 2 decimals; the points are whole numbers.
 

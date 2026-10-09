@@ -425,7 +425,11 @@ async def test_the_score_appears_from_review_when_an_engine_is_wired_in() -> Non
     ]
     score = CoachScore(total=50, band="getting_ready", factors=factors, rubric_version=1)
     repo, plans = FakeSessionRepo(), FakePlanRepo()
-    service = CoachSessions(repo, plans, scorer=lambda profile: score)  # type: ignore[arg-type]
+
+    async def scorer(profile: object) -> CoachScore:
+        return score
+
+    service = CoachSessions(repo, plans, scorer=scorer)  # type: ignore[arg-type]
     persona = _persona("p10_jp_ph_miguel")
     session = (await service.start(UID, "tl", restart=False, now=NOW)).session
     assert session.score is None
@@ -433,3 +437,36 @@ async def test_the_score_appears_from_review_when_an_engine_is_wired_in() -> Non
     reviewed = await _answer_everything(service, session.id, persona)
 
     assert reviewed.score == score
+
+
+async def test_a_session_at_review_carries_the_personas_score_from_the_stored_data() -> None:
+    from app.services.coach.coach_scorer import CoachScorer
+    from tests.fixtures.coach_scoring_data import FakeBaselines, FakeLaws, FakeRates
+
+    persona = next(p for p in load_personas().personas if p.id == "p02_sg_ph_jun")
+    rates = {persona.expected_score.rate_pair: persona.expected_score.rate}
+    service, _, _ = make_sessions()
+    service._scorer = CoachScorer(  # noqa: SLF001
+        FakeBaselines(), FakeLaws(), FakeRates(rates)  # type: ignore[arg-type]
+    )
+    started = await service.start(UID, "en", restart=False, now=NOW)
+
+    session = await _answer_everything(service, started.session.id, persona)
+
+    assert session.stage == "review"
+    assert session.score is not None and session.score.total == persona.expected_score.total
+    again = await service.get(UID, started.session.id, NOW + timedelta(hours=1))
+    assert again.score is not None and again.score.total == session.score.total
+
+
+async def test_a_session_before_review_has_no_score_and_never_asks_for_one() -> None:
+    asked: list[object] = []
+
+    async def scorer(profile: object) -> None:
+        asked.append(profile)
+
+    service, _, _ = make_sessions()
+    service._scorer = scorer  # type: ignore[assignment]  # noqa: SLF001
+    started = await service.start(UID, "en", restart=False, now=NOW)
+
+    assert started.session.score is None and asked == []

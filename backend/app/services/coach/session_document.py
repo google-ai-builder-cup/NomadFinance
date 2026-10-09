@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -23,9 +23,10 @@ IDLE_AFTER = timedelta(days=14)
 # How long a session stays after its last turn (TTL field `expires_at`); the plan outlives it.
 KEEP_FOR = timedelta(days=30)
 
-# Computes the preparedness score of the answers; the engine is NF-FC-011. Until it is wired in
-# the session shows `score: null`, which the contract allows.
-Scorer = Callable[[CoachProfile], CoachScore | None]
+# Computes the preparedness score of the answers (`coach_scorer.CoachScorer`, NF-FC-011). It reads
+# stored costs, law and rates, so it is awaited. None means "cannot be worked out now": the
+# session then shows `score: null`, which the contract allows.
+Scorer = Callable[[CoachProfile], Awaitable[CoachScore | None]]
 
 
 def new_document(language: ReportLanguage, now: datetime, bank: QuestionBank) -> dict[str, Any]:
@@ -71,8 +72,20 @@ def expired(document: dict[str, Any], now: datetime) -> bool:
     return not isinstance(until, datetime) or until <= now
 
 
+def scorable_profile(document: dict[str, Any], bank: QuestionBank) -> CoachProfile | None:
+    """The answers as a profile when the session has reached the stages that show a score."""
+    slots: dict[str, dict[str, Any]] = document["slots"]
+    stage = settle(bank, document["stage"], slots, document.get("declined_slots", []))
+    if stage not in SCORED_STAGES:
+        return None
+    return CoachProfile.model_validate({n: r["value"] for n, r in slots.items()})
+
+
 def to_session(
-    session_id: str, document: dict[str, Any], bank: QuestionBank, scorer: Scorer | None = None
+    session_id: str,
+    document: dict[str, Any],
+    bank: QuestionBank,
+    score: CoachScore | None = None,
 ) -> CoachSession:
     """The contract's view of a stored session (`GET /coach/sessions/{id}`).
 
@@ -82,9 +95,6 @@ def to_session(
     slots: dict[str, dict[str, Any]] = document["slots"]
     declined = document.get("declined_slots", [])
     stage = settle(bank, document["stage"], slots, declined)
-    score = None
-    if scorer is not None and stage in SCORED_STAGES:
-        score = scorer(CoachProfile.model_validate({n: r["value"] for n, r in slots.items()}))
     return CoachSession(
         id=session_id,
         status=document["status"],
