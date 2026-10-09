@@ -1,8 +1,106 @@
 {
   "home": {
     "title": "Pelatih Keuangan",
-    "comingSoonTitle": "Segera hadir",
-    "comingSoonDescription": "Kami masih membangun bagian NomadFinance ini. Kunjungi lagi nanti.",
+    "description": "Jawab beberapa pertanyaan tentang pekerjaan dan uang Anda. Pelatih membantu Anda bersiap sebelum berangkat.",
+    "loading": "Membuka pelatih…"
+  },
+  "chat": {
+    "log": "Percakapan dengan pelatih",
+    "coachSays": "Pelatih:",
+    "youSaid": "Kata Anda:",
+    "typing": "Pelatih sedang mengetik",
+    "latest": "Pesan terbaru",
+    "notSent": "Belum terkirim",
+    "error": {
+      "sessionNotActive": "Wawancara ini sudah selesai. Anda bisa memulai yang baru.",
+      "sessionFull": "Percakapan ini sudah penuh. Anda bisa memulai wawancara baru.",
+      "notFound": "Kami tidak menemukan wawancara ini. Anda bisa memulai yang baru.",
+      "inProgress": "Pelatih masih mengerjakan pesan terakhir Anda. Tunggu sebentar lalu coba lagi.",
+      "invalid": "Pesan itu tidak bisa dikirim. Ubah lalu coba lagi.",
+      "rateLimited": "Anda mengirim pesan terlalu cepat. Tunggu semenit lalu coba lagi.",
+      "rateLimitedWait": "Anda mengirim pesan terlalu cepat. Tunggu {{seconds}} detik lalu coba lagi.",
+      "busy": "Pelatih sedang sibuk. Jawaban Anda aman. Coba lagi semenit lagi.",
+      "timeout": "Pelatih terlalu lama menjawab. Jawaban Anda aman. Silakan coba lagi.",
+      "dropped": "Koneksi terputus sebelum pelatih selesai. Silakan coba lagi.",
+      "restart": "Mulai wawancara baru"
+    }
+  },
+  "stage": {
+    "listLabel": "Kemajuan wawancara",
+    "intro": "Dasar",
+    "income": "Penghasilan",
+    "obligations": "Keluarga",
+    "debt": "Utang",
+    "savings": "Tabungan",
+    "review": "Tinjauan",
+    "position": "Langkah {{current}} dari {{total}}: {{name}}",
+    "complete": "Semua pertanyaan sudah dijawab",
+    "done": "selesai",
+    "current": "langkah saat ini",
+    "upcoming": "belum dimulai"
+  },
+  "input": {
+    "panel": "Jawaban Anda",
+    "suggestions": "Jawaban cepat",
+    "typeInstead": "Ketik jawaban sendiri",
+    "useQuick": "Pakai jawaban cepat",
+    "textLabel": "Jawaban Anda",
+    "textPlaceholder": "Ketik jawaban Anda",
+    "send": "Kirim",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "Terlalu panjang: persingkat menjadi {{max}} karakter atau kurang.",
+    "none": "Tidak ada (0)",
+    "amountLabel": "Jumlah",
+    "currencyLabel": "Mata uang",
+    "periodLabel": "Seberapa sering",
+    "period": {
+      "month": "Per bulan",
+      "week": "Per minggu",
+      "year": "Per tahun"
+    },
+    "rateLabel": "Suku bunga (%)",
+    "countLabel": "Jumlah orang",
+    "dateLabel": "Tanggal berangkat",
+    "dateUnknown": "Saya belum tahu",
+    "country": {
+      "SG": "Singapura",
+      "KR": "Korea Selatan",
+      "MY": "Malaysia",
+      "JP": "Jepang",
+      "HK": "Hong Kong",
+      "AU": "Australia"
+    },
+    "bank": {
+      "bank_account": "Rekening bank",
+      "mobile_wallet": "Dompet digital",
+      "both": "Rekening bank dan dompet digital",
+      "none": "Tidak punya keduanya"
+    },
+    "review": {
+      "yes": "Ya, itu benar",
+      "change": "Saya ingin mengubah sesuatu"
+    },
+    "compose": {
+      "month": "{{amount}} {{currency}} per bulan",
+      "week": "{{amount}} {{currency}} per minggu",
+      "year": "{{amount}} {{currency}} per tahun",
+      "once": "{{amount}} {{currency}}",
+      "interest": {
+        "month": "bunga {{rate}}% per bulan",
+        "year": "bunga {{rate}}% per tahun"
+      }
+    },
+    "error": {
+      "amount": "Isi jumlah di atas nol, misalnya 2500.",
+      "amountOrZero": "Isi jumlah, misalnya 2500, atau 0 jika tidak ada.",
+      "count": "Isi bilangan bulat dari 0 sampai 20.",
+      "rate": "Isi suku bunga dari 0 sampai 1000.",
+      "date": "Pilih tanggal."
+    }
+  },
+  "confirmed": {
+    "title": "Semua jawaban Anda sudah masuk",
+    "description": "Berikutnya skor kesiapan dan rencana 90 hari Anda. Keduanya belum ada di layar ini.",
     "backToDashboard": "Kembali ke beranda"
   }
 }

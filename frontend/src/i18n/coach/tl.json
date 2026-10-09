@@ -1,8 +1,106 @@
 {
   "home": {
     "title": "Financial Coach",
-    "comingSoonTitle": "Malapit na",
-    "comingSoonDescription": "Ginagawa pa namin ang bahaging ito ng NomadFinance. Bumalik ulit sa lalong madaling panahon.",
+    "description": "Sagutin ang ilang tanong tungkol sa trabaho at pera mo. Tutulungan ka ng coach na maghanda bago ka umalis.",
+    "loading": "Binubuksan ang coach…"
+  },
+  "chat": {
+    "log": "Usapan kasama ang coach",
+    "coachSays": "Coach:",
+    "youSaid": "Sinabi mo:",
+    "typing": "Nagta-type ang coach",
+    "latest": "Pinakabagong mensahe",
+    "notSent": "Hindi naipadala",
+    "error": {
+      "sessionNotActive": "Tapos na ang interview na ito. Maaari kang magsimula ng bago.",
+      "sessionFull": "Puno na ang usapang ito. Maaari kang magsimula ng bagong interview.",
+      "notFound": "Hindi namin makita ang interview na ito. Maaari kang magsimula ng bago.",
+      "inProgress": "Ginagawa pa ng coach ang huling mensahe mo. Maghintay sandali at subukan ulit.",
+      "invalid": "Hindi maipadala ang mensaheng iyon. Baguhin ito at subukan ulit.",
+      "rateLimited": "Masyadong mabilis ang pagpapadala mo ng mensahe. Maghintay ng isang minuto at subukan ulit.",
+      "rateLimitedWait": "Masyadong mabilis ang pagpapadala mo ng mensahe. Maghintay ng {{seconds}} segundo at subukan ulit.",
+      "busy": "Abala ang coach ngayon. Ligtas ang mga sagot mo. Subukan ulit pagkalipas ng isang minuto.",
+      "timeout": "Natagalan ang coach sa pagsagot. Ligtas ang mga sagot mo. Pakisubukan ulit.",
+      "dropped": "Naputol ang koneksyon bago natapos ang coach. Pakisubukan ulit.",
+      "restart": "Magsimula ng bagong interview"
+    }
+  },
+  "stage": {
+    "listLabel": "Progreso ng interview",
+    "intro": "Pangunahin",
+    "income": "Kita",
+    "obligations": "Pamilya",
+    "debt": "Utang",
+    "savings": "Ipon",
+    "review": "Rebyu",
+    "position": "Hakbang {{current}} sa {{total}}: {{name}}",
+    "complete": "Nasagot na ang lahat ng tanong",
+    "done": "tapos na",
+    "current": "kasalukuyang hakbang",
+    "upcoming": "hindi pa nagsisimula"
+  },
+  "input": {
+    "panel": "Ang sagot mo",
+    "suggestions": "Mabilis na sagot",
+    "typeInstead": "I-type ang sarili kong sagot",
+    "useQuick": "Gumamit ng mabilis na sagot",
+    "textLabel": "Ang sagot mo",
+    "textPlaceholder": "I-type ang sagot mo",
+    "send": "Ipadala",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "Masyadong mahaba: paikliin ito sa {{max}} karakter o mas kaunti.",
+    "none": "Wala (0)",
+    "amountLabel": "Halaga",
+    "currencyLabel": "Pera",
+    "periodLabel": "Gaano kadalas",
+    "period": {
+      "month": "Kada buwan",
+      "week": "Kada linggo",
+      "year": "Kada taon"
+    },
+    "rateLabel": "Tubo (%)",
+    "countLabel": "Bilang ng tao",
+    "dateLabel": "Petsa ng pag-alis",
+    "dateUnknown": "Hindi ko pa alam",
+    "country": {
+      "SG": "Singapore",
+      "KR": "Timog Korea",
+      "MY": "Malaysia",
+      "JP": "Japan",
+      "HK": "Hong Kong",
+      "AU": "Australia"
+    },
+    "bank": {
+      "bank_account": "Bank account",
+      "mobile_wallet": "Mobile wallet",
+      "both": "Pareho: bank account at mobile wallet",
+      "none": "Wala sa dalawa"
+    },
+    "review": {
+      "yes": "Oo, tama iyan",
+      "change": "May gusto akong baguhin"
+    },
+    "compose": {
+      "month": "{{amount}} {{currency}} kada buwan",
+      "week": "{{amount}} {{currency}} kada linggo",
+      "year": "{{amount}} {{currency}} kada taon",
+      "once": "{{amount}} {{currency}}",
+      "interest": {
+        "month": "{{rate}}% tubo kada buwan",
+        "year": "{{rate}}% tubo kada taon"
+      }
+    },
+    "error": {
+      "amount": "Maglagay ng halagang higit sa zero, halimbawa 2500.",
+      "amountOrZero": "Maglagay ng halaga, halimbawa 2500, o 0 kung wala ka.",
+      "count": "Maglagay ng buong numero mula 0 hanggang 20.",
+      "rate": "Maglagay ng tubo mula 0 hanggang 1000.",
+      "date": "Pumili ng petsa."
+    }
+  },
+  "confirmed": {
+    "title": "Nasa amin na ang lahat ng sagot mo",
+    "description": "Susunod ang iyong preparedness score at 90-araw na plano. Wala pa ang mga ito sa screen na ito.",
     "backToDashboard": "Bumalik sa home"
   }
 }

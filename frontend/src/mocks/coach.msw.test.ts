@@ -196,6 +196,11 @@ describe("a streamed turn", () => {
     );
 
     expect(names(events)).not.toContain("slot_update");
+    // The server's fixed words (backend guard_texts.REDIRECT["en"]), which do not repeat the
+    // question: the mock shows what a worker really gets (D-225).
+    expect(words(events)).toBe(
+      "I can only help you plan your money before you leave. Please answer my last question when you are ready."
+    );
     expect(events.at(-1)?.data).toMatchObject({ stage: "intro", next_slot: "destination_country" });
   });
 
