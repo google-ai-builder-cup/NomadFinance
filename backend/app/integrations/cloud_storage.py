@@ -147,6 +147,15 @@ class ExportStore:
         self._get_bucket().blob(path).upload_from_string(data, content_type="application/pdf")
         return path
 
+    def read(self, uid: str, path: str) -> bytes | None:
+        """The bytes of one export, or None if the file is gone."""
+        self._check(uid, path)
+        try:
+            data: bytes = self._get_bucket().blob(path).download_as_bytes()
+        except NotFound:
+            return None
+        return data
+
     def delete(self, uid: str, path: str) -> None:
         """Remove one export; a file that is already gone is not an error."""
         self._check(uid, path)

@@ -42,7 +42,7 @@ async def ready(persona=MARICEL, **options):  # type: ignore[no-untyped-def]
 async def test_a_new_plan_is_stored_in_english_and_completes_the_session() -> None:
     plans, service, session_repo, plan_repo, gemini, session_id = await ready()
 
-    result = await plans.create(UID, session_id, LATER)
+    result = await plans.create(UID, session_id, "en", LATER)
 
     plan_id = slot_hash(MARICEL.expected_slots)[:20]
     assert result.created and result.response.id == plan_id
@@ -64,9 +64,9 @@ async def test_a_new_plan_is_stored_in_english_and_completes_the_session() -> No
 
 async def test_asking_again_returns_the_same_plan_without_another_call() -> None:
     plans, _, _, _, gemini, session_id = await ready()
-    first = await plans.create(UID, session_id, LATER)
+    first = await plans.create(UID, session_id, "en", LATER)
 
-    again = await plans.create(UID, session_id, LATER + timedelta(minutes=1))
+    again = await plans.create(UID, session_id, "en", LATER + timedelta(minutes=1))
 
     assert not again.created and again.response == first.response.model_copy(
         update={"session_id": again.response.session_id}
@@ -76,12 +76,12 @@ async def test_asking_again_returns_the_same_plan_without_another_call() -> None
 
 async def test_a_plan_that_exists_for_the_answers_is_returned_and_the_session_completed() -> None:
     plans, service, session_repo, plan_repo, gemini, session_id = await ready()
-    first = await plans.create(UID, session_id, LATER)
+    first = await plans.create(UID, session_id, "en", LATER)
     # The session was left at `plan` (the write after the plan failed once): the plan is found.
     document = session_repo.docs[(UID, session_id)]
     document.update(status="active", plan_id=None)
 
-    again = await plans.create(UID, session_id, LATER + timedelta(minutes=1))
+    again = await plans.create(UID, session_id, "en", LATER + timedelta(minutes=1))
 
     assert not again.created and again.response.id == first.response.id
     assert session_repo.docs[(UID, session_id)]["status"] == "completed"
@@ -93,7 +93,7 @@ async def test_answers_that_are_not_confirmed_are_not_ready() -> None:
     started = await service.start(UID, "en", restart=False, now=NOW)
 
     with pytest.raises(PlanNotReadyError):
-        await plans.create(UID, started.session.id, LATER)
+        await plans.create(UID, started.session.id, "en", LATER)
     assert gemini.calls == []
 
 
@@ -102,7 +102,7 @@ async def test_an_abandoned_session_cannot_make_a_plan() -> None:
     session_repo.docs[(UID, session_id)]["status"] = "abandoned"
 
     with pytest.raises(SessionNotActiveError):
-        await plans.create(UID, session_id, LATER)
+        await plans.create(UID, session_id, "en", LATER)
 
 
 async def test_a_second_request_while_the_first_runs_is_refused() -> None:
@@ -110,7 +110,7 @@ async def test_a_second_request_while_the_first_runs_is_refused() -> None:
     session_repo.docs[(UID, session_id)]["plan_lock"] = {"hash": "x", "started_at": LATER}
 
     with pytest.raises(PlanInProgressError):
-        await plans.create(UID, session_id, LATER + timedelta(seconds=30))
+        await plans.create(UID, session_id, "en", LATER + timedelta(seconds=30))
     assert gemini.calls == []
 
 
@@ -118,7 +118,7 @@ async def test_a_lock_left_by_a_dead_request_does_not_block_forever() -> None:
     plans, _, session_repo, _, _, session_id = await ready()
     session_repo.docs[(UID, session_id)]["plan_lock"] = {"hash": "x", "started_at": LATER}
 
-    result = await plans.create(UID, session_id, LATER + timedelta(minutes=5))
+    result = await plans.create(UID, session_id, "en", LATER + timedelta(minutes=5))
 
     assert result.created
 
@@ -128,12 +128,14 @@ async def test_a_failed_plan_stores_nothing_and_frees_the_lock() -> None:
     plans, _, session_repo, plan_repo, _, session_id = await ready(gemini=gemini)
 
     with pytest.raises(GeminiUnavailableError):
-        await plans.create(UID, session_id, LATER)
+        await plans.create(UID, session_id, "en", LATER)
 
     assert plan_repo.plans == {}
     assert session_repo.docs[(UID, session_id)]["plan_lock"] is None
     assert session_repo.docs[(UID, session_id)]["status"] == "active"
-    retry = await plans.create(UID, session_id, LATER + timedelta(seconds=5))  # the next try works
+    retry = await plans.create(
+        UID, session_id, "en", LATER + timedelta(seconds=5)
+    )  # the next try works
     assert retry.created
 
 
@@ -149,7 +151,7 @@ async def test_sentences_with_made_up_figures_twice_are_a_bad_response_and_nothi
     plans, _, _, plan_repo, _, session_id = await ready(gemini=gemini)
 
     with pytest.raises(GeminiResponseError):
-        await plans.create(UID, session_id, LATER)
+        await plans.create(UID, session_id, "en", LATER)
 
     assert plan_repo.plans == {} and len(gemini.calls) == 2
 
@@ -158,7 +160,7 @@ async def test_a_missing_rate_makes_the_score_and_so_the_plan_unavailable() -> N
     plans, _, session_repo, plan_repo, gemini, session_id = await ready(rates={})
 
     with pytest.raises(ScoreUnavailableError):
-        await plans.create(UID, session_id, LATER)
+        await plans.create(UID, session_id, "en", LATER)
 
     assert gemini.calls == [] and plan_repo.plans == {}
     assert session_repo.docs[(UID, session_id)]["plan_lock"] is None
@@ -168,7 +170,7 @@ async def test_a_missing_rate_makes_the_score_and_so_the_plan_unavailable() -> N
 async def test_a_route_outside_the_six_corridors_has_no_provider_quote(home: str | None) -> None:
     plans, _, _, _, _, session_id = await ready(home=home)
 
-    result = await plans.create(UID, session_id, LATER)
+    result = await plans.create(UID, session_id, "en", LATER)
 
     remittance = result.response.plan.remittance
     assert result.response.corridor_id is None and remittance.corridor_id is None
@@ -179,19 +181,19 @@ async def test_a_route_outside_the_six_corridors_has_no_provider_quote(home: str
 
 async def test_a_provider_the_radar_flagged_is_not_the_one_chosen() -> None:
     plans, _, _, _, _, session_id = await ready()
-    best = (await plans.create(UID, session_id, LATER)).response.plan.remittance.provider
+    best = (await plans.create(UID, session_id, "en", LATER)).response.plan.remittance.provider
     assert best is not None
 
     flagged = FakeRadar([{"slug": best.slug, "report_count": 9}])
     plans2, _, _, _, _, session2 = await ready(radar=flagged)
-    chosen = (await plans2.create(UID, session2, LATER)).response.plan.remittance.provider
+    chosen = (await plans2.create(UID, session2, "en", LATER)).response.plan.remittance.provider
 
     assert chosen is not None and chosen.slug != best.slug
 
 
 async def test_a_plan_is_the_workers_own() -> None:
     plans, _, _, _, _, session_id = await ready()
-    created = await plans.create(UID, session_id, LATER)
+    created = await plans.create(UID, session_id, "en", LATER)
 
     assert (await plans.get(UID, created.response.id, LATER)).id == created.response.id
     with pytest.raises(PlanNotFoundError):
@@ -202,7 +204,7 @@ async def test_a_plan_is_the_workers_own() -> None:
 
 async def test_a_plan_outlives_its_session() -> None:
     plans, _, _, _, _, session_id = await ready()
-    created = await plans.create(UID, session_id, LATER)
+    created = await plans.create(UID, session_id, "en", LATER)
 
     read = await plans.get(UID, created.response.id, LATER + timedelta(days=40))
 
@@ -214,7 +216,7 @@ async def test_each_persona_makes_a_plan_through_the_service() -> None:
     for persona in PERSONAS.values():
         plans, _, _, _, _, session_id = await ready(persona)
 
-        result = await plans.create(UID, session_id, LATER)
+        result = await plans.create(UID, session_id, "en", LATER)
 
         assert result.created and result.response.corridor_id == persona.corridor
         assert result.response.score.total == persona.expected_score.total

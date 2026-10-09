@@ -55,6 +55,14 @@ Every number the model writes must be one it was given, to the precision it wrot
 
 A rejected answer is asked for again once, with the reasons. A second rejection is `502 ai_bad_response` and nothing is stored.
 
+## Translation and the PDF (NF-FC-014)
+
+The plan is written in English once. Another language is made on the first request (`language` on `POST /plan`, `GET /plans/{id}` or the `.pdf`) and kept as `coach_plans/{id}/translations/{lang}`.
+
+- **Only sentences are translated.** `plan_translator.py` sends the narrative (the summary, the title and actions of the 13 weeks, the text of the warnings and checklist items, the disclaimer) to Flash-Lite and nothing else. No figure, id or severity is sent.
+- **Checked before saving** (`plan_translation_check.py`): the same entries in the same order; in every text the same numbers and currency codes, character for character (digits 0 to 9 only, no other script's digits, nothing added or dropped); no links; no runaway length. Then the translated plan with its sentences taken out must equal the English one, byte for byte (`same_figures`). One retry with the reasons, then `502 ai_bad_response`; nothing is saved.
+- **The PDF** (`plan_pdf_html.py`, weasyprint, Noto fonts in the image): the score and its five factors, the budget, the remittance with the provider, the debt, the emergency fund, the 13 weeks, the warnings by severity (a word, not only a colour), the checklist, the dates and the disclaimer. The fixed wording is in six languages (`plan_pdf_labels*.py`); figures are written as in the JSON plan. It is made on first request in a language, stored at `exports/{uid}/coach-plan-{id}-{lang}.pdf` (account deletion removes it with the other exports) and returned through the API, not as a signed link.
+
 ## Limits
 
 - A number written as a word ("three months") is not checked; the prompt asks for digits.

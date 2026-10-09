@@ -35,6 +35,7 @@ EXPECTED_PROMPTS = {
     "coach/plan.v1",
     "coach/reply.v1",
     "coach/summarise.v1",
+    "coach/translate_plan.v1",
 }
 
 

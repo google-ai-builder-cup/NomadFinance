@@ -91,6 +91,7 @@ class FakeSessionRepo:
 class FakePlanRepo:
     def __init__(self) -> None:
         self.plans: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+        self.translations: dict[tuple[str, str, str], dict[str, Any]] = {}
 
     def add(self, uid: str, plan_id: str, plan: dict[str, Any]) -> None:
         self.plans.setdefault(uid, []).append((plan_id, plan))
@@ -104,6 +105,26 @@ class FakePlanRepo:
             return False
         self.add(uid, plan_id, copy.deepcopy(document))
         return True
+
+    def get_translation(self, uid: str, plan_id: str, language: str) -> dict[str, Any] | None:
+        found = self.translations.get((uid, plan_id, language))
+        return copy.deepcopy(found) if found else None
+
+    def create_translation(
+        self, uid: str, plan_id: str, language: str, document: dict[str, Any]
+    ) -> bool:
+        if (uid, plan_id, language) in self.translations:
+            return False
+        self.translations[(uid, plan_id, language)] = copy.deepcopy(document)
+        return True
+
+    def translation_languages(self, uid: str, plan_id: str) -> list[str]:
+        return sorted(lang for (u, p, lang) in self.translations if (u, p) == (uid, plan_id))
+
+    def set_pdf(self, uid: str, plan_id: str, language: str, entry: dict[str, Any]) -> None:
+        for pid, plan in self.plans.get(uid, []):
+            if pid == plan_id:
+                plan.setdefault("pdf", {})[language] = entry
 
     def newest(self, uid: str) -> tuple[str, dict[str, Any]] | None:
         mine = sorted(self.plans.get(uid, []), key=lambda p: p[1]["created_at"])

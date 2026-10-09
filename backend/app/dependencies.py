@@ -18,7 +18,7 @@ from app.core.security import (
     verify_google_oidc_token,
     verify_id_token,
 )
-from app.integrations.cloud_storage import UserFileStore
+from app.integrations.cloud_storage import ExportStore, UserFileStore, get_export_store
 from app.integrations.firebase_auth import delete_firebase_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.base import get_firestore_client
@@ -52,8 +52,10 @@ from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.coach.coach_scorer import CoachScorer
+from app.services.coach.plan_files import PlanFiles
 from app.services.coach.plan_generator import CoachPlanWriter
 from app.services.coach.plan_service import CoachPlans
+from app.services.coach.plan_translator import CoachPlanTranslator
 from app.services.coach.session_service import CoachSessions
 from app.services.coach.slot_extractor import CoachSlotExtractor
 from app.services.coach.turn_service import CoachTurns
@@ -226,9 +228,11 @@ def get_coach_plans(
     radar: Annotated[RadarRepository, Depends(get_radar_repository)],
     users: Annotated[UserRepository, Depends(get_user_repository)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    exports: Annotated[ExportStore, Depends(get_export_store)],
 ) -> CoachPlans:
     """The 90-day plan of the Financial Coach (NF-FC-012): the figures in code, the sentences
-    from Gemini, the cheapest provider from Remittance X-Ray."""
+    from Gemini, the cheapest provider from Remittance X-Ray; its translations and PDF
+    (NF-FC-014)."""
     return CoachPlans(
         sessions,
         plans,
@@ -238,6 +242,7 @@ def get_coach_plans(
         corridors,
         rates,
         radar,
+        PlanFiles(plans, CoachPlanTranslator(gemini), exports),
     )
 
 

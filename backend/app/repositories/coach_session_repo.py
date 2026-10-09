@@ -153,6 +153,31 @@ class CoachPlanRepository:
         snapshot = self._plans(uid).document(plan_id).get()
         return snapshot.to_dict() if snapshot.exists else None
 
+    def get_translation(self, uid: str, plan_id: str, language: str) -> dict[str, Any] | None:
+        reference = self._plans(uid).document(plan_id).collection("translations").document(language)
+        snapshot = reference.get()
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def create_translation(
+        self, uid: str, plan_id: str, language: str, document: dict[str, Any]
+    ) -> bool:
+        """Store a translation; False if one already exists (two requests at once)."""
+        reference = self._plans(uid).document(plan_id).collection("translations").document(language)
+        try:
+            reference.create(document)
+        except AlreadyExists:
+            return False
+        return True
+
+    def translation_languages(self, uid: str, plan_id: str) -> list[str]:
+        """The languages a plan is stored in besides English, in order."""
+        found = self._plans(uid).document(plan_id).collection("translations").list_documents()
+        return sorted(str(reference.id) for reference in found)
+
+    def set_pdf(self, uid: str, plan_id: str, language: str, entry: dict[str, Any]) -> None:
+        """Record where the plan's PDF in `language` is kept (`pdf.<language>`)."""
+        self._plans(uid).document(plan_id).update({f"pdf.{language}": entry})
+
     def create(self, uid: str, plan_id: str, document: dict[str, Any]) -> bool:
         """Store a new plan; False if one with this id already exists (it is left as it is)."""
         try:

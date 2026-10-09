@@ -12,16 +12,29 @@ from app.integrations.gemini import GeminiTimeoutError
 from app.schemas.coach_plan import CoachPlanResponse
 from app.schemas.errors import ErrorEnvelope
 from tests.fixtures.coach_personas import load_personas
-from tests.fixtures.coach_plan_data import UID, WritingGemini, make_plans, reach_plan_stage
+from tests.fixtures.coach_plan_data import (
+    UID,
+    TranslatingGemini,
+    WritingGemini,
+    make_plans,
+    reach_plan_stage,
+)
 from tests.fixtures.coach_sessions import NOW, make_coach_app
 
 MARICEL = next(p for p in load_personas().personas if p.id == "p01_sg_ph_maricel")
 
 
 class World:
-    def __init__(self, *, gemini: WritingGemini | None = None, rates: dict | None = None) -> None:  # type: ignore[type-arg]
+    def __init__(
+        self,
+        *,
+        gemini: WritingGemini | None = None,
+        rates: dict | None = None,  # type: ignore[type-arg]
+        translator: TranslatingGemini | None = None,
+    ) -> None:
+        self.translator = translator or TranslatingGemini()
         self.plans, self.service, self.sessions, self.store, self.gemini = make_plans(
-            MARICEL, gemini=gemini, rates=rates
+            MARICEL, gemini=gemini, rates=rates, translator=self.translator
         )
         self.session_id = asyncio.run(reach_plan_stage(self.service, MARICEL))
 
@@ -65,16 +78,96 @@ def test_asking_again_is_200_with_the_same_plan() -> None:
     assert again.json()["plan"] == first["plan"] and len(world.gemini.calls) == 1
 
 
-def test_a_plan_is_read_by_its_id_and_a_language_is_answered_in_english_for_now() -> None:
+def test_a_plan_is_read_by_its_id_in_english_and_in_another_language() -> None:
     world = World()
     api = world.client()
     plan_id = api.post(world.url, json={"language": "hi"}).json()["id"]
 
-    english = api.get(f"/api/v2/coach/plans/{plan_id}")
     hindi = api.get(f"/api/v2/coach/plans/{plan_id}", params={"language": "hi"})
+    bengali = api.get(f"/api/v2/coach/plans/{plan_id}", params={"language": "bn"})
+    english = api.get(f"/api/v2/coach/plans/{plan_id}")
 
     assert english.status_code == 200 and CoachPlanResponse.model_validate(english.json())
-    assert hindi.json()["language"] == "en" and hindi.json()["available_languages"] == ["en"]
+    assert english.json()["language"] == "en" and english.json()["available_languages"] == [
+        "en",
+        "bn",
+        "hi",
+    ]
+    assert hindi.json()["language"] == "hi" and hindi.json()["plan"]["summary"].startswith(
+        "[Hindi]"
+    )
+    assert bengali.json()["language"] == "bn"
+    assert len(world.translator.calls) == 2  # Hindi was made with the plan, Bengali on request
+    figures = {k: english.json()["plan"][k] for k in ("monthly_budget", "remittance", "debt")}
+    assert figures == {k: hindi.json()["plan"][k] for k in figures}
+
+
+def test_the_pdf_is_the_file_through_the_api_with_its_headers(monkeypatch: Any) -> None:
+    from app.services.coach import plan_files
+
+    monkeypatch.setattr(plan_files, "render_plan_pdf", lambda r: b"%PDF-1.7 " + r.language.encode())
+    world = World()
+    api = world.client()
+    plan_id = api.post(world.url, json={"language": "en"}).json()["id"]
+
+    english = api.get(f"/api/v2/coach/plans/{plan_id}.pdf")
+    tagalog = api.get(f"/api/v2/coach/plans/{plan_id}.pdf", params={"language": "tl"})
+
+    assert english.status_code == 200 and english.content == b"%PDF-1.7 en"
+    assert english.headers["content-type"] == "application/pdf"
+    assert (
+        english.headers["content-disposition"] == 'attachment; filename="nomadfinance-plan-en.pdf"'
+    )
+    assert english.headers["cache-control"] == "private, no-store"
+    assert (
+        tagalog.content == b"%PDF-1.7 tl"
+        and "plan-tl.pdf" in tagalog.headers["content-disposition"]
+    )
+    assert len(world.translator.calls) == 1
+
+
+def test_the_pdf_route_does_not_swallow_the_plan_route_or_the_other_way_round() -> None:
+    world = World()
+    api = world.client()
+    plan_id = api.post(world.url, json={"language": "en"}).json()["id"]
+
+    assert api.get(f"/api/v2/coach/plans/{plan_id}").headers["content-type"] == "application/json"
+    _error(api.get("/api/v2/coach/plans/not-an-id.pdf"), 404, "not_found")
+    _error(api.get("/api/v2/coach/plans/" + "0" * 20 + ".pdf"), 404, "not_found")
+    _error(
+        api.get(f"/api/v2/coach/plans/{plan_id}.pdf", params={"language": "xx"}),
+        422,
+        "validation_failed",
+    )
+
+
+def test_a_translation_that_fails_is_a_json_error_and_stores_nothing() -> None:
+    from app.integrations.gemini import GeminiTimeoutError
+    from tests.fixtures.coach_plan_data import TranslatingGemini
+
+    world = World(
+        translator=TranslatingGemini(GeminiTimeoutError("slow"), GeminiTimeoutError("slow"))
+    )
+    api = world.client()
+    plan_id = api.post(world.url, json={"language": "en"}).json()["id"]
+
+    _error(api.get(f"/api/v2/coach/plans/{plan_id}", params={"language": "hi"}), 504, "ai_timeout")
+    _error(
+        api.get(f"/api/v2/coach/plans/{plan_id}.pdf", params={"language": "hi"}), 504, "ai_timeout"
+    )
+    assert api.get(f"/api/v2/coach/plans/{plan_id}", params={"language": "hi"}).status_code == 200
+
+
+def test_the_pdf_and_translations_are_the_workers_own_and_behind_the_flag() -> None:
+    world = World()
+    plan_id = world.client().post(world.url, json={"language": "en"}).json()["id"]
+    stranger = TestClient(_app_for(world, "stranger"), raise_server_exceptions=False)
+
+    _error(stranger.get(f"/api/v2/coach/plans/{plan_id}.pdf"), 404, "not_found")
+    _error(world.client(flag_on=False).get(f"/api/v2/coach/plans/{plan_id}.pdf"), 404, "not_found")
+    assert (
+        world.client(signed_in=False).get(f"/api/v2/coach/plans/{plan_id}.pdf").status_code == 401
+    )
 
 
 def test_the_refusals() -> None:

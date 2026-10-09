@@ -1,8 +1,9 @@
-"""The Financial Coach's plan routes (NF-FC-012): make the 90-day plan, and read it.
+"""The Financial Coach's plan routes: make the 90-day plan (NF-FC-012), read it in any of the six
+languages and download it as a PDF (NF-FC-014).
 
 `POST /coach/sessions/{id}/plan` finds the plan by the hash of the answers or makes it (the
-figures in code, the sentences by Gemini, checked). The PDF and other languages are NF-FC-014's:
-until then a plan is returned in English.
+figures in code, the sentences by Gemini, checked). A language other than English is translated on
+first request and kept; a read that finds it stored does not call Gemini.
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ import re
 from datetime import UTC, datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 
 from app.core.errors import ApiError
 from app.core.rate_limit import limit_ai_calls
@@ -60,7 +61,7 @@ _COMMON: dict[int | str, dict[str, Any]] = {
         },
         504: {"description": "Gemini timed out (`ai_timeout`)"},
     },
-    summary="Make the 90-day plan from the confirmed answers",
+    summary="Make the 90-day plan from the confirmed answers, in a language",
 )
 async def create_coach_plan(
     session_id: str,
@@ -70,12 +71,12 @@ async def create_coach_plan(
     plans: Annotated[CoachPlans, Depends(get_coach_plans)],
 ) -> CoachPlanResponse:
     """The plan is found by the hash of the answers, so asking again returns the same plan
-    (200). A new plan takes 20 to 40 seconds (201). Only English exists for now: `language` is
-    accepted and the plan comes back in English (`language: "en"`) until translation is built."""
+    (200), also in a language it was not yet stored in (translated now). A new plan takes 20 to
+    40 seconds (201), and a translation a few seconds more."""
     if not _SESSION_ID.match(session_id):
         raise ApiError(404, "not_found", "Not Found")
     try:
-        result = await plans.create(user.uid, session_id, datetime.now(UTC))
+        result = await plans.create(user.uid, session_id, body.language, datetime.now(UTC))
     except SessionNotFoundError as exc:
         raise ApiError(404, "not_found", "Not Found") from exc
     except SessionNotActiveError as exc:
@@ -102,23 +103,79 @@ async def create_coach_plan(
     return result.response
 
 
+def _before_translation(request: Request) -> Any:
+    """The Gemini budget is spent only when a translation is really made."""
+
+    async def spend() -> None:
+        await limit_ai_calls(request)
+
+    return spend
+
+
+_PLAN_ERRORS: dict[int | str, dict[str, Any]] = {
+    **_COMMON,
+    422: {"description": "A language outside the six"},
+    502: {"description": "The translation was unusable twice (`ai_bad_response`)"},
+    503: {"description": "Gemini busy or unavailable (`ai_busy`, `ai_unavailable`)"},
+    504: {"description": "Gemini timed out (`ai_timeout`)"},
+}
+
+
+@router.get(
+    "/plans/{plan_id}.pdf",
+    response_class=Response,
+    responses={**_PLAN_ERRORS, 200: {"content": {"application/pdf": {}}, "description": "The PDF"}},
+    summary="The plan as a PDF, in a language",
+)
+async def get_coach_plan_pdf(
+    plan_id: str,
+    request: Request,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    plans: Annotated[CoachPlans, Depends(get_coach_plans)],
+    language: Annotated[ReportLanguage, Query()] = "en",
+) -> Response:
+    """The plan as a file, through the API with the bearer token (not a signed link: the bucket
+    has no CORS policy, and a link anyone can open would be a link to a worker's debts). Made on
+    the first request in a language and then kept in Cloud Storage. Errors are JSON."""
+    if not _PLAN_ID.match(plan_id):
+        raise ApiError(404, "not_found", "Not Found")
+    try:
+        data = await plans.pdf(
+            user.uid, plan_id, language, datetime.now(UTC), _before_translation(request)
+        )
+    except PlanNotFoundError as exc:
+        raise ApiError(404, "not_found", "Not Found") from exc
+    return Response(
+        content=data,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="nomadfinance-plan-{language}.pdf"',
+            "Cache-Control": "private, no-store",
+        },
+    )
+
+
 @router.get(
     "/plans/{plan_id}",
     response_model=CoachPlanResponse,
-    responses={**_COMMON, 422: {"description": "A language outside the six"}},
-    summary="One stored plan",
+    responses=_PLAN_ERRORS,
+    summary="One stored plan, in a language",
 )
 async def get_coach_plan(
     plan_id: str,
+    request: Request,
     user: Annotated[AuthenticatedUser, Depends(get_current_user)],
     plans: Annotated[CoachPlans, Depends(get_coach_plans)],
     language: Annotated[ReportLanguage, Query()] = "en",
 ) -> CoachPlanResponse:
-    """A stored plan. Another worker's plan and a missing one are the same `404`. Until
-    translation is built (NF-FC-014) every language returns the English plan."""
+    """A stored plan. Another worker's plan and a missing one are the same `404`. A language the
+    plan is not stored in is translated now and kept, so the first request can take a few
+    seconds and uses the Gemini budget; reading never changes the plan itself."""
     if not _PLAN_ID.match(plan_id):
         raise ApiError(404, "not_found", "Not Found")
     try:
-        return await plans.get(user.uid, plan_id, datetime.now(UTC))
+        return await plans.get(
+            user.uid, plan_id, datetime.now(UTC), language, _before_translation(request)
+        )
     except PlanNotFoundError as exc:
         raise ApiError(404, "not_found", "Not Found") from exc
