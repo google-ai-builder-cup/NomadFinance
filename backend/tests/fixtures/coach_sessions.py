@@ -95,6 +95,16 @@ class FakePlanRepo:
     def add(self, uid: str, plan_id: str, plan: dict[str, Any]) -> None:
         self.plans.setdefault(uid, []).append((plan_id, plan))
 
+    def get(self, uid: str, plan_id: str) -> dict[str, Any] | None:
+        found = [plan for pid, plan in self.plans.get(uid, []) if pid == plan_id]
+        return copy.deepcopy(found[0]) if found else None
+
+    def create(self, uid: str, plan_id: str, document: dict[str, Any]) -> bool:
+        if self.get(uid, plan_id) is not None:
+            return False
+        self.add(uid, plan_id, copy.deepcopy(document))
+        return True
+
     def newest(self, uid: str) -> tuple[str, dict[str, Any]] | None:
         mine = sorted(self.plans.get(uid, []), key=lambda p: p[1]["created_at"])
         return mine[-1] if mine else None

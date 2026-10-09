@@ -52,6 +52,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `revision` | number | yes | Starts at 1, +1 on every write. The backend writes with "revision must still be N", so two tabs sending a turn at once cannot overwrite each other. |
 | `prefill` | map | no | `{ "contract_id", "fields": ["salary", "employer"], "confirmed": false }`: values offered from the latest Contract Shield analysis. They enter `slots` only after the worker confirms them (NF-FC-015). |
 | `plan_id` | string | when completed | Id of the plan created from this session |
+| `plan_lock` | map or null | no | `{ "hash", "started_at" }`: set while the plan for these answers is being made, so a second request gets `409 request_in_progress`; cleared when the plan is stored or fails. A lock older than 150 seconds counts as left by a dead request (NF-FC-012) |
 | `last_active` | timestamp | yes | Time of the last completed turn |
 | `expires_at` | timestamp | yes | TTL field. `last_active` + 30 days, moved forward on every turn; on completion, `completed_at` + 30 days |
 | `completed_at` | timestamp | when completed | |
@@ -110,6 +111,8 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 | `reporting_currency` | string | yes | Currency of the plan's totals |
 | `score` | map | yes | `{ "total": 0 to 100, "band": string, "factors": [ { "id", "value", "score", "weight" } ], "rubric_version": number }`. Factor ids: `debt_to_income`, `emergency_buffer`, `remittance_ratio`, `recruitment_fee_vs_cap`, `banked_status`. Weights, band names and cut-offs are defined in [`docs/features/coach-scoring.md`](../../features/coach-scoring.md) (NF-FC-006). Computed in Python, no model. |
 | `plan` | map | yes | The 13-week plan in English: budget, remittance schedule, debt paydown, emergency-fund target, warnings, and the "not professional financial advice" note. Structure defined by NF-FC-011/-012 (`CoachPlan`). Every money figure is `{ "amount", "currency" }`. |
+| `rates_as_of` | timestamp | yes | The oldest exchange rate or provider quote the plan used; the time of the plan when it used none (NF-FC-012) |
+| `plan_rules_version`, `rubric_version` | number | yes | The versions of the plan rules (`docs/features/coach-plan.md`) and of the score rubric the plan was made with |
 | `grounding` | map | yes | What the figures were derived from, so the validator and a reviewer can check them: `{ "baselines": { "host_country", "version" }, "labor_law": { "country", "version" }, "fx": [ { "pair", "rate", "fetched_at", "provider" } ], "provider_quote": { "slug", "name", "fetched_at" } }` |
 | `language_generated` | string | yes | `en` |
 | `pdf` | map | no | Language to `{ "storage_path", "created_at" }`, for example `{ "en": {...}, "hi": {...} }`. Path: `exports/{uid}/coach-plan-{planId}-{language}.pdf`. Links are signed on request and never stored. |

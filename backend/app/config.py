@@ -113,6 +113,11 @@ class Settings(BaseSettings):
         "classification"
     )
     gemini_coach_extract_thinking_budget: int | None = Field(default=0, ge=0)
+    # The 90-day plan's words (NF-FC-012): the figures come from code, so the model only writes
+    # sentences, but it must follow many rules at once (thirteen weeks, only the given numbers), so
+    # the reasoning tier with a small thinking budget. A plan takes 20 to 40 seconds.
+    gemini_coach_plan_tier: Literal["reasoning", "extraction", "classification"] = "reasoning"
+    gemini_coach_plan_thinking_budget: int | None = Field(default=1024, ge=0)
 
     # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
     # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.
