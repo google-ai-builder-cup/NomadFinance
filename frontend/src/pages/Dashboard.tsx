@@ -1,3 +1,4 @@
+import CoachWidget from "@/components/dashboard/CoachWidget";
 import GreetingBand from "@/components/dashboard/GreetingBand";
 import ModuleWidget from "@/components/dashboard/ModuleWidget";
 import FIBProgressWidget from "@/components/dashboard/FIBProgressWidget";
@@ -12,7 +13,8 @@ import { useI18n } from "@/hooks/useI18n";
 
 /** Signed-in home: a greeting, four live KPIs, and a widget per pillar — recent contracts, a
  * remittance shortcut, radar alerts, Financial Identity progress (NF-P3-019), then a card for
- * each Future Scope pillar (Scam Check, Financial Coach) that is on for the worker. Every KPI
+ * each Future Scope pillar (Scam Check, Financial Coach) that is on for the worker; the Coach's
+ * says Start, Continue or View plan (NF-FC-022). Every KPI
  * and widget loads independently, so a slow or empty one never blocks the others. */
 export default function Dashboard() {
   const { t } = useI18n();
@@ -41,7 +43,7 @@ export default function Dashboard() {
           </Reveal>
           {MODULE_ITEMS.filter(({ flag }) => flags[flag]).map((item, index) => (
             <Reveal key={item.to} delay={240 + index * 60} className="h-full">
-              <ModuleWidget item={item} />
+              {item.flag === "coach" ? <CoachWidget item={item} /> : <ModuleWidget item={item} />}
             </Reveal>
           ))}
         </div>

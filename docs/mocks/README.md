@@ -7,7 +7,7 @@ Sample requests and responses for the API, written before the endpoint exists. F
 | `conventions/` | NF-F0-002 | One sample per `/api/v2` convention (`docs/api/v2-conventions.md`) |
 | `flags/` | NF-F0-014 | `GET /api/v2/flags`: both modules off, the Coach on, the Scam Analyzer on, and the 401 envelope |
 | `scam/` | NF-SA-002 | The Scam Analyzer API (`docs/api/v2-scam.md`): a check at each risk level and a benign one, the history, one stored check, a report, and every refusal |
-| `coach/` | NF-FC-002 | The Financial Coach API (`docs/api/v2-coach.md`): a session at every stage, the three score bands, plans in English and Hindi, ten streamed turns, the dashboard overview, and every refusal |
+| `coach/` | NF-FC-002 | The Financial Coach API (`docs/api/v2-coach.md`): a session at every stage, the three score bands, plans in English and Hindi, ten streamed turns, the dashboard overview, the check-in answers, and every refusal |
 
 ## `scam/`
 
@@ -65,6 +65,8 @@ The turn route has no default answer: a test always picks a stream. The JSON ref
 | `plan-get-03-no-debt.json` | `GET /api/v2/coach/plans/e75fa9f24fd3159ad83d` | Worker C's plan |
 | `plan-get-error-not-found.json` | `GET /api/v2/coach/plans/0123456789abcdef0123` | 404 |
 | `overview-01-active-session.json`, `-02-plan-only`, `-03-session-and-plan`, `-04-empty` | `GET /api/v2/coach/overview` | The four states of the dashboard card: Resume (default), View plan, both, Start |
+| `checkin-01-answered.json`, `-02-already-answered` | `PUT /api/v2/coach/plans/5a202702c922fc9b4fcf/checkins/d30` | 200: the first answers stored (default); the same milestone again, the first answers back with `already_answered: true` |
+| `checkin-error-not-due.json`, `-error-not-found` | `PUT .../checkins/d60`; `PUT /api/v2/coach/plans/0123456789abcdef0123/checkins/d30` | 409 `checkin_not_due` (the day has not come); the same 404 for a plan that is missing or not the caller's |
 
 | Stream | Request to replay it on | Shows |
 |---|---|---|

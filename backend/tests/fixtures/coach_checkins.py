@@ -13,7 +13,7 @@ from typing import Any, cast
 
 from google.api_core.exceptions import ServiceUnavailable
 
-from app.repositories.coach_session_repo import CoachPlanRepository
+from app.repositories.coach_session_repo import CoachPlanRepository, SessionContentionError
 from app.repositories.user_repo import UserRepository
 from app.services.feature_flag_service import FeatureFlagService
 
@@ -47,6 +47,7 @@ class FakePlans:
         self.plans: dict[tuple[str, str], dict[str, Any]] = {}
         self.fail_query_for: set[str] = set()
         self.fail_mark = False
+        self.contended = False
 
     def add(
         self,
@@ -88,6 +89,32 @@ class FakePlans:
             raise ServiceUnavailable("write failed")
         entry = self.plans[(uid, plan_id)].setdefault("checkins", {}).setdefault(milestone, {})
         entry.update({"due_on": due_on, "notified_at": notified_at})
+
+    def checkin_state(self, uid: str, plan_id: str) -> dict[str, Any] | None:
+        document = self.plans.get((uid, plan_id))
+        if document is None:
+            return None
+        return {k: v for k, v in document.items() if k in ("departure_date", "checkins")}
+
+    def answer_checkin(
+        self,
+        uid: str,
+        plan_id: str,
+        milestone: str,
+        answers: dict[str, Any],
+        answered_at: datetime,
+    ) -> tuple[dict[str, Any], datetime, bool] | None:
+        """First answer wins, and the reminder's markers beside it survive (a field-path write)."""
+        document = self.plans.get((uid, plan_id))
+        if document is None:
+            return None
+        if self.contended:
+            raise SessionContentionError("too many writers")
+        entry = document.setdefault("checkins", {}).setdefault(milestone, {})
+        if entry.get("answered_at") is not None:
+            return entry["answers"], entry["answered_at"], False
+        entry.update({"answers": answers, "answered_at": answered_at})
+        return answers, answered_at, True
 
     def marker(self, uid: str = "u1", plan_id: str = PLAN_ID) -> dict[str, Any]:
         return cast(dict[str, Any], self.plans[(uid, plan_id)].get("checkins", {}))

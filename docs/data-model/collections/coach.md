@@ -116,7 +116,7 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 | `grounding` | map | yes | What the figures were derived from, so the validator and a reviewer can check them: `{ "baselines": { "host_country", "version" }, "labor_law": { "country", "version" }, "fx": [ { "pair", "rate", "fetched_at", "provider" } ], "provider_quote": { "slug", "name", "fetched_at" } }` |
 | `language_generated` | string | yes | `en` |
 | `pdf` | map | no | Language to `{ "storage_path", "created_at" }`, for example `{ "en": {...}, "hi": {...} }`. Path: `exports/{uid}/coach-plan-{planId}-{language}.pdf`. Links are signed on request and never stored. |
-| `checkins` | map | no | `d30`, `d60`, `d90`, each `{ "due_on": "YYYY-MM-DD", "notified_at": timestamp, "answered_at": timestamp, "answers": map }`. **Absent when a plan is made.** The check-in job (NF-FC-016) writes `due_on` and `notified_at` of a milestone, by field path, once it has sent that milestone's reminder; a milestone without `notified_at` has not been reminded. Field paths keep whatever the app stores beside them later. `answered_at` and `answers` are the three check-in questions of NF-FC-022 (not built yet, D-233) and may move to their own subcollection there. |
+| `checkins` | map | no | `d30`, `d60`, `d90`, each `{ "due_on": "YYYY-MM-DD", "notified_at": timestamp, "answered_at": timestamp, "answers": map }`. **Absent when a plan is made.** The check-in job (NF-FC-016) writes `due_on` and `notified_at` of a milestone, by field path, once it has sent that milestone's reminder; a milestone without `notified_at` has not been reminded. Field paths keep whatever the app stores beside them later. **`answers` and `answered_at` (NF-FC-022)** are written by `PUT /api/v2/coach/plans/{id}/checkins/{milestone}` in a transaction, once per milestone: `answers` is `{ "remittance": "on_track" \| "behind" \| "not_yet", "savings": "on_track" \| "behind" \| "not_yet", "pay": "full_on_time" \| "late_or_less" \| "not_paid" }`, fixed choices only, no text a worker typed. The first answers are kept; a later request changes nothing. A milestone can be answered with no `notified_at` (the plan is open from its day, not from its reminder). They stay on the plan: three small fields per milestone did not need a subcollection of their own (the option D-106 left open). |
 | `models` | map | yes | `{ "plan": "...", "translation": "..." }` |
 | `prompt_versions` | map | yes | `{ "coach.plan": 1, "coach.translate_plan": 1 }` |
 | `created_at`, `updated_at` | timestamp | yes | |
@@ -160,7 +160,12 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
   "language_generated": "en",
   "pdf": { "en": { "storage_path": "exports/uid_rajesh_demo/coach-plan-9f3a1c5e7b2d4a60c8e1-en.pdf", "created_at": "2026-10-20T08:09:00Z" } },
   "checkins": {
-    "d30": { "due_on": "2026-12-31", "notified_at": "2026-12-31T02:00:04Z" }
+    "d30": {
+      "due_on": "2026-12-31",
+      "notified_at": "2026-12-31T02:00:04Z",
+      "answered_at": "2026-12-31T09:12:40Z",
+      "answers": { "remittance": "on_track", "savings": "behind", "pay": "full_on_time" }
+    }
   },
   "models": { "plan": "gemini-3.5-flash", "translation": "gemini-3.1-flash-lite" },
   "prompt_versions": { "coach.plan": 1, "coach.translate_plan": 1 },
@@ -170,7 +175,7 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 }
 ```
 
-Values are illustrative: the score, the rate and the plan body come from NF-FC-006, the live rate cache and NF-FC-012. `checkins` is shown as it is after the day 30 reminder; the other two milestones are added when they are sent.
+Values are illustrative: the score, the rate and the plan body come from NF-FC-006, the live rate cache and NF-FC-012. `checkins` is shown as it is after the day 30 reminder and the worker's answers to it; the other two milestones are added when they are sent.
 
 **Access:** the owner reads; **no client writes**. Backend only writes.
 

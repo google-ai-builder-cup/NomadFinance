@@ -4,7 +4,7 @@
 
 A Cloud Scheduler job calls `POST /api/v1/internal/send-coach-checkins` once a day (02:00 UTC). The endpoint finds the Coach plans whose departure date plus 30, 60 or 90 days is today (or fell in the last 3 days). For each one it writes a `coach_checkin` notification with the deep link `/coach/checkin/{planId}?m=30` (or 60, 90) and sends an FCM push, both in the worker's `preferred_language`. It does this **once per plan per milestone, however often the job runs**.
 
-The job only reminds. The three questions and the route that stores the answers are not part of this task (D-233); the app side of the link is NF-FC-022 (D-232).
+The job only reminds. The three questions and the route that stores the answers are not part of this task (D-233); the app side of the link is NF-FC-022 (D-232). **Update (NF-FC-022, 2026-10-09):** both are now built: the route is `PUT /api/v2/coach/plans/{id}/checkins/{milestone}` and the screen is `/coach/checkin/:planId` (`docs/runbooks/NF-FC-022-coach-dashboard-widget.md`).
 
 ## Flow
 

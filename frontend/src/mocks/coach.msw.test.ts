@@ -381,3 +381,34 @@ describe("the dashboard overview", () => {
     expect((await call("/overview")).body).toEqual({ session: null, plan: null });
   });
 });
+
+describe("the check-in answers", () => {
+  const put = (path: string, answers: object = {}) =>
+    call(path, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers }),
+    });
+
+  it("stores the first answers (200), and a repeat returns them with already_answered", async () => {
+    const first = await put(`/plans/${PLAN_ID}/checkins/d30`);
+    expect(first.status).toBe(200);
+    expect(first.body).toMatchObject({
+      plan_id: PLAN_ID,
+      milestone: "d30",
+      already_answered: false,
+    });
+
+    server.use(handlerForMock("coach/checkin-02-already-answered.json"));
+    const again = await put(`/plans/${PLAN_ID}/checkins/d30`);
+    expect(again.body).toEqual({ ...first.body, already_answered: true });
+  });
+
+  it("refuses a milestone that is not open yet (409) and a plan that is not there (404)", async () => {
+    const early = await put(`/plans/${PLAN_ID}/checkins/d60`);
+    expect(early.status).toBe(409);
+    expect(early.body).toMatchObject({ code: "checkin_not_due" });
+
+    expect((await put("/plans/0123456789abcdef0123/checkins/d30")).status).toBe(404);
+  });
+});

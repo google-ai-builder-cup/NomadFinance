@@ -16,6 +16,7 @@ import pytest
 from pydantic import BaseModel
 
 from app.core.redact import redact_text
+from app.schemas.coach_checkin import CheckinAnswerResponse
 from app.schemas.coach_plan import CoachPlanResponse
 from app.schemas.coach_profile import CoachProfile
 from app.schemas.coach_session import (
@@ -35,7 +36,7 @@ from tests.fixtures.coach_mocks import (
     sessions_by_id,
 )
 
-# Codes of docs/api/v2-conventions.md section 2 that the coach uses, and the four it adds.
+# Codes of docs/api/v2-conventions.md section 2 that the coach uses, and the five it adds.
 KNOWN_CODES = {
     "validation_failed",
     "rate_limited",
@@ -50,6 +51,7 @@ KNOWN_CODES = {
     "session_full",
     "turn_in_progress",
     "plan_not_ready",
+    "checkin_not_due",
 }
 SESSION_ID = r"[a-z0-9_]+"
 PLAN_ID = r"[0-9a-f]{20}"
@@ -67,6 +69,7 @@ def _model_for(request: str) -> type[BaseModel] | None:
         ("POST", rf"/api/v2/coach/sessions/{SESSION_ID}/plan", CoachPlanResponse),
         ("GET", rf"/api/v2/coach/plans/{PLAN_ID}", CoachPlanResponse),
         ("GET", r"/api/v2/coach/overview", CoachOverview),
+        ("PUT", rf"/api/v2/coach/plans/{PLAN_ID}/checkins/d(30|60|90)", CheckinAnswerResponse),
         ("POST", rf"/api/v2/coach/sessions/{SESSION_ID}/messages", None),
     ]
     for route_method, pattern, model in routes:
@@ -298,3 +301,15 @@ def test_a_plan_without_a_corridor_has_no_quote_and_one_without_debt_has_none() 
     assert plan["plan"]["remittance"]["provider"] is None
     assert plan["plan"]["debt"] is None
     assert "debt_interest" not in plan["slots"]
+
+
+# ---- the check-in -------------------------------------------------------------------------------
+
+
+def test_the_check_in_mocks_are_the_same_plan_and_a_repeat_returns_the_first_answers() -> None:
+    first = load(MOCKS / "checkin-01-answered.json")["body"]
+    again = load(MOCKS / "checkin-02-already-answered.json")["body"]
+
+    assert any(key.startswith(first["plan_id"]) for key in plans_by_key())
+    assert first["already_answered"] is False and again["already_answered"] is True
+    assert {**first, "already_answered": True} == again

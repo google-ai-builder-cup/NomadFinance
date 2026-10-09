@@ -35,6 +35,8 @@ const IDENTIFYING_ROUTES: ReadonlyArray<readonly [RegExp, string]> = [
   [/^\/scam-check\/history\/[^/].*$/, "/scam-check/history/:id"],
   // A stored Coach plan: its id is the hash of the worker's answers.
   [/^\/coach\/plan\/[^/].*$/, "/coach/plan/:planId"],
+  // A check-in link names the same plan (and `?m=30` after it, which `safeLocation` drops).
+  [/^\/coach\/checkin\/[^/].*$/, "/coach/checkin/:planId"],
 ];
 
 /** The route a pathname belongs to, without the ids in it: all Analytics may keep of a path. */

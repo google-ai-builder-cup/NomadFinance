@@ -228,6 +228,61 @@ class CoachPlanRepository:
             }
         )
 
+    def checkin_state(self, uid: str, plan_id: str) -> dict[str, Any] | None:
+        """What answering a check-in reads of a plan: the departure date and the check-in markers.
+
+        Only those two fields come back; a plan holds the whole 13 weeks.
+        """
+        snapshot = (
+            self._plans(uid).document(plan_id).get(field_paths=["departure_date", "checkins"])
+        )
+        return snapshot.to_dict() if snapshot.exists else None
+
+    def answer_checkin(
+        self,
+        uid: str,
+        plan_id: str,
+        milestone: str,
+        answers: dict[str, Any],
+        answered_at: datetime,
+    ) -> tuple[dict[str, Any], datetime, bool] | None:
+        """Store the answers of `milestone`, unless it already has some: the first ones are kept.
+
+        A transaction, so two taps at once (or a second phone) store one set of answers. Field
+        paths, so the reminder's `due_on` and `notified_at` beside them are kept.
+
+        Returns:
+            (the answers now stored, when they were given, whether this call stored them), or
+            None if the plan does not exist.
+        """
+        reference = self._plans(uid).document(plan_id)
+
+        @transactional
+        def run(transaction: Transaction) -> tuple[dict[str, Any], datetime, bool] | None:
+            snapshot = reference.get(transaction=transaction)
+            if not snapshot.exists:
+                return None
+            checkins = (snapshot.to_dict() or {}).get("checkins")
+            entry = checkins.get(milestone) if isinstance(checkins, dict) else None
+            if isinstance(entry, dict) and entry.get("answered_at") is not None:
+                return dict(entry.get("answers") or {}), entry["answered_at"], False
+            transaction.update(
+                reference,
+                {
+                    f"checkins.{milestone}.answers": answers,
+                    f"checkins.{milestone}.answered_at": answered_at,
+                },
+            )
+            return answers, answered_at, True
+
+        try:
+            result: tuple[dict[str, Any], datetime, bool] | None = run(
+                self._client.transaction(max_attempts=MAX_ATTEMPTS)
+            )
+        except (Aborted, ValueError) as exc:
+            raise _contention(exc) from exc
+        return result
+
 
 @lru_cache
 def get_coach_session_repository() -> CoachSessionRepository:

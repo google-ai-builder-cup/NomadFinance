@@ -352,5 +352,57 @@
       "pressAgain": "PDF Anda sudah siap. Tekan “Bagikan” lagi.",
       "shareTitle": "Rencana 90 hari saya"
     }
+  },
+  "checkin": {
+    "title": "Cek hari ke-{{days}}",
+    "description": "Tiga pertanyaan singkat tentang rencana uang Anda.",
+    "progress": "Pertanyaan {{current}} dari {{total}}",
+    "next": "Lanjut",
+    "back": "Kembali",
+    "send": "Kirim jawaban saya",
+    "sending": "Mengirim…",
+    "questions": {
+      "remittance": "Apakah Anda mengirim uang ke rumah sesuai rencana?",
+      "savings": "Apakah Anda menabung sesuai rencana?",
+      "pay": "Apakah majikan Anda membayar penuh dan tepat waktu?"
+    },
+    "options": {
+      "remittance": {
+        "on_track": "Ya, sesuai rencana saya",
+        "behind": "Saya kirim lebih sedikit dari rencana",
+        "not_yet": "Belum"
+      },
+      "savings": {
+        "on_track": "Ya, sesuai rencana saya",
+        "behind": "Saya menabung lebih sedikit dari rencana",
+        "not_yet": "Belum"
+      },
+      "pay": {
+        "full_on_time": "Ya, penuh dan tepat waktu",
+        "late_or_less": "Terlambat, atau kurang dari yang disepakati",
+        "not_paid": "Saya belum dibayar"
+      }
+    },
+    "done": {
+      "title": "Terima kasih",
+      "saved": "Jawaban Anda tersimpan.",
+      "already": "Anda sudah menjawab cek ini. Jawaban pertama Anda disimpan.",
+      "planHelp": "Rencana Anda bisa berubah seiring hidup Anda di luar negeri berubah. Lihat lagi rencana Anda.",
+      "planLink": "Lihat rencana saya",
+      "payHelp": "Jika majikan Anda tidak membayar sesuai kesepakatan, Anda bisa melaporkannya agar pekerja lain diperingatkan.",
+      "payLink": "Laporkan majikan",
+      "home": "Kembali ke beranda"
+    },
+    "error": {
+      "notDue": "Cek ini belum dibuka. Kami akan mengingatkan Anda pada harinya.",
+      "notFound": "Kami tidak menemukan rencana ini. Mungkin milik akun lain.",
+      "inProgress": "Jawaban Anda masih disimpan. Tunggu sebentar lalu coba lagi.",
+      "invalid": "Jawaban itu tidak dapat disimpan. Kembali dan pilih lagi."
+    },
+    "invalid": {
+      "title": "Tautan cek ini tidak lengkap",
+      "description": "Buka Coach untuk menemukan rencana Anda.",
+      "open": "Buka Coach"
+    }
   }
 }

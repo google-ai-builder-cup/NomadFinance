@@ -352,5 +352,57 @@
       "pressAgain": "Your PDF is ready. Press Share again.",
       "shareTitle": "My 90-day plan"
     }
+  },
+  "checkin": {
+    "title": "Day {{days}} check-in",
+    "description": "Three short questions on how your money plan is going.",
+    "progress": "Question {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "send": "Send my answers",
+    "sending": "Sending…",
+    "questions": {
+      "remittance": "Did you send money home as in your plan?",
+      "savings": "Did you save money as in your plan?",
+      "pay": "Is your employer paying you in full and on time?"
+    },
+    "options": {
+      "remittance": {
+        "on_track": "Yes, as in my plan",
+        "behind": "I sent less than planned",
+        "not_yet": "Not yet"
+      },
+      "savings": {
+        "on_track": "Yes, as in my plan",
+        "behind": "I saved less than planned",
+        "not_yet": "Not yet"
+      },
+      "pay": {
+        "full_on_time": "Yes, in full and on time",
+        "late_or_less": "Late, or less than agreed",
+        "not_paid": "I have not been paid"
+      }
+    },
+    "done": {
+      "title": "Thank you",
+      "saved": "Your answers are saved.",
+      "already": "You already answered this check-in. Your first answers are kept.",
+      "planHelp": "Your plan can change as your life abroad changes. Take another look at it.",
+      "planLink": "View my plan",
+      "payHelp": "If your employer does not pay as agreed, you can report it so other workers are warned.",
+      "payLink": "Report an employer",
+      "home": "Back to home"
+    },
+    "error": {
+      "notDue": "This check-in is not open yet. We will remind you on the day.",
+      "notFound": "We could not find this plan. It may belong to another account.",
+      "inProgress": "Your answers are still being saved. Wait a moment and try again.",
+      "invalid": "Those answers could not be saved. Go back and choose again."
+    },
+    "invalid": {
+      "title": "This check-in link is not complete",
+      "description": "Open the Coach to find your plan.",
+      "open": "Open the Coach"
+    }
   }
 }

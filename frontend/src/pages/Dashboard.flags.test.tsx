@@ -1,12 +1,18 @@
 // @vitest-environment jsdom
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import "@/lib/i18n";
+import { setupMockServer } from "@/mocks/server";
 import Dashboard from "@/pages/Dashboard";
 
 const state = vi.hoisted(() => ({ flags: { coach: false, scam: false } }));
+
+// The Coach's card reads `GET /coach/overview`; the mock API answers it.
+vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
+setupMockServer();
 
 vi.mock("@/hooks/useFeatureFlag", () => ({
   useFeatureFlags: () => ({ flags: state.flags, isLoading: false }),
@@ -29,9 +35,13 @@ afterEach(cleanup);
 
 function renderDashboard() {
   return render(
-    <MemoryRouter>
-      <Dashboard />
-    </MemoryRouter>
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>
+    </QueryClientProvider>
   );
 }
 
@@ -64,5 +74,17 @@ describe("the dashboard's Future Scope cards", () => {
       "/coach"
     );
     expect(screen.getByRole("link", { name: /Check a message/ })).toBeTruthy();
+  });
+
+  it("makes the Coach card say what the worker can do next once the overview is read", async () => {
+    state.flags = { coach: true, scam: false };
+
+    renderDashboard();
+
+    // The default overview mock is a worker in the middle of an interview.
+    const link = await screen.findByRole("link", { name: /Continue my interview/ });
+    expect(link.getAttribute("href")).toBe("/coach");
+    expect(screen.getByText("Step 4 of 6")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /Open the Coach/ })).toBeNull();
   });
 });

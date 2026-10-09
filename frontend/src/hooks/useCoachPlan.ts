@@ -19,13 +19,18 @@ export function useCoachPlan(planId: string, language: LanguageCode) {
   });
 }
 
-/** The newest plan and the open interview, to offer a worker the way back to their plan. */
+/** The newest plan and the open interview, to offer a worker the way back to their plan and the
+ * dashboard card its Start, Continue or View plan. */
 export function useCoachOverview(enabled = true) {
   return useQuery({
     queryKey: ["coach", "overview"],
     queryFn: getCoachOverview,
     enabled,
     staleTime: 30_000,
+    // An interview or a plan is made on the Coach pages and the card is on another one: coming
+    // back within `staleTime` must not show the state from before. The cached answer still shows
+    // while the new one loads.
+    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
 }
