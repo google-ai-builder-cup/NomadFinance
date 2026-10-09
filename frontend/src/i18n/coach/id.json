@@ -111,7 +111,7 @@
   },
   "confirmed": {
     "title": "Semua jawaban Anda sudah masuk",
-    "description": "Berikutnya skor kesiapan dan rencana 90 hari Anda. Keduanya belum ada di layar ini.",
+    "description": "Ini skor kesiapan Anda. Berikutnya Anda bisa membuat rencana 90 hari.",
     "backToDashboard": "Kembali ke beranda"
   },
   "language": {
@@ -130,5 +130,123 @@
     "waiting": "Menunggu sinyal",
     "notice": "Tidak ada koneksi. Jawaban Anda tersimpan di ponsel ini dan akan dikirim saat Anda kembali online.",
     "sendNow": "Kirim sekarang"
+  },
+  "score": {
+    "title": "Skor kesiapan Anda",
+    "subtitle": "Seberapa siap uang Anda untuk berangkat. Ini panduan, bukan skor kredit.",
+    "outOf": "dari 100",
+    "chartLabel": "Skor kesiapan: {{total}} dari 100, {{band}}",
+    "band": {
+      "needs_work": "Perlu persiapan lagi",
+      "getting_ready": "Sedang bersiap",
+      "well_prepared": "Siap dengan baik",
+      "other": "Tingkat Anda"
+    },
+    "level": {
+      "strong": "Kuat",
+      "fair": "Cukup",
+      "weak": "Lemah"
+    },
+    "points": "{{points}} dari 100",
+    "whatMeans": "Artinya",
+    "howImprove": "Cara memperbaiki",
+    "factorsHeading": "Apa saja yang membentuk skor Anda",
+    "floorNote": "Satu bagian sangat rendah, jadi tingkat Anda tetap “Sedang bersiap” sampai bagian itu diperbaiki.",
+    "disclaimer": "Ini panduan untuk membantu Anda merencanakan. Ini bukan nasihat keuangan dan bukan skor kredit.",
+    "loading": "Memuat skor Anda",
+    "unavailable": {
+      "title": "Skor Anda belum bisa dihitung sekarang",
+      "description": "Ada angka yang kami perlukan belum tersedia. Coba lagi sebentar lagi."
+    },
+    "plan": {
+      "button": "Buat rencana 90 hari saya",
+      "help": "Rencana Anda berisi anggaran, rencana mengirim uang ke keluarga, dan langkah untuk setiap minggu.",
+      "making": "Sedang membuat rencana Anda…",
+      "wait": "Ini memakan waktu sampai satu menit. Anda boleh membiarkan halaman ini terbuka.",
+      "slow": "Masih berjalan. Ini bisa memakan waktu sampai satu menit.",
+      "readyTitle": "Rencana Anda sudah siap",
+      "readyNote": "Halaman rencana lengkap, dengan minggu-minggunya dan PDF, menyusul."
+    },
+    "error": {
+      "notReady": "Mohon konfirmasi jawaban Anda dulu.",
+      "unavailable": "Rencana Anda belum bisa dibuat sekarang. Coba lagi nanti."
+    },
+    "factor": {
+      "debt_to_income": {
+        "name": "Utang dibanding gaji Anda",
+        "strong": {
+          "means": "Utang Anda sedikit atau tidak ada dibanding penghasilan Anda.",
+          "improve": "Pertahankan. Jangan berutang baru sebelum berangkat."
+        },
+        "fair": {
+          "means": "Utang Anda sebesar beberapa bulan gaji. Ini beban, tetapi masih bisa ditanggung.",
+          "improve": "Lunasi dulu utang yang bunganya paling tinggi, dan minta pemberi pinjaman menuliskan besar bunganya."
+        },
+        "weak": {
+          "means": "Utang Anda sebesar banyak bulan gaji. Ini risiko terbesar bagi rencana Anda.",
+          "improve": "Jangan berutang lagi. Bicaralah dengan kelompok pendamping pekerja sebelum membayar apa pun yang baru, dan simpan setiap kuitansi."
+        }
+      },
+      "emergency_buffer": {
+        "name": "Tabungan darurat",
+        "strong": {
+          "means": "Tabungan Anda cukup untuk beberapa bulan pengeluaran. Ini bantalan yang kuat.",
+          "improve": "Pisahkan uang ini dari uang yang Anda kirim ke keluarga."
+        },
+        "fair": {
+          "means": "Tabungan Anda cukup untuk satu atau dua bulan pengeluaran. Ini membantu, tetapi bisa habis jika masalahnya lama.",
+          "improve": "Tambah sedikit setiap bulan sampai cukup untuk tiga bulan pengeluaran."
+        },
+        "weak": {
+          "means": "Anda hampir tidak punya tabungan untuk bulan yang buruk.",
+          "improve": "Mulai dengan jumlah kecil dari gaji pertama, sekecil apa pun, dan tambah setiap bulan."
+        }
+      },
+      "remittance_ratio": {
+        "name": "Uang kiriman dibanding gaji Anda",
+        "strong": {
+          "means": "Bagian gaji yang ingin Anda kirim masih menyisakan ruang untuk hidup.",
+          "improve": "Kirim jumlah yang sama setiap bulan, pada hari yang sama."
+        },
+        "fair": {
+          "means": "Anda ingin mengirim sebagian besar gaji. Sisa untuk kejutan sedikit.",
+          "improve": "Periksa pengeluaran bulan pertama sebelum menentukan jumlah pastinya."
+        },
+        "weak": {
+          "means": "Anda ingin mengirim hampir seluruh gaji, atau lebih dari yang sanggup Anda kirim.",
+          "improve": "Kirim jumlah yang lebih kecil dulu. Naikkan setelah Anda tahu pengeluaran sebenarnya."
+        }
+      },
+      "recruitment_fee_vs_cap": {
+        "name": "Biaya agen dibanding batas yang lazim",
+        "strong": {
+          "means": "Biaya yang Anda bayar ke agen sama dengan atau di bawah yang lazim dibolehkan negara tujuan.",
+          "improve": "Simpan kuitansi dan kontrak Anda bersama-sama."
+        },
+        "fair": {
+          "means": "Biaya yang Anda bayar ke agen sedikit di atas batas yang lazim.",
+          "improve": "Simpan setiap kuitansi dan tanyakan kepada kelompok pendamping pekerja apakah biaya itu sudah dijelaskan kepada Anda."
+        },
+        "weak": {
+          "means": "Biaya yang Anda bayar ke agen jauh di atas yang lazim dibolehkan negara tujuan.",
+          "improve": "Simpan setiap kuitansi dan pesan dari agen, lalu minta bantuan kelompok pendamping pekerja. Jangan membayar lagi."
+        }
+      },
+      "banked_status": {
+        "name": "Rekening bank atau dompet digital",
+        "strong": {
+          "means": "Anda punya rekening bank, jadi gaji dan tabungan Anda aman dan mudah ditunjukkan.",
+          "improve": "Simpan rekening atas nama Anda sendiri dan pegang sendiri kartunya."
+        },
+        "fair": {
+          "means": "Anda punya dompet digital tetapi belum punya rekening bank. Ini awal yang baik.",
+          "improve": "Tanyakan tentang rekening bank yang bisa dipakai majikan untuk membayar gaji."
+        },
+        "weak": {
+          "means": "Anda belum punya rekening bank atau dompet digital untuk menerima gaji.",
+          "improve": "Buka rekening bank atau dompet digital atas nama Anda sebelum berangkat, atau di minggu pertama."
+        }
+      }
+    }
   }
 }

@@ -17,7 +17,13 @@ import pytest
 
 from app.schemas.coach_extraction import SlotExtraction
 from app.services.coach.slot_extractor import EXTRACT_PROMPT, CoachSlotExtractor
-from tests.fixtures.coach_extraction_sim import TODAY, prompt_fingerprint, run_persona, score
+from tests.fixtures.coach_extraction_sim import (
+    TODAY,
+    NoReview,
+    prompt_fingerprint,
+    run_persona,
+    score,
+)
 from tests.fixtures.coach_personas import load_personas
 
 pytestmark = pytest.mark.anyio
@@ -65,7 +71,7 @@ def test_every_persona_has_exactly_the_readings_its_messages_need() -> None:
 @pytest.fixture(scope="module")
 async def results() -> dict[str, dict[str, Any]]:
     gemini = ReplayGemini(_recording()["readings"])
-    extractor = CoachSlotExtractor(gemini, today=lambda: TODAY)  # type: ignore[arg-type]
+    extractor = CoachSlotExtractor(gemini, today=lambda: TODAY, reviewer=NoReview())  # type: ignore[arg-type]
     scored: dict[str, dict[str, Any]] = {}
     for persona in PERSONAS:
         gemini.current = persona.id

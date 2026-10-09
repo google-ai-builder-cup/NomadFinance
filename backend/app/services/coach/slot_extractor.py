@@ -23,6 +23,7 @@ from app.schemas.contract import ReportLanguage
 from app.services.coach.extraction_checks import EARLIER_MESSAGES, ReadingContext, interpret
 from app.services.coach.guard_rules import fence, visible_to_model
 from app.services.coach.question_bank import load_question_bank
+from app.services.coach.review_reader import CoachReviewReader, ReviewReader
 from app.services.coach.session_machine import QUESTION_STAGES, next_slot
 from app.services.coach.turn_types import Understanding
 
@@ -38,11 +39,18 @@ def _today() -> date:
 
 
 class CoachSlotExtractor:
-    def __init__(self, gemini: GeminiClient, *, today: Callable[[], date] = _today) -> None:
+    def __init__(
+        self,
+        gemini: GeminiClient,
+        *,
+        today: Callable[[], date] = _today,
+        reviewer: ReviewReader | None = None,
+    ) -> None:
         self._gemini = gemini
         self._today = today
         self._bank = load_question_bank()
         self._settings = get_settings()
+        self._reviewer = reviewer or CoachReviewReader(gemini)
 
     async def extract(
         self, document: dict[str, Any], text: str, language: ReportLanguage
@@ -53,9 +61,10 @@ class CoachSlotExtractor:
             GeminiError: The call failed; the turn ends as any Gemini failure of a turn does.
         """
         stage = document["stage"]
+        if stage == "review":
+            # No answer is read here: the worker says yes, or what to change (NF-FC-020).
+            return Understanding(review=await self._reviewer.read(document, text))
         if stage not in QUESTION_STAGES:
-            # In `review` and `plan` an answer does not move the stage: confirming and
-            # correcting are explicit moves (NF-FC-008).
             return Understanding()
         slots: dict[str, dict[str, Any]] = document["slots"]
         declined = document.get("declined_slots", [])

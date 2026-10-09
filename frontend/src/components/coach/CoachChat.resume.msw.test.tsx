@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // Coming back to an interview (NF-FC-019): the banner that says where it stopped, and what the
 // worker typed and did not send, which a reload does not lose.
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
@@ -9,7 +10,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import CoachChat from "@/components/coach/CoachChat";
 import { loadNamespace, setLanguage } from "@/lib/i18n";
 import { memoryBackend, readEntry, saveEntry, setOutboxBackend } from "@/lib/coachOutboxStore";
-import { replayTurns, sessionFrom } from "@/mocks/coachTurns";
+import { replaySession, replayTurns, sessionFrom } from "@/mocks/coachTurns";
 import { setupMockServer } from "@/mocks/server";
 import type { CoachSessionStart } from "@/types/coach";
 import { readDraft } from "@/utils/coachDraft";
@@ -45,14 +46,18 @@ const resumed = (changes: Partial<CoachSessionStart> = {}) =>
 
 function renderChat(session: CoachSessionStart, onRestart = vi.fn(), uid: string | null = UID) {
   render(
-    <MemoryRouter>
-      <CoachChat
-        session={session}
-        onRestart={onRestart}
-        timing={{ retryDelayMs: 0 }}
-        uid={uid ?? undefined}
-      />
-    </MemoryRouter>
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <MemoryRouter>
+        <CoachChat
+          session={session}
+          onRestart={onRestart}
+          timing={{ retryDelayMs: 0 }}
+          uid={uid ?? undefined}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>
   );
   return onRestart;
 }
@@ -108,6 +113,7 @@ describe("the resume banner", () => {
   });
 
   it("is not shown once the answers are confirmed", async () => {
+    replaySession();
     renderChat(resumed({ stage: "plan", next_slot: null }));
 
     await noBanner();

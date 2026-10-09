@@ -224,6 +224,7 @@ class CoachTurns:
             updates=turn.understanding.updates,
             messages=messages,
             declined=turn.understanding.declined,
+            review=turn.understanding.review,
             extra={
                 "last_turn": last,
                 "models": {

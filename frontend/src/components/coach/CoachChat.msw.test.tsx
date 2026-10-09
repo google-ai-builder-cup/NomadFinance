@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // The interview against the recorded streams of docs/mocks/coach/ (NF-FC-017): the real chat,
 // hook, stream client and API client run, and only the backend's answers come from the mock files.
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -8,7 +9,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import CoachChat from "@/components/coach/CoachChat";
-import { replayTurns, sessionFrom } from "@/mocks/coachTurns";
+import { replaySession, replayTurns, sessionFrom } from "@/mocks/coachTurns";
 import { server, setupMockServer } from "@/mocks/server";
 import { loadNamespace } from "@/lib/i18n";
 import type { CoachSessionStart } from "@/types/coach";
@@ -28,9 +29,13 @@ const FAST = { retryDelayMs: 0 };
 
 function renderChat(session: CoachSessionStart, onRestart = vi.fn()) {
   render(
-    <MemoryRouter>
-      <CoachChat session={session} onRestart={onRestart} timing={FAST} />
-    </MemoryRouter>
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <MemoryRouter>
+        <CoachChat session={session} onRestart={onRestart} timing={FAST} />
+      </MemoryRouter>
+    </QueryClientProvider>
   );
   return onRestart;
 }
@@ -204,6 +209,7 @@ describe("a turn", () => {
   });
 
   it("ends in a confirmed state at the plan stage, with no answer box", async () => {
+    replaySession();
     replayTurns({
       bytes:
         'event: token\ndata: {"text":"Thank you. Your answers are saved."}\n\n' +

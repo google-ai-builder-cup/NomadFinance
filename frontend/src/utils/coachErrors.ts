@@ -50,6 +50,10 @@ export function coachErrorView(failure: CoachFailure): CoachErrorView {
     case "turn_in_progress":
     case "request_in_progress":
       return { messageKey: "chat.error.inProgress", action: "retry" };
+    case "plan_not_ready":
+      return { messageKey: "score.error.notReady", action: "none" };
+    case "score_unavailable":
+      return { messageKey: "score.error.unavailable", action: "retry" };
     case "validation_failed":
       return { messageKey: "chat.error.invalid", action: "none" };
     case "rate_limited":

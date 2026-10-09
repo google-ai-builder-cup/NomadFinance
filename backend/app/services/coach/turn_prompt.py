@@ -20,7 +20,7 @@ from app.schemas.contract import ReportLanguage
 from app.services.coach.guard_rules import fence, visible_to_model
 from app.services.coach.prefill import PREFILL_SLOT, apply_prefill, prefill_question
 from app.services.coach.session_document import jsonable
-from app.services.coach.session_machine import next_slot, settle
+from app.services.coach.session_machine import next_slot, settle, stage_of
 from app.services.coach.turn_types import Understanding
 
 REPLY_PROMPT = load_prompt("coach", "reply", 1)
@@ -34,6 +34,11 @@ LANGUAGE_NAMES: dict[str, str] = {
     "ne": "Nepali",
     "bn": "Bengali",
 }
+# What the coach asks when the worker wants to change something and does not say what (the review).
+WHICH_ANSWER = (
+    "Ask which answer they want to change, and say they can name it, for example the pay or the "
+    "money they send home."
+)
 # Shown to the model in place of a message the worker did not type (the coach speaks first).
 NO_MESSAGE = "(none)"
 
@@ -74,6 +79,15 @@ def projected(
         document, slots, stage, now=datetime.now(UTC), turn=0, worker_spoke=worker_spoke
     )
     stage = settle(bank, document["stage"], slots, declined)
+    move = understanding.review
+    if document["stage"] == "review" and move is not None:
+        # The worker's reply at the review (the same rule `record_turn` follows): a yes goes on to
+        # the plan; naming an answer to change goes back to the question that holds it.
+        if move.kind == "confirm":
+            stage = "plan"
+        elif move.slot is not None and move.slot in slots:
+            slots = {**slots, move.slot: {**slots[move.slot], "confirmed": False}}
+            stage = stage_of(bank, move.slot)
     return slots, declined, stage, next_slot(bank, stage, slots, declined)
 
 
@@ -81,6 +95,9 @@ def question_to_ask(
     bank: QuestionBank, understanding: Understanding, ask_slot: str | None
 ) -> tuple[str, str]:
     """`(ask_next, follow_up)`: the bank's own wording, in English; the model puts it in words."""
+    review = understanding.review
+    if review is not None and review.kind == "change" and review.slot is None:
+        return "", WHICH_ANSWER
     if understanding.clarify is not None:
         clarify = understanding.clarify
         return "", bank.follow_up(clarify.slot, clarify.trigger).prompt_en

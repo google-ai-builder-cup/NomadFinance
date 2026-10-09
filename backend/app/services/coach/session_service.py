@@ -34,6 +34,7 @@ from app.schemas.coach_session import (
 from app.schemas.contract import ReportLanguage
 from app.services.coach.prefill import PrefillFinder, apply_prefill, prefill_document
 from app.services.coach.question_bank import load_question_bank
+from app.services.coach.review_reader import ReviewMove
 from app.services.coach.session_document import (
     IDLE_AFTER,
     KEEP_FOR,
@@ -53,6 +54,7 @@ from app.services.coach.session_machine import (
     transition,
 )
 from app.services.coach.session_overview import build_overview
+from app.services.coach.session_review import apply_review_move
 from app.services.coach.session_types import (
     NewMessage,
     SessionConflictError,
@@ -132,6 +134,7 @@ class CoachSessions:
         messages: Sequence[NewMessage] = (),
         declined: Sequence[SlotName] = (),
         extra: dict[str, Any] | None = None,
+        review: ReviewMove | None = None,
     ) -> CoachSession:
         """Save one turn: the answers understood, the messages, the language, the new stage.
 
@@ -184,6 +187,11 @@ class CoachSessions:
             turn=turn,
             worker_spoke=any(m.role == "user" for m in messages),
         )
+        new_stage = settle(self._bank, document["stage"], slots, declined_slots)
+        if review is not None and document["stage"] == "review":
+            slots, declined_slots, new_stage = apply_review_move(
+                self._bank, slots, declined_slots, review, now
+            )
         changes = {
             **(extra or {}),
             **({"prefill": offer} if offer is not None else {}),
@@ -192,7 +200,7 @@ class CoachSessions:
             "messages": stored_messages,
             "turn_count": turn,
             "language": language,
-            "stage": settle(self._bank, document["stage"], slots, declined_slots),
+            "stage": new_stage,
             "last_active": now,
             "expires_at": now + KEEP_FOR,
         }
