@@ -1,4 +1,4 @@
-// axe for the tests of the scam screens (NF-SA-019). Only tests import this module; the app never
+// axe for the tests of the scam screens (NF-SA-019) and the Coach screens (NF-FC-023). Only tests import this module; the app never
 // does, and `axe-core` is a development dependency.
 //
 // jsdom has no layout engine, so what axe needs boxes and real colours for cannot be judged here:
@@ -42,8 +42,14 @@ export async function axeViolations(
 // What i18next shows when a key has no string: the key itself. The first part of every key in the
 // app's two namespaces, so a version number or an address in a message is never taken for one.
 const KEY_ROOTS =
-  "home|input|screenshot|analyze|result|history|report|radarReport|common|errors|radar|nav";
+  "home|input|screenshot|analyze|result|history|report|radarReport|common|errors|radar|nav|" +
+  // The Coach's namespace (NF-FC-023).
+  "chat|stage|confirmed|language|resume|offline|score|plan|checkin|recap|known";
 const RAW_KEY = new RegExp(`^(${KEY_ROOTS})(\\.[A-Za-z0-9_]+)+$`);
+// A file name such as "chat.png" has the shape of a key ("chat" is the Coach's own root) but is a
+// worker's file, not a string that is missing.
+const FILE_NAME = /\.(png|jpe?g|webp|gif|pdf|svg|heic)$/i;
+const isRawKey = (text: string): boolean => RAW_KEY.test(text) && !FILE_NAME.test(text);
 
 const NAMED_BY_ATTRIBUTE = ["aria-label", "title", "placeholder", "alt"] as const;
 
@@ -54,14 +60,14 @@ export function rawKeysShown(root: Element = document.body): string[] {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
     const text = node.textContent?.trim() ?? "";
-    if (RAW_KEY.test(text)) {
+    if (isRawKey(text)) {
       found.push(text);
     }
   }
   for (const element of root.querySelectorAll("*")) {
     for (const name of NAMED_BY_ATTRIBUTE) {
       const value = element.getAttribute(name)?.trim() ?? "";
-      if (RAW_KEY.test(value)) {
+      if (isRawKey(value)) {
         found.push(`${name}="${value}"`);
       }
     }

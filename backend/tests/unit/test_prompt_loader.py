@@ -34,7 +34,7 @@ EXPECTED_PROMPTS = {
     "coach/extract.v1",
     "coach/guard.v1",
     "coach/plan.v1",
-    "coach/reply.v1",
+    "coach/reply.v2",
     "coach/review.v1",
     "coach/summarise.v1",
     "coach/translate_plan.v1",

@@ -13,8 +13,16 @@ from app.integrations.gemini import ModelTier, model_for
 from app.schemas.coach_plan import CoachScore
 from app.schemas.coach_profile import CoachProfile
 from app.schemas.coach_questions import QuestionBank
-from app.schemas.coach_session import SCORED_STAGES, CoachMessage, CoachSession, CoachSlot
+from app.schemas.coach_session import (
+    SCORED_STAGES,
+    CoachKnown,
+    CoachKnownItem,
+    CoachMessage,
+    CoachSession,
+    CoachSlot,
+)
 from app.schemas.contract import ReportLanguage
+from app.services.coach.known_details import OFFER_ORDER
 from app.services.coach.session_machine import next_slot, settle
 
 SCHEMA_VERSION = 1
@@ -34,10 +42,12 @@ def new_document(
     now: datetime,
     bank: QuestionBank,
     prefill: dict[str, Any] | None = None,
+    known: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """A session that has just been created: stage `intro`, nothing answered, no messages.
 
-    `prefill` is the salary offered from the worker's contract (`prefill.py`, NF-FC-015).
+    `prefill` is the salary offered from the worker's contract (`prefill.py`, NF-FC-015); `known`
+    is everything else the Coach could already fill in (`known_details.py`, NF-FC-023).
     """
     settings = get_settings()
     document: dict[str, Any] = {
@@ -64,7 +74,22 @@ def new_document(
     }
     if prefill is not None:
         document["prefill"] = prefill
+    if known is not None:
+        document["known"] = known
     return document
+
+
+def known_view(document: dict[str, Any]) -> CoachKnown | None:
+    """What is offered and waiting for the worker, in the interview's order; None once they have
+    answered (or when nothing was offered). Firestore does not keep a map's order, so the order is
+    set here."""
+    known = document.get("known")
+    if not known or known.get("state") != "offered":
+        return None
+    items = known["items"]
+    return CoachKnown(
+        items=[CoachKnownItem(slot=slot, **items[slot]) for slot in OFFER_ORDER if slot in items]
+    )
 
 
 def jsonable(value: object) -> object:
@@ -120,6 +145,7 @@ def to_session(
         turn_count=document["turn_count"],
         score=score,
         plan_id=document.get("plan_id"),
+        known=known_view(document),
         created_at=document["created_at"],
         last_active=document["last_active"],
     )

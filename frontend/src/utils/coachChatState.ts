@@ -1,6 +1,7 @@
 import type {
   CoachDone,
   CoachFailure,
+  CoachSession,
   CoachSessionStart,
   CoachSlot,
   CoachStage,
@@ -47,13 +48,24 @@ export type ChatAction =
   /** The turn could not reach the server and is kept to be sent when it can. */
   | { type: "queued" }
   /** An answer kept on the phone by an earlier visit: it is waiting, or the server refused it. */
-  | { type: "restored"; line: ChatLine; failure: CoachFailure | null };
+  | { type: "restored"; line: ChatLine; failure: CoachFailure | null }
+  /** The screen reader has had the finished reply for long enough: the copy is taken away, so
+   * browsing the page line by line does not meet the reply twice. */
+  | { type: "announcement_read" }
+  /** The worker kept what the Coach already knew: those answers are in, and the stage moved. */
+  | { type: "known_applied"; session: CoachSession };
 
-export function initialChatState(session: CoachSessionStart): ChatState {
+/** The answers as bare values, by slot. */
+function bareValues(answers: CoachSession["slots"]): ChatState["slots"] {
   const slots: ChatState["slots"] = {};
-  for (const [name, answer] of Object.entries(session.slots)) {
+  for (const [name, answer] of Object.entries(answers)) {
     slots[name as CoachSlot] = answer.value;
   }
+  return slots;
+}
+
+export function initialChatState(session: CoachSessionStart): ChatState {
+  const slots = bareValues(session.slots);
   return {
     lines: session.messages.map(({ id, role, text }) => ({ id, role, text })),
     draft: null,
@@ -148,6 +160,15 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         pendingSlots: {},
         failure: null,
         queued: true,
+      };
+    case "announcement_read":
+      return { ...state, announcement: "" };
+    case "known_applied":
+      return {
+        ...state,
+        slots: { ...state.slots, ...bareValues(action.session.slots) },
+        stage: action.session.stage,
+        nextSlot: action.session.next_slot,
       };
     case "restored":
       return {

@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,8 @@ export interface StepProgressProps {
   progressLabel: string;
   /** Spoken after each step's name, e.g. "completed", "current step", "not started". */
   statusLabels: { done: string; current: string; upcoming: string };
+  /** A control beside the position line, at its end (for example "Start over"). */
+  action?: ReactNode;
   className?: string;
 }
 
@@ -33,6 +36,7 @@ export default function StepProgress({
   listLabel,
   progressLabel,
   statusLabels,
+  action,
   className,
 }: StepProgressProps) {
   return (
@@ -84,9 +88,16 @@ export default function StepProgress({
           );
         })}
       </ol>
-      <p className="mt-2 text-center text-xs font-semibold text-muted-foreground">
-        {progressLabel}
-      </p>
+      {action ? (
+        <div className="mt-1 flex items-center justify-between gap-3">
+          <p className="text-xs font-semibold text-muted-foreground">{progressLabel}</p>
+          {action}
+        </div>
+      ) : (
+        <p className="mt-2 text-center text-xs font-semibold text-muted-foreground">
+          {progressLabel}
+        </p>
+      )}
     </nav>
   );
 }

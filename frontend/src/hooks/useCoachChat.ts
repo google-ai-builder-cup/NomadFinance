@@ -8,7 +8,7 @@ import {
   removeEntry,
 } from "@/lib/coachOutboxStore";
 import { keepForLater } from "@/services/coachOutboxService";
-import type { CoachSessionStart, CoachTurnRequest } from "@/types/coach";
+import type { CoachSession, CoachSessionStart, CoachTurnRequest } from "@/types/coach";
 import type { LanguageCode } from "@/types/enums";
 import { chatReducer, initialChatState, isBusy, type ChatLine } from "@/utils/coachChatState";
 import { isExpired, shouldQueue, toRequest, wasSaved } from "@/utils/coachOutbox";
@@ -23,6 +23,8 @@ export type CoachChatTiming = Pick<
   recheckMs?: number;
   /** How long to wait for the phone's storage before going on without it. */
   storageMs?: number;
+  /** How long the screen-reader copy of a finished reply stays in the page. */
+  announcementMs?: number;
 };
 
 // While an answer waits and the device says it is online (a connection that is "up" but carries
@@ -34,6 +36,9 @@ const BUSY_RECHECK_MS = 3_000;
 // Storage that neither answers nor fails (a database another tab is holding) must not keep the
 // worker waiting: after this the screen goes on without it.
 const STORAGE_PATIENCE_MS = 3_000;
+// A finished reply is also in a hidden region that is read out when it appears. Left there, a reader
+// moving through the page line by line would meet the reply twice (D-238), so it is taken away.
+const ANNOUNCEMENT_STAYS_MS = 4_000;
 
 /** The result of `work`, or `fallback` if it has not finished in time. */
 function within<T>(work: Promise<T>, fallback: T, ms = STORAGE_PATIENCE_MS): Promise<T> {
@@ -57,7 +62,9 @@ function within<T>(work: Promise<T>, fallback: T, ms = STORAGE_PATIENCE_MS): Pro
  * stands, and why the last turn failed. One turn runs at a time. The reply and the facts of a
  * turn are provisional until the server says `done`; a turn that fails shows neither.
  *
- * The coach speaks first: a session with no messages opens with a turn that has no text.
+ * The coach speaks first: a session with no messages opens with a turn that has no text. Not while
+ * the worker has yet to answer what the Coach already knows (`session.known`): the opening waits
+ * for `adoptKnown`, so the first question is one that is still open.
  *
  * `language` is the language the worker wants the coach in (the app's language). When it changes
  * while the interview is open, a turn with no text and the new language is sent once the current
@@ -322,6 +329,27 @@ export function useCoachChat(
   }, []);
 
   const busy = isBusy(state);
+
+  useEffect(() => {
+    if (state.announcement === "") {
+      return undefined;
+    }
+    const timer = setTimeout(
+      () => dispatch({ type: "announcement_read" }),
+      timingRef.current.announcementMs ?? ANNOUNCEMENT_STAYS_MS
+    );
+    return () => clearTimeout(timer);
+  }, [state.announcement]);
+
+  /** The worker kept (or changed) what the Coach already knew: take the session the server made of
+   * it, then let the coach speak first. */
+  const adoptKnown = useCallback(
+    (applied: CoachSession) => {
+      dispatch({ type: "known_applied", session: applied });
+      send();
+    },
+    [send]
+  );
   // The worker changed the language (here or in the header) while the interview is open: once no
   // turn is running, the coach continues in the new one. Not while a turn fails or is retried:
   // that turn is sent again as it was, in the language it began in. Not while an answer waits.
@@ -349,12 +377,12 @@ export function useCoachChat(
   ]);
 
   useEffect(() => {
-    if (session.status === "active" && session.messages.length === 0) {
+    if (session.status === "active" && session.messages.length === 0 && !session.known) {
       send();
     }
     // Once, when the screen opens: a session with no messages gets its opening turn.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { state, busy, send, retry, restoring };
+  return { state, busy, send, retry, restoring, adoptKnown };
 }

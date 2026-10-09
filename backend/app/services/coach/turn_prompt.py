@@ -23,7 +23,7 @@ from app.services.coach.session_document import jsonable
 from app.services.coach.session_machine import next_slot, settle, stage_of
 from app.services.coach.turn_types import Understanding
 
-REPLY_PROMPT = load_prompt("coach", "reply", 1)
+REPLY_PROMPT = load_prompt("coach", "reply", 2)
 SUMMARISE_PROMPT = load_prompt("coach", "summarise", 1)
 
 LANGUAGE_NAMES: dict[str, str] = {
@@ -113,7 +113,7 @@ def reply_message(
     text: str | None,
     language: ReportLanguage,
 ) -> str:
-    """The user message of the reply call, filled from `coach/reply.v1`."""
+    """The user message of the reply call, filled from `coach/reply.v2`."""
     slots, _, stage, ask_slot = projected(bank, document, understanding, worker_spoke=bool(text))
     ask_next, follow_up = question_to_ask(bank, understanding, ask_slot)
     offer = document.get("prefill")

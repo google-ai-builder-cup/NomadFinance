@@ -16,6 +16,7 @@
     "typing": "The coach is typing",
     "latest": "Latest message",
     "notSent": "Not sent",
+    "newInterview": "New interview",
     "error": {
       "sessionNotActive": "This interview is finished. You can start a new one.",
       "sessionFull": "This conversation is full. You can start a new interview.",
@@ -117,7 +118,55 @@
   "confirmed": {
     "title": "All your answers are in",
     "description": "Here is your preparedness score. Next you can make your 90-day plan.",
-    "backToDashboard": "Back to home"
+    "backToDashboard": "Back to home",
+    "conversation": "Your conversation with the coach"
+  },
+  "recap": {
+    "title": "Your answers",
+    "caption": "Your answers, one row for each question",
+    "question": "Question",
+    "answer": "Your answer",
+    "action": "Change an answer",
+    "change": "Change",
+    "changeLabel": "Change: {{what}}",
+    "changeSentence": "I want to change my answer about: {{what}}.",
+    "slot": {
+      "destination_country": "Country you will work in",
+      "job_type": "Kind of work",
+      "departure_date": "Leaving date",
+      "monthly_salary": "Your pay",
+      "dependents": "People who depend on you",
+      "remittance_target": "Money you send home",
+      "recruitment_fee_paid": "Fee you paid to the agent",
+      "debt_outstanding": "Debt you still owe",
+      "debt_interest": "Interest on the debt",
+      "savings": "Your savings",
+      "bank_or_wallet": "Bank or mobile wallet"
+    }
+  },
+  "known": {
+    "title": "What we already know",
+    "description": "We found these answers in your profile and your Financial Identity. Check each one. Keep what is right and change what is not.",
+    "caption": "Answers we already know, one row for each question",
+    "question": "Question",
+    "answer": "What we found",
+    "action": "Keep or change",
+    "change": "Change",
+    "keep": "Keep",
+    "changeLabel": "Change: {{what}}",
+    "keepLabel": "Keep: {{what}}",
+    "willAsk": "I will ask you this",
+    "use": "Use these answers",
+    "skip": "Ask me every question",
+    "noneKept": "You are changing every answer, so I will ask each question.",
+    "privacy": "Changing an answer here changes it only for this interview. Your profile and your records stay as they are.",
+    "source": {
+      "profile": "From your profile",
+      "contract": "From your contract",
+      "income": "Last salary you logged, {{date}}",
+      "transfers": "From the money you sent home, up to {{date}}",
+      "savings": "From your logged savings, up to {{date}}"
+    }
   },
   "language": {
     "label": "Coach language"

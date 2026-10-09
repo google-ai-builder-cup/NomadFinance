@@ -32,7 +32,7 @@ Eleven answers the interview collects. The model is `CoachProfile` in `backend/a
 
 **Two kinds of limit.** The model refuses what cannot be true (a negative amount, 21 dependents, 13th month). The bank holds the *expected* range: outside it the coach asks again before keeping the value, and keeps it only when the worker confirms (`range_issue`). Money ranges are multiples of one rough "monthly pay" number per currency in the bank, to catch an extra zero or a yearly figure called monthly. They are not wage data.
 
-**One stored slot** (`SlotRecord`) has `value`, `confidence` (0 to 1), `source` (`user` or `contract_prefill`), `confirmed`, `updated_at` and `turn`. A slot that was not answered is not stored.
+**One stored slot** (`SlotRecord`) has `value`, `confidence` (0 to 1), `source` (`user`, `contract_prefill`, `profile_prefill` or `identity_prefill`), `confirmed`, `updated_at` and `turn`. A slot that was not answered is not stored.
 
 ## `users/{uid}/coach_sessions/{sessionId}`
 
@@ -43,7 +43,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `status` | string | yes | `active`, `completed` (a plan was created), `abandoned` (idle past 14 days; set by the backend when it next reads the session, so a new one can start) |
 | `stage` | string | yes | `intro`, `income`, `obligations`, `debt`, `savings`, `review`, `plan`. Only the transitions of design 4.3 are allowed. |
 | `language` | string | yes | Language the coach replies in now. Changes when the worker switches language (NF-FC-018); slots are kept. |
-| `slots` | map | yes | Slot name to `{ "value", "confidence", "source", "confirmed", "updated_at", "turn" }`. `confidence` 0 to 1; `source` is `user` or `contract_prefill`; `confirmed` is `true` once the worker has confirmed it (always, for a prefill). Slot names, units and limits: "The slots" above. A money slot holds `{ "amount", "currency", "period" }`, never a bare number. |
+| `slots` | map | yes | Slot name to `{ "value", "confidence", "source", "confirmed", "updated_at", "turn" }`. `confidence` 0 to 1; `source` is `user`, `contract_prefill`, `profile_prefill` or `identity_prefill`; `confirmed` is `true` once the worker has confirmed it (always, for a prefill). Slot names, units and limits: "The slots" above. A money slot holds `{ "amount", "currency", "period" }`, never a bare number. |
 | `messages` | array of map | yes | The transcript: `{ "id", "role", "text", "language", "at" }`, `role` is `user` or `coach`. **Text is stored with phone numbers, emails, ID and account numbers and URLs masked** (`app/core/redact.py`, NF-F0-008); amounts are left as written. At most 200 entries (an interview is about 25 turns); a longer session is refused. A turn is appended only after it completes. |
 | `last_turn` | map | no | `{ "key", "body_hash", "state", "started_at", "turn", "message_id", "slots" }`: the `Idempotency-Key` of the latest turn, the SHA-256 of its body, `running`, `done` or `failed`, when it started, and its number. `message_id` (the coach message the turn stored) and `slots` (the names of the answers it stored) are set when the turn is done, so a replay can be rebuilt from the transcript (NF-FC-009). It lets a retry after a dropped connection get the stored reply instead of a second turn, and keeps a second turn from starting while one runs (`docs/api/v2-coach.md`, "How the key is kept"). A `running` turn older than 90 seconds counts as failed; a key older than 24 hours is forgotten. Only the latest turn is kept, and the reply is rebuilt from `messages` and the slots stamped with that `turn`, so nothing is stored twice. Optional, so no schema bump (`versioning.md`, rule 1); NF-FC-008 and -009 write it. |
 | `summary` | string | no | Short English summary of turns older than the history window (Flash-Lite), so a long session fits the model's budget (NF-FC-009) |
@@ -51,6 +51,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `turn_count` | number | yes | Completed user turns |
 | `revision` | number | yes | Starts at 1, +1 on every write. The backend writes with "revision must still be N", so two tabs sending a turn at once cannot overwrite each other. |
 | `prefill` | map | no | The salary offered from the worker's latest analysed employment contract (NF-FC-015): `{ "contract_id", "fields": ["salary", "employer"], "confirmed": false, "state", "salary": { "amount", "currency", "period" }, "employer" }`. `state` is `offered` (kept until the interview reaches the income stage), `asked` (stored as an **unconfirmed** `monthly_salary` slot with `source: contract_prefill` and the coach has asked) or `resolved` (`confirmed` says whether the worker agreed). The slot counts as an answer only once `confirmed` is true. `employer` is shown in the question only if it looks like a name (short, no markup, no orders) and is not a slot. Absent when the worker has no usable contract |
+| `known` | map | no | **NF-FC-023.** What the profile, the latest contract and Financial Identity already answer, offered before the first question: `{ "state": "offered" or "resolved", "items": { slot: { "value", "source", "as_of" } }, "kept": [slot] }`. `source` is `profile`, `contract`, `income`, `savings` or `transfers`; `as_of` is the date of the newest entry the figure was worked out from (`null` for the profile and the contract). `kept` appears when `state` is `resolved`: the slots the worker kept, which were written to `slots` (`source` `profile_prefill`, `contract_prefill` or `identity_prefill`, `confirmed: true`) in the same write. **Nothing in `items` is an answer.** Absent when nothing was found (a worker with no records), when reading failed, or for a session made before this existed. The API shows `known` only while `state` is `offered` |
 | `plan_id` | string | when completed | Id of the plan created from this session |
 | `plan_lock` | map or null | no | `{ "hash", "started_at" }`: set while the plan for these answers is being made, so a second request gets `409 request_in_progress`; cleared when the plan is stored or fails. A lock older than 150 seconds counts as left by a dead request (NF-FC-012) |
 | `last_active` | timestamp | yes | Time of the last completed turn |
@@ -59,7 +60,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `declined_slots` | array of string | yes | Optional slots the worker was asked and chose not to answer (today only `departure_date`: "I do not know yet"). It tells "not sure" from "not asked yet", so the stage can advance without the slot (closes D-171, part 1). Removed from the list when the slot is answered later |
 | `question_bank_version` | number | yes | `version` of `question_bank.json` the session was created with (D-171, part 2) |
 | `models` | map | yes | `{ "extraction": "...", "reply": "..." }` as of the last turn (ADR-002) |
-| `prompt_versions` | map | yes | `{ "coach.extract_slots": 1, "coach.reply": 1 }` |
+| `prompt_versions` | map | yes | `{ "coach.extract_slots": 1, "coach.reply": 2 }` |
 | `created_at` | timestamp | yes | |
 | `schema_version` | number | yes | `1` |
 
@@ -87,7 +88,7 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
   "last_active": "2026-10-20T08:06:40Z",
   "expires_at": "2026-11-19T08:06:40Z",
   "models": { "extraction": "gemini-3.1-flash-lite", "reply": "gemini-3.5-flash" },
-  "prompt_versions": { "coach.extract_slots": 1, "coach.reply": 1 },
+  "prompt_versions": { "coach.extract_slots": 1, "coach.reply": 2 },
   "created_at": "2026-10-20T08:02:00Z",
   "schema_version": 1
 }

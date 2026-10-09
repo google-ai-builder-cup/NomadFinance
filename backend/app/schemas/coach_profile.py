@@ -34,7 +34,10 @@ Currency = Literal["SGD", "KRW", "MYR", "JPY", "HKD", "AUD", "PHP", "INR", "IDR"
 MoneyPeriod = Literal["month", "week", "year", "once"]
 InterestPeriod = Literal["month", "year"]
 AccountKind = Literal["bank_account", "mobile_wallet", "both", "none"]
-SlotSource = Literal["user", "contract_prefill"]
+# `contract_prefill`: the salary of an analysed contract; `profile_prefill`: the country or kind of
+# work of the sign-up profile; `identity_prefill`: a figure worked out from the worker's Financial
+# Identity entries. All three enter a session only after the worker agrees (NF-FC-015, NF-FC-023).
+SlotSource = Literal["user", "contract_prefill", "profile_prefill", "identity_prefill"]
 SlotName = Literal[
     "destination_country",
     "job_type",

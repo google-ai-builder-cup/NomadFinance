@@ -4,12 +4,16 @@ import { CORRIDOR_IDS } from "@/types/enums";
 /** A figure as the PDF writes it: `4,200 AUD`, `1,473.72 AUD`, digits 0 to 9 in every language
  * (a locale such as Bengali would write other digits), so the screen and the file always agree. */
 export function planMoney(money: PlanMoney): string {
-  const text = new Intl.NumberFormat("en-US", {
+  return `${groupedAmount(money.amount)} ${money.currency}`;
+}
+
+/** An amount written the same way in every language: `4,200`, `1,473.72`. */
+export function groupedAmount(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
     useGrouping: true,
     numberingSystem: "latn",
-  } as Intl.NumberFormatOptions).format(money.amount);
-  return `${text} ${money.currency}`;
+  } as Intl.NumberFormatOptions).format(amount);
 }
 
 /** The link into Remittance X-Ray with the plan's corridor and monthly amount filled in, or null

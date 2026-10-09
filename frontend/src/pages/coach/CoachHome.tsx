@@ -1,4 +1,5 @@
 import { GraduationCap } from "lucide-react";
+import { useState } from "react";
 
 import CoachChat from "@/components/coach/CoachChat";
 import CoachNotice from "@/components/coach/CoachNotice";
@@ -13,10 +14,11 @@ import { cn } from "@/lib/utils";
 import { toFailure } from "@/utils/coachErrors";
 import { PILLAR_STYLES } from "@/utils/pillars";
 
-// Its own chunk, fetched only once the `coach` flag is on for the signed-in user. The page is as
-// tall as the screen below the header and above the phone's tab bar (64 px + 48 px of padding,
-// and 96 px for the bar on a phone), so the conversation scrolls inside it and the page itself
-// does not move while a reply streams in.
+// Its own chunk, fetched only once the `coach` flag is on for the signed-in user. While the
+// interview is under way the page is as tall as the screen below the header and above the phone's
+// tab bar (64 px + 48 px of padding, and 96 px for the bar on a phone), so the conversation
+// scrolls inside it and the page itself does not move while a reply streams in. From the review on
+// it is an ordinary page that grows with the table of answers, the score and the conversation.
 export default function CoachHome() {
   const { t } = useI18n("coach");
   const { user } = useAuth();
@@ -24,12 +26,13 @@ export default function CoachHome() {
   const restart = useCoachRestart();
   // The way back to a plan that was made; if this read fails the Coach page is as it was.
   const plan = useCoachOverview().data?.plan;
+  const [flowing, setFlowing] = useState(false);
 
   return (
     <div
       className={cn(
-        "mx-auto flex min-h-[28rem] w-full max-w-2xl flex-col gap-3",
-        "h-[calc(100dvh-13rem)] md:h-[calc(100dvh-9rem)]"
+        "mx-auto flex w-full max-w-2xl flex-col gap-3",
+        !flowing && "min-h-[28rem] h-[calc(100dvh-13rem)] md:h-[calc(100dvh-9rem)]"
       )}
     >
       <header className="flex shrink-0 items-center gap-3">
@@ -71,6 +74,7 @@ export default function CoachHome() {
           onRestart={() => restart.mutate()}
           restarting={restart.isPending}
           restartError={restart.isError ? restart.error : undefined}
+          onFlowChange={setFlowing}
           uid={user?.uid}
         />
       )}

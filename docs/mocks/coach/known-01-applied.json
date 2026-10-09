@@ -1,0 +1,65 @@
+{
+  "description": "The worker keeps all six answers (`keep` names them): they become confirmed answers with their source, `known` leaves the answer, and the next question is the first one that is still open (the departure date). No messages were added.",
+  "request": "POST /api/v2/coach/sessions/s_08/known",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c301"
+  },
+  "body": {
+    "id": "s_08",
+    "status": "active",
+    "stage": "intro",
+    "language": "en",
+    "slots": {
+      "destination_country": {
+        "value": "SG",
+        "confirmed": true,
+        "source": "profile_prefill"
+      },
+      "job_type": {
+        "value": "domestic_worker",
+        "confirmed": true,
+        "source": "profile_prefill"
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 650,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "identity_prefill"
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 500,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "confirmed": true,
+        "source": "identity_prefill"
+      },
+      "savings": {
+        "value": {
+          "amount": 1200,
+          "currency": "SGD",
+          "period": "once"
+        },
+        "confirmed": true,
+        "source": "identity_prefill"
+      },
+      "bank_or_wallet": {
+        "value": "bank_account",
+        "confirmed": true,
+        "source": "identity_prefill"
+      }
+    },
+    "messages": [],
+    "next_slot": "departure_date",
+    "turn_count": 0,
+    "score": null,
+    "plan_id": null,
+    "created_at": "2026-10-20T08:00:00Z",
+    "last_active": "2026-10-20T08:01:00Z"
+  }
+}

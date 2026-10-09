@@ -18,6 +18,9 @@ export interface ChatBubbleProps {
   /** The message did not go through: shows `failedLabel` and a retry button. */
   failed?: boolean;
   failedLabel?: string;
+  /** Whether the failed label is an alert of its own. Turn it off when something else on the screen
+   * already announces the failure, so a screen reader says it once. */
+  announceFailed?: boolean;
   retryLabel?: string;
   onRetry?: () => void;
   /** The message is kept on the device and goes when the connection is back (not a failure). */
@@ -37,6 +40,7 @@ export default function ChatBubble({
   timeLabel,
   failed = false,
   failedLabel,
+  announceFailed = true,
   retryLabel,
   onRetry,
   pending = false,
@@ -95,7 +99,10 @@ export default function ChatBubble({
               </span>
             )}
             {failed && failedLabel && (
-              <span role="alert" className="font-semibold text-danger-ink">
+              <span
+                role={announceFailed ? "alert" : undefined}
+                className="font-semibold text-danger-ink"
+              >
                 {failedLabel}
               </span>
             )}

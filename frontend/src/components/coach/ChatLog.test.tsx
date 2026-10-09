@@ -38,6 +38,16 @@ describe("ChatLog", () => {
     expect(log.getAttribute("lang")).toBe("en");
   });
 
+  it("is the anchor of the hidden speaker labels, so a long talk does not stretch the page", () => {
+    // The labels are absolutely positioned. If the scroller is not a positioned box they are placed
+    // against one outside it, below the visible part, and every message adds to the page's height
+    // (found in NF-FC-023: a 20-line talk made a 2,000 px page).
+    render(<ChatLog lines={LINES} draft={null} announcement="" language="en" />);
+
+    expect(screen.getByRole("log").className).toMatch(/(^|\s)relative(\s|$)/);
+    expect(screen.getByRole("log").className).toMatch(/overflow-y-auto/);
+  });
+
   it("says who spoke before each line, for a screen reader", () => {
     render(<ChatLog lines={LINES} draft={null} announcement="" language="en" />);
 
@@ -62,6 +72,26 @@ describe("ChatLog", () => {
     rerender(<ChatLog lines={LINES} draft={null} announcement="Thank you." language="en" />);
 
     expect(screen.getByRole("status").textContent).toBe("Thank you.");
+  });
+
+  it("leaves the notice as the only alert when a line was not sent", () => {
+    const failed: ChatLine[] = [
+      ...LINES,
+      { id: "local-1", role: "user", text: "4200", failed: true },
+    ];
+
+    render(
+      <ChatLog
+        lines={failed}
+        draft={null}
+        announcement=""
+        language="en"
+        footer={<div role="alert">The coach is busy. Try again.</div>}
+      />
+    );
+
+    expect(screen.getByText("Not sent")).toBeTruthy(); // still shown beside the line
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
   });
 
   it("follows new content to the end while the worker is at the end", () => {

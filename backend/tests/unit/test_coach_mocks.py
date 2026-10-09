@@ -25,6 +25,7 @@ from app.schemas.coach_session import (
     CoachSessionCreateResponse,
 )
 from app.schemas.errors import ErrorEnvelope
+from app.services.coach.known_details import OFFER_ORDER, SLOT_SOURCES
 from app.services.coach.question_bank import is_applicable, load_question_bank
 from tests.fixtures.coach_mocks import (
     JSON_FILES,
@@ -66,6 +67,7 @@ def _model_for(request: str) -> type[BaseModel] | None:
     routes: list[tuple[str, str, type[BaseModel] | None]] = [
         ("POST", r"/api/v2/coach/sessions", CoachSessionCreateResponse),
         ("GET", rf"/api/v2/coach/sessions/{SESSION_ID}", CoachSession),
+        ("POST", rf"/api/v2/coach/sessions/{SESSION_ID}/known", CoachSession),
         ("POST", rf"/api/v2/coach/sessions/{SESSION_ID}/plan", CoachPlanResponse),
         ("GET", rf"/api/v2/coach/plans/{PLAN_ID}", CoachPlanResponse),
         ("GET", r"/api/v2/coach/overview", CoachOverview),
@@ -185,12 +187,33 @@ def test_a_stage_the_worker_confirmed_has_a_score_and_a_plan_screen_has_a_band_e
 
 def test_the_create_answers_are_sessions_that_exist_as_details() -> None:
     sessions = sessions_by_id()
-    for name in ("sessions-create-01-new.json", "sessions-create-02-resumed.json"):
+    for name in (
+        "sessions-create-01-new.json",
+        "sessions-create-02-resumed.json",
+        "sessions-create-03-known.json",
+    ):
         body = dict(load(MOCKS / name)["body"])
         resumed = body.pop("resumed")
 
         assert body == sessions[body["id"]]
         assert resumed == (body["turn_count"] > 0)
+
+
+def test_the_known_mocks_agree_with_each_other_and_with_the_rules_of_keeping() -> None:
+    offered = sessions_by_id()["s_08"]["known"]["items"]
+    applied = load(MOCKS / "known-01-applied.json")["body"]
+
+    assert [item["slot"] for item in offered] == list(OFFER_ORDER)
+    assert set(applied["slots"]) == {item["slot"] for item in offered}
+    for item in offered:
+        kept = applied["slots"][item["slot"]]
+        assert kept == {
+            "value": item["value"],
+            "confirmed": True,
+            "source": SLOT_SOURCES[item["source"]],
+        }
+    assert "known" not in applied and applied["messages"] == []
+    assert applied["next_slot"] == "departure_date"
 
 
 def test_a_completed_session_points_at_a_plan_that_exists() -> None:

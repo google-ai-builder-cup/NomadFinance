@@ -102,4 +102,20 @@ describe("StepProgress", () => {
 
     expect(container.innerHTML).not.toMatch(/\b(ml|mr|pl|pr)-\d|text-left|text-right/);
   });
+
+  it("puts a control at the end of the position line, which then reads from the start", () => {
+    render(
+      <StepProgress
+        steps={STEPS}
+        currentIndex={1}
+        listLabel="Interview progress"
+        progressLabel="Step 2 of 4: Income"
+        statusLabels={STATUS}
+        action={<button type="button">Start over</button>}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Start over" })).toBeTruthy();
+    expect(screen.getByText("Step 2 of 4: Income").className).not.toMatch(/text-center/);
+  });
 });

@@ -137,7 +137,7 @@ async def test_the_models_and_prompt_versions_are_recorded_on_the_session() -> N
 
     document = stored(repo, UID, session_id)
     assert document["models"]["reply"] and document["models"]["extraction"]
-    assert document["prompt_versions"] == {"coach.reply": 1}
+    assert document["prompt_versions"] == {"coach.reply": 2}
 
 
 async def test_earlier_messages_are_sent_as_history_without_the_new_one() -> None:

@@ -127,3 +127,29 @@ export function replayOverview(name = "coach/overview-04-empty.json"): void {
   }
   server.use(http.get("*/api/v2/coach/overview", () => HttpResponse.json(mock.body as object)));
 }
+
+export interface KeptAnswers {
+  keep: string[];
+}
+
+/** Answers `POST /coach/sessions/{id}/known` with a mock (`coach/known-01-applied.json` by default)
+ * or a refusal, and records which answers the worker kept (NF-FC-023). */
+export function replayKnown(
+  reply: "coach/known-01-applied.json" | { refusal: string } = "coach/known-01-applied.json"
+): KeptAnswers[] {
+  const sent: KeptAnswers[] = [];
+  server.use(
+    http.post("*/api/v2/coach/sessions/:id/known", async ({ request }) => {
+      sent.push((await request.json()) as KeptAnswers);
+      const mock = jsonMocks.get(typeof reply === "string" ? reply : reply.refusal);
+      if (mock === undefined) {
+        throw new Error("No such known mock in docs/mocks/.");
+      }
+      return HttpResponse.json(mock.body as Record<string, unknown>, {
+        status: mock.status ?? 200,
+        headers: mock.headers,
+      });
+    })
+  );
+  return sent;
+}

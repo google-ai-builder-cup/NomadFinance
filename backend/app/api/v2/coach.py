@@ -5,18 +5,25 @@ from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Response
+from fastapi.exceptions import RequestValidationError
 
 from app.core.errors import ApiError
 from app.dependencies import get_coach_sessions, get_current_user, require_flag
 from app.schemas.coach_session import (
+    CoachKnownRequest,
     CoachOverview,
     CoachSession,
     CoachSessionCreateRequest,
     CoachSessionCreateResponse,
 )
 from app.schemas.user import AuthenticatedUser
+from app.services.coach.known_details import UnknownKnownSlotError
 from app.services.coach.session_service import CoachSessions
-from app.services.coach.session_types import SessionConflictError, SessionNotFoundError
+from app.services.coach.session_types import (
+    SessionConflictError,
+    SessionNotActiveError,
+    SessionNotFoundError,
+)
 
 # A missing token is a 401 first; a caller without the `coach` flag gets the 404 an unknown path
 # gets (docs/api/v2-coach.md, "What every route shares").
@@ -106,3 +113,47 @@ async def get_coach_overview(
 ) -> CoachOverview:
     """What the dashboard card needs to say Start, Resume or View plan. Creates nothing."""
     return await sessions.overview(user.uid, datetime.now(UTC))
+
+
+@router.post(
+    "/sessions/{session_id}/known",
+    response_model=CoachSession,
+    responses={
+        **_RESPONSES,
+        409: {
+            "description": "The session has ended (`session_not_active`), or another request is "
+            "changing it (`request_in_progress`); retry"
+        },
+        422: {"description": "A slot that was not offered"},
+    },
+    summary="Agree with what the Coach already knows, or change some of it",
+)
+async def apply_known_details(
+    session_id: str,
+    body: CoachKnownRequest,
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    sessions: Annotated[CoachSessions, Depends(get_coach_sessions)],
+) -> CoachSession:
+    """The worker keeps the offered answers in `keep` (they become confirmed answers, with their
+    source) and drops the rest, which the coach asks as usual. No Gemini call is made; the screen
+    then opens the interview with a turn that has no text. Asking again after the worker has
+    answered changes nothing and returns the same session."""
+    if not _SESSION_ID.match(session_id):
+        raise ApiError(404, "not_found", "Not Found")
+    try:
+        return await sessions.apply_known(user.uid, session_id, body.keep, datetime.now(UTC))
+    except SessionNotFoundError as exc:
+        raise ApiError(404, "not_found", "Not Found") from exc
+    except SessionNotActiveError as exc:
+        raise ApiError(409, "session_not_active", "This interview has ended.") from exc
+    except SessionConflictError as exc:
+        raise ApiError(
+            409,
+            "request_in_progress",
+            "Another request is changing the interview. Try again in a moment.",
+            headers={"Retry-After": "2"},
+        ) from exc
+    except UnknownKnownSlotError as exc:
+        raise RequestValidationError(
+            [{"type": "value_error", "loc": ("body", "keep"), "msg": str(exc)}]
+        ) from exc

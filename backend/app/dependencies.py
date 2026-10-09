@@ -55,6 +55,7 @@ from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.coach.coach_scorer import CoachScorer
 from app.services.coach.guard import CoachGuard
+from app.services.coach.known_details import known_finder
 from app.services.coach.plan_files import PlanFiles
 from app.services.coach.plan_generator import CoachPlanWriter
 from app.services.coach.plan_service import CoachPlans
@@ -217,14 +218,18 @@ def get_coach_sessions(
     laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
     rates: Annotated[RateRepository, Depends(get_rate_repository)],
     contracts: Annotated[ContractRepository, Depends(get_contract_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
 ) -> CoachSessions:
     """The worker's Financial Coach sessions and their state machine (NF-FC-008), with the
-    preparedness score from `review` on (NF-FC-011)."""
+    preparedness score from `review` on (NF-FC-011), and what the profile, the contract and
+    Financial Identity already answer (NF-FC-015, NF-FC-023)."""
     return CoachSessions(
         sessions,
         plans,
         scorer=CoachScorer(baselines, laws, rates),
         prefills=contract_prefill_finder(contracts),
+        known=known_finder(users, fib),
     )
 
 

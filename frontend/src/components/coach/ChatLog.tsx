@@ -10,7 +10,7 @@ export interface ChatLogProps {
   lines: readonly ChatLine[];
   /** The reply that is arriving; null when no turn is running. */
   draft: string | null;
-  /** The last finished coach reply, read out once. */
+  /** The last finished coach reply, read out once; the chat empties it a few seconds later. */
   announcement: string;
   language: string;
   /** Shown after the last line, inside the scrolling box: a notice about the turn that failed. It
@@ -39,7 +39,10 @@ export default function ChatLog({ lines, draft, announcement, language, footer }
         lang={language}
         // Focusable so the keyboard can scroll it.
         tabIndex={0}
-        className="flex h-full flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl border bg-card p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        // `relative` makes this box the anchor of the screen-reader-only speaker labels in the
+        // bubbles (absolutely positioned). Without it they are placed against a box outside the
+        // scroller, below the visible area, and every message adds to the page's height.
+        className="relative flex h-full flex-col gap-3 overflow-y-auto overscroll-contain rounded-2xl border bg-card p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {lines.map((line) => (
           <ChatBubble
@@ -48,6 +51,8 @@ export default function ChatLog({ lines, draft, announcement, language, footer }
             speakerLabel={line.role === "coach" ? t("chat.coachSays") : t("chat.youSaid")}
             failed={line.failed}
             failedLabel={t("chat.notSent")}
+            // The notice below the last line is the alert: it says why, and takes focus.
+            announceFailed={false}
             pending={line.queued}
             pendingLabel={t("offline.waiting")}
           >
