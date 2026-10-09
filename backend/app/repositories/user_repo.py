@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any
 
+from google.api_core.exceptions import AlreadyExists
 from google.cloud.firestore import ArrayRemove, FieldFilter
 
 from app.repositories.base import FirestoreRepository, get_firestore_client
@@ -52,6 +53,20 @@ class UserRepository(FirestoreRepository):
     def create_notification(self, uid: str, notification: dict[str, Any]) -> None:
         """Write one `users/{uid}/notifications/{id}` document (users.md)."""
         self.document(uid).collection("notifications").document().set(notification)
+
+    def create_notification_once(
+        self, uid: str, notification_id: str, notification: dict[str, Any]
+    ) -> bool:
+        """Write a notification under a fixed id; False if that id is already taken.
+
+        The id is the caller's idempotency key: of two runs that race, only one creates it.
+        """
+        reference = self.document(uid).collection("notifications").document(notification_id)
+        try:
+            reference.create(notification)
+        except AlreadyExists:
+            return False
+        return True
 
 
 @lru_cache

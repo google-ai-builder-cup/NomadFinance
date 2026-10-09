@@ -6,18 +6,22 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 
-from app.dependencies import require_cloud_scheduler
+from app.dependencies import get_feature_flag_service, require_cloud_scheduler
 from app.integrations.fx import FxRouter, get_fx_router
 from app.integrations.gemini import GeminiClient, get_gemini_client
+from app.repositories.coach_session_repo import CoachPlanRepository, get_coach_plan_repository
 from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.repositories.scam_stats_repo import ScamStatsRepository, get_scam_stats_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
+from app.schemas.coach_checkin import SendCheckinsResponse
 from app.schemas.fib_profile import RecomputeResponse
 from app.schemas.radar_alert import AggregateRadarResponse
 from app.schemas.remittance import RefreshRatesResponse
 from app.schemas.scam_stats import AggregateScamStatsResponse
+from app.services.coach.checkin_job import send_checkins
+from app.services.feature_flag_service import FeatureFlagService
 from app.services.fib.profile_builder import recompute_all
 from app.services.radar.alerts import run_aggregation
 from app.services.remittance.rates import refresh_rates
@@ -93,5 +97,23 @@ async def aggregate_scam_stats_endpoint(
     failed run and retries. Repeating is harmless: every run replaces what it writes.
     """
     result, complete = await run_scam_stats(stats, datetime.now(UTC))
+    code = status.HTTP_200_OK if complete else status.HTTP_503_SERVICE_UNAVAILABLE
+    return JSONResponse(result.model_dump(mode="json"), status_code=code)
+
+
+@router.post("/send-coach-checkins", response_model=SendCheckinsResponse, responses=_RESPONSES)
+async def send_coach_checkins_endpoint(
+    _caller: Annotated[str, Depends(require_cloud_scheduler)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    flags: Annotated[FeatureFlagService, Depends(get_feature_flag_service)],
+) -> JSONResponse:
+    """Daily Coach check-in reminders for plans 30, 60 and 90 days past departure (NF-FC-016).
+
+    A plan or a query that could not be read or written makes the answer a 503, so Cloud
+    Scheduler logs a failed run and retries. Repeating is harmless: a reminder already written
+    for a plan and milestone is never written or pushed again.
+    """
+    result, complete = await send_checkins(plans, users, flags, datetime.now(UTC))
     code = status.HTTP_200_OK if complete else status.HTTP_503_SERVICE_UNAVAILABLE
     return JSONResponse(result.model_dump(mode="json"), status_code=code)

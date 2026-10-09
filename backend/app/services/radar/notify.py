@@ -16,7 +16,7 @@ from typing import Any
 from fastapi.concurrency import run_in_threadpool
 from firebase_admin.exceptions import FirebaseError  # type: ignore[import-untyped]
 
-from app.integrations.firebase_messaging import send_push
+from app.integrations.firebase_messaging import send_push, usable_tokens
 from app.integrations.gemini import GeminiClient, GeminiError, ModelTier
 from app.prompts.loader import load_prompt
 from app.repositories.radar_repo import RadarRepository
@@ -30,19 +30,6 @@ logger = logging.getLogger(__name__)
 ALERT_NOTIFICATION_PROMPT = load_prompt("radar", "alert_notification", 1)
 
 DEEP_LINK = "/radar"
-
-# A worker can store anything in `fcm_tokens` (the profile rules only cap the list at 5), so
-# what reaches the push call is untrusted. Real FCM tokens are about 160 characters.
-_MAX_TOKENS = 5
-_MAX_TOKEN_CHARS = 1024
-
-
-def _push_tokens(profile: dict[str, Any]) -> list[str]:
-    raw = profile.get("fcm_tokens")
-    if not isinstance(raw, list):
-        return []
-    usable = [t for t in raw if isinstance(t, str) and 0 < len(t) <= _MAX_TOKEN_CHARS]
-    return usable[:_MAX_TOKENS]
 
 
 def _subscribed_profiles(corridor_id: str, users: UserRepository) -> dict[str, dict[str, Any]]:
@@ -152,7 +139,7 @@ async def notify_new_alert(
         await run_in_threadpool(users.create_notification, uid, notification)
         sent += 1
 
-        tokens = _push_tokens(profile)
+        tokens = usable_tokens(profile)
         if tokens:
             try:
                 invalid = await run_in_threadpool(

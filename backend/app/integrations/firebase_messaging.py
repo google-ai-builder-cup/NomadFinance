@@ -1,14 +1,30 @@
-"""Firebase Cloud Messaging: push notifications for Exploitation Radar alerts (NF-P3-004)."""
+"""Firebase Cloud Messaging: push notifications for Exploitation Radar alerts (NF-P3-004) and
+Coach check-in reminders (NF-FC-016)."""
 
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from firebase_admin import messaging  # type: ignore[import-untyped]
 
 from app.core.security import get_firebase_app
 
 logger = logging.getLogger(__name__)
+
+# A worker can store anything in `fcm_tokens` (the profile rules only cap the list at 5), so
+# what reaches the push call is untrusted. Real FCM tokens are about 160 characters.
+_MAX_TOKENS = 5
+_MAX_TOKEN_CHARS = 1024
+
+
+def usable_tokens(profile: dict[str, Any]) -> list[str]:
+    """The push tokens of a profile that are plausible enough to hand to FCM."""
+    raw = profile.get("fcm_tokens")
+    if not isinstance(raw, list):
+        return []
+    usable = [t for t in raw if isinstance(t, str) and 0 < len(t) <= _MAX_TOKEN_CHARS]
+    return usable[:_MAX_TOKENS]
 
 
 def send_push(tokens: list[str], title: str, body: str, deep_link: str) -> list[str]:

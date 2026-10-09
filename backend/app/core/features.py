@@ -21,6 +21,7 @@ _BY_INTERNAL_JOB = {
     "aggregate-radar": "radar",
     "recompute-fib-profiles": "fib",
     "aggregate-scam-stats": "scam",
+    "send-coach-checkins": "coach",
 }
 
 PLATFORM = "platform"
