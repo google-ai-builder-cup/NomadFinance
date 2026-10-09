@@ -52,6 +52,7 @@ from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.coach.coach_scorer import CoachScorer
+from app.services.coach.guard import CoachGuard
 from app.services.coach.plan_files import PlanFiles
 from app.services.coach.plan_generator import CoachPlanWriter
 from app.services.coach.plan_service import CoachPlans
@@ -250,9 +251,11 @@ def get_coach_turns(
     sessions: Annotated[CoachSessions, Depends(get_coach_sessions)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
 ) -> CoachTurns:
-    """The Financial Coach's turn: slot extraction (NF-FC-010), then the streamed reply (NF-FC-009),
-    both on the shared Gemini client."""
-    return CoachTurns(sessions, gemini, extractor=CoachSlotExtractor(gemini))
+    """The Financial Coach's turn: the guardrails (NF-FC-013), slot extraction (NF-FC-010), then
+    the streamed reply (NF-FC-009), all on the shared Gemini client."""
+    return CoachTurns(
+        sessions, gemini, extractor=CoachSlotExtractor(gemini), guard=CoachGuard(gemini)
+    )
 
 
 def get_scam_reporter(

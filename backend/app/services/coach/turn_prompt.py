@@ -16,6 +16,7 @@ from app.prompts.loader import load_prompt
 from app.schemas.coach_profile import parse_slot_value
 from app.schemas.coach_questions import QuestionBank
 from app.schemas.contract import ReportLanguage
+from app.services.coach.guard_rules import fence, visible_to_model
 from app.services.coach.session_document import jsonable
 from app.services.coach.session_machine import next_slot, settle
 from app.services.coach.turn_types import Understanding
@@ -36,9 +37,13 @@ NO_MESSAGE = "(none)"
 
 
 def history_from(messages: Sequence[dict[str, Any]]) -> list[ChatTurn]:
-    """The stored transcript as chat turns: the worker is `user`, the coach is `model`."""
+    """The stored transcript as chat turns: the worker is `user`, the coach is `model`. A worker
+    message that gave the coach orders is replaced, so it cannot keep working from the history."""
     return [
-        ChatTurn("user" if message["role"] == "user" else "model", message["text"])
+        ChatTurn(
+            "user" if message["role"] == "user" else "model",
+            visible_to_model(message["role"], message["text"]),
+        )
         for message in messages
     ]
 
@@ -87,8 +92,8 @@ def reply_message(
         follow_up=follow_up,
         understood_json=_json({k: jsonable(v) for k, v in understood.items()}),
         slots_json=_json({name: record["value"] for name, record in slots.items()}),
-        summary=document.get("summary") or "(none)",
-        worker_message=text if text else NO_MESSAGE,
+        summary=fence(document.get("summary") or "(none)"),
+        worker_message=fence(text) if text else NO_MESSAGE,
     )
 
 

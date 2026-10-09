@@ -27,6 +27,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | `coach/translate_plan.v1` | Translate a finished plan's sentences into the worker's language; only text is sent, and every number and currency code must come back unchanged (NF-FC-014) | classification | `target_language`, `plan_json`, `fix_these` |
 | `coach/plan.v1` | The words of the 90-day plan: summary, 13 weeks of actions, the warnings and checklist items code chose; it is given the figures and may use no other number, which the validator checks (NF-FC-012) | reasoning | `facts_json`, `warnings_json`, `checklist_json`, `fix_these` |
 | `coach/extract.v1` | Read one worker message in any of the six languages into interview answers: for each, the exact words that state it and a confidence; the code checks every one before it is kept (NF-FC-010) | classification | `worker_language`, `today`, `asking`, `unconfirmed_json`, `confirmed_json`, `recent_talk`, `message` |
+| `coach/guard.v1` | Sort one worker message as on topic, off topic, a request for a financial product, an order to the coach, or a sign of danger; asked only for messages the fixed rules cannot judge, and it never writes to the worker (NF-FC-013) | classification | `worker_language`, `asking`, `message` |
 
 The fields each prompt asks for are the field names in `docs/data-model/collections/`. The step's Pydantic response model (the `response_schema`) must use the same names.
 

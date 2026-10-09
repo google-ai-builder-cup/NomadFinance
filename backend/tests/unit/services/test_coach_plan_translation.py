@@ -10,6 +10,7 @@ from app.integrations.gemini import GeminiTimeoutError
 from app.integrations.gemini.errors import GeminiResponseError
 from app.schemas.coach_plan import CoachPlan
 from app.schemas.coach_plan_text import NoteText, PlanTranslation
+from app.services.coach.guard_texts import NOT_ADVICE_NOTE
 from app.services.coach.plan_translation_check import (
     apply_narrative,
     check_translation,
@@ -174,6 +175,20 @@ async def test_two_rejected_translations_are_a_bad_response() -> None:
     with pytest.raises(GeminiResponseError):
         await CoachPlanTranslator(gemini).translate(english(), "id")  # type: ignore[arg-type]
     assert len(gemini.calls) == 2
+
+
+@pytest.mark.parametrize("language", ["hi", "tl", "id", "ne", "bn"])
+async def test_the_note_is_the_fixed_wording_whatever_the_model_wrote(language: str) -> None:
+    def careless(contents: str) -> PlanTranslation:
+        note = "Guaranteed returns of 10 percent, call 91234567."
+        return translated_text(contents).model_copy(update={"disclaimer": note})
+
+    gemini = TranslatingGemini(careless)
+
+    translated = await CoachPlanTranslator(gemini).translate(english(), language)  # type: ignore[arg-type]
+
+    assert translated.disclaimer == NOT_ADVICE_NOTE[language]  # type: ignore[index]
+    assert len(gemini.calls) == 1, "the model's note must not cost a retry"
 
 
 async def test_english_is_not_translated_and_gemini_errors_pass_through() -> None:

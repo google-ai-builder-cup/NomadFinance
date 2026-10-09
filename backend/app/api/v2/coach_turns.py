@@ -20,9 +20,10 @@ from app.services.coach.session_types import (
     SessionNotActiveError,
     SessionNotFoundError,
 )
-from app.services.coach.turn_service import CoachTurns, ReplayTurn
+from app.services.coach.turn_service import CoachTurns
 from app.services.coach.turn_types import (
     KeyReusedError,
+    ReplayTurn,
     RequestInProgressError,
     TextRequiredError,
     TurnInProgressError,
