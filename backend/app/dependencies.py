@@ -29,7 +29,13 @@ from app.repositories.coach_session_repo import (
     get_coach_session_repository,
 )
 from app.repositories.config_repo import get_config_repository
+from app.repositories.cost_baseline_repo import (
+    CostBaselineRepository,
+    get_cost_baseline_repository,
+)
+from app.repositories.labor_law_repo import LaborLawRepository, get_labor_law_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
+from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
 from app.repositories.scam_indicator_repo import (
     ScamIndicatorRepository,
@@ -44,6 +50,7 @@ from app.repositories.scam_taxonomy_repo import (
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
+from app.services.coach.coach_scorer import CoachScorer
 from app.services.coach.session_service import CoachSessions
 from app.services.coach.slot_extractor import CoachSlotExtractor
 from app.services.coach.turn_service import CoachTurns
@@ -197,9 +204,13 @@ def get_scam_check_store(
 def get_coach_sessions(
     sessions: Annotated[CoachSessionRepository, Depends(get_coach_session_repository)],
     plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    baselines: Annotated[CostBaselineRepository, Depends(get_cost_baseline_repository)],
+    laws: Annotated[LaborLawRepository, Depends(get_labor_law_repository)],
+    rates: Annotated[RateRepository, Depends(get_rate_repository)],
 ) -> CoachSessions:
-    """The worker's Financial Coach sessions and their state machine (NF-FC-008)."""
-    return CoachSessions(sessions, plans)
+    """The worker's Financial Coach sessions and their state machine (NF-FC-008), with the
+    preparedness score from `review` on (NF-FC-011)."""
+    return CoachSessions(sessions, plans, scorer=CoachScorer(baselines, laws, rates))
 
 
 def get_coach_turns(

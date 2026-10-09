@@ -39,6 +39,7 @@ from app.services.coach.session_document import (
     idle,
     jsonable,
     new_document,
+    scorable_profile,
     to_session,
 )
 from app.services.coach.session_machine import (
@@ -90,12 +91,12 @@ class CoachSessions:
             )
         except SessionContentionError as exc:
             raise SessionConflictError(uid) from exc
-        return StartResult(to_session(session_id, stored, self._bank, self._scorer), resumed)
+        return StartResult(await self._view(session_id, stored), resumed)
 
     async def get(self, uid: str, session_id: str, now: datetime) -> CoachSession:
         """One session. An active one idle for 14 days is closed here, as `abandoned`."""
         document = await self._load(uid, session_id, now)
-        return to_session(session_id, document, self._bank, self._scorer)
+        return await self._view(session_id, document)
 
     async def overview(self, uid: str, now: datetime) -> CoachOverview:
         """The open session and the newest plan, without creating or changing anything."""
@@ -308,4 +309,12 @@ class CoachSessions:
         self, uid: str, session_id: str, document: dict[str, Any], changes: dict[str, Any]
     ) -> CoachSession:
         stored = await self._write_document(uid, session_id, document, changes)
-        return to_session(session_id, stored, self._bank, self._scorer)
+        return await self._view(session_id, stored)
+
+    async def _view(self, session_id: str, document: dict[str, Any]) -> CoachSession:
+        """The contract's view of a stored session, with its score from `review` on."""
+        profile = scorable_profile(document, self._bank)
+        score = None
+        if self._scorer is not None and profile is not None:
+            score = await self._scorer(profile)
+        return to_session(session_id, document, self._bank, score)
