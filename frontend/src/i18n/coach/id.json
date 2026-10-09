@@ -16,6 +16,7 @@
     "typing": "Pelatih sedang mengetik",
     "latest": "Pesan terbaru",
     "notSent": "Belum terkirim",
+    "newInterview": "Wawancara baru",
     "error": {
       "sessionNotActive": "Wawancara ini sudah selesai. Anda bisa memulai yang baru.",
       "sessionFull": "Percakapan ini sudah penuh. Anda bisa memulai wawancara baru.",
@@ -117,7 +118,55 @@
   "confirmed": {
     "title": "Semua jawaban Anda sudah masuk",
     "description": "Ini skor kesiapan Anda. Berikutnya Anda bisa membuat rencana 90 hari.",
-    "backToDashboard": "Kembali ke beranda"
+    "backToDashboard": "Kembali ke beranda",
+    "conversation": "Percakapan Anda dengan pelatih"
+  },
+  "recap": {
+    "title": "Jawaban Anda",
+    "caption": "Jawaban Anda, satu baris untuk setiap pertanyaan",
+    "question": "Pertanyaan",
+    "answer": "Jawaban Anda",
+    "action": "Ubah jawaban",
+    "change": "Ubah",
+    "changeLabel": "Ubah: {{what}}",
+    "changeSentence": "Saya ingin mengubah jawaban saya tentang: {{what}}.",
+    "slot": {
+      "destination_country": "Negara tempat Anda bekerja",
+      "job_type": "Jenis pekerjaan",
+      "departure_date": "Tanggal berangkat",
+      "monthly_salary": "Gaji Anda",
+      "dependents": "Orang yang menjadi tanggungan Anda",
+      "remittance_target": "Uang yang Anda kirim pulang",
+      "recruitment_fee_paid": "Biaya yang Anda bayar ke agen",
+      "debt_outstanding": "Utang yang masih tersisa",
+      "debt_interest": "Bunga utang",
+      "savings": "Tabungan Anda",
+      "bank_or_wallet": "Rekening bank atau dompet digital"
+    }
+  },
+  "known": {
+    "title": "Yang sudah kami ketahui",
+    "description": "Kami menemukan jawaban ini di profil dan Identitas Finansial Anda. Periksa satu per satu. Simpan yang benar dan ubah yang salah.",
+    "caption": "Jawaban yang sudah kami ketahui, satu baris untuk setiap pertanyaan",
+    "question": "Pertanyaan",
+    "answer": "Yang kami temukan",
+    "action": "Simpan atau ubah",
+    "change": "Ubah",
+    "keep": "Simpan",
+    "changeLabel": "Ubah: {{what}}",
+    "keepLabel": "Simpan: {{what}}",
+    "willAsk": "Saya akan menanyakan ini kepada Anda",
+    "use": "Pakai jawaban ini",
+    "skip": "Tanyakan semuanya",
+    "noneKept": "Anda mengubah semua jawaban, jadi saya akan menanyakan setiap pertanyaan.",
+    "privacy": "Mengubah jawaban di sini hanya berlaku untuk wawancara ini. Profil dan catatan Anda tidak berubah.",
+    "source": {
+      "profile": "Dari profil Anda",
+      "contract": "Dari kontrak Anda",
+      "income": "Gaji terakhir yang Anda catat, {{date}}",
+      "transfers": "Dari uang yang Anda kirim pulang, sampai {{date}}",
+      "savings": "Dari tabungan yang Anda catat, sampai {{date}}"
+    }
   },
   "language": {
     "label": "Bahasa Coach"

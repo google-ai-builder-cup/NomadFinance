@@ -15,6 +15,10 @@ flowchart LR
     S2 <-.Load and save slots + transcript.-> CS[(Firestore - users coach_sessions)]
     S5 -.Save slots + stage.-> CS
     CTR[(Firestore - users contracts)] -.Salary + employer, user confirms.-> S2
+    PRF[(Firestore - users profile)] -.Country + kind of work, offered at start.-> S2
+    FIB[(Firestore - users income, savings, transfers)] -.Pay, savings, account, money sent home, offered at start.-> S2
+    S2 -->|New session carries known - worker keeps or changes each row| K1[POST sessions known - kept rows become confirmed answers, no Gemini call]
+    K1 -.Save kept slots.-> CS
 
     S5 -->|Stage reaches review| S7[Compute Preparedness Score - pure Python, no model]
     LL[(Firestore - labor_laws)] -.Legal fee cap.-> S7

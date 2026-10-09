@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import StepProgress from "@/components/common/StepProgress";
 import { useI18n } from "@/hooks/useI18n";
 import type { CoachStage } from "@/types/coach";
@@ -7,10 +9,12 @@ const STEPS = ["intro", "income", "obligations", "debt", "savings", "review"] as
 
 export interface StageStepperProps {
   stage: CoachStage;
+  /** A control at the end of the position line. */
+  action?: ReactNode;
 }
 
 /** Where the interview stands, as the shared step row (NF-F0-012). */
-export default function StageStepper({ stage }: StageStepperProps) {
+export default function StageStepper({ stage, action }: StageStepperProps) {
   const { t } = useI18n("coach");
   const index = stage === "plan" ? STEPS.length : STEPS.indexOf(stage);
   const position =
@@ -28,6 +32,7 @@ export default function StageStepper({ stage }: StageStepperProps) {
       currentIndex={index}
       listLabel={t("stage.listLabel")}
       progressLabel={position}
+      action={action}
       statusLabels={{
         done: t("stage.done"),
         current: t("stage.current"),

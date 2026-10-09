@@ -2,7 +2,7 @@ description: >
   Financial Coach summary of older turns (NF-FC-009), classification tier. When the conversation
   is longer than the history window sent with each reply, the turns left out are summarised
   here so the coach keeps what the worker said. The summary is stored on the session
-  (`summary`) and sent back inside <summary_of_earlier_talk> of `coach/reply.v1`.
+  (`summary`) and sent back inside <summary_of_earlier_talk> of `coach/reply.v2`.
 
 system: |
   You keep notes of a conversation between a money coach and a migrant worker who is about to

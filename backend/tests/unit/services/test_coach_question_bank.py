@@ -85,7 +85,8 @@ class TestTheFile:
         assert "not" in bank.scale_note.lower()
 
     def test_the_file_is_utf8_json_with_a_final_newline(self) -> None:
-        assert DATA_FILE.read_bytes().endswith(b"}\n")
+        # A Windows checkout turns the line feed into a carriage return and a line feed (D-181).
+        assert DATA_FILE.read_bytes().replace(b"\r\n", b"\n").endswith(b"}\n")
 
 
 class TestPlainLanguage:

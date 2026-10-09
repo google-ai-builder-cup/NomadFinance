@@ -47,6 +47,8 @@ The turn route has no default answer: a test always picks a stream. The JSON ref
 |---|---|---|
 | `sessions-create-01-new.json` | `POST /api/v2/coach/sessions` | 201, a new English session at the first question, no messages (default) |
 | `sessions-create-02-resumed.json` | same | 200, the open session comes back: Hindi, debt stage, the transcript so far |
+| `sessions-create-03-known.json`, `session-08-known.json` | `POST /api/v2/coach/sessions`, `GET .../s_08` | A new session that carries `known` (NF-FC-023): six answers the profile and Financial Identity already give, each with its source and date |
+| `known-01-applied.json`, `known-error-unknown-slot.json` | `POST /api/v2/coach/sessions/s_08/known` | 200 with the six kept as confirmed answers and the date next; 422 for a slot that was not offered |
 | `session-01-new.json` to `session-07-completed.json` | `GET /api/v2/coach/sessions/s_01` to `s_07` | New; Hindi in the debt stage; the review (two answers unconfirmed, a salary from a contract); stage `plan` at the middle, lowest and highest band; completed |
 | `session-error-not-found.json` | `GET /api/v2/coach/sessions/s_missing` | 404 |
 | `turn-error-session-not-active.json` | `POST /api/v2/coach/sessions/s_07/messages` | 409, the session is completed |

@@ -32,7 +32,18 @@ from app.schemas.coach_session import (
     CoachSession,
 )
 from app.schemas.contract import ReportLanguage
-from app.services.coach.prefill import PrefillFinder, apply_prefill, prefill_document
+from app.services.coach.known_details import (
+    KnownFinder,
+    kept_slots,
+    known_document,
+)
+from app.services.coach.prefill import (
+    PREFILL_SLOT,
+    Prefill,
+    PrefillFinder,
+    apply_prefill,
+    prefill_document,
+)
 from app.services.coach.question_bank import load_question_bank
 from app.services.coach.review_reader import ReviewMove
 from app.services.coach.session_document import (
@@ -77,18 +88,27 @@ class CoachSessions:
         bank: QuestionBank | None = None,
         scorer: Scorer | None = None,
         prefills: PrefillFinder | None = None,
+        known: KnownFinder | None = None,
     ) -> None:
         self._sessions = sessions
         self._plans = plans
         self._bank = bank or load_question_bank()
         self._scorer = scorer
         self._prefills = prefills
+        self._known = known
 
     async def start(
         self, uid: str, language: ReportLanguage, *, restart: bool, now: datetime
     ) -> StartResult:
         """The worker's active session, or a new one. `restart` closes the active one first."""
-        document = new_document(language, now, self._bank, await self._offer(uid))
+        contract = await self._offer(uid)
+        document = new_document(
+            language,
+            now,
+            self._bank,
+            None if contract is None else prefill_document(contract),
+            await self._offered(uid, contract),
+        )
         try:
             session_id, stored, resumed = await run_in_threadpool(
                 self._sessions.create_or_resume,
@@ -102,17 +122,64 @@ class CoachSessions:
             raise SessionConflictError(uid) from exc
         return StartResult(await self._view(session_id, stored), resumed)
 
-    async def _offer(self, uid: str) -> dict[str, Any] | None:
+    async def _offer(self, uid: str) -> Prefill | None:
         """The salary of the worker's latest contract, as an offer for a new session. Reading it
         must never stop an interview from starting."""
         if self._prefills is None:
             return None
         try:
-            offer = await self._prefills(uid)
+            return await self._prefills(uid)
         except GoogleAPICallError:
             logger.warning("coach_prefill_read_failed", exc_info=True)
             return None
-        return None if offer is None else prefill_document(offer)
+
+    async def _offered(self, uid: str, contract: Prefill | None) -> dict[str, Any] | None:
+        """What the profile and Financial Identity already answer (NF-FC-023). Reading it must
+        never stop an interview from starting either."""
+        if self._known is None:
+            return None
+        try:
+            items = await self._known(uid, contract)
+        except GoogleAPICallError:
+            logger.warning("coach_known_read_failed", exc_info=True)
+            return None
+        return known_document(items) if items else None
+
+    async def apply_known(
+        self, uid: str, session_id: str, keep: Sequence[SlotName], now: datetime
+    ) -> CoachSession:
+        """The worker agrees with the offered answers they keep; the rest are asked as usual.
+
+        Asking again after the worker has answered changes nothing and gives the same session, so a
+        double tap or a retry is safe.
+
+        Raises:
+            SessionNotFoundError, SessionNotActiveError: The session cannot take it.
+            SessionConflictError: The session changed meanwhile; read it again.
+            UnknownKnownSlotError: `keep` names a slot that was not offered.
+        """
+        document = await self._load(uid, session_id, now)
+        self._require_active(document)
+        known = document.get("known")
+        if not known or known["state"] != "offered":
+            return await self._view(session_id, document)
+        kept = kept_slots(known, keep, now, document["turn_count"])
+        slots = {**kept, **document["slots"]}  # an answer already given is never overwritten
+        declined = document.get("declined_slots", [])
+        changes: dict[str, Any] = {
+            "slots": slots,
+            "stage": settle(self._bank, document["stage"], slots, declined),
+            "known": {**known, "state": "resolved", "kept": sorted(kept)},
+            "last_active": now,
+            "expires_at": now + KEEP_FOR,
+        }
+        contract = document.get("prefill")
+        offered = known["items"].get(PREFILL_SLOT, {})
+        if contract and contract["state"] == "offered" and offered.get("source") == "contract":
+            # The card already asked about the contract's salary: the chat must not ask again.
+            agreed = PREFILL_SLOT in kept
+            changes["prefill"] = {**contract, "state": "resolved", "confirmed": agreed}
+        return await self._write(uid, session_id, document, changes)
 
     async def get(self, uid: str, session_id: str, now: datetime) -> CoachSession:
         """One session. An active one idle for 14 days is closed here, as `abandoned`."""

@@ -37,11 +37,33 @@ export interface CoachMessage {
   at: string;
 }
 
+/** `contract_prefill`, `profile_prefill` and `identity_prefill` are answers the worker agreed to
+ * from what the Coach already knew (NF-FC-023); `user` is one they gave. */
+export type CoachSlotSource = "user" | "contract_prefill" | "profile_prefill" | "identity_prefill";
+
 export interface CoachSlotAnswer {
   /** Shaped as the slot's field of `CoachProfile`: a string, a number or an object. */
   value: unknown;
   confirmed: boolean;
-  source: "user" | "contract_prefill";
+  source: CoachSlotSource;
+}
+
+/** Where an offered answer was worked out from (`docs/api/v2-coach.md`, "What the Coach already
+ * knows"). */
+export type KnownSource = "profile" | "contract" | "income" | "savings" | "transfers";
+
+/** One answer the Coach could fill in. It is not an answer until the worker keeps it. */
+export interface CoachKnownItem {
+  slot: CoachSlot;
+  value: unknown;
+  source: KnownSource;
+  /** The date of the newest entry the figure comes from; null for the profile and the contract. */
+  as_of: string | null;
+}
+
+export interface CoachKnown {
+  /** In the order of the interview. */
+  items: CoachKnownItem[];
 }
 
 export const SCORE_FACTORS = [
@@ -194,6 +216,8 @@ export interface CoachSession {
   /** At `review` and `plan` unless it cannot be worked out right now (a missing rate): `null`. */
   score: CoachScore | null;
   plan_id: string | null;
+  /** Only while the worker has not yet answered what the Coach already knows; absent otherwise. */
+  known?: CoachKnown;
   created_at: string;
   last_active: string;
 }

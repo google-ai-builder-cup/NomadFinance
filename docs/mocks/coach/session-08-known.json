@@ -1,0 +1,74 @@
+{
+  "description": "The same session read back: `known` is there until the worker answers it.",
+  "request": "GET /api/v2/coach/sessions/s_08",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c208"
+  },
+  "body": {
+    "id": "s_08",
+    "status": "active",
+    "stage": "intro",
+    "language": "en",
+    "slots": {},
+    "messages": [],
+    "next_slot": "destination_country",
+    "turn_count": 0,
+    "score": null,
+    "plan_id": null,
+    "known": {
+      "items": [
+        {
+          "slot": "destination_country",
+          "value": "SG",
+          "source": "profile",
+          "as_of": null
+        },
+        {
+          "slot": "job_type",
+          "value": "domestic_worker",
+          "source": "profile",
+          "as_of": null
+        },
+        {
+          "slot": "monthly_salary",
+          "value": {
+            "amount": 650,
+            "currency": "SGD",
+            "period": "month"
+          },
+          "source": "income",
+          "as_of": "2026-09-25"
+        },
+        {
+          "slot": "remittance_target",
+          "value": {
+            "amount": 500,
+            "currency": "SGD",
+            "period": "month"
+          },
+          "source": "transfers",
+          "as_of": "2026-09-26"
+        },
+        {
+          "slot": "savings",
+          "value": {
+            "amount": 1200,
+            "currency": "SGD",
+            "period": "once"
+          },
+          "source": "savings",
+          "as_of": "2026-09-25"
+        },
+        {
+          "slot": "bank_or_wallet",
+          "value": "bank_account",
+          "source": "savings",
+          "as_of": "2026-09-25"
+        }
+      ]
+    },
+    "created_at": "2026-10-20T08:00:00Z",
+    "last_active": "2026-10-20T08:00:00Z"
+  }
+}

@@ -121,4 +121,15 @@ describe("ChatBubble", () => {
 
     expect(container.innerHTML).not.toMatch(/\b(ml|mr|pl|pr)-\d|text-left|text-right/);
   });
+
+  it("can show a failed message without making it an alert, when the screen has one already", () => {
+    render(
+      <ChatBubble role="user" failed failedLabel="Not sent" announceFailed={false}>
+        4200
+      </ChatBubble>
+    );
+
+    expect(screen.getByText("Not sent")).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
 });

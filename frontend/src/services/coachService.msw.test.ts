@@ -7,7 +7,12 @@ import { describe, expect, it, vi } from "vitest";
 import { sseHandler } from "@/mocks/handlers";
 import { server, setupMockServer } from "@/mocks/server";
 import { ApiError } from "@/services/apiClient";
-import { CoachStreamDropped, startCoachSession, streamCoachTurn } from "@/services/coachService";
+import {
+  applyKnownDetails,
+  CoachStreamDropped,
+  startCoachSession,
+  streamCoachTurn,
+} from "@/services/coachService";
 import type { CoachStreamEvent, CoachTurnRequest } from "@/types/coach";
 
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
@@ -267,5 +272,57 @@ describe("startCoachSession", () => {
     const session = await startCoachSession("en");
 
     expect(session).toMatchObject({ id: "s_01", stage: "intro", resumed: false, messages: [] });
+  });
+});
+
+describe("applyKnownDetails", () => {
+  it("sends the kept slots and gets the session with them in it", async () => {
+    let body: unknown;
+    server.use(
+      http.post("*/api/v2/coach/sessions/:id/known", async ({ request, params }) => {
+        body = { id: params.id, ...((await request.json()) as object) };
+        return HttpResponse.json({ id: "s_08", stage: "intro", slots: {} });
+      })
+    );
+
+    const session = await applyKnownDetails("s_08", ["job_type", "savings"]);
+
+    expect(body).toEqual({ id: "s_08", keep: ["job_type", "savings"] });
+    expect(session.id).toBe("s_08");
+  });
+
+  it("sends an empty list when the worker keeps nothing", async () => {
+    let body: unknown;
+    server.use(
+      http.post("*/api/v2/coach/sessions/:id/known", async ({ request }) => {
+        body = await request.json();
+        return HttpResponse.json({ id: "s_08" });
+      })
+    );
+
+    await applyKnownDetails("s_08", []);
+
+    expect(body).toEqual({ keep: [] });
+  });
+
+  it("reads the default answer of the mock: six answers kept, the date is next", async () => {
+    const session = await applyKnownDetails("s_08", []);
+
+    expect(Object.keys(session.slots)).toHaveLength(6);
+    expect(session).toMatchObject({ stage: "intro", next_slot: "departure_date" });
+    expect(session.known).toBeUndefined();
+  });
+
+  it("throws the API's error for a session that has ended", async () => {
+    server.use(
+      http.post("*/api/v2/coach/sessions/:id/known", () =>
+        HttpResponse.json({ code: "session_not_active", message: "x" }, { status: 409 })
+      )
+    );
+
+    await expect(applyKnownDetails("s_08", [])).rejects.toMatchObject({
+      status: 409,
+      detail: "session_not_active",
+    });
   });
 });

@@ -79,13 +79,30 @@ def test_a_clarification_replaces_the_next_question_with_the_banks_follow_up() -
     assert f"<follow_up>{expected}</follow_up>" in message and "<ask_next></ask_next>" in message
 
 
-def test_at_review_nothing_is_asked_and_the_answers_are_given_for_the_model_to_repeat() -> None:
+def test_at_review_nothing_is_asked_and_the_answers_stay_in_the_slots_the_model_may_read() -> None:
     document = _document(stage="review", slots={"dependents": {"value": 2, "confirmed": True}})
 
     message = reply_message(BANK, document, Understanding(), "yes", "en")
 
     assert "<stage>review</stage>" in message and "<ask_next></ask_next>" in message
     assert '"dependents": 2' in message
+
+
+def test_the_review_lead_in_does_not_repeat_the_answers_the_screen_shows_in_a_table() -> None:
+    """v2 (NF-FC-023): the answers are a table in the app, so the coach says one short line."""
+    system = " ".join(REPLY_PROMPT.system.split())
+
+    assert REPLY_PROMPT.version == 2
+    assert "Do not list or repeat the answers" in system
+    assert "write no number, amount or date" in system
+
+
+def test_a_change_of_language_is_only_ever_said_for_a_turn_with_no_worker_message() -> None:
+    """D-225 (NF-FC-018): an ordinary answer got "You have changed your language" back."""
+    system = " ".join(REPLY_PROMPT.system.split())
+
+    assert 'only when <worker_message> is exactly "(none)"' in system
+    assert "you never mention a change of language" in system
 
 
 def test_the_workers_words_are_data_and_cannot_fill_a_placeholder() -> None:

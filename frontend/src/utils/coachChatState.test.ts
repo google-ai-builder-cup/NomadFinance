@@ -54,6 +54,67 @@ describe("initialChatState", () => {
   });
 });
 
+describe("what the Coach already knew, kept by the worker", () => {
+  it("brings the kept answers and the stage the server settled on, and adds no line", () => {
+    const fresh: CoachSessionStart = {
+      ...SESSION,
+      messages: [],
+      slots: {},
+      turn_count: 0,
+      next_slot: null,
+    };
+    const kept = {
+      ...fresh,
+      stage: "intro" as const,
+      next_slot: "departure_date" as const,
+      slots: {
+        destination_country: { value: "SG", confirmed: true, source: "profile_prefill" as const },
+        savings: {
+          value: { amount: 1200, currency: "SGD", period: "once" },
+          confirmed: true,
+          source: "identity_prefill" as const,
+        },
+      },
+    };
+
+    const state = run(initialChatState(fresh), { type: "known_applied", session: kept });
+
+    expect(state.slots).toEqual({
+      destination_country: "SG",
+      savings: { amount: 1200, currency: "SGD", period: "once" },
+    });
+    expect(state.nextSlot).toBe("departure_date");
+    expect(state.lines).toEqual([]);
+    expect(isBusy(state)).toBe(false);
+  });
+});
+
+describe("the screen-reader copy of a reply", () => {
+  it("is taken away once it was read, and the next reply is read again even in the same words", () => {
+    const done = { ...DONE, messageId: "m_010" };
+    const said = run(
+      initialChatState(SESSION),
+      { type: "turn_started", line: null },
+      { type: "token", text: "Thank you." },
+      { type: "done", done }
+    );
+    expect(said.announcement).toBe("Thank you.");
+
+    const quiet = run(said, { type: "announcement_read" });
+    expect(quiet.announcement).toBe("");
+    // The log keeps the reply: only the hidden copy goes.
+    expect(quiet.lines.at(-1)?.text).toBe("Thank you.");
+
+    const again = run(
+      quiet,
+      { type: "turn_started", line: null },
+      { type: "token", text: "Thank you." },
+      { type: "done", done: { ...done, messageId: "m_011" } }
+    );
+    expect(again.announcement).toBe("Thank you.");
+  });
+});
+
 describe("a turn that finishes", () => {
   it("shows the words as they come but changes nothing else until done", () => {
     const state = run(

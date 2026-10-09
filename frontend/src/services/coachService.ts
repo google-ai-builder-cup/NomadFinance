@@ -48,6 +48,24 @@ export async function startCoachSession(
   return (await response.json()) as CoachSessionStart;
 }
 
+/** Keep the offered answers in `keep` and drop the rest, which the coach then asks as usual. The
+ * session comes back with the kept answers in it and without `known`. Asking again once answered
+ * changes nothing. Nothing the worker changes here is written to their profile. */
+export async function applyKnownDetails(
+  sessionId: string,
+  keep: readonly CoachSlot[]
+): Promise<CoachSession> {
+  const response = await apiRequest(
+    `/api/v2/coach/sessions/${encodeURIComponent(sessionId)}/known`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ keep }),
+    }
+  );
+  return (await response.json()) as CoachSession;
+}
+
 /** One session as the server holds it now (its score is there from the `review` stage). */
 export async function getCoachSession(sessionId: string): Promise<CoachSession> {
   const response = await apiRequest(`/api/v2/coach/sessions/${encodeURIComponent(sessionId)}`);

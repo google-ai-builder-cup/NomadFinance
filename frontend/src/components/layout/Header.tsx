@@ -38,6 +38,8 @@ export default function Header() {
         <div className="flex min-w-0 items-center gap-4">
           <Link
             to="/dashboard"
+            // The name is hidden below `sm`, which would leave the link without one.
+            aria-label="NomadFinance"
             className="flex shrink-0 items-center gap-2.5 rounded-lg text-lg font-extrabold tracking-tight"
           >
             <BrandMark size={32} />

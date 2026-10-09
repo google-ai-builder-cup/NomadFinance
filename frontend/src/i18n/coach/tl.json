@@ -16,6 +16,7 @@
     "typing": "Nagta-type ang coach",
     "latest": "Pinakabagong mensahe",
     "notSent": "Hindi naipadala",
+    "newInterview": "Bagong interview",
     "error": {
       "sessionNotActive": "Tapos na ang interview na ito. Maaari kang magsimula ng bago.",
       "sessionFull": "Puno na ang usapang ito. Maaari kang magsimula ng bagong interview.",
@@ -117,7 +118,55 @@
   "confirmed": {
     "title": "Nasa amin na ang lahat ng sagot mo",
     "description": "Ito ang marka mo sa paghahanda. Susunod, magagawa mo na ang 90-araw na plano mo.",
-    "backToDashboard": "Bumalik sa home"
+    "backToDashboard": "Bumalik sa home",
+    "conversation": "Usapan ninyo ng coach"
+  },
+  "recap": {
+    "title": "Mga sagot mo",
+    "caption": "Mga sagot mo, isang hanay para sa bawat tanong",
+    "question": "Tanong",
+    "answer": "Sagot mo",
+    "action": "Baguhin ang sagot",
+    "change": "Baguhin",
+    "changeLabel": "Baguhin: {{what}}",
+    "changeSentence": "Gusto kong baguhin ang sagot ko tungkol sa: {{what}}.",
+    "slot": {
+      "destination_country": "Bansang pagtatrabahuhan mo",
+      "job_type": "Uri ng trabaho",
+      "departure_date": "Petsa ng pag-alis",
+      "monthly_salary": "Sahod mo",
+      "dependents": "Mga umaasa sa iyo",
+      "remittance_target": "Perang ipapadala mo sa pamilya",
+      "recruitment_fee_paid": "Bayad mo sa ahente",
+      "debt_outstanding": "Utang na hindi pa bayad",
+      "debt_interest": "Interes ng utang",
+      "savings": "Ipon mo",
+      "bank_or_wallet": "Bangko o mobile wallet"
+    }
+  },
+  "known": {
+    "title": "Ang alam na namin",
+    "description": "Nakita namin ang mga sagot na ito sa profile at sa Financial Identity mo. Tingnan ang bawat isa. Panatilihin ang tama at baguhin ang mali.",
+    "caption": "Mga sagot na alam na namin, isang hanay para sa bawat tanong",
+    "question": "Tanong",
+    "answer": "Ang nakita namin",
+    "action": "Panatilihin o baguhin",
+    "change": "Baguhin",
+    "keep": "Panatilihin",
+    "changeLabel": "Baguhin: {{what}}",
+    "keepLabel": "Panatilihin: {{what}}",
+    "willAsk": "Itatanong ko ito sa iyo",
+    "use": "Gamitin ang mga sagot na ito",
+    "skip": "Itanong ang lahat",
+    "noneKept": "Binabago mo ang lahat ng sagot, kaya itatanong ko ang bawat tanong.",
+    "privacy": "Kapag binago mo ang sagot dito, sa interview na ito lang ito mababago. Mananatili ang profile at mga record mo.",
+    "source": {
+      "profile": "Mula sa profile mo",
+      "contract": "Mula sa kontrata mo",
+      "income": "Huling sahod na inilista mo, {{date}}",
+      "transfers": "Mula sa perang ipinadala mo sa pamilya, hanggang {{date}}",
+      "savings": "Mula sa inilista mong ipon, hanggang {{date}}"
+    }
   },
   "language": {
     "label": "Wika ng Coach"

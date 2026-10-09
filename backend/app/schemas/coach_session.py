@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal, get_args
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_serializer, model_validator
 
 from app.schemas.coach_plan import CoachScore, PlanId, SnakeId
 from app.schemas.coach_profile import CoachProfile, DepartureDate, SlotName, SlotSource
@@ -56,6 +56,49 @@ class CoachSlot(BaseModel):
     source: SlotSource
 
 
+KnownSource = Literal["profile", "contract", "income", "savings", "transfers"]
+
+
+class CoachKnownItem(BaseModel):
+    """One answer the Coach could already fill in, and where it came from."""
+
+    slot: SlotName
+    value: Any = Field(description="Shaped as the slot's field of `CoachProfile`.")
+    source: KnownSource = Field(
+        description="`profile` (sign-up), `contract` (latest analysed contract), `income`, "
+        "`savings`, `transfers` (Financial Identity entries)."
+    )
+    as_of: DepartureDate | None = Field(
+        default=None,
+        description="The date of the newest entry the figure was worked out from; `null` for the "
+        "profile and the contract.",
+    )
+
+
+class CoachKnown(BaseModel):
+    """What the Coach already knows about the worker, waiting for them to agree (NF-FC-023)."""
+
+    items: list[CoachKnownItem] = Field(min_length=1, max_length=len(get_args(SlotName)))
+
+    @model_validator(mode="after")
+    def _each_value_fits_its_slot(self) -> CoachKnown:
+        for item in self.items:
+            CoachProfile.model_validate({item.slot: item.value})
+        if len({item.slot for item in self.items}) != len(self.items):
+            raise ValueError("A slot is offered once.")
+        return self
+
+
+class CoachKnownRequest(BaseModel):
+    """Body of `POST /api/v2/coach/sessions/{id}/known`: the offered answers the worker keeps."""
+
+    keep: list[SlotName] = Field(
+        max_length=len(get_args(SlotName)),
+        description="Slots of `known.items` the worker agrees with. Every other offered answer "
+        "is dropped and the coach asks that question as usual. May be empty.",
+    )
+
+
 class CoachSession(BaseModel):
     """One interview (`GET /coach/sessions/{id}`)."""
 
@@ -73,8 +116,20 @@ class CoachSession(BaseModel):
         description="From `review` on; `null` before, and when it cannot be worked out yet."
     )
     plan_id: PlanId | None = Field(description="Set exactly when the session is completed.")
+    known: CoachKnown | None = Field(
+        default=None,
+        description="Only while the worker has not yet agreed to what the Coach already knows "
+        "(NF-FC-023); left out of the answer otherwise.",
+    )
     created_at: datetime
     last_active: datetime
+
+    @model_serializer(mode="wrap")
+    def _leave_out_known_when_there_is_none(self, handler: Any) -> dict[str, Any]:
+        data: dict[str, Any] = handler(self)
+        if data.get("known") is None:
+            data.pop("known", None)
+        return data
 
     @model_validator(mode="after")
     def _the_parts_agree(self) -> CoachSession:
