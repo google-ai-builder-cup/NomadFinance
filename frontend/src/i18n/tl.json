@@ -345,7 +345,9 @@
     "actions": {
       "compare": "Ihambing ang mga rate",
       "contract": "Suriin ang kontrata",
-      "report": "Mag-ulat ng problema"
+      "report": "Mag-ulat ng problema",
+      "scam": "Suriin ang mensahe",
+      "coach": "Magplano kasama ang Coach"
     },
     "kpi": {
       "heading": "Buod mo",

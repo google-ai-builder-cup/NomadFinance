@@ -1,4 +1,4 @@
-import { Keyboard, ListChecks } from "lucide-react";
+import { Keyboard, ListChecks, Mic } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import QuickReplyChips from "@/components/common/QuickReplyChips";
@@ -8,7 +8,9 @@ import TextComposer from "@/components/coach/TextComposer";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import type { CoachSlot, CoachStage } from "@/types/coach";
+import type { LanguageCode } from "@/types/enums";
 import { answerInputFor, defaultCurrency, type AnswerInput } from "@/utils/coachInput";
+import { isVoiceAvailable } from "@/utils/voiceInput";
 
 export interface AnswerPanelProps {
   stage: CoachStage;
@@ -18,6 +20,8 @@ export interface AnswerPanelProps {
   /** A reply is arriving: nothing more can be sent yet. */
   busy: boolean;
   onSend: (text: string) => void;
+  /** The coach's language, for the microphone. */
+  language?: LanguageCode;
 }
 
 // The label key of each chip, by set. Job types reuse the onboarding strings (all six languages).
@@ -45,10 +49,20 @@ const MORE_BELOW: CSSProperties = {
  * fitting helper: tap a chip, fill an amount, pick a date. "Type my own answer" is always there.
  * Whatever the helper makes is sent as text, exactly as if it had been typed.
  */
-export default function AnswerPanel({ stage, slot, slots, busy, onSend }: AnswerPanelProps) {
+export default function AnswerPanel({
+  stage,
+  slot,
+  slots,
+  busy,
+  onSend,
+  language,
+}: AnswerPanelProps) {
   const { t } = useI18n("coach");
   const input = answerInputFor(stage, slot);
   const [typing, setTyping] = useState(false);
+  // The microphone was pressed on a helper: the answer box opens already listening.
+  const [speaking, setSpeaking] = useState(false);
+  const voiceReady = isVoiceAvailable(language ?? "en");
   const [question, setQuestion] = useState(`${stage}:${slot}`);
   const panel = useRef<HTMLDivElement>(null);
 
@@ -57,6 +71,7 @@ export default function AnswerPanel({ stage, slot, slots, busy, onSend }: Answer
   if (question !== `${stage}:${slot}`) {
     setQuestion(`${stage}:${slot}`);
     setTyping(false);
+    setSpeaking(false);
   }
 
   const asText = input.kind === "text" || typing;
@@ -84,7 +99,7 @@ export default function AnswerPanel({ stage, slot, slots, busy, onSend }: Answer
       style={MORE_BELOW}
     >
       {asText ? (
-        <TextComposer busy={busy} onSend={onSend} />
+        <TextComposer busy={busy} onSend={onSend} language={language} listenOnOpen={speaking} />
       ) : input.kind === "choice" ? (
         <QuickReplyChips
           groupLabel={t("input.suggestions")}
@@ -108,19 +123,41 @@ export default function AnswerPanel({ stage, slot, slots, busy, onSend }: Answer
         <DateField busy={busy} onSend={onSend} />
       )}
       {input.kind !== "text" && (
-        <Button
-          type="button"
-          variant="ghost"
-          className="min-h-11 w-full gap-2 text-sm font-bold"
-          onClick={() => setTyping((value) => !value)}
-        >
-          {typing ? (
-            <ListChecks className="h-4 w-4" aria-hidden="true" />
-          ) : (
-            <Keyboard className="h-4 w-4" aria-hidden="true" />
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            className="min-h-11 flex-1 gap-2 text-sm font-bold"
+            onClick={() => {
+              setSpeaking(false);
+              setTyping((value) => !value);
+            }}
+          >
+            {typing ? (
+              <ListChecks className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Keyboard className="h-4 w-4" aria-hidden="true" />
+            )}
+            {typing ? t("input.useQuick") : t("input.typeInstead")}
+          </Button>
+          {/* One press instead of two for a worker who would rather speak: open the answer box
+              and start listening. Inside the box the microphone is there too. */}
+          {voiceReady && !typing && (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-11 w-11 shrink-0 rounded-xl"
+              aria-label={t("input.voiceStart")}
+              onClick={() => {
+                setSpeaking(true);
+                setTyping(true);
+              }}
+            >
+              <Mic className="h-5 w-5" aria-hidden="true" />
+            </Button>
           )}
-          {typing ? t("input.useQuick") : t("input.typeInstead")}
-        </Button>
+        </div>
       )}
     </div>
   );

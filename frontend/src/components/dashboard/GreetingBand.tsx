@@ -1,4 +1,5 @@
 import { ArrowLeftRight, Fingerprint, Flag, Languages, ShieldCheck } from "lucide-react";
+import { MODULE_ITEMS } from "@/components/layout/navItems";
 import { Link } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
@@ -6,17 +7,22 @@ import { Button } from "@/components/ui/button";
 import AnimatedBackground from "@/components/visual/AnimatedBackground";
 import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useAuth } from "@/hooks/useAuth";
+import { useFeatureFlags } from "@/hooks/useFeatureFlag";
 import { useI18n } from "@/hooks/useI18n";
 import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
+import { PILLAR_STYLES } from "@/utils/pillars";
 
-/** The top of the dashboard: a greeting, today's date, the worker's report language and three
- * quick actions that lead straight into the pillars. */
+/** The top of the dashboard: a greeting, today's date, the worker's report language and quick
+ * actions that lead straight into the pillars: the four of v1.0, then Scam Check and the Coach
+ * for a worker they are switched on for. */
 export default function GreetingBand() {
   const { user } = useAuth();
   const { t } = useI18n();
   const profile = useUserProfile();
+  const { flags } = useFeatureFlags();
+  const modules = MODULE_ITEMS.filter(({ flag }) => flags[flag]);
   const language = i18n.resolvedLanguage ?? "en";
   // Only a Google name is worth greeting by; an email or phone number reads badly as a name.
   const firstName = user?.displayName?.split(" ")[0];
@@ -78,6 +84,19 @@ export default function GreetingBand() {
                 {t("fib.dashboard.logActivity")}
               </Link>
             </Button>
+            {modules.map(({ to, pillar, icon: Icon }) => (
+              <Button
+                key={to}
+                asChild
+                variant="outline"
+                className="h-12 rounded-xl bg-card px-5 font-bold"
+              >
+                <Link to={to}>
+                  <Icon className="mr-2 h-4 w-4" aria-hidden="true" />
+                  {t(`dashboard.actions.${pillar}`)}
+                </Link>
+              </Button>
+            ))}
           </div>
         </div>
         {/* Decoration only: the pillar illustration with the other pillars floating around it. */}
@@ -94,6 +113,17 @@ export default function GreetingBand() {
           <span className="absolute right-0 top-8 flex h-10 w-10 animate-float-slow items-center justify-center rounded-xl bg-radar text-white shadow-lg [animation-delay:-3s]">
             <Flag className="h-5 w-5" />
           </span>
+          {modules.map(({ pillar, icon: Icon }, index) => (
+            <span
+              key={pillar}
+              className={`absolute flex h-11 w-11 animate-float-slow items-center justify-center rounded-xl text-white shadow-lg ${PILLAR_STYLES[pillar].tile} ${
+                index === 0 ? "-right-1 bottom-20" : "bottom-0 left-8"
+              }`}
+              style={{ animationDelay: `${-1.5 - index}s` }}
+            >
+              <Icon className="h-5 w-5" />
+            </span>
+          ))}
         </div>
       </div>
     </section>

@@ -1,15 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
-
+import { useUiLanguage } from "@/hooks/useUiLanguage";
 import { startCoachSession } from "@/services/coachService";
-import { isLanguageCode, type LanguageCode } from "@/types/enums";
 
 export const COACH_SESSION_KEY = ["coach", "session"] as const;
-
-function useUiLanguage(): LanguageCode {
-  const { i18n } = useTranslation();
-  return isLanguageCode(i18n.resolvedLanguage) ? i18n.resolvedLanguage : "en";
-}
 
 /**
  * The worker's open interview, started if there is none (asking twice gives the same one). A

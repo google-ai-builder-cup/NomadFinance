@@ -96,11 +96,25 @@
       "count": "Enter a whole number from 0 to 20.",
       "rate": "Enter a rate from 0 to 1000.",
       "date": "Choose a date."
+    },
+    "voiceStart": "Speak your answer",
+    "voiceStop": "Stop listening",
+    "voiceListening": "Listening…",
+    "voicePrivacy": "Your voice is sent to your browser's speech service to turn it into text.",
+    "voiceProblem": {
+      "denied": "The microphone is blocked. Allow it in your browser settings, or type your answer.",
+      "noSpeech": "We did not hear anything. Press the microphone and try again.",
+      "noMic": "No microphone was found. You can type your answer.",
+      "network": "The speech service could not be reached. You can type your answer.",
+      "failed": "Voice input did not work. You can type your answer."
     }
   },
   "confirmed": {
     "title": "All your answers are in",
     "description": "Your preparedness score and your 90-day plan come next. They are not on this screen yet.",
     "backToDashboard": "Back to home"
+  },
+  "language": {
+    "label": "Coach language"
   }
 }

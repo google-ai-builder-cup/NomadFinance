@@ -96,11 +96,25 @@
       "count": "Isi bilangan bulat dari 0 sampai 20.",
       "rate": "Isi suku bunga dari 0 sampai 1000.",
       "date": "Pilih tanggal."
+    },
+    "voiceStart": "Ucapkan jawaban",
+    "voiceStop": "Berhenti mendengarkan",
+    "voiceListening": "Mendengarkan…",
+    "voicePrivacy": "Suara Anda dikirim ke layanan suara browser Anda untuk diubah menjadi teks.",
+    "voiceProblem": {
+      "denied": "Mikrofon diblokir. Izinkan di pengaturan browser, atau ketik jawaban Anda.",
+      "noSpeech": "Kami tidak mendengar apa pun. Tekan mikrofon dan coba lagi.",
+      "noMic": "Mikrofon tidak ditemukan. Anda bisa mengetik jawaban.",
+      "network": "Layanan suara tidak dapat dihubungi. Anda bisa mengetik jawaban.",
+      "failed": "Input suara tidak berhasil. Anda bisa mengetik jawaban."
     }
   },
   "confirmed": {
     "title": "Semua jawaban Anda sudah masuk",
     "description": "Berikutnya skor kesiapan dan rencana 90 hari Anda. Keduanya belum ada di layar ini.",
     "backToDashboard": "Kembali ke beranda"
+  },
+  "language": {
+    "label": "Bahasa Coach"
   }
 }

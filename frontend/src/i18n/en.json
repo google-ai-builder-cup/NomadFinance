@@ -345,7 +345,9 @@
     "actions": {
       "compare": "Compare rates",
       "contract": "Check a contract",
-      "report": "Report an issue"
+      "report": "Report an issue",
+      "scam": "Check a message",
+      "coach": "Plan with the Coach"
     },
     "kpi": {
       "heading": "Your summary",

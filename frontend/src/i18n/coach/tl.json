@@ -96,11 +96,25 @@
       "count": "Maglagay ng buong numero mula 0 hanggang 20.",
       "rate": "Maglagay ng tubo mula 0 hanggang 1000.",
       "date": "Pumili ng petsa."
+    },
+    "voiceStart": "Sabihin ang sagot",
+    "voiceStop": "Itigil ang pakikinig",
+    "voiceListening": "Nakikinig…",
+    "voicePrivacy": "Ipinapadala ang boses mo sa speech service ng browser mo para gawing teksto.",
+    "voiceProblem": {
+      "denied": "Naka-block ang mikropono. Payagan ito sa settings ng browser, o i-type ang sagot.",
+      "noSpeech": "Wala kaming narinig. Pindutin ang mikropono at subukan ulit.",
+      "noMic": "Walang nakitang mikropono. Maaari mong i-type ang sagot.",
+      "network": "Hindi makonekta ang speech service. Maaari mong i-type ang sagot.",
+      "failed": "Hindi gumana ang boses. Maaari mong i-type ang sagot."
     }
   },
   "confirmed": {
     "title": "Nasa amin na ang lahat ng sagot mo",
     "description": "Susunod ang iyong preparedness score at 90-araw na plano. Wala pa ang mga ito sa screen na ito.",
     "backToDashboard": "Bumalik sa home"
+  },
+  "language": {
+    "label": "Wika ng Coach"
   }
 }
