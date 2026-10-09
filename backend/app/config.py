@@ -106,6 +106,13 @@ class Settings(BaseSettings):
     # piece inside 2 s there; `None` keeps the model's default thinking.
     gemini_coach_reply_tier: Literal["reasoning", "extraction", "classification"] = "classification"
     gemini_coach_reply_thinking_budget: int | None = Field(default=0, ge=0)
+    # Slot extraction (NF-FC-010) reads one message into answers before the reply: a classification
+    # job, so the fast tier and no thinking by default. A reading the code does not accept is asked
+    # again, so a weaker tier costs the worker a question, never a wrong figure.
+    gemini_coach_extract_tier: Literal["reasoning", "extraction", "classification"] = (
+        "classification"
+    )
+    gemini_coach_extract_thinking_budget: int | None = Field(default=0, ge=0)
 
     # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
     # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.

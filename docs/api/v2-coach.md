@@ -13,7 +13,7 @@ The contract of the Financial Coach (NF-FC-002): a worker who is about to leave 
 
 ## Implementation status
 
-The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. The turn route is built (NF-FC-009): `POST /coach/sessions/{id}/messages`, with the stream, the idempotency rules, the history window and the summary. **Until the slot extraction exists (NF-FC-010) a turn understands nothing**: no `slot_update` is sent, no answer is stored and the coach asks the same question again; the stage moves only when extraction is wired in. Until the scoring engine exists (NF-FC-011) `score` is `null` at `review` and `plan`, which the contract allows. The rest is specified only.
+The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. The turn route is built (NF-FC-009): `POST /coach/sessions/{id}/messages`, with the stream, the idempotency rules, the history window and the summary. **Slot extraction is built (NF-FC-010)**: each message is read by one structured call (`coach/extract.v1`) and by checks that keep only what the worker stated, so `slot_update` events are sent, answers are stored and the stage moves. A gap (a money or period not named, an amount outside the usual range, an unsure reading) is asked about with the bank's follow-up wording instead of being guessed. Until the scoring engine exists (NF-FC-011) `score` is `null` at `review` and `plan`, which the contract allows. The rest is specified only.
 
 | Route | Built by |
 |---|---|

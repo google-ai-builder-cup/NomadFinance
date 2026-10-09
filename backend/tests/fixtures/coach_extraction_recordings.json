@@ -1,0 +1,2653 @@
+{
+ "prompt": "coach.extract v1",
+ "prompt_sha256": "659fca8a6bc9d26e",
+ "model": "gemini-3.1-flash-lite",
+ "recorded_on": "2026-10-09",
+ "readings": {
+  "p01_sg_ph_maricel": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Singapore",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "SG",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "kasambahay",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "domestic_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "December 5, 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-12-05",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "650 Singapore dollars po kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 650.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Apat po ang umaasa sa akin",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 4,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "400 Singapore dollars kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 400.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "Nagbayad po ako ng 120,000 pesos sa ahensya.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 120000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "May utang pa po ako na 100,000 pesos.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 100000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "Five percent po kada buwan ang tubo.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 5.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "Wala po akong ipon, zero po, 0 pesos.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "May GCash lang po ako, wala akong bank account.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "mobile_wallet"
+     }
+    ]
+   }
+  ],
+  "p02_sg_ph_jun": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Singapore",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "SG",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     },
+     {
+      "slot": "job_type",
+      "evidence": "construction",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "construction_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "15 November 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-11-15",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "450 Singapore dollars",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 450.0,
+       "currency": "SGD",
+       "period": null
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "450 dollars every week",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 450.0,
+       "currency": "SGD",
+       "period": "week"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Two people depend on me",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 2,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "700 Singapore dollars every month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 700.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "60,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 60000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "I have no debt",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "150,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 150000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "I have a bank account and a GCash wallet.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "both"
+     }
+    ]
+   }
+  ],
+  "p03_sg_in_priya": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "सिंगापुर",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "SG",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "घरेलू काम",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "domestic_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "12 दिसंबर 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-12-12",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "हर महीने 650 सिंगापुर डॉलर मिलेंगे",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 650.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "मेरे ऊपर तीन लोग निर्भर हैं",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 3,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "350 सिंगापुर डॉलर",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 350.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "40,000 रुपये",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 40000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "60,000 रुपये का कर्ज़",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 60000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "हर महीने 2 प्रतिशत ब्याज",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 2.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "20,000 रुपये की बचत",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 20000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "मेरा बैंक खाता है, मोबाइल वॉलेट नहीं।",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "bank_account"
+     }
+    ]
+   }
+  ],
+  "p04_sg_in_ravi": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Singapore",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "SG",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "Factory work",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "manufacturing_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "10 January 2027",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2027-01-10",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "2,400 Singapore dollars a month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 2400.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Two dependents",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 2,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "800 Singapore dollars every month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 800.0,
+       "currency": "SGD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "150,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 150000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "No debt, 0 rupees.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "300,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 300000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "I have a bank account and a wallet app.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "both"
+     }
+    ]
+   }
+  ],
+  "p05_au_in_gurpreet": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "ऑस्ट्रेलिया",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "AU",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "मैं बुज़ुर्गों की देखभाल का काम करूँगा।",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "care_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "1 मार्च 2027",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2027-03-01",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "हर महीने 3,900 ऑस्ट्रेलियाई डॉलर मिलेंगे",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 3900.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Three people depend on me",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 3,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "1,000 Australian dollars home every month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1000.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "I paid 0 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "150,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 150000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "18 percent a year",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 18.0,
+       "period": "year"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "80,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 80000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "Bank account only",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "bank_account"
+     }
+    ]
+   }
+  ],
+  "p06_au_in_anil": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Australia",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "AU",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     },
+     {
+      "slot": "job_type",
+      "evidence": "construction work",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "construction_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "decline",
+    "candidates": []
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "62,000 Australian dollars a year",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 62000.0,
+       "currency": "AUD",
+       "period": "year"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "One dependent",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 1,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "1,500 Australian dollars each month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1500.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "I paid nothing to an agent, 0 rupees.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "500,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 500000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "12 percent a year",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 12.0,
+       "period": "year"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "400,000 rupees",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 400000.0,
+       "currency": "INR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "mobile wallet only",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "mobile_wallet"
+     }
+    ]
+   }
+  ],
+  "p07_my_id_slamet": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Malaysia",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "MY",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "perkebunan kelapa sawit",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "plantation_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "20 November 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-11-20",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "1.700 ringgit per bulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1700.0,
+       "currency": "MYR",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "tiga orang",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 3,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "900 ringgit setiap bulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 900.0,
+       "currency": "MYR",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "12 juta rupiah",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 12000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "10 juta rupiah",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 10000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "4 persen per bulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 4.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "Tabungan saya cuma 1 juta rupiah.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "Saya tidak punya rekening bank dan tidak pakai dompet digital.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "none"
+     }
+    ]
+   }
+  ],
+  "p08_my_id_siti": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Malaysia",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "MY",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     },
+     {
+      "slot": "job_type",
+      "evidence": "pembantu rumah tangga",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "domestic_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "3 Desember 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-12-03",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "1.500 ringgit sebulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1500.0,
+       "currency": "MYR",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Dua orang bergantung pada saya",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 2,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "500 ringgit per bulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 500.0,
+       "currency": "MYR",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "4 juta rupiah",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 4000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "Saya masih berutang 3 juta rupiah ke koperasi.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 3000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "1,5 persen per bulan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 1.5,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "Saya punya tabungan 6 juta rupiah.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 6000000.0,
+       "currency": "IDR",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "Saya punya rekening bank.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "bank_account"
+     }
+    ]
+   }
+  ],
+  "p09_jp_ph_mark": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Japan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "JP",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "pabrika",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "manufacturing_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "January 20, 2027",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2027-01-20",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "168,000 po ang sahod ko kada buwan.",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 168000.0,
+       "currency": null,
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "168,000 yen kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 168000.0,
+       "currency": "JPY",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Dalawa po ang umaasa sa akin",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 2,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "60,000 yen kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 60000.0,
+       "currency": "JPY",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "Nagbayad po ako ng 800,000 pesos sa recruiter.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 800000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "80,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 80000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "50,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 50000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "3 percent po kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 3.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "10,000 pesos po ang ipon ko.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 10000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "GCash lang po ang meron ako.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "mobile_wallet"
+     }
+    ]
+   }
+  ],
+  "p10_jp_ph_miguel": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Sa Japan po ako",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "JP",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     },
+     {
+      "slot": "job_type",
+      "evidence": "care worker po ako",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "care_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "February 10, 2027",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2027-02-10",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "152,000 yen po kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 152000.0,
+       "currency": "JPY",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Isa po ang umaasa sa akin",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 1,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "50,000 yen kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 50000.0,
+       "currency": "JPY",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "0 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "Wala po akong utang, 0 pesos.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "400,000 yen",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 400000.0,
+       "currency": "JPY",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "May bank account po ako at GCash.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "both"
+     }
+    ]
+   }
+  ],
+  "p11_au_ph_jenny": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Australia",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "AU",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "care worker",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "care_worker",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "December 15, 2026",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2026-12-15",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "4,000 Australian dollars po kada buwan.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 4000.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Dalawa po ang umaasa sa akin",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 2,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "900 Australian dollars po ang gusto kong ipadala kada buwan.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 900.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "90,000 pesos po ang binayad ko sa ahensya.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 90000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "60,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 60000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "2 percent po kada buwan",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 2.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "120,000 pesos po ang ipon ko.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 120000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "May bank account po ako.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "bank_account"
+     }
+    ]
+   }
+  ],
+  "p12_au_ph_ricardo": [
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "destination_country",
+      "evidence": "Australia",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": "AU",
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "job_type",
+      "evidence": "odd jobs, kitchen help and cleaning",
+      "confidence": 0.9,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": "other",
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "departure_date",
+      "evidence": "8 January 2027",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": "2027-01-08",
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "monthly_salary",
+      "evidence": "3,000 Australian dollars a month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 3000.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "dependents",
+      "evidence": "Five people depend on me.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": 5,
+      "money": null,
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "remittance_target",
+      "evidence": "1,200 Australian dollars every month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 1200.0,
+       "currency": "AUD",
+       "period": "month"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "recruitment_fee_paid",
+      "evidence": "150,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 150000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_outstanding",
+      "evidence": "200,000 pesos",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 200000.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "debt_interest",
+      "evidence": "6 percent a month",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": {
+       "rate_percent": 6.0,
+       "period": "month"
+      },
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "savings",
+      "evidence": "I have no savings, 0 pesos.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": {
+       "amount": 0.0,
+       "currency": "PHP",
+       "period": "once"
+      },
+      "interest": null,
+      "account": null
+     }
+    ]
+   },
+   {
+    "message_kind": "answer",
+    "candidates": [
+     {
+      "slot": "bank_or_wallet",
+      "evidence": "Only a mobile wallet.",
+      "confidence": 1.0,
+      "confirms_pending": false,
+      "country": null,
+      "job_type": null,
+      "date": null,
+      "count": null,
+      "money": null,
+      "interest": null,
+      "account": "mobile_wallet"
+     }
+    ]
+   }
+  ]
+ }
+}

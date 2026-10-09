@@ -24,6 +24,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | `scam/read_screenshot.v1` | Transcribe a message screenshot: text and visible sender (NF-SA-008) | extraction | none: the image is a separate part |
 | `scam/explain.v1` | For a scam: why each detected tactic works, what the scammer wants, 3 safe next steps, in the worker's language at grade 6 (NF-SA-009) | reasoning | `language`, `host_country`, `verdict_json`, `details_json`, `tactics_json`, `tactic_notes_json`, `safe_response_json`, `message` |
 | `scam/reassure.v1` | For a message that is not a scam: a short reassurance and one general tip (NF-SA-009) | classification | `language`, `details_json`, `message` |
+| `coach/extract.v1` | Read one worker message in any of the six languages into interview answers: for each, the exact words that state it and a confidence; the code checks every one before it is kept (NF-FC-010) | classification | `worker_language`, `today`, `asking`, `unconfirmed_json`, `confirmed_json`, `recent_talk`, `message` |
 
 The fields each prompt asks for are the field names in `docs/data-model/collections/`. The step's Pydantic response model (the `response_schema`) must use the same names.
 

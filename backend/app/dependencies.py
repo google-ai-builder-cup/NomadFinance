@@ -45,6 +45,7 @@ from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
 from app.services.coach.session_service import CoachSessions
+from app.services.coach.slot_extractor import CoachSlotExtractor
 from app.services.coach.turn_service import CoachTurns
 from app.services.feature_flag_service import FeatureFlagService, FlagName
 from app.services.scam.check_store import CheckStore
@@ -205,8 +206,9 @@ def get_coach_turns(
     sessions: Annotated[CoachSessions, Depends(get_coach_sessions)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
 ) -> CoachTurns:
-    """The Financial Coach's turn: streamed reply on the shared Gemini client (NF-FC-009)."""
-    return CoachTurns(sessions, gemini)
+    """The Financial Coach's turn: slot extraction (NF-FC-010), then the streamed reply (NF-FC-009),
+    both on the shared Gemini client."""
+    return CoachTurns(sessions, gemini, extractor=CoachSlotExtractor(gemini))
 
 
 def get_scam_reporter(
