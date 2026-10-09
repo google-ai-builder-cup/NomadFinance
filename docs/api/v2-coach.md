@@ -273,12 +273,12 @@ Both can be present: a worker with a plan who started a new interview. Errors: `
 
 ## The score
 
-`score` is pure arithmetic on the answers, the exchange rates and the legal fee cap: no model (NF-FC-006, -011).
+`score` is pure arithmetic on the answers, the exchange rates and the legal fee cap: no model (NF-FC-006, -011). The formula, weights, bands and a worked example are in [`docs/features/coach-scoring.md`](../features/coach-scoring.md).
 
 | Field | Meaning |
 |---|---|
 | `total` | Whole number, 0 to 100 |
-| `band` | An open id, translated by the screen. **Provisional until NF-FC-006**: the samples use `needs_work` (0 to 39), `getting_ready` (40 to 69) and `well_prepared` (70 to 100) |
+| `band` | An open id, translated by the screen: `needs_work` (0 to 39), `getting_ready` (40 to 69) and `well_prepared` (70 to 100), with a floor rule (a factor under 20 points keeps the band at `getting_ready` or below). Fixed by the rubric, [`docs/features/coach-scoring.md`](../features/coach-scoring.md) |
 | `factors` | The five, once each: `debt_to_income`, `emergency_buffer`, `remittance_ratio`, `recruitment_fee_vs_cap`, `banked_status`. Each is `{id, value, score, weight}`: the measured figure (`null` if it cannot be measured), its points out of 100 and its weight. The samples' weights add up to 1 and `total` is the rounded weighted sum |
 | `rubric_version` | Raises when the rubric changes |
 
@@ -306,7 +306,7 @@ The rules of the conventions (section 6) apply. Adding a field to a response, an
 | # | Point | Owner |
 |---|---|---|
 | 1 | The score at `review` and the score in the plan are worked out at different times, so an exchange rate can move them apart. Freezing the score on the session when it reaches `review` and copying it into the plan would make them equal | NF-FC-011, NF-FC-012 |
-| 2 | The band ids and cut-offs of the samples are placeholders; the rubric decides, and the mocks follow | NF-FC-006 |
+| 2 | The band ids and cut-offs of the samples are now the rubric's (NF-FC-006, `docs/features/coach-scoring.md`). The factor points and totals in the samples are still placeholders and differ from the rubric by up to 10 points, always within the same band (D-200) | NF-FC-011 |
 | 3 | Answers from the chips and fields are sent as text and understood again. A structured `answer` field (`{slot, value}`) would skip that and could be added later without breaking anything | NF-FC-010, NF-FC-017 |
 | 4 | Check-in routes (answering the three questions on day 30, 60 and 90) are specified when the reminder job is: new routes, and possibly a `checkins` field on the plan | NF-FC-016, NF-FC-022 |
 | 5 | A salary taken from a contract (NF-FC-015) enters as a slot with `source: "contract_prefill"` after a confirmation turn. There is no route for it | NF-FC-015 |
