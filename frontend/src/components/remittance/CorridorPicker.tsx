@@ -18,6 +18,8 @@ const fieldClass =
 export interface CorridorPickerProps {
   /** The corridor selected when the form first shows (the worker's own, from the profile). */
   initialCorridor: CorridorId;
+  /** The amount filled in when the form first shows (from a link, such as the Coach plan's). */
+  initialAmount?: number;
   /** A comparison is running: the form is locked. */
   pending: boolean;
   /** An error from the server, shown above the button. */
@@ -29,6 +31,7 @@ export interface CorridorPickerProps {
  * set of six pair cards (a radio group), not a drop-down, so every option is visible at once. */
 export default function CorridorPicker({
   initialCorridor,
+  initialAmount,
   pending,
   serverError,
   onSubmit,
@@ -36,7 +39,9 @@ export default function CorridorPicker({
   const { t } = useI18n();
   const language = i18n.resolvedLanguage ?? "en";
   const [corridorId, setCorridorId] = useState<CorridorId>(initialCorridor);
-  const [amountText, setAmountText] = useState("");
+  const [amountText, setAmountText] = useState(
+    initialAmount === undefined ? "" : String(initialAmount)
+  );
   const [problem, setProblem] = useState<AmountProblem | null>(null);
   const info = CORRIDORS[corridorId];
   const money = (amount: number) => formatMoney(amount, info.sendCurrency, language, info.decimals);

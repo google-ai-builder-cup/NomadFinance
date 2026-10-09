@@ -33,6 +33,8 @@ const IDENTIFYING_ROUTES: ReadonlyArray<readonly [RegExp, string]> = [
   [/^\/contract\/(?!history\/?$)[^/].*$/, "/contract/:contractId"],
   [/^\/radar\/entity\/[^/].*$/, "/radar/entity/:slug"],
   [/^\/scam-check\/history\/[^/].*$/, "/scam-check/history/:id"],
+  // A stored Coach plan: its id is the hash of the worker's answers.
+  [/^\/coach\/plan\/[^/].*$/, "/coach/plan/:planId"],
 ];
 
 /** The route a pathname belongs to, without the ids in it: all Analytics may keep of a path. */

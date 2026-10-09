@@ -2,7 +2,9 @@ import { ApiError, apiRequest } from "@/services/apiClient";
 import {
   COACH_SLOTS,
   COACH_STAGES,
+  type CoachOverview,
   type CoachPlanMade,
+  type CoachPlanResponse,
   type CoachSession,
   type CoachSessionStart,
   type CoachSlot,
@@ -50,6 +52,33 @@ export async function startCoachSession(
 export async function getCoachSession(sessionId: string): Promise<CoachSession> {
   const response = await apiRequest(`/api/v2/coach/sessions/${encodeURIComponent(sessionId)}`);
   return (await response.json()) as CoachSession;
+}
+
+/** The worker's open interview and newest plan, for the screens that offer the next step. */
+export async function getCoachOverview(): Promise<CoachOverview> {
+  const response = await apiRequest("/api/v2/coach/overview");
+  return (await response.json()) as CoachOverview;
+}
+
+/** A stored plan in `language`. A language it is not stored in is translated now and kept, so the
+ * first request can take a few seconds. */
+export async function getCoachPlan(
+  planId: string,
+  language: LanguageCode
+): Promise<CoachPlanResponse> {
+  const response = await apiRequest(
+    `/api/v2/coach/plans/${encodeURIComponent(planId)}?language=${language}`
+  );
+  return (await response.json()) as CoachPlanResponse;
+}
+
+/** The plan as a PDF, through the API with the token (not a signed link: the contract says why).
+ * Made on the first request in a language, so it can take several seconds. */
+export async function fetchCoachPlanPdf(planId: string, language: LanguageCode): Promise<Blob> {
+  const response = await apiRequest(
+    `/api/v2/coach/plans/${encodeURIComponent(planId)}.pdf?language=${language}`
+  );
+  return await response.blob();
 }
 
 /** The plan can take 20 to 40 seconds and a translation more: the contract says to allow 90. */

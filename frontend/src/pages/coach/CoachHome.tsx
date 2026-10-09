@@ -2,9 +2,11 @@ import { GraduationCap } from "lucide-react";
 
 import CoachChat from "@/components/coach/CoachChat";
 import CoachNotice from "@/components/coach/CoachNotice";
+import PlanCard from "@/components/coach/PlanCard";
 import LanguageSwitch from "@/components/coach/LanguageSwitch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { useCoachOverview } from "@/hooks/useCoachPlan";
 import { useCoachRestart, useCoachSession } from "@/hooks/useCoachSession";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,8 @@ export default function CoachHome() {
   const { user } = useAuth();
   const session = useCoachSession();
   const restart = useCoachRestart();
+  // The way back to a plan that was made; if this read fails the Coach page is as it was.
+  const plan = useCoachOverview().data?.plan;
 
   return (
     <div
@@ -44,6 +48,8 @@ export default function CoachHome() {
         </div>
         <LanguageSwitch />
       </header>
+
+      {plan && <PlanCard plan={plan} />}
 
       {session.isPending ? (
         <div role="status" aria-label={t("home.loading")} className="flex flex-1 flex-col gap-3">

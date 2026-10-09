@@ -2,7 +2,12 @@
   "home": {
     "title": "Pelatih Keuangan",
     "description": "Jawab beberapa pertanyaan tentang pekerjaan dan uang Anda. Pelatih membantu Anda bersiap sebelum berangkat.",
-    "loading": "Membuka pelatih…"
+    "loading": "Membuka pelatih…",
+    "plan": {
+      "title": "Rencana 90 hari Anda sudah siap",
+      "description": "Skor {{total}}. Buka rencana, PDF, dan daftar periksa Anda.",
+      "open": "Lihat rencana saya"
+    }
   },
   "chat": {
     "log": "Percakapan dengan pelatih",
@@ -165,7 +170,7 @@
       "wait": "Ini memakan waktu sampai satu menit. Anda boleh membiarkan halaman ini terbuka.",
       "slow": "Masih berjalan. Ini bisa memakan waktu sampai satu menit.",
       "readyTitle": "Rencana Anda sudah siap",
-      "readyNote": "Halaman rencana lengkap, dengan minggu-minggunya dan PDF, menyusul."
+      "view": "Lihat rencana saya"
     },
     "error": {
       "notReady": "Mohon konfirmasi jawaban Anda dulu.",
@@ -247,6 +252,105 @@
           "improve": "Buka rekening bank atau dompet digital atas nama Anda sebelum berangkat, atau di minggu pertama."
         }
       }
+    }
+  },
+  "plan": {
+    "title": "Rencana 90 hari Anda",
+    "loading": "Memuat rencana Anda",
+    "translating": "Rencana Anda diterjemahkan ke bahasa Anda… butuh beberapa detik.",
+    "back": "Kembali ke Coach",
+    "notFound": {
+      "title": "Rencana ini tidak ditemukan",
+      "description": "Mungkin milik akun lain, atau sudah dihapus."
+    },
+    "error": {
+      "title": "Rencana Anda tidak bisa dibuka"
+    },
+    "header": {
+      "score": "Skor {{total}} · {{band}}",
+      "route": "Rute",
+      "departure": "Tanggal berangkat",
+      "ratesAsOf": "Kurs per"
+    },
+    "warnings": {
+      "heading": "Lihat ini dulu",
+      "severity": {
+        "urgent": "Mendesak",
+        "warning": "Peringatan",
+        "info": "Catatan"
+      }
+    },
+    "budget": {
+      "heading": "Bulan Anda",
+      "income": "Penghasilan per bulan",
+      "costs": "Pengeluaran",
+      "goals": "Disisihkan",
+      "leftOver": "Sisa",
+      "gap": "Kurang setiap bulan sebesar",
+      "gapHelp": "Pengeluaran dan rencana Anda lebih besar dari gaji. Bicaralah dengan kelompok pendamping pekerja sebelum memutuskan apa yang diubah.",
+      "setup": "Biaya sekali bayar di bulan pertama",
+      "setupHelp": "Ini tambahan hanya di bulan pertama. Tidak termasuk baris di atas."
+    },
+    "cost": {
+      "accommodation": "Tempat tinggal",
+      "food": "Makanan",
+      "transport": "Transportasi",
+      "phone_data": "Ponsel dan data",
+      "deductions": "Potongan gaji"
+    },
+    "goal": {
+      "remittance": "Kirim ke keluarga",
+      "debt_payment": "Cicilan utang",
+      "emergency_fund": "Tabungan darurat"
+    },
+    "remittance": {
+      "heading": "Mengirim uang",
+      "monthly": "Setiap bulan:",
+      "cheapest": "Layanan termurah yang ditemukan",
+      "fee": "Biaya",
+      "receives": "Diterima keluarga",
+      "rate": "1 {{from}} = {{rate}} {{to}} · harga per {{date}}",
+      "noProvider": "Perbandingan harga untuk rute ini belum tersedia. Bandingkan dua atau tiga layanan sebelum mengirim.",
+      "schedule": "Kapan mengirim",
+      "sendOn": "Minggu {{week}} · {{amount}}",
+      "compare": "Bandingkan di Remittance X-Ray"
+    },
+    "debt": {
+      "heading": "Utang Anda",
+      "outstanding": "Sisa utang",
+      "payment": "Cicilan per bulan",
+      "toClear": "Waktu sampai lunas",
+      "months": "{{n}} bulan",
+      "notCovered": "Cicilan tidak menutup bunga"
+    },
+    "fund": {
+      "heading": "Tabungan darurat",
+      "target": "Target",
+      "coversMonths": "Berapa bulan pengeluaran yang tercakup",
+      "months": "{{n}} bulan",
+      "saving": "Tabungan per bulan",
+      "toTarget": "Waktu sampai tercapai",
+      "weeks": "{{n}} minggu",
+      "reached": "Sudah tercapai",
+      "noSaving": "Tidak ada tabungan yang direncanakan"
+    },
+    "weeks": {
+      "heading": "Minggu demi minggu",
+      "week": "Minggu {{week}}",
+      "sendMoney": "Kirim uang"
+    },
+    "checklist": {
+      "heading": "Sebelum berangkat",
+      "progress": "{{done}} dari {{total}} selesai"
+    },
+    "pdf": {
+      "heading": "Bawa bersama Anda",
+      "help": "Simpan rencana Anda sebagai PDF, atau kirim ke orang yang Anda percaya.",
+      "download": "Unduh PDF",
+      "share": "Bagikan",
+      "making": "PDF Anda sedang dibuat… ini bisa memakan waktu beberapa detik.",
+      "pressAgain": "PDF Anda sudah siap. Tekan “Bagikan” lagi.",
+      "shareTitle": "Rencana 90 hari saya"
     }
   }
 }

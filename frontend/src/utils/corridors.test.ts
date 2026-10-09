@@ -4,7 +4,13 @@ import { describe, expect, it } from "vitest";
 
 import { ApiError } from "@/services/apiClient";
 import { CORRIDOR_IDS } from "@/types/enums";
-import { CORRIDORS, compareFailure, defaultCorridor, parseAmount } from "@/utils/corridors";
+import {
+  CORRIDORS,
+  compareFailure,
+  defaultCorridor,
+  parseAmount,
+  parseCompareLink,
+} from "@/utils/corridors";
 import { formatMoney } from "@/utils/format";
 
 interface SurveyQuote {
@@ -156,5 +162,27 @@ describe("compareFailure", () => {
       "errors.offline"
     );
     expect(compareFailure(new ApiError(500, "boom"), "SG-PH", "en").key).toBe("errors.server");
+  });
+});
+
+describe("the link into the comparison from a plan", () => {
+  const link = (query: string) => parseCompareLink(new URLSearchParams(query));
+
+  it("gives the corridor and the amount", () => {
+    expect(link("corridor=AU-IN&amount=900")).toEqual({ corridorId: "AU-IN", amount: 900 });
+    expect(link("corridor=SG-PH&amount=412.5")).toEqual({ corridorId: "SG-PH", amount: 412.5 });
+  });
+
+  it.each([
+    ["no query", ""],
+    ["no amount", "corridor=AU-IN"],
+    ["no corridor", "amount=900"],
+    ["a corridor outside the six", "corridor=NP-BD&amount=900"],
+    ["an amount that is not a number", "corridor=AU-IN&amount=lots"],
+    ["a negative amount", "corridor=AU-IN&amount=-5"],
+    ["an amount with more decimals than the currency has", "corridor=JP-PH&amount=100.5"],
+    ["an amount above the corridor's limit", "corridor=AU-IN&amount=999999999"],
+  ])("is nothing for %s, so the screen opens as usual", (_label, query) => {
+    expect(link(query)).toBeNull();
   });
 });

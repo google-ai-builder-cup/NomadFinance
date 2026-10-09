@@ -8,3 +8,4 @@ export const OUTBOX_DB_VERSION = 1;
 export const OUTBOX_STORE = "entries";
 export const OUTBOX_SYNC_TAG = "coach-outbox";
 export const DRAFT_KEY_PREFIX = "nomadfinance.coach.draft.";
+export const CHECKLIST_KEY_PREFIX = "nomadfinance.coach.checklist.";

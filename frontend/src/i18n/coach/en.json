@@ -2,7 +2,12 @@
   "home": {
     "title": "Financial Coach",
     "description": "Answer a few questions about your job and your money. The coach helps you get ready before you leave.",
-    "loading": "Opening the coach…"
+    "loading": "Opening the coach…",
+    "plan": {
+      "title": "Your 90-day plan is ready",
+      "description": "Score {{total}}. Open your plan, the PDF and your checklist.",
+      "open": "View my plan"
+    }
   },
   "chat": {
     "log": "Conversation with the coach",
@@ -165,7 +170,7 @@
       "wait": "This takes up to a minute. You can keep this page open.",
       "slow": "Still working. This can take up to a minute.",
       "readyTitle": "Your plan is ready",
-      "readyNote": "The full plan page, with the weeks and the PDF, is coming next."
+      "view": "View my plan"
     },
     "error": {
       "notReady": "Please confirm your answers first.",
@@ -247,6 +252,105 @@
           "improve": "Open a bank account or wallet in your own name before you leave, or in your first week."
         }
       }
+    }
+  },
+  "plan": {
+    "title": "Your 90-day plan",
+    "loading": "Loading your plan",
+    "translating": "Translating your plan into your language… this takes a few seconds.",
+    "back": "Back to the Coach",
+    "notFound": {
+      "title": "We could not find this plan",
+      "description": "It may belong to another account, or it was removed."
+    },
+    "error": {
+      "title": "We could not open your plan"
+    },
+    "header": {
+      "score": "Score {{total}} · {{band}}",
+      "route": "Route",
+      "departure": "Leaving on",
+      "ratesAsOf": "Rates as of"
+    },
+    "warnings": {
+      "heading": "Look at these first",
+      "severity": {
+        "urgent": "Urgent",
+        "warning": "Warning",
+        "info": "Note"
+      }
+    },
+    "budget": {
+      "heading": "Your month",
+      "income": "Income each month",
+      "costs": "Costs",
+      "goals": "Set aside",
+      "leftOver": "Left over",
+      "gap": "Short each month by",
+      "gapHelp": "Your costs and plans are more than your pay. Talk to a worker support group before you decide what to change.",
+      "setup": "One-off costs of the first month",
+      "setupHelp": "This is extra, in the first month only. It is not part of the lines above."
+    },
+    "cost": {
+      "accommodation": "Housing",
+      "food": "Food",
+      "transport": "Transport",
+      "phone_data": "Phone and data",
+      "deductions": "Deductions from pay"
+    },
+    "goal": {
+      "remittance": "Sent home",
+      "debt_payment": "Debt payment",
+      "emergency_fund": "Emergency savings"
+    },
+    "remittance": {
+      "heading": "Sending money home",
+      "monthly": "Each month:",
+      "cheapest": "Cheapest service found",
+      "fee": "Fee",
+      "receives": "Your family receives",
+      "rate": "1 {{from}} = {{rate}} {{to}} · prices as of {{date}}",
+      "noProvider": "We cannot compare prices for this route yet. Compare two or three services before you send.",
+      "schedule": "When to send",
+      "sendOn": "Week {{week}} · {{amount}}",
+      "compare": "Compare in Remittance X-Ray"
+    },
+    "debt": {
+      "heading": "Your debt",
+      "outstanding": "Debt left",
+      "payment": "Payment each month",
+      "toClear": "Time to pay it off",
+      "months": "{{n}} months",
+      "notCovered": "The payment does not cover the interest"
+    },
+    "fund": {
+      "heading": "Emergency savings",
+      "target": "Target",
+      "coversMonths": "Months of costs it covers",
+      "months": "{{n}} months",
+      "saving": "Saved each month",
+      "toTarget": "Time to reach it",
+      "weeks": "{{n}} weeks",
+      "reached": "Already reached",
+      "noSaving": "No saving planned"
+    },
+    "weeks": {
+      "heading": "Week by week",
+      "week": "Week {{week}}",
+      "sendMoney": "Send money"
+    },
+    "checklist": {
+      "heading": "Before you leave",
+      "progress": "{{done}} of {{total}} done"
+    },
+    "pdf": {
+      "heading": "Take it with you",
+      "help": "Save your plan as a PDF, or send it to someone you trust.",
+      "download": "Download PDF",
+      "share": "Share",
+      "making": "Making your PDF… this can take a few seconds.",
+      "pressAgain": "Your PDF is ready. Press Share again.",
+      "shareTitle": "My 90-day plan"
     }
   }
 }

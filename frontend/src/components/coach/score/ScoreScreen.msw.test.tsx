@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import ScoreScreen from "@/components/coach/score/ScoreScreen";
@@ -34,7 +35,9 @@ function renderScreen(language: LanguageCode = "en", timeoutProps: { slowAfterMs
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
     >
-      <ScoreScreen sessionId="s_01" language={language} />
+      <MemoryRouter>
+        <ScoreScreen sessionId="s_01" language={language} />
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
@@ -231,7 +234,9 @@ describe("the button that makes the plan", () => {
     const user = userEvent.setup();
     render(
       <QueryClientProvider client={new QueryClient()}>
-        <ScoreScreen sessionId="s_01" language="en" />
+        <MemoryRouter>
+          <ScoreScreen sessionId="s_01" language="en" />
+        </MemoryRouter>
       </QueryClientProvider>
     );
     await screen.findByRole("img", { name: /\d/ });

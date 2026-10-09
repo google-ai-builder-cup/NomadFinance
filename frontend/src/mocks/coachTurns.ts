@@ -117,3 +117,13 @@ export function replayPlan(
   );
   return made;
 }
+
+/** Answers `GET /coach/overview` with an overview mock (`coach/overview-04-empty.json` by default):
+ * the Coach page asks for it to offer the way back to a plan (NF-FC-021). */
+export function replayOverview(name = "coach/overview-04-empty.json"): void {
+  const mock = jsonMocks.get(name);
+  if (mock?.body === undefined) {
+    throw new Error(`No mock "${name}" in docs/mocks/.`);
+  }
+  server.use(http.get("*/api/v2/coach/overview", () => HttpResponse.json(mock.body as object)));
+}

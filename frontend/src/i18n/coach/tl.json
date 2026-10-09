@@ -2,7 +2,12 @@
   "home": {
     "title": "Financial Coach",
     "description": "Sagutin ang ilang tanong tungkol sa trabaho at pera mo. Tutulungan ka ng coach na maghanda bago ka umalis.",
-    "loading": "Binubuksan ang coach…"
+    "loading": "Binubuksan ang coach…",
+    "plan": {
+      "title": "Handa na ang 90-araw mong plano",
+      "description": "Marka {{total}}. Buksan ang plano, ang PDF at ang checklist mo.",
+      "open": "Tingnan ang plano ko"
+    }
   },
   "chat": {
     "log": "Usapan kasama ang coach",
@@ -165,7 +170,7 @@
       "wait": "Aabutin ito nang hanggang isang minuto. Maaari mong iwanang bukas ang pahinang ito.",
       "slow": "Gumagana pa rin. Maaari itong abutin nang hanggang isang minuto.",
       "readyTitle": "Handa na ang plano mo",
-      "readyNote": "Susunod ang buong pahina ng plano, kasama ang mga linggo at ang PDF."
+      "view": "Tingnan ang plano ko"
     },
     "error": {
       "notReady": "Pakikumpirma muna ang mga sagot mo.",
@@ -247,6 +252,105 @@
           "improve": "Magbukas ng bank account o e-wallet sa sarili mong pangalan bago umalis o sa unang linggo."
         }
       }
+    }
+  },
+  "plan": {
+    "title": "Ang iyong 90-araw na plano",
+    "loading": "Kinukuha ang plano mo",
+    "translating": "Isinasalin ang plano mo sa wika mo… ilang segundo lang ito.",
+    "back": "Bumalik sa Coach",
+    "notFound": {
+      "title": "Hindi namin makita ang planong ito",
+      "description": "Maaaring sa ibang account ito, o inalis na."
+    },
+    "error": {
+      "title": "Hindi mabuksan ang plano mo"
+    },
+    "header": {
+      "score": "Marka {{total}} · {{band}}",
+      "route": "Ruta",
+      "departure": "Petsa ng alis",
+      "ratesAsOf": "Mga palitan noong"
+    },
+    "warnings": {
+      "heading": "Tingnan muna ang mga ito",
+      "severity": {
+        "urgent": "Madalian",
+        "warning": "Babala",
+        "info": "Paalala"
+      }
+    },
+    "budget": {
+      "heading": "Ang buwan mo",
+      "income": "Kita bawat buwan",
+      "costs": "Mga gastusin",
+      "goals": "Mga itatabi",
+      "leftOver": "Matitira",
+      "gap": "Kulang bawat buwan ng",
+      "gapHelp": "Mas malaki ang gastusin at plano mo kaysa sa sahod mo. Kausapin ang isang grupong tumutulong sa manggagawa bago magpasya kung ano ang babaguhin.",
+      "setup": "Isang beses na gastos sa unang buwan",
+      "setupHelp": "Dagdag ito sa unang buwan lang. Hindi ito kasama sa mga linya sa itaas."
+    },
+    "cost": {
+      "accommodation": "Tirahan",
+      "food": "Pagkain",
+      "transport": "Pamasahe",
+      "phone_data": "Telepono at data",
+      "deductions": "Mga bawas sa sahod"
+    },
+    "goal": {
+      "remittance": "Padala sa pamilya",
+      "debt_payment": "Bayad sa utang",
+      "emergency_fund": "Ipon para sa emerhensiya"
+    },
+    "remittance": {
+      "heading": "Pagpapadala ng pera",
+      "monthly": "Bawat buwan:",
+      "cheapest": "Pinakamurang serbisyong nakita",
+      "fee": "Bayad",
+      "receives": "Matatanggap ng pamilya",
+      "rate": "1 {{from}} = {{rate}} {{to}} · mga presyo noong {{date}}",
+      "noProvider": "Hindi pa namin maihambing ang presyo para sa rutang ito. Maghambing ng dalawa o tatlong serbisyo bago magpadala.",
+      "schedule": "Kailan magpapadala",
+      "sendOn": "Linggo {{week}} · {{amount}}",
+      "compare": "Ihambing sa Remittance X-Ray"
+    },
+    "debt": {
+      "heading": "Ang utang mo",
+      "outstanding": "Natitirang utang",
+      "payment": "Hulog bawat buwan",
+      "toClear": "Panahon bago mabayaran",
+      "months": "{{n}} buwan",
+      "notCovered": "Hindi sapat ang hulog para sa tubo"
+    },
+    "fund": {
+      "heading": "Ipon para sa emerhensiya",
+      "target": "Target",
+      "coversMonths": "Ilang buwan ng gastusin ang saklaw",
+      "months": "{{n}} buwan",
+      "saving": "Ipon bawat buwan",
+      "toTarget": "Panahon bago maabot",
+      "weeks": "{{n}} linggo",
+      "reached": "Naabot na",
+      "noSaving": "Walang planong ipon"
+    },
+    "weeks": {
+      "heading": "Linggo-linggo",
+      "week": "Linggo {{week}}",
+      "sendMoney": "Magpadala ng pera"
+    },
+    "checklist": {
+      "heading": "Bago ka umalis",
+      "progress": "{{done}} sa {{total}} ang tapos"
+    },
+    "pdf": {
+      "heading": "Dalhin ito",
+      "help": "I-save ang plano mo bilang PDF, o ipadala sa pinagkakatiwalaan mo.",
+      "download": "I-download ang PDF",
+      "share": "Ibahagi",
+      "making": "Ginagawa ang PDF mo… maaaring abutin ng ilang segundo.",
+      "pressAgain": "Handa na ang PDF mo. Pindutin ulit ang “Ibahagi”.",
+      "shareTitle": "Ang 90-araw kong plano"
     }
   }
 }

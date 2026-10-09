@@ -99,6 +99,10 @@ export const router = createBrowserRouter([
                       // flag guard, so a user the flag is off for downloads nothing of the module.
                       { path: "/coach", ...page(() => import("@/pages/coach/CoachRoute")) },
                       {
+                        path: "/coach/plan/:planId",
+                        ...page(() => import("@/pages/coach/CoachPlanRoute")),
+                      },
+                      {
                         path: "/scam-check",
                         ...page(() => import("@/pages/scam/ScamCheckRoute")),
                       },
