@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 
 import { clearAnalyticsUserProperties, trackLogin } from "@/lib/analytics";
+import { clearCoachLocalData } from "@/lib/coachLocalData";
 import { auth } from "@/lib/firebase";
 
 const googleProvider = new GoogleAuthProvider();
@@ -113,6 +114,8 @@ export async function confirmPhoneCode(
 
 export function signOut(): Promise<void> {
   clearAnalyticsUserProperties();
+  // Drafts and a waiting answer are the last person's words on a phone that may be shared.
+  clearCoachLocalData();
   return firebaseSignOut(auth);
 }
 

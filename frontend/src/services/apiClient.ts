@@ -5,6 +5,12 @@ import { getIdToken } from "@/services/authService";
 // the backend must allow the site's origin (CORS, NF-P1-027).
 const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/+$/, "");
 
+/** The whole address of a backend path, for a caller that sends the request itself (the Coach's
+ * offline queue hands the address to its service worker, which has no build settings to read). */
+export function apiUrl(path: string): string {
+  return new URL(`${baseUrl}${path}`, window.location.href).href;
+}
+
 /** Whether calls to the backend can work here. Features that need it stay hidden otherwise. */
 export const isApiConfigured = import.meta.env.DEV || baseUrl !== "";
 

@@ -168,3 +168,81 @@ describe("a stream that dropped and is tried again", () => {
     expect(state.slots.job_type).toBeUndefined();
   });
 });
+
+describe("an answer waiting for a connection", () => {
+  const sent = run(initialChatState(SESSION), {
+    type: "turn_started",
+    line: { id: "local-1", role: "user", text: "Care work" },
+  });
+  const queued = chatReducer(chatReducer(sent, { type: "token", text: "half" }), {
+    type: "queued",
+  });
+
+  it("marks the worker's line as waiting, not as failed, and shows no failure", () => {
+    expect(queued.queued).toBe(true);
+    expect(queued.failure).toBeNull();
+    expect(queued.lines.at(-1)).toMatchObject({ text: "Care work", queued: true, failed: false });
+  });
+
+  it("throws the half reply of the attempt away and is no longer busy", () => {
+    expect(isBusy(queued)).toBe(false);
+    expect(queued.draft).toBeNull();
+    expect(queued.lines.map((line) => line.text)).not.toContain("half");
+  });
+
+  it("goes back to a running turn when it is sent again", () => {
+    const again = chatReducer(queued, { type: "retry_started" });
+
+    expect(again.queued).toBe(false);
+    expect(isBusy(again)).toBe(true);
+    expect(again.lines.at(-1)).toMatchObject({ text: "Care work", queued: false });
+  });
+
+  it("is over when the server finishes the turn", () => {
+    const done = run(
+      queued,
+      { type: "retry_started" },
+      { type: "token", text: "Thanks." },
+      {
+        type: "done",
+        done: DONE,
+      }
+    );
+
+    expect(done.queued).toBe(false);
+    expect(done.lines.map((line) => line.text)).toEqual([
+      "Which country?",
+      "Australia",
+      "Care work",
+      "Thanks.",
+    ]);
+  });
+});
+
+describe("an answer kept by an earlier visit", () => {
+  const line = { id: "local-1", role: "user", text: "4200 AUD per month" } as const;
+
+  it("comes back as a waiting line after the transcript", () => {
+    const state = chatReducer(initialChatState(SESSION), {
+      type: "restored",
+      line: { ...line, queued: true },
+      failure: null,
+    });
+
+    expect(state.queued).toBe(true);
+    expect(state.lines.at(-1)).toMatchObject({ text: "4200 AUD per month", queued: true });
+    expect(state.lines).toHaveLength(3);
+  });
+
+  it("comes back as not sent, with the reason, when the server refused it", () => {
+    const state = chatReducer(initialChatState(SESSION), {
+      type: "restored",
+      line: { ...line, failed: true },
+      failure: { code: "session_not_active", status: 409 },
+    });
+
+    expect(state.queued).toBe(false);
+    expect(state.failure).toEqual({ code: "session_not_active", status: 409 });
+    expect(state.lines.at(-1)).toMatchObject({ failed: true });
+  });
+});

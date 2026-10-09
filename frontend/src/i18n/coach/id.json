@@ -116,5 +116,19 @@
   },
   "language": {
     "label": "Bahasa Coach"
+  },
+  "resume": {
+    "label": "Selamat datang kembali",
+    "lastSeen": "Terakhir kali Anda menjawab {{when}}.",
+    "saved": "Jawaban Anda tersimpan.",
+    "continue": "Lanjutkan",
+    "confirm": "Memulai wawancara baru akan menutup wawancara ini beserta jawabannya. Apakah Anda ingin mulai dari awal?",
+    "confirmYes": "Ya, mulai dari awal",
+    "confirmNo": "Tidak, lanjutkan"
+  },
+  "offline": {
+    "waiting": "Menunggu sinyal",
+    "notice": "Tidak ada koneksi. Jawaban Anda tersimpan di ponsel ini dan akan dikirim saat Anda kembali online.",
+    "sendNow": "Kirim sekarang"
   }
 }

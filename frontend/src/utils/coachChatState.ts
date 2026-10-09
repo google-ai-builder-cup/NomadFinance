@@ -12,6 +12,8 @@ export interface ChatLine {
   text: string;
   /** The turn this line started did not go through (nothing was saved). */
   failed?: boolean;
+  /** The line is kept on the phone and goes when the connection is back (NF-FC-019). */
+  queued?: boolean;
 }
 
 export interface ChatState {
@@ -28,6 +30,8 @@ export interface ChatState {
   /** Answered slots by name, as bare values: the screen picks defaults from them. */
   slots: Partial<Record<CoachSlot, unknown>>;
   failure: CoachFailure | null;
+  /** The worker's answer is waiting for a connection; nothing else can be sent until it goes. */
+  queued: boolean;
   /** The last finished coach reply, handed to the screen reader once. */
   announcement: string;
 }
@@ -39,7 +43,11 @@ export type ChatAction =
   | { type: "stream_reset" }
   | { type: "done"; done: CoachDone }
   | { type: "failed"; failure: CoachFailure }
-  | { type: "retry_started" };
+  | { type: "retry_started" }
+  /** The turn could not reach the server and is kept to be sent when it can. */
+  | { type: "queued" }
+  /** An answer kept on the phone by an earlier visit: it is waiting, or the server refused it. */
+  | { type: "restored"; line: ChatLine; failure: CoachFailure | null };
 
 export function initialChatState(session: CoachSessionStart): ChatState {
   const slots: ChatState["slots"] = {};
@@ -56,6 +64,7 @@ export function initialChatState(session: CoachSessionStart): ChatState {
     turnCount: session.turn_count,
     slots,
     failure: null,
+    queued: false,
     announcement: "",
   };
 }
@@ -77,6 +86,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
         turnLineId: action.line?.id ?? null,
         pendingSlots: {},
         failure: null,
+        queued: false,
         // Cleared so the next finished reply is read out even if its words are the same.
         announcement: "",
       };
@@ -95,6 +105,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
           ? [...state.lines, { id: action.done.messageId, role: "coach", text }]
           : state.lines,
         draft: null,
+        queued: false,
         slots: { ...state.slots, ...state.pendingSlots },
         pendingSlots: {},
         stage: action.done.stage,
@@ -117,10 +128,34 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case "retry_started":
       return {
         ...state,
-        lines: state.lines.map((line) => (line.failed ? { ...line, failed: false } : line)),
+        lines: state.lines.map((line) =>
+          line.failed || line.queued ? { ...line, failed: false, queued: false } : line
+        ),
         draft: "",
         pendingSlots: {},
         failure: null,
+        queued: false,
+      };
+    case "queued":
+      // Not a failure: nothing is wrong with the answer, only with the connection. The words and
+      // facts of the attempt are thrown away like those of any turn that did not finish.
+      return {
+        ...state,
+        lines: state.lines.map((line) =>
+          line.id === state.turnLineId ? { ...line, failed: false, queued: true } : line
+        ),
+        draft: null,
+        pendingSlots: {},
+        failure: null,
+        queued: true,
+      };
+    case "restored":
+      return {
+        ...state,
+        lines: [...state.lines, action.line],
+        turnLineId: action.line.id,
+        failure: action.failure,
+        queued: action.failure === null,
       };
   }
 }

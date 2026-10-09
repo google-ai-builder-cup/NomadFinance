@@ -1,16 +1,22 @@
 import { CircleCheck } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import AnswerPanel from "@/components/coach/AnswerPanel";
 import ChatLog from "@/components/coach/ChatLog";
 import CoachNotice from "@/components/coach/CoachNotice";
+import OfflineNotice from "@/components/coach/OfflineNotice";
+import ResumeBanner from "@/components/coach/ResumeBanner";
 import StageStepper from "@/components/coach/StageStepper";
 import { Button } from "@/components/ui/button";
 import { useCoachChat, type CoachChatTiming } from "@/hooks/useCoachChat";
+import { CoachDraftProvider } from "@/hooks/useCoachDraft";
 import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import { useUiLanguage } from "@/hooks/useUiLanguage";
+import { removeEntry } from "@/lib/coachOutboxStore";
 import type { CoachSessionStart } from "@/types/coach";
+import { clearDraft } from "@/utils/coachDraft";
 import { toFailure } from "@/utils/coachErrors";
 
 export interface CoachChatProps {
@@ -21,6 +27,9 @@ export interface CoachChatProps {
   /** Why the last restart failed, if it did. */
   restartError?: unknown;
   timing?: CoachChatTiming;
+  /** The signed-in person. With it, what they type and an answer sent without a connection are
+   * kept on this phone (NF-FC-019); without it, nothing is kept (tests). */
+  uid?: string;
 }
 
 /** The interview: the steps, the conversation, and the place to answer. Mounted once per
@@ -31,18 +40,73 @@ export default function CoachChat({
   restarting,
   restartError,
   timing,
+  uid,
 }: CoachChatProps) {
   const { t } = useI18n("coach");
   const language = useUiLanguage();
-  const { state, busy, send, retry } = useCoachChat(session, timing, language);
+  const { state, busy, send, retry, restoring } = useCoachChat(session, timing, language, uid);
+  // An answer waiting for a connection locks the panel like a running turn: the coach's next
+  // question depends on it.
+  const locked = busy || state.queued || restoring;
+  const question = `${state.stage}:${state.nextSlot}`;
+  const draftScope = useMemo(
+    () => (uid === undefined ? null : { uid, sessionId: session.id, question }),
+    [uid, session.id, question]
+  );
+  // Coming back to an interview that is under way: say where it stopped, until the worker carries
+  // on. Not for a new interview, and not for one whose answers are already confirmed.
+  const [resuming, setResuming] = useState(
+    session.resumed &&
+      session.status === "active" &&
+      session.messages.length > 0 &&
+      session.stage !== "plan"
+  );
   // A restart that failed is shown the same way as a turn that failed.
   const failure = restartError ? toFailure(restartError) : state.failure;
   const confirmed = state.stage === "plan";
   // The answer panel is gone once the answers are confirmed; focus goes to what replaces it.
   const confirmedRef = useFocusOnMount<HTMLDivElement>(confirmed);
 
+  // Starting over takes the answers with it: so does what was kept for them on this phone.
+  function startOver() {
+    if (uid !== undefined) {
+      void removeEntry(session.id);
+      clearDraft(uid);
+    }
+    onRestart();
+  }
+
+  const showBanner =
+    resuming && !restoring && !state.queued && state.failure === null && !confirmed;
+  const panel = (
+    <AnswerPanel
+      stage={state.stage}
+      slot={state.nextSlot}
+      slots={state.slots}
+      busy={locked}
+      onSend={(text) => {
+        setResuming(false);
+        // The answer is on its way: what was kept for it (the box, its amount, that the box was
+        // open) is not needed, and must not come back for a question that is already answered.
+        if (uid !== undefined) {
+          clearDraft(uid);
+        }
+        send(text);
+      }}
+      language={language}
+    />
+  );
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
+      {showBanner && (
+        <ResumeBanner
+          stage={state.stage}
+          lastActive={session.last_active}
+          onContinue={() => setResuming(false)}
+          onStartOver={startOver}
+        />
+      )}
       <StageStepper stage={state.stage} />
       <ChatLog
         lines={state.lines}
@@ -50,13 +114,15 @@ export default function CoachChat({
         announcement={state.announcement}
         language={session.language}
         footer={
-          failure && (
+          failure ? (
             <CoachNotice
               failure={failure}
-              onRetry={restartError ? onRestart : retry}
-              onRestart={onRestart}
+              onRetry={restartError ? startOver : retry}
+              onRestart={startOver}
               restarting={restarting}
             />
+          ) : (
+            state.queued && <OfflineNotice onSendNow={retry} />
           )
         }
       />
@@ -75,15 +141,10 @@ export default function CoachChat({
             </Button>
           </div>
         </div>
+      ) : draftScope === null ? (
+        panel
       ) : (
-        <AnswerPanel
-          stage={state.stage}
-          slot={state.nextSlot}
-          slots={state.slots}
-          busy={busy}
-          onSend={send}
-          language={language}
-        />
+        <CoachDraftProvider scope={draftScope}>{panel}</CoachDraftProvider>
       )}
     </div>
   );

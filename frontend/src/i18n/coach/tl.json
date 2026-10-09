@@ -116,5 +116,19 @@
   },
   "language": {
     "label": "Wika ng Coach"
+  },
+  "resume": {
+    "label": "Welcome ulit",
+    "lastSeen": "Huli kang sumagot {{when}}.",
+    "saved": "Naka-save ang iyong mga sagot.",
+    "continue": "Magpatuloy",
+    "confirm": "Isasara ng bagong interview ang interview na ito at ang mga sagot nito. Gusto mo bang magsimulang muli?",
+    "confirmYes": "Oo, magsimula ulit",
+    "confirmNo": "Hindi, magpatuloy"
+  },
+  "offline": {
+    "waiting": "Naghihintay ng signal",
+    "notice": "Walang koneksyon. Naka-save sa teleponong ito ang sagot mo at ipapadala ito pagbalik ng internet.",
+    "sendNow": "Ipadala ngayon"
   }
 }

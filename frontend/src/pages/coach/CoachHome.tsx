@@ -4,6 +4,7 @@ import CoachChat from "@/components/coach/CoachChat";
 import CoachNotice from "@/components/coach/CoachNotice";
 import LanguageSwitch from "@/components/coach/LanguageSwitch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
 import { useCoachRestart, useCoachSession } from "@/hooks/useCoachSession";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ import { PILLAR_STYLES } from "@/utils/pillars";
 // does not move while a reply streams in.
 export default function CoachHome() {
   const { t } = useI18n("coach");
+  const { user } = useAuth();
   const session = useCoachSession();
   const restart = useCoachRestart();
 
@@ -63,6 +65,7 @@ export default function CoachHome() {
           onRestart={() => restart.mutate()}
           restarting={restart.isPending}
           restartError={restart.isError ? restart.error : undefined}
+          uid={user?.uid}
         />
       )}
     </div>

@@ -48,6 +48,8 @@ export default function ChatLog({ lines, draft, announcement, language, footer }
             speakerLabel={line.role === "coach" ? t("chat.coachSays") : t("chat.youSaid")}
             failed={line.failed}
             failedLabel={t("chat.notSent")}
+            pending={line.queued}
+            pendingLabel={t("offline.waiting")}
           >
             {line.text}
           </ChatBubble>
