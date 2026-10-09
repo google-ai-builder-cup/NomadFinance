@@ -2,7 +2,7 @@
 
 Monthly cost-of-living figures for a migrant worker in each host country, used by the Financial Coach to ground the 90-day plan (design 4.4). Shape sources: the path and purpose are **[T]** (tracker NF-FC-003 to -005, design addendum section 7); field names, categories and ids are **[P]**. The curators of NF-FC-003 (SG, AU), NF-FC-004 (KR, MY) and NF-FC-005 (JP, HK) refine the categories, and should tell the team when they change a field name here.
 
-**Six documents, one per host country: `SG`, `KR`, `MY`, `JP`, `HK`, `AU`.** NF-FC-003 covers Singapore and **Australia** (decision of 2026-10-06; the tracker row still lists a different second country, see D-102). NF-FC-003 curated `SG` and `AU` and wrote the checker and the loader; NF-FC-004 curated `KR` and `MY`; NF-FC-005 (`JP`, `HK`) adds its files to `data-scripts/data/source/cost-baselines/` and runs the same loader. The curator's steps are in [data-scripts/README.md](../../../data-scripts/README.md), "Cost baselines".
+**Six documents, one per host country: `SG`, `KR`, `MY`, `JP`, `HK`, `AU`.** NF-FC-003 covers Singapore and **Australia** (decision of 2026-10-06; the tracker row still lists a different second country, see D-102). NF-FC-003 curated `SG` and `AU` and wrote the checker and the loader; NF-FC-004 curated `KR` and `MY`; NF-FC-005 curated `JP` and `HK`. All six files are in `data-scripts/data/source/cost-baselines/` and are loaded by the same loader. The curator's steps are in [data-scripts/README.md](../../../data-scripts/README.md), "Cost baselines".
 
 ```
 cost_baselines/{host}      host = ISO-2 country, uppercase
@@ -94,7 +94,7 @@ A figure is a **published price or range, not a measured average of what workers
 }
 ```
 
-The default of each country is the worker group the first figure describes, named in the `notes`: a dormitory Work Permit holder in `SG`, a working-holiday maker in `AU`, an E-9 worker in an employer dormitory in `KR`, a foreign worker in employer housing in `MY`. In `KR`, `accommodation` is a ceiling on the employer's housing deduction, not a market rent; in `MY` it is what the worker pays under the rent cap (see the NF-FC-004 runbook).
+The default of each country is the worker group the first figure describes, named in the `notes`: a dormitory Work Permit holder in `SG`, a working-holiday maker in `AU`, an E-9 worker in an employer dormitory in `KR`, a foreign worker in employer housing in `MY`, a technical intern in company housing in `JP`, a live-in foreign domestic helper in `HK` (housing 0, food free or an allowance, no MPF). In `KR`, `accommodation` is a ceiling on the employer's housing deduction, not a market rent; in `MY` it is what the worker pays under the rent cap (see the NF-FC-004 runbook).
 
 ## How it is used and refreshed
 
