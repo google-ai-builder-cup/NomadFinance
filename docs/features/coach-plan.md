@@ -9,7 +9,7 @@ How the plan of `POST /api/v2/coach/sessions/{id}/plan` is made (NF-FC-012). The
 | Every figure: budget, goals, remittance amounts and schedule, debt, emergency fund, the provider quote | **Code** (`plan_figures.py`), from the answers, the cost baselines, the stored rates and Remittance X-Ray | The schema (the budget adds up), and `check_figures` (the plan equals the worked-out figures) |
 | Which warnings and checklist items a worker gets, and their severity | Code (`plan_facts.py`) | Tests |
 | The summary, the title and actions of weeks 1 to 13, the words of each warning and checklist item | **Gemini** (`coach/plan.v1`, reasoning tier) | `plan_validator.check_text` |
-| The "not professional advice" note | Fixed text (`DISCLAIMER`) | |
+| The "not professional advice" note | Fixed text in six languages (`guard_texts.NOT_ADVICE_NOTE`, NF-FC-013); a translated plan carries the worker's language's version, never the model's | |
 
 The model is given the figures as facts and returns sentences only. It cannot put a figure in the plan; the worst it can do is write a wrong number in a sentence, and the validator rejects that.
 
@@ -66,6 +66,6 @@ The plan is written in English once. Another language is made on the first reque
 ## Limits
 
 - A number written as a word ("three months") is not checked; the prompt asks for digits.
-- The advice check catches the common ways to suggest a loan, not all. The wider guardrails are NF-FC-013's.
+- The advice check catches the common ways to suggest a loan, not all. The chat reply has its own, narrower check and the worker's messages are screened (NF-FC-013, `docs/runbooks/NF-FC-013-coach-guardrails.md`).
 - The plan id is the hash of the answers only, so a worker whose home country changes in their profile still gets the stored plan.
 - The shares (50/70/40/25/80), the 3 months and the send weeks are product choices, not financial planning advice; they are written here so the owner can review them.

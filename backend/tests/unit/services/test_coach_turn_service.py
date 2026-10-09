@@ -17,10 +17,11 @@ from app.services.coach.session_types import (
     SessionNotFoundError,
     SlotUpdate,
 )
-from app.services.coach.turn_service import LiveTurn, ReplayTurn
 from app.services.coach.turn_types import (
     Clarification,
     KeyReusedError,
+    LiveTurn,
+    ReplayTurn,
     RequestInProgressError,
     TextRequiredError,
     TurnInProgressError,

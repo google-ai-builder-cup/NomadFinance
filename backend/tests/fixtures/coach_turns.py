@@ -14,7 +14,7 @@ from app.dependencies import get_coach_turns
 from app.integrations.gemini import ChatReply, ChatTurn
 from app.services.coach.session_service import CoachSessions
 from app.services.coach.turn_service import CoachTurns
-from app.services.coach.turn_types import Understanding
+from app.services.coach.turn_types import Guard, Understanding
 from tests.fixtures.coach_sessions import NOW, FakeSessionRepo, make_coach_app, make_sessions
 
 OPENING = ["Hello! ", "Which country will you work in?"]
@@ -105,12 +105,14 @@ class StubExtractor:
 
 
 def make_turns(
-    gemini: StubGemini | None = None, extractor: StubExtractor | None = None
+    gemini: StubGemini | None = None,
+    extractor: StubExtractor | None = None,
+    guard: Guard | None = None,
 ) -> tuple[CoachTurns, CoachSessions, FakeSessionRepo, StubGemini]:
     """The turn service over in-memory storage and a stub Gemini."""
     service, repo, _ = make_sessions()
     stub = gemini or StubGemini()
-    turns = CoachTurns(service, stub, extractor=extractor)  # type: ignore[arg-type]
+    turns = CoachTurns(service, stub, extractor=extractor, guard=guard)  # type: ignore[arg-type]
     return turns, service, repo, stub
 
 

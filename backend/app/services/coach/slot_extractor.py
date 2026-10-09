@@ -21,6 +21,7 @@ from app.prompts.loader import load_prompt
 from app.schemas.coach_extraction import SlotExtraction
 from app.schemas.contract import ReportLanguage
 from app.services.coach.extraction_checks import EARLIER_MESSAGES, ReadingContext, interpret
+from app.services.coach.guard_rules import fence, visible_to_model
 from app.services.coach.question_bank import load_question_bank
 from app.services.coach.session_machine import QUESTION_STAGES, next_slot
 from app.services.coach.turn_types import Understanding
@@ -61,7 +62,8 @@ class CoachSlotExtractor:
         asking = next_slot(self._bank, stage, slots, declined)
         message = redact_text(text)
         messages = [
-            {"role": m["role"], "text": m["text"]} for m in document["messages"][-RECENT_MESSAGES:]
+            {"role": m["role"], "text": visible_to_model(m["role"], m["text"])}
+            for m in document["messages"][-RECENT_MESSAGES:]
         ]
         earlier = [m["text"] for m in reversed(document["messages"]) if m["role"] == "user"]
         today = self._today()
@@ -77,7 +79,7 @@ class CoachSlotExtractor:
                 ),
                 confirmed_json=_json({n: r["value"] for n, r in slots.items() if r["confirmed"]}),
                 recent_talk=_json(messages),
-                message=_fenced(message),
+                message=fence(message),
             ),
             response_model=SlotExtraction,
             system_instruction=EXTRACT_PROMPT.system,
@@ -109,9 +111,3 @@ class CoachSlotExtractor:
 
 def _json(value: object) -> str:
     return json.dumps(value, ensure_ascii=False)
-
-
-def _fenced(text: str) -> str:
-    # The prompt says everything inside <worker_message> is data; a closing tag in the text
-    # could end that section early.
-    return text.replace("</worker_message", "< /worker_message")

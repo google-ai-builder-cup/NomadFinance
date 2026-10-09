@@ -113,6 +113,11 @@ class Settings(BaseSettings):
         "classification"
     )
     gemini_coach_extract_thinking_budget: int | None = Field(default=0, ge=0)
+    # The guardrail's scope check (NF-FC-013) runs only for the messages the fixed rules cannot
+    # judge, and only sorts a message into one of five labels: the fast tier, no thinking. A label
+    # it is unsure of lets the turn through, so a weaker tier costs a missed redirect, not a block.
+    gemini_coach_guard_tier: Literal["reasoning", "extraction", "classification"] = "classification"
+    gemini_coach_guard_thinking_budget: int | None = Field(default=0, ge=0)
     # The 90-day plan's words (NF-FC-012): the figures come from code, so the model only writes
     # sentences, but it must follow many rules at once (thirteen weeks, only the given numbers), so
     # the reasoning tier with a small thinking budget. A plan takes 20 to 40 seconds.

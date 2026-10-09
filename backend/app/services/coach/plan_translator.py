@@ -19,6 +19,7 @@ from app.prompts.loader import load_prompt
 from app.schemas.coach_plan import CoachPlan
 from app.schemas.coach_plan_text import PlanTranslation
 from app.schemas.contract import ReportLanguage
+from app.services.coach.guard_texts import NOT_ADVICE_NOTE
 from app.services.coach.plan_translation_check import (
     apply_narrative,
     check_translation,
@@ -76,6 +77,9 @@ class CoachPlanTranslator:
                 thinking_budget=self._settings.gemini_coach_translate_thinking_budget,
                 timeout_seconds=60,
             )
+            # The note is fixed wording, not the model's (design 4.5): the model's version is
+            # replaced before it is checked, so it can neither fail the check nor reach a worker.
+            target = target.model_copy(update={"disclaimer": NOT_ADVICE_NOTE[language]})
             problems = check_translation(source, target)
             if not problems:
                 translated = apply_narrative(plan, target)

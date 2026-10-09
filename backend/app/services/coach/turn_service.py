@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import AsyncIterator
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
@@ -34,6 +33,8 @@ from app.schemas.coach_session import (
     CoachTurnRequest,
 )
 from app.schemas.errors import ErrorEnvelope
+from app.services.coach.guard_texts import reply_for
+from app.services.coach.guard_types import GuardDecision
 from app.services.coach.question_bank import load_question_bank
 from app.services.coach.session_document import jsonable
 from app.services.coach.session_service import CoachSessions
@@ -53,7 +54,12 @@ from app.services.coach.turn_prompt import (
 )
 from app.services.coach.turn_replay import body_hash, replay_frames
 from app.services.coach.turn_types import (
+    FixedReply,
+    Guard,
+    LiveTurn,
     NoExtraction,
+    NoGuard,
+    ReplayTurn,
     SlotExtractor,
     TextRequiredError,
     TurnInProgressError,
@@ -67,28 +73,6 @@ SUMMARY_OPERATION = "coach.summarise"
 REPLY_TEMPERATURE = 0.3
 
 
-@dataclass
-class LiveTurn:
-    """A turn that has started: its reply stream is open and its first piece is in."""
-
-    uid: str
-    session_id: str
-    key: str
-    body_hash: str
-    body: CoachTurnRequest
-    understanding: Understanding
-    document: dict[str, Any]
-    stream: GeminiStream
-    started_at: datetime
-
-
-@dataclass(frozen=True)
-class ReplayTurn:
-    """A finished turn asked for again with the same key: its events, from storage."""
-
-    frames: tuple[str, ...]
-
-
 class CoachTurns:
     def __init__(
         self,
@@ -96,10 +80,12 @@ class CoachTurns:
         gemini: GeminiClient,
         *,
         extractor: SlotExtractor | None = None,
+        guard: Guard | None = None,
     ) -> None:
         self._sessions = sessions
         self._gemini = gemini
         self._extractor = extractor or NoExtraction()
+        self._guard = guard or NoGuard()
         self._bank = load_question_bank()
         self._settings = get_settings()
 
@@ -114,7 +100,8 @@ class CoachTurns:
             TextRequiredError: `text` was left out where the coach may not speak first.
             KeyReusedError, RequestInProgressError, TurnInProgressError: The key or the session
                 is in a state that refuses a new run (conventions, section 5).
-            GeminiError: Understanding or opening the reply failed before any piece arrived.
+            GeminiError: Judging, understanding or opening the reply failed before any piece
+                arrived.
         """
         document = await self._sessions.document(uid, session_id, now)
         if document["status"] != "active":
@@ -134,16 +121,25 @@ class CoachTurns:
         turn_document = {**document, "last_turn": started}
         try:
             understanding = Understanding()
+            decision: GuardDecision | None = None
+            stream: GeminiStream | FixedReply
             if body.text:
-                understanding = await self._extractor.extract(
-                    turn_document, body.text, body.language
-                )
-            stream = await self._open_reply(turn_document, understanding, body)
+                decision = await self._guard.check(turn_document, body.text, body.language)
+            if decision is not None and decision.blocked:
+                # Design 4.2: a blocked turn is answered with fixed words, so neither the
+                # extractor nor the reply model ever sees what was blocked.
+                stream = FixedReply(reply_for(decision, body.language))
+            else:
+                if body.text:
+                    understanding = await self._extractor.extract(
+                        turn_document, body.text, body.language
+                    )
+                stream = await self._open_reply(turn_document, understanding, body)
         except BaseException:
             await self._mark(uid, session_id, started, "failed")
             raise
         return LiveTurn(
-            uid, session_id, key, digest, body, understanding, turn_document, stream, now
+            uid, session_id, key, digest, body, understanding, turn_document, stream, now, decision
         )
 
     async def frames(self, turn: LiveTurn, request_id: str) -> AsyncIterator[str]:
@@ -165,6 +161,10 @@ class CoachTurns:
             reply = turn.stream.text.strip()
             if not reply:
                 raise GeminiResponseError("the reply was empty")
+            if not isinstance(turn.stream, FixedReply) and self._guard.check_reply(reply):
+                # The words are already on the screen, which treats them as provisional until
+                # `done`: end in an error and save nothing, so the worker asks again.
+                raise GeminiResponseError("the reply broke a rule of the coach")
             done = await self._save(turn, reply)
             finished = True
             yield sse_event("done", done.model_dump(mode="json"))

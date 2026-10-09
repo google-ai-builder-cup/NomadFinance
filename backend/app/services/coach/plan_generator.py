@@ -18,6 +18,7 @@ from app.integrations.gemini.errors import GeminiResponseError
 from app.prompts.loader import load_prompt
 from app.schemas.coach_plan import ChecklistItem, CoachPlan, PlanWarning, PlanWeek
 from app.schemas.coach_plan_text import PlanText
+from app.services.coach.guard_texts import NOT_ADVICE_NOTE
 from app.services.coach.plan_facts import (
     CHECKLIST_ABOUT,
     WARNING_ABOUT,
@@ -32,11 +33,10 @@ logger = logging.getLogger(__name__)
 
 PLAN_PROMPT = load_prompt("coach", "plan", 1)
 ATTEMPTS = 2
-# The standard note on every plan and PDF (design 4.4, NF-FC-013). Fixed text, not the model's.
-DISCLAIMER = (
-    "This plan is a guide to help you think ahead. It is not professional financial advice. "
-    "Check important decisions with a trusted adviser or a worker support organisation."
-)
+# The standard note on every plan and PDF (design 4.5). Fixed text, not the model's: it lives with
+# the other guardrail wording in six languages (`guard_texts`), and a translated plan carries the
+# worker's language's version of it, not a model's translation.
+DISCLAIMER = NOT_ADVICE_NOTE["en"]
 
 
 def _json(value: object) -> str:
