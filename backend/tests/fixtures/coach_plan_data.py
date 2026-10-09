@@ -145,6 +145,64 @@ class WritingGemini:
         return compliant_text(kwargs["contents"])
 
 
+class FakeExportStore:
+    """`exports/{uid}/...` in memory."""
+
+    def __init__(self) -> None:
+        self.files: dict[str, bytes] = {}
+        self.reads = 0
+
+    def upload(self, uid: str, filename: str, data: bytes) -> str:
+        path = f"exports/{uid}/{filename}"
+        self.files[path] = data
+        return path
+
+    def read(self, uid: str, path: str) -> bytes | None:
+        self.reads += 1
+        return self.files.get(path)
+
+
+def translated_text(contents: str) -> Any:
+    """What a faithful translator returns: every entry, in order, numbers and codes unchanged,
+    the words marked with the language so a test can see which plan it is reading."""
+    from app.schemas.coach_plan_text import NoteText, PlanTranslation, WeekText
+
+    found = re.search(r"Translate this plan into (.*?)\.\n", contents)
+    language = found.group(1) if found else "?"
+    source = json.loads(_section(contents, "plan"))
+
+    def say(text: str) -> str:
+        return f"[{language}] {text}"
+
+    return PlanTranslation(
+        summary=say(source["summary"]),
+        weeks=[
+            WeekText(week=w["week"], title=say(w["title"]), actions=[say(a) for a in w["actions"]])
+            for w in source["weeks"]
+        ],
+        warnings=[NoteText(id=n["id"], text=say(n["text"])) for n in source["warnings"]],
+        checklist=[NoteText(id=n["id"], text=say(n["text"])) for n in source["checklist"]],
+        disclaimer=say(source["disclaimer"]),
+    )
+
+
+class TranslatingGemini:
+    """Answers the translation call with `translated_text`, or with what a test scripts first."""
+
+    def __init__(self, *scripted: Any) -> None:
+        self.scripted = list(scripted)
+        self.calls: list[dict[str, Any]] = []
+
+    async def generate_structured(self, **kwargs: Any) -> Any:
+        self.calls.append(kwargs)
+        if self.scripted:
+            step = self.scripted.pop(0)
+            if isinstance(step, Exception):
+                raise step
+            return step(kwargs["contents"]) if callable(step) else step
+        return translated_text(kwargs["contents"])
+
+
 def make_plans(
     persona: Persona,
     *,
@@ -152,11 +210,15 @@ def make_plans(
     gemini: WritingGemini | None = None,
     rates: dict[str, float] | None = None,
     radar: FakeRadar | None = None,
+    translator: TranslatingGemini | None = None,
+    store: FakeExportStore | None = None,
 ) -> Any:
     """`CoachPlans` over in-memory storage for a persona. `home="same"` is the persona's own home
     country; `None` is a profile with no home country."""
+    from app.services.coach.plan_files import PlanFiles
     from app.services.coach.plan_generator import CoachPlanWriter
     from app.services.coach.plan_service import CoachPlans
+    from app.services.coach.plan_translator import CoachPlanTranslator
     from tests.fixtures.coach_sessions import make_sessions
 
     service, session_repo, plan_repo = make_sessions()
@@ -176,6 +238,11 @@ def make_plans(
         FakeCorridors(),  # type: ignore[arg-type]
         FakeRates(persona_rates(persona)),  # type: ignore[arg-type]
         radar or FakeRadar(),  # type: ignore[arg-type]
+        PlanFiles(
+            plan_repo,  # type: ignore[arg-type]
+            CoachPlanTranslator(translator or TranslatingGemini()),  # type: ignore[arg-type]
+            store or FakeExportStore(),  # type: ignore[arg-type]
+        ),
     )
     return plans, service, session_repo, plan_repo, stub
 

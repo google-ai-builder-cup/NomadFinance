@@ -26,11 +26,18 @@ from app.repositories.rate_repo import RateRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.coach_plan import CoachPlanResponse, slot_hash
 from app.schemas.coach_profile import CoachProfile
+from app.schemas.contract import ReportLanguage
 from app.schemas.remittance_compare import CorridorId
-from app.services.coach.coach_scorer import CoachScorer, ScoringData
-from app.services.coach.plan_document import build_document, to_response
+from app.services.coach.coach_scorer import CoachScorer
+from app.services.coach.plan_document import (
+    build_document,
+    grounding_of,
+    rates_as_of,
+    to_response,
+)
 from app.services.coach.plan_facts import PlanContext
 from app.services.coach.plan_figures import Quote, compute_figures
+from app.services.coach.plan_files import BeforeTranslation, PlanFiles
 from app.services.coach.plan_generator import PLAN_PROMPT, CoachPlanWriter
 from app.services.coach.plan_inputs import plan_inputs, score_inputs_of
 from app.services.coach.plan_quote import cheapest_quote
@@ -88,6 +95,7 @@ class CoachPlans:
         corridors: CorridorRepository,
         rates: RateRepository,
         radar: RadarRepository,
+        files: PlanFiles,
     ) -> None:
         self._sessions = sessions
         self._plans = plans
@@ -97,27 +105,33 @@ class CoachPlans:
         self._corridors = corridors
         self._rates = rates
         self._radar = radar
+        self._files = files
 
-    async def create(self, uid: str, session_id: str, now: datetime) -> PlanResult:
-        """The plan for the session's confirmed answers: the stored one, or a new one.
+    async def create(
+        self, uid: str, session_id: str, language: ReportLanguage, now: datetime
+    ) -> PlanResult:
+        """The plan for the session's confirmed answers in `language`: the stored one, or a new one.
 
         Raises:
             SessionNotFoundError, SessionNotActiveError: No such session, or it is abandoned.
             PlanNotReadyError: The answers are not confirmed yet.
             PlanInProgressError: Another request is making this plan.
             ScoreUnavailableError: The score (so the plan) cannot be worked out now.
-            GeminiError: The sentences failed (`GeminiResponseError` when unusable twice).
+            GeminiError: The sentences or the translation failed (a `GeminiResponseError` when
+                unusable twice).
         """
         document = await self._sessions.document(uid, session_id, now)
         if document["status"] == "completed" and document.get("plan_id"):
-            return PlanResult(await self.get(uid, document["plan_id"], now), created=False)
+            return PlanResult(
+                await self.get(uid, document["plan_id"], now, language), created=False
+            )
         if document["status"] != "active":
             raise SessionNotActiveError(document["status"])
         profile = self._confirmed_profile(document)
         plan_id = slot_hash(profile)[:20]
         if await run_in_threadpool(self._plans.get, uid, plan_id) is not None:
             await self._finish(uid, session_id, plan_id, now)
-            return PlanResult(await self.get(uid, plan_id, now), created=False)
+            return PlanResult(await self.get(uid, plan_id, now, language), created=False)
 
         await self._lock(uid, session_id, document, plan_id, now)
         try:
@@ -126,24 +140,84 @@ class CoachPlans:
         except BaseException:
             await self._unlock(uid, session_id, now)
             raise
-        return PlanResult(to_response(plan_id, stored, session_id=session_id), created=True)
+        # The English plan is stored and the session completed: a failed translation is a retry
+        # of this call, which then finds the plan and only translates.
+        response = await self._view(uid, plan_id, stored, session_id, language, now)
+        return PlanResult(response, created=True)
 
-    async def get(self, uid: str, plan_id: str, now: datetime) -> CoachPlanResponse:
-        """A stored plan, in English (other languages: NF-FC-014).
+    async def get(
+        self,
+        uid: str,
+        plan_id: str,
+        now: datetime,
+        language: ReportLanguage = "en",
+        before_translation: BeforeTranslation | None = None,
+    ) -> CoachPlanResponse:
+        """A stored plan in `language`, translated now (and kept) if it is not stored in it.
 
         Raises:
             PlanNotFoundError: No such plan for this worker.
+            GeminiError: The translation failed; nothing is stored.
         """
         document = await run_in_threadpool(self._plans.get, uid, plan_id)
         if document is None:
             raise PlanNotFoundError(plan_id)
-        session_id: str | None = document.get("session_id")
+        session_id = await self._live_session(uid, document.get("session_id"), now)
+        return await self._view(
+            uid, plan_id, document, session_id, language, now, before_translation
+        )
+
+    async def pdf(
+        self,
+        uid: str,
+        plan_id: str,
+        language: ReportLanguage,
+        now: datetime,
+        before_translation: BeforeTranslation | None = None,
+    ) -> bytes:
+        """The plan as a PDF in `language`: kept in Cloud Storage after the first request.
+
+        Raises:
+            PlanNotFoundError: No such plan for this worker.
+            GeminiError: A translation was needed and failed.
+        """
+        document = await run_in_threadpool(self._plans.get, uid, plan_id)
+        if document is None:
+            raise PlanNotFoundError(plan_id)
+        response = await self._view(uid, plan_id, document, None, language, now, before_translation)
+        return await self._files.pdf(uid, plan_id, document, response, now)
+
+    async def _view(
+        self,
+        uid: str,
+        plan_id: str,
+        document: dict[str, Any],
+        session_id: str | None,
+        language: ReportLanguage,
+        now: datetime,
+        before_translation: BeforeTranslation | None = None,
+    ) -> CoachPlanResponse:
+        plan, available = await self._files.plan_in(
+            uid, plan_id, document, language, now, before_translation
+        )
+        return to_response(
+            plan_id,
+            document,
+            session_id=session_id,
+            language=language,
+            plan=plan,
+            available=available,
+        )
+
+    async def _live_session(self, uid: str, session_id: str | None, now: datetime) -> str | None:
+        """The session's id while the session exists, else None (the plan outlives it)."""
+        if session_id is None:
+            return None
         try:
-            if session_id is not None:
-                await self._sessions.document(uid, session_id, now)
+            await self._sessions.document(uid, session_id, now)
         except SessionNotFoundError:
-            session_id = None
-        return to_response(plan_id, document, session_id=session_id)
+            return None
+        return session_id
 
     @staticmethod
     def _confirmed_profile(document: dict[str, Any]) -> CoachProfile:
@@ -217,8 +291,8 @@ class CoachPlans:
             corridor_id=corridor_id,
             score=score,
             plan=plan,
-            grounding=_grounding(host, data, quote),
-            rates_as_of=_rates_as_of(data, quote, now),
+            grounding=grounding_of(host, data, quote),
+            rates_as_of=rates_as_of(data, quote, now),
             models={"plan": model_for(ModelTier(settings.gemini_coach_plan_tier), settings)},
             prompt_versions={PLAN_PROMPT.key: PLAN_PROMPT.version},
             now=now,
@@ -231,33 +305,3 @@ class CoachPlans:
         profile = await run_in_threadpool(self._users.get_profile, uid)
         home = profile.get("home_country")
         return home if isinstance(home, str) and len(home) == 2 else None
-
-
-def _grounding(host: str, data: ScoringData, quote: Quote | None) -> dict[str, Any]:
-    """What the figures came from, so a reviewer can check them (data model: `grounding`)."""
-    return {
-        "baselines": {"host_country": host, "version": data.baseline.get("version")},
-        "labor_law": {"country": host, "version": data.law_version},
-        "fx": [
-            {
-                "pair": pair,
-                "rate": rate,
-                "fetched_at": data.rate_times.get(pair),
-                "provider": data.rate_providers.get(pair),
-            }
-            for pair, rate in sorted(data.rates.items())
-        ],
-        "provider_quote": (
-            None
-            if quote is None
-            else {"slug": quote.slug, "name": quote.name, "fetched_at": quote.quoted_at}
-        ),
-    }
-
-
-def _rates_as_of(data: ScoringData, quote: Quote | None, now: datetime) -> datetime:
-    """The oldest rate or quote the plan used; the time of the plan when it used none."""
-    times = [t for t in data.rate_times.values() if t is not None]
-    if quote is not None:
-        times.append(quote.quoted_at)
-    return min(times) if times else now

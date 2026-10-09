@@ -118,6 +118,12 @@ class Settings(BaseSettings):
     # the reasoning tier with a small thinking budget. A plan takes 20 to 40 seconds.
     gemini_coach_plan_tier: Literal["reasoning", "extraction", "classification"] = "reasoning"
     gemini_coach_plan_thinking_budget: int | None = Field(default=1024, ge=0)
+    # Translating the plan's sentences (NF-FC-014) is a classification job: the fast tier, no
+    # thinking. The code checks every number, so a weaker tier costs a retry, never a wrong figure.
+    gemini_coach_translate_tier: Literal["reasoning", "extraction", "classification"] = (
+        "classification"
+    )
+    gemini_coach_translate_thinking_budget: int | None = Field(default=0, ge=0)
 
     # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
     # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.

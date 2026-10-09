@@ -26,3 +26,17 @@ class PlanText(BaseModel):
     weeks: list[WeekText] = Field(description="Exactly 13 entries, weeks 1 to 13.")
     warnings: list[NoteText] = Field(description="One for each warning asked for, by id.")
     checklist: list[NoteText] = Field(description="One for each checklist item asked for, by id.")
+
+
+class PlanTranslation(BaseModel):
+    """The narrative of a plan, all of it text, for the translation step (NF-FC-014).
+
+    The same shape in and out: the model returns every entry, in the same order, with the same
+    ids and week numbers. Figures are not in it, so the model never sees or changes one.
+    """
+
+    summary: str
+    weeks: list[WeekText]
+    warnings: list[NoteText]
+    checklist: list[NoteText]
+    disclaimer: str
