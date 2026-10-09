@@ -72,6 +72,8 @@ POST /sessions ──► POST /messages (no text: the coach speaks first)
 
 A worker who corrects something at `review` goes back to the stage that holds it (design 4.3); the contract does not change, only `stage` and `next_slot` do.
 
+**How the review is answered (built by NF-FC-020).** There is no separate route: the worker's reply at `review` goes to `POST /messages` like any other, and one fast-tier call (`coach/review.v1`) reads it into *confirm*, *change* (and which answer) or *other*. Code decides what moves: a **yes** needs high confidence and the quoted words in the message, then confirms every answer and the `done` event has `stage: "plan"` and `next_slot: null`; a **change that names an answer** reopens it (unconfirmed) and goes back to its stage, with that answer as `next_slot`; a **change that names none** ("I want to change something") moves nothing and the coach asks which; anything else moves nothing and the review is shown again. The move is written in the same step as the turn.
+
 **Stages**, in order (a stage is left only when its required answers are in; a worker who volunteers a later fact keeps it):
 
 | Stage | Slots asked |

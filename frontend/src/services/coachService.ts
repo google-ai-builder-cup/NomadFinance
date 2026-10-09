@@ -2,6 +2,8 @@ import { ApiError, apiRequest } from "@/services/apiClient";
 import {
   COACH_SLOTS,
   COACH_STAGES,
+  type CoachPlanMade,
+  type CoachSession,
   type CoachSessionStart,
   type CoachSlot,
   type CoachStage,
@@ -42,6 +44,55 @@ export async function startCoachSession(
     body: JSON.stringify({ language, ...(restart && { restart: true }) }),
   });
   return (await response.json()) as CoachSessionStart;
+}
+
+/** One session as the server holds it now (its score is there from the `review` stage). */
+export async function getCoachSession(sessionId: string): Promise<CoachSession> {
+  const response = await apiRequest(`/api/v2/coach/sessions/${encodeURIComponent(sessionId)}`);
+  return (await response.json()) as CoachSession;
+}
+
+/** The plan can take 20 to 40 seconds and a translation more: the contract says to allow 90. */
+export const PLAN_TIMEOUT_MS = 90_000;
+
+/** Make the 90-day plan from the confirmed answers, in `language`. Asking again for the same
+ * answers returns the plan that exists (200), so a retry never makes a second one. A call that
+ * outlasts `timeoutMs` ends as a `504 ai_timeout`, the same as the server's own. */
+export async function createCoachPlan(
+  sessionId: string,
+  language: LanguageCode,
+  timeoutMs = PLAN_TIMEOUT_MS
+): Promise<CoachPlanMade> {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  try {
+    return await requestCoachPlan(sessionId, language, controller.signal);
+  } catch (error) {
+    throw timedOut ? new ApiError(504, "ai_timeout") : error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function requestCoachPlan(
+  sessionId: string,
+  language: LanguageCode,
+  signal: AbortSignal
+): Promise<CoachPlanMade> {
+  const response = await apiRequest(
+    `/api/v2/coach/sessions/${encodeURIComponent(sessionId)}/plan`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language }),
+      signal,
+    }
+  );
+  return (await response.json()) as CoachPlanMade;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {

@@ -7,6 +7,7 @@ import ChatLog from "@/components/coach/ChatLog";
 import CoachNotice from "@/components/coach/CoachNotice";
 import OfflineNotice from "@/components/coach/OfflineNotice";
 import ResumeBanner from "@/components/coach/ResumeBanner";
+import ScoreScreen from "@/components/coach/score/ScoreScreen";
 import StageStepper from "@/components/coach/StageStepper";
 import { Button } from "@/components/ui/button";
 import { useCoachChat, type CoachChatTiming } from "@/hooks/useCoachChat";
@@ -108,38 +109,47 @@ export default function CoachChat({
         />
       )}
       <StageStepper stage={state.stage} />
-      <ChatLog
-        lines={state.lines}
-        draft={state.draft}
-        announcement={state.announcement}
-        language={session.language}
-        footer={
-          failure ? (
-            <CoachNotice
-              failure={failure}
-              onRetry={restartError ? startOver : retry}
-              onRestart={startOver}
-              restarting={restarting}
-            />
-          ) : (
-            state.queued && <OfflineNotice onSendNow={retry} />
-          )
-        }
-      />
+      {/* Once the answers are confirmed the score takes the room: the conversation shrinks to its
+          last lines, still there to scroll back through. */}
+      <div
+        className={confirmed ? "flex max-h-16 shrink-0 flex-col" : "flex min-h-0 flex-1 flex-col"}
+      >
+        <ChatLog
+          lines={state.lines}
+          draft={state.draft}
+          announcement={state.announcement}
+          language={session.language}
+          footer={
+            failure ? (
+              <CoachNotice
+                failure={failure}
+                onRetry={restartError ? startOver : retry}
+                onRestart={startOver}
+                restarting={restarting}
+              />
+            ) : (
+              state.queued && <OfflineNotice onSendNow={retry} />
+            )
+          }
+        />
+      </div>
       {confirmed ? (
         <div
           ref={confirmedRef}
           tabIndex={-1}
-          className="flex shrink-0 items-start gap-3 rounded-2xl border bg-card p-4 focus:outline-none"
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain rounded-2xl border bg-card p-4 focus:outline-none"
         >
-          <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-safe-ink" aria-hidden="true" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <p className="text-sm font-bold">{t("confirmed.title")}</p>
-            <p className="text-sm text-muted-foreground">{t("confirmed.description")}</p>
-            <Button asChild variant="outline" className="min-h-11">
-              <Link to="/dashboard">{t("confirmed.backToDashboard")}</Link>
-            </Button>
+          <div className="flex items-start gap-3">
+            <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-safe-ink" aria-hidden="true" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold">{t("confirmed.title")}</p>
+              <p className="text-sm text-muted-foreground">{t("confirmed.description")}</p>
+            </div>
           </div>
+          <ScoreScreen sessionId={session.id} language={language} />
+          <Button asChild variant="outline" className="min-h-11">
+            <Link to="/dashboard">{t("confirmed.backToDashboard")}</Link>
+          </Button>
         </div>
       ) : draftScope === null ? (
         panel

@@ -44,6 +44,42 @@ export interface CoachSlotAnswer {
   source: "user" | "contract_prefill";
 }
 
+export const SCORE_FACTORS = [
+  "debt_to_income",
+  "emergency_buffer",
+  "remittance_ratio",
+  "recruitment_fee_vs_cap",
+  "banked_status",
+] as const;
+export type ScoreFactorId = (typeof SCORE_FACTORS)[number];
+
+export interface ScoreFactor {
+  id: ScoreFactorId;
+  /** The measured figure (a ratio, or months); null when it could not be measured. */
+  value: number | null;
+  /** This factor's points, 0 to 100. */
+  score: number;
+  weight: number;
+}
+
+/** The preparedness score of `docs/features/coach-scoring.md`. `band` is an open id: a band the
+ * screen does not know is shown with a neutral label. */
+export interface CoachScore {
+  total: number;
+  band: string;
+  factors: ScoreFactor[];
+  rubric_version: number;
+}
+
+/** What the screen reads of a made plan (`POST /coach/sessions/{id}/plan`); the plan view of
+ * NF-FC-021 reads the rest of it. */
+export interface CoachPlanMade {
+  id: string;
+  language: LanguageCode;
+  score: CoachScore;
+  plan: { summary: string };
+}
+
 export interface CoachSession {
   id: string;
   status: "active" | "completed" | "abandoned";
@@ -54,8 +90,8 @@ export interface CoachSession {
   /** The slot the coach asks next; null exactly in the `review` and `plan` stages. */
   next_slot: CoachSlot | null;
   turn_count: number;
-  /** The score screen (NF-FC-020) reads the rest of it. */
-  score: { total: number; band: string } | null;
+  /** At `review` and `plan` unless it cannot be worked out right now (a missing rate): `null`. */
+  score: CoachScore | null;
   plan_id: string | null;
   created_at: string;
   last_active: string;

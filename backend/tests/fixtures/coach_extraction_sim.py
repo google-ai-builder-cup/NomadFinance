@@ -132,3 +132,11 @@ async def run_persona(persona: Persona, extractor: Extractor) -> PersonaResult:
     result.stage = document["stage"]
     result.declined = document["declined_slots"]
     return result
+
+
+class NoReview:
+    """Reads nothing at the review step: the persona runs here judge the answers, and what a worker
+    says at the review is read by `CoachReviewReader` (tested on its own, NF-FC-020)."""
+
+    async def read(self, document: dict[str, Any], text: str) -> None:
+        return None

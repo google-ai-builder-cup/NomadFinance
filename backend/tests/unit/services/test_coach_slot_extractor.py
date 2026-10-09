@@ -116,13 +116,28 @@ async def test_the_message_is_masked_and_inside_its_tag_and_cannot_close_it() ->
     assert "</worker_message" not in inside
 
 
-@pytest.mark.parametrize("stage", ["review", "plan"])
+@pytest.mark.parametrize("stage", ["plan"])
 async def test_no_call_is_made_where_an_answer_does_not_move_the_stage(stage: str) -> None:
     fake = FakeGemini({"coach.extract": reading(COUNTRY)})
 
     result = await extractor(fake).extract(document(stage), "Singapore", "en")
 
     assert fake.calls == [] and list(result.updates) == []
+
+
+async def test_at_the_review_no_answer_is_read_but_the_review_reader_is_asked() -> None:
+    fake = FakeGemini({"coach.extract": reading(COUNTRY)})
+    asked: list[str] = []
+
+    class Reviewer:
+        async def read(self, document: dict[str, Any], text: str) -> None:
+            asked.append(text)
+
+    result = await CoachSlotExtractor(
+        as_client(fake), today=lambda: TODAY, reviewer=Reviewer()
+    ).extract(document("review"), "Singapore", "en")
+
+    assert asked == ["Singapore"] and fake.calls == [] and list(result.updates) == []
 
 
 async def test_a_gemini_failure_is_left_to_the_turn() -> None:

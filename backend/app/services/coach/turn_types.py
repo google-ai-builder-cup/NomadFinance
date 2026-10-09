@@ -15,6 +15,7 @@ from app.schemas.coach_questions import FollowUpTrigger
 from app.schemas.coach_session import CoachTurnRequest
 from app.schemas.contract import ReportLanguage
 from app.services.coach.guard_types import GuardDecision, GuardReason
+from app.services.coach.review_reader import ReviewMove
 from app.services.coach.session_types import SlotUpdate
 
 
@@ -54,6 +55,9 @@ class Understanding:
     updates: Sequence[SlotUpdate] = ()
     declined: Sequence[SlotName] = ()
     clarify: Clarification | None = None
+    # At the review stage only: the worker confirmed every answer, or wants to change one
+    # (`ReviewMove`, NF-FC-020). Nothing else is read at the review.
+    review: ReviewMove | None = None
 
 
 class SlotExtractor(Protocol):

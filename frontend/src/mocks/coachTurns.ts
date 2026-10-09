@@ -69,3 +69,51 @@ export function sessionFrom(
   const body = mock.body as Omit<CoachSessionStart, "resumed"> & { resumed?: boolean };
   return { ...body, resumed: body.resumed ?? false, ...changes };
 }
+
+/** Answers `GET /coach/sessions/{id}` with a session mock, as the score screen asks for it once the
+ * answers are confirmed (NF-FC-020). Without `body` it is the mock as it is; `score: null` is the
+ * answer while a rate is missing. */
+export function replaySession(
+  name = "coach/session-04-plan-mid.json",
+  changes: Partial<CoachSessionStart> = {}
+): { requests: number } {
+  const seen = { requests: 0 };
+  server.use(
+    http.get("*/api/v2/coach/sessions/:id", () => {
+      seen.requests += 1;
+      return HttpResponse.json({ ...sessionFrom(name), ...changes });
+    })
+  );
+  return seen;
+}
+
+export interface MadePlan {
+  sent: { sessionId: string; language: string | undefined }[];
+}
+
+/** Answers `POST /coach/sessions/{id}/plan` with a plan mock, or a refusal (`{ refusal }`), and
+ * records what was asked. `delayMs` keeps the answer back, to see the screen wait. */
+export function replayPlan(
+  reply: "coach/plan-01-created.json" | { refusal: string } = "coach/plan-01-created.json",
+  delayMs = 0
+): MadePlan {
+  const made: MadePlan = { sent: [] };
+  server.use(
+    http.post("*/api/v2/coach/sessions/:id/plan", async ({ params, request }) => {
+      const body = (await request.json()) as { language?: string };
+      made.sent.push({ sessionId: String(params.id), language: body.language });
+      if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+      const mock = jsonMocks.get(typeof reply === "string" ? reply : reply.refusal);
+      if (mock === undefined) {
+        throw new Error("No such plan mock in docs/mocks/.");
+      }
+      return HttpResponse.json(mock.body as Record<string, unknown>, {
+        status: mock.status ?? 200,
+        headers: mock.headers,
+      });
+    })
+  );
+  return made;
+}

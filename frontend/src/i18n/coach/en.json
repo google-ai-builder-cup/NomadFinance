@@ -111,7 +111,7 @@
   },
   "confirmed": {
     "title": "All your answers are in",
-    "description": "Your preparedness score and your 90-day plan come next. They are not on this screen yet.",
+    "description": "Here is your preparedness score. Next you can make your 90-day plan.",
     "backToDashboard": "Back to home"
   },
   "language": {
@@ -130,5 +130,123 @@
     "waiting": "Waiting for signal",
     "notice": "No connection. Your answer is saved on this phone and will be sent when you are back online.",
     "sendNow": "Send now"
+  },
+  "score": {
+    "title": "Your preparedness score",
+    "subtitle": "How ready your money is for leaving. It is a guide, not a loan score.",
+    "outOf": "out of 100",
+    "chartLabel": "Preparedness score: {{total}} out of 100, {{band}}",
+    "band": {
+      "needs_work": "Needs more preparation",
+      "getting_ready": "Getting ready",
+      "well_prepared": "Well prepared",
+      "other": "Your level"
+    },
+    "level": {
+      "strong": "Strong",
+      "fair": "Fair",
+      "weak": "Weak"
+    },
+    "points": "{{points}} out of 100",
+    "whatMeans": "What this means",
+    "howImprove": "How to improve",
+    "factorsHeading": "What makes up your score",
+    "floorNote": "One area is very low, so your level stays at “Getting ready” until you improve it.",
+    "disclaimer": "This is a guide to help you plan. It is not financial advice and not a credit score.",
+    "loading": "Loading your score",
+    "unavailable": {
+      "title": "We cannot work out your score right now",
+      "description": "A figure we need is missing. Please try again in a moment."
+    },
+    "plan": {
+      "button": "Make my 90-day plan",
+      "help": "Your plan has a budget, a plan for sending money home, and steps for each week.",
+      "making": "Making your plan…",
+      "wait": "This takes up to a minute. You can keep this page open.",
+      "slow": "Still working. This can take up to a minute.",
+      "readyTitle": "Your plan is ready",
+      "readyNote": "The full plan page, with the weeks and the PDF, is coming next."
+    },
+    "error": {
+      "notReady": "Please confirm your answers first.",
+      "unavailable": "We cannot make your plan right now. Please try again later."
+    },
+    "factor": {
+      "debt_to_income": {
+        "name": "Debt compared with your pay",
+        "strong": {
+          "means": "You owe little or nothing compared with what you earn.",
+          "improve": "Keep it that way. Do not take new loans before you leave."
+        },
+        "fair": {
+          "means": "Your debt is a few months of your pay. It is a weight, but you can carry it.",
+          "improve": "Pay the debt with the highest interest first, and ask the lender to write the interest rate down."
+        },
+        "weak": {
+          "means": "Your debt is many months of your pay. This is the biggest risk to your plan.",
+          "improve": "Do not borrow more. Talk to a worker support group before you pay anything new, and keep every receipt."
+        }
+      },
+      "emergency_buffer": {
+        "name": "Emergency savings",
+        "strong": {
+          "means": "Your savings cover several months of your costs. That is a strong cushion.",
+          "improve": "Keep this money apart from the money you send home."
+        },
+        "fair": {
+          "means": "Your savings cover a month or two of costs. That helps, but a long problem would use it up.",
+          "improve": "Add a little every month until it covers three months of costs."
+        },
+        "weak": {
+          "means": "You have almost nothing saved for a bad month.",
+          "improve": "Start with a small amount from your first pay, even a very small one, and add each month."
+        }
+      },
+      "remittance_ratio": {
+        "name": "Money sent home compared with your pay",
+        "strong": {
+          "means": "The share of your pay you plan to send home leaves room to live.",
+          "improve": "Keep sending the same amount each month, on the same day."
+        },
+        "fair": {
+          "means": "You plan to send a large part of your pay. It leaves little room for surprises.",
+          "improve": "Check your costs for the first month before you decide the exact amount."
+        },
+        "weak": {
+          "means": "You plan to send almost all of your pay, or more than you can afford.",
+          "improve": "Send a smaller amount at first. Raise it once you know your real costs."
+        }
+      },
+      "recruitment_fee_vs_cap": {
+        "name": "Agent fee compared with the usual limit",
+        "strong": {
+          "means": "What you paid your agent is at or under what the host country usually allows.",
+          "improve": "Keep your receipts and your contract together."
+        },
+        "fair": {
+          "means": "What you paid your agent is a little above the usual limit.",
+          "improve": "Keep every receipt and ask a worker support group if the fee was explained to you."
+        },
+        "weak": {
+          "means": "What you paid your agent is far above what the host country usually allows.",
+          "improve": "Keep every receipt and message from the agent, and ask a worker support group for help. Do not pay more."
+        }
+      },
+      "banked_status": {
+        "name": "Bank account or wallet",
+        "strong": {
+          "means": "You have a bank account, so your pay and savings are safe and easy to show.",
+          "improve": "Keep the account in your own name and keep the card yourself."
+        },
+        "fair": {
+          "means": "You have a mobile wallet but no bank account. It is a start.",
+          "improve": "Ask about a bank account that your employer can pay into."
+        },
+        "weak": {
+          "means": "You have no bank account or wallet to be paid into.",
+          "improve": "Open a bank account or wallet in your own name before you leave, or in your first week."
+        }
+      }
+    }
   }
 }

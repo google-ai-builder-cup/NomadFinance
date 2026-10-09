@@ -31,7 +31,13 @@ import pytest
 from app.config import get_settings
 from app.integrations.gemini import GeminiClient
 from app.services.coach.slot_extractor import EXTRACT_PROMPT, CoachSlotExtractor
-from tests.fixtures.coach_extraction_sim import TODAY, prompt_fingerprint, run_persona, score
+from tests.fixtures.coach_extraction_sim import (
+    TODAY,
+    NoReview,
+    prompt_fingerprint,
+    run_persona,
+    score,
+)
 from tests.fixtures.coach_personas import Persona, load_personas
 
 pytestmark = [
@@ -88,7 +94,7 @@ def _show(text: str) -> None:
 @pytest.mark.parametrize("persona", PERSONAS, ids=[p.id for p in PERSONAS])
 async def test_a_persona_is_read_right(gemini: PacedRecordingGemini, persona: Persona) -> None:
     gemini.current = persona.id
-    extractor = CoachSlotExtractor(gemini, today=lambda: TODAY)  # type: ignore[arg-type]
+    extractor = CoachSlotExtractor(gemini, today=lambda: TODAY, reviewer=NoReview())  # type: ignore[arg-type]
 
     result = await run_persona(persona, extractor)
     scored = score(result, persona)
