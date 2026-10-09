@@ -48,6 +48,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | POST | `/api/v1/internal/recompute-fib-profiles` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-013 |
+| POST | `/api/v1/internal/send-coach-checkins` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-FC-016 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
 ## Error format
@@ -1324,6 +1325,19 @@ Called only by the Cloud Scheduler job `fib-recompute` (Sundays 02:00 UTC). Hidd
 - **Always 200.** A failure for one user (the narrative call timing out, a Firestore error, an entry that does not match its schema) is caught and logged inside the run with a hashed user id. That user keeps last week's profile and the others still run; a retry would run, and pay for, every other user again.
 - **Run time:** one reasoning-tier call per user, 3 users at a time. Measured 15 to 24 s per call (2026-10-01), so about 100 users fit in Cloud Run's 900 s request timeout.
 - **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured.
+
+---
+
+## `POST /api/v1/internal/send-coach-checkins` (internal)
+
+Called only by the Cloud Scheduler job `coach-checkins` (daily at 02:00 UTC). Hidden from the OpenAPI docs. The check-in step of the Financial Coach pipeline (NF-FC-016, `docs/mermaid/financial-coach-pipeline.mmd`): finds the Coach plans whose departure date plus 30, 60 or 90 days is today or fell in the last 3 days, and for each one writes a `coach_checkin` notification (`users/{uid}/notifications`, deep link `/coach/checkin/{planId}?m=30`, 60 or 90) and sends an FCM push, both in the worker's `preferred_language`. The wording is fixed in six languages (`services/coach/checkin_texts.py`), not written by a model.
+
+- **Auth:** `Authorization: Bearer <Google-signed OIDC token>` for `CRON_SERVICE_ACCOUNT` with audience `CRON_AUDIENCE`, the same as `/internal/refresh-rates`. Firebase user tokens are rejected.
+- **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
+- **Response `200`:** `SendCheckinsResponse` (`app/schemas/coach_checkin.py`): `day` (UTC), `plans_found`, `notified` (written by this run), `already_sent` (written by an earlier run), `skipped`, `failed`, `completed_at`. Counts only: no worker and no plan is named.
+- **Left out, with nothing written:** a worker whose `coach` flag is off, whose `notification_prefs.reminders` is `false`, a plan that is not the worker's newest (changing an answer makes a new plan and the old one stays), and a departure date that is not a date. They are counted in `skipped` and looked at again on the next run while the plan is inside the 3 days.
+- **Idempotent:** the notification is created under the id `coach_checkin_{planId}_{d30|d60|d90}` and `create` fails if it exists, so only the run that created it sends the push. The marker `checkins.{milestone}.notified_at` on the plan is written last. Running the job twice, at the same moment or after a failure, sends each reminder once. The push is best effort: a dead token is removed, any other push failure is logged and does not fail the run.
+- **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured **or** a query or a plan failed (`failed` is above 0 and the rest of the work was still done). A 503 makes Cloud Scheduler retry, which is safe because of the above.
 
 ---
 

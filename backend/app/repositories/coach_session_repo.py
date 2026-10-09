@@ -193,6 +193,41 @@ class CoachPlanRepository:
             return str(snapshot.id), snapshot.to_dict() or {}
         return None
 
+    def departing_between(self, first: str, last: str) -> list[tuple[str, str, dict[str, Any]]]:
+        """Every worker's plans whose `departure_date` is `first` to `last`, both `YYYY-MM-DD`.
+
+        For the check-in job (NF-FC-016): a collection-group query, so it needs the group-scope
+        index on `coach_plans.departure_date` (firestore-schema.md). Only the fields the job
+        reads come back; a plan is large. Returns (uid, plan id, those fields).
+        """
+        query = (
+            self._client.collection_group("coach_plans")
+            .where(filter=FieldFilter("departure_date", ">=", first))
+            .where(filter=FieldFilter("departure_date", "<=", last))
+            .select(["departure_date", "checkins"])
+        )
+        found: list[tuple[str, str, dict[str, Any]]] = []
+        for snapshot in query.stream():
+            owner = snapshot.reference.parent.parent
+            if owner is None or owner.parent.id != "users":
+                continue
+            found.append((str(owner.id), str(snapshot.id), snapshot.to_dict() or {}))
+        return found
+
+    def mark_checkin(
+        self, uid: str, plan_id: str, milestone: str, due_on: str, notified_at: datetime
+    ) -> None:
+        """Record that the reminder of `milestone` (`d30`, `d60`, `d90`) went out.
+
+        Field paths, not a whole `checkins` map, so an answer the app stores there later is kept.
+        """
+        self._plans(uid).document(plan_id).update(
+            {
+                f"checkins.{milestone}.due_on": due_on,
+                f"checkins.{milestone}.notified_at": notified_at,
+            }
+        )
+
 
 @lru_cache
 def get_coach_session_repository() -> CoachSessionRepository:

@@ -116,7 +116,7 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 | `grounding` | map | yes | What the figures were derived from, so the validator and a reviewer can check them: `{ "baselines": { "host_country", "version" }, "labor_law": { "country", "version" }, "fx": [ { "pair", "rate", "fetched_at", "provider" } ], "provider_quote": { "slug", "name", "fetched_at" } }` |
 | `language_generated` | string | yes | `en` |
 | `pdf` | map | no | Language to `{ "storage_path", "created_at" }`, for example `{ "en": {...}, "hi": {...} }`. Path: `exports/{uid}/coach-plan-{planId}-{language}.pdf`. Links are signed on request and never stored. |
-| `checkins` | map | no | `d30`, `d60`, `d90`, each `{ "due_on": "YYYY-MM-DD", "notified_at": timestamp or null, "answered_at": timestamp, "answers": map }`. The job sets `notified_at` once per milestone, which makes it safe to run twice. Answers are the three check-in questions of NF-FC-022 and may move to their own subcollection there. |
+| `checkins` | map | no | `d30`, `d60`, `d90`, each `{ "due_on": "YYYY-MM-DD", "notified_at": timestamp, "answered_at": timestamp, "answers": map }`. **Absent when a plan is made.** The check-in job (NF-FC-016) writes `due_on` and `notified_at` of a milestone, by field path, once it has sent that milestone's reminder; a milestone without `notified_at` has not been reminded. Field paths keep whatever the app stores beside them later. `answered_at` and `answers` are the three check-in questions of NF-FC-022 (not built yet, D-233) and may move to their own subcollection there. |
 | `models` | map | yes | `{ "plan": "...", "translation": "..." }` |
 | `prompt_versions` | map | yes | `{ "coach.plan": 1, "coach.translate_plan": 1 }` |
 | `created_at`, `updated_at` | timestamp | yes | |
@@ -160,9 +160,7 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
   "language_generated": "en",
   "pdf": { "en": { "storage_path": "exports/uid_rajesh_demo/coach-plan-9f3a1c5e7b2d4a60c8e1-en.pdf", "created_at": "2026-10-20T08:09:00Z" } },
   "checkins": {
-    "d30": { "due_on": "2026-12-31", "notified_at": null },
-    "d60": { "due_on": "2027-01-30", "notified_at": null },
-    "d90": { "due_on": "2027-03-01", "notified_at": null }
+    "d30": { "due_on": "2026-12-31", "notified_at": "2026-12-31T02:00:04Z" }
   },
   "models": { "plan": "gemini-3.5-flash", "translation": "gemini-3.1-flash-lite" },
   "prompt_versions": { "coach.plan": 1, "coach.translate_plan": 1 },
@@ -172,7 +170,7 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 }
 ```
 
-Values are illustrative: the score, the rate and the plan body come from NF-FC-006, the live rate cache and NF-FC-012.
+Values are illustrative: the score, the rate and the plan body come from NF-FC-006, the live rate cache and NF-FC-012. `checkins` is shown as it is after the day 30 reminder; the other two milestones are added when they are sent.
 
 **Access:** the owner reads; **no client writes**. Backend only writes.
 
@@ -195,7 +193,7 @@ A translation is a separate document, as Contract Shield's `reports/{language}` 
 
 ## Indexes
 
-None beyond the automatic ones, except the collection-group index on `coach_plans.departure_date` in `firestore-schema.md`. The queries are: the active session (`status ==` inside one user's subcollection), the newest plans (`order by created_at desc`, one user), and the check-in job (`departure_date ==`, all users).
+None beyond the automatic ones, except the collection-group index on `coach_plans.departure_date` in `firestore-schema.md`. The queries are: the active session (`status ==` inside one user's subcollection), the newest plans (`order by created_at desc`, one user), and the check-in job (`departure_date` in a range of 4 days for each of the three milestones, all users).
 
 ## Tasks that use it
 

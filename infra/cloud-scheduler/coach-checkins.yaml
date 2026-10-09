@@ -1,0 +1,37 @@
+# Cloud Scheduler job: remind Coach workers 30, 60 and 90 days after their departure date with a
+# notification and a push (NF-FC-016).
+#
+# Create (once):   gcloud scheduler jobs create http coach-checkins --flags-file=infra/cloud-scheduler/coach-checkins.yaml --headers=Content-Type=application/json
+# Apply a change:  gcloud scheduler jobs update http coach-checkins --flags-file=infra/cloud-scheduler/coach-checkins.yaml --update-headers=Content-Type=application/json
+# Run now:         gcloud scheduler jobs run coach-checkins --project nomadfinance-prod --location asia-south1
+#
+# scheduler-deploy.yml creates or updates this job when the file is merged to main; the
+# Content-Type header is set there, not here (see radar-aggregation.yaml).
+#
+# Safe to repeat: a reminder already written for a plan and milestone is never written or pushed
+# again, so a retry or a manual "Run now" cannot send twice. A plan is picked up on its day and
+# for 3 days after (CATCH_UP_DAYS, services/coach/checkin_job.py), so a day this job did not run
+# delays a reminder instead of losing it. Do not run it less often than every 3 days.
+#
+# 02:00 UTC is 10:00 to 13:00 on the same calendar date in all six host countries (UTC+8 to +11),
+# so "today" for the job is the worker's today. To change the time, edit --schedule only (UTC).
+# While the `coach` flag is off for a worker, the job skips their plans and writes nothing.
+
+--project: nomadfinance-prod
+--location: asia-south1
+--schedule: "0 2 * * *"
+--time-zone: Etc/UTC
+--description: "Coach day 30, 60 and 90 check-in reminders (NF-FC-016)"
+--uri: https://nomadfinance-api-azewstzfaa-el.a.run.app/api/v1/internal/send-coach-checkins
+--http-method: POST
+# Google's front end rejects a POST without Content-Length (411); an empty JSON body avoids it.
+--message-body: "{}"
+# The endpoint accepts only an OIDC token for this service account and audience; they must
+# match CRON_SERVICE_ACCOUNT and CRON_AUDIENCE on the Cloud Run service (deploy_manual.sh).
+--oidc-service-account-email: nomadfinance-scheduler@nomadfinance-prod.iam.gserviceaccount.com
+--oidc-token-audience: https://nomadfinance-api-azewstzfaa-el.a.run.app
+# Three small collection-group queries, then a handful of reads and writes per plan found. No
+# model call. A cold Cloud Run instance takes about 8 s to start (D-77), so budget generously.
+--attempt-deadline: 180s
+--max-retry-attempts: 2
+--min-backoff: 300s
