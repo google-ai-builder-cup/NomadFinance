@@ -8,11 +8,13 @@ saved and two writers cannot overwrite each other.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from datetime import datetime
 from typing import Any
 
 from fastapi.concurrency import run_in_threadpool
+from google.api_core.exceptions import GoogleAPICallError
 
 from app.core.redact import redact_text
 from app.repositories.coach_session_repo import (
@@ -30,6 +32,7 @@ from app.schemas.coach_session import (
     CoachSession,
 )
 from app.schemas.contract import ReportLanguage
+from app.services.coach.prefill import PrefillFinder, apply_prefill, prefill_document
 from app.services.coach.question_bank import load_question_bank
 from app.services.coach.session_document import (
     IDLE_AFTER,
@@ -60,6 +63,8 @@ from app.services.coach.session_types import (
     StartResult,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class CoachSessions:
     def __init__(
@@ -69,17 +74,19 @@ class CoachSessions:
         *,
         bank: QuestionBank | None = None,
         scorer: Scorer | None = None,
+        prefills: PrefillFinder | None = None,
     ) -> None:
         self._sessions = sessions
         self._plans = plans
         self._bank = bank or load_question_bank()
         self._scorer = scorer
+        self._prefills = prefills
 
     async def start(
         self, uid: str, language: ReportLanguage, *, restart: bool, now: datetime
     ) -> StartResult:
         """The worker's active session, or a new one. `restart` closes the active one first."""
-        document = new_document(language, now, self._bank)
+        document = new_document(language, now, self._bank, await self._offer(uid))
         try:
             session_id, stored, resumed = await run_in_threadpool(
                 self._sessions.create_or_resume,
@@ -92,6 +99,18 @@ class CoachSessions:
         except SessionContentionError as exc:
             raise SessionConflictError(uid) from exc
         return StartResult(await self._view(session_id, stored), resumed)
+
+    async def _offer(self, uid: str) -> dict[str, Any] | None:
+        """The salary of the worker's latest contract, as an offer for a new session. Reading it
+        must never stop an interview from starting."""
+        if self._prefills is None:
+            return None
+        try:
+            offer = await self._prefills(uid)
+        except GoogleAPICallError:
+            logger.warning("coach_prefill_read_failed", exc_info=True)
+            return None
+        return None if offer is None else prefill_document(offer)
 
     async def get(self, uid: str, session_id: str, now: datetime) -> CoachSession:
         """One session. An active one idle for 14 days is closed here, as `abandoned`."""
@@ -156,8 +175,18 @@ class CoachSessions:
                     "at": now,
                 }
             )
+        stage = settle(self._bank, document["stage"], slots, declined_slots)
+        slots, offer = apply_prefill(
+            document,
+            slots,
+            stage,
+            now=now,
+            turn=turn,
+            worker_spoke=any(m.role == "user" for m in messages),
+        )
         changes = {
             **(extra or {}),
+            **({"prefill": offer} if offer is not None else {}),
             "slots": slots,
             "declined_slots": declined_slots,
             "messages": stored_messages,

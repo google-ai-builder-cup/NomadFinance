@@ -21,6 +21,7 @@ from app.repositories.fib_repo import EntryKind, FibRepository
 from app.repositories.rate_repo import RateRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.fib_profile import RecomputeResponse
+from app.services.coach.plan_goals import GoalsSource
 from app.services.fib.narrative import NARRATIVE_PROMPT, write_narrative
 from app.services.fib.profile_metrics import (
     Convert,
@@ -170,6 +171,7 @@ async def recompute_profile(
     users: UserRepository,
     rate_repo: RateRepository,
     now: datetime,
+    goals_source: GoalsSource | None = None,
 ) -> Literal["recomputed", "no_data"]:
     """Recompute one user's profile and overwrite `financial_profile/current`.
 
@@ -236,6 +238,10 @@ async def recompute_profile(
     profile["narrative"] = {"language": language, "text": text, "model": model}
     profile["prompt_versions"] = {NARRATIVE_PROMPT.key: NARRATIVE_PROMPT.version}
     profile["computed_at"] = now
+    # Goals the profile already holds are carried over by `save_profile`; this is for a profile
+    # built after the plan, which has none yet (NF-FC-015).
+    if goals_source is not None and (goals := await run_in_threadpool(goals_source, uid)):
+        profile["goals"] = goals
 
     await run_in_threadpool(fib.save_profile, uid, profile)
     logger.info(
@@ -250,6 +256,7 @@ async def recompute_all(
     users: UserRepository,
     rate_repo: RateRepository,
     now: datetime,
+    goals_source: GoalsSource | None = None,
 ) -> RecomputeResponse:
     """Recompute every user's profile. A failure on one user is logged and counted, never
     raised: the others still run, and the previous profile of that user stays."""
@@ -259,7 +266,9 @@ async def recompute_all(
     async def one(uid: str) -> Literal["recomputed", "no_data", "failed"]:
         async with gate:
             try:
-                return await recompute_profile(uid, gemini, fib, users, rate_repo, now)
+                return await recompute_profile(
+                    uid, gemini, fib, users, rate_repo, now, goals_source
+                )
             except (GeminiError, GoogleAPICallError, *_BAD_DATA):
                 logger.exception("fib_profile_failed user=%s", hash_user_id(uid))
                 return "failed"

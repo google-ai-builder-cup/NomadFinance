@@ -15,16 +15,18 @@ from datetime import datetime, timedelta
 from typing import Any, cast
 
 from fastapi.concurrency import run_in_threadpool
+from google.api_core.exceptions import GoogleAPICallError
 from pydantic import ValidationError
 
 from app.config import get_settings
 from app.integrations.gemini.model_tiers import ModelTier, model_for
 from app.repositories.coach_session_repo import CoachPlanRepository
 from app.repositories.corridor_repo import CorridorRepository
+from app.repositories.fib_repo import FibRepository
 from app.repositories.radar_repo import RadarRepository
 from app.repositories.rate_repo import RateRepository
 from app.repositories.user_repo import UserRepository
-from app.schemas.coach_plan import CoachPlanResponse, slot_hash
+from app.schemas.coach_plan import CoachPlan, CoachPlanResponse, slot_hash
 from app.schemas.coach_profile import CoachProfile
 from app.schemas.contract import ReportLanguage
 from app.schemas.remittance_compare import CorridorId
@@ -39,6 +41,7 @@ from app.services.coach.plan_facts import PlanContext
 from app.services.coach.plan_figures import Quote, compute_figures
 from app.services.coach.plan_files import BeforeTranslation, PlanFiles
 from app.services.coach.plan_generator import PLAN_PROMPT, CoachPlanWriter
+from app.services.coach.plan_goals import goals_for
 from app.services.coach.plan_inputs import plan_inputs, score_inputs_of
 from app.services.coach.plan_quote import cheapest_quote
 from app.services.coach.scoring import NotScorableError, score_inputs
@@ -96,6 +99,7 @@ class CoachPlans:
         rates: RateRepository,
         radar: RadarRepository,
         files: PlanFiles,
+        fib: FibRepository | None = None,
     ) -> None:
         self._sessions = sessions
         self._plans = plans
@@ -106,6 +110,7 @@ class CoachPlans:
         self._rates = rates
         self._radar = radar
         self._files = files
+        self._fib = fib
 
     async def create(
         self, uid: str, session_id: str, language: ReportLanguage, now: datetime
@@ -140,10 +145,25 @@ class CoachPlans:
         except BaseException:
             await self._unlock(uid, session_id, now)
             raise
+        await self._publish_goals(uid, plan_id, stored, now)
         # The English plan is stored and the session completed: a failed translation is a retry
         # of this call, which then finds the plan and only translates.
         response = await self._view(uid, plan_id, stored, session_id, language, now)
         return PlanResult(response, created=True)
+
+    async def _publish_goals(
+        self, uid: str, plan_id: str, document: dict[str, Any], now: datetime
+    ) -> None:
+        """The plan's targets into the worker's Financial Identity profile (NF-FC-015). The plan
+        is already stored, so a failure here is logged and never fails the request: the next
+        recompute takes the goals from the newest plan."""
+        if self._fib is None:
+            return
+        goals = goals_for(plan_id, CoachPlan.model_validate(document["plan"]), now)
+        try:
+            await run_in_threadpool(self._fib.set_goals, uid, goals)
+        except GoogleAPICallError:
+            logger.warning("coach_goals_not_written", exc_info=True)
 
     async def get(
         self,

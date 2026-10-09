@@ -3,11 +3,14 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any, Literal
 
+from google.api_core.exceptions import NotFound
 from google.cloud.firestore import SERVER_TIMESTAMP, Client, CollectionReference, DocumentReference
 
 from app.repositories.base import get_firestore_client
 
 SCHEMA_VERSION = 1
+# Written into the profile by other features, so a recompute keeps them.
+CARRIED_FIELDS = ("latest_export", "goals")
 
 # The four activity types the Financial Identity Builder logs (docs/data-model/collections/fib.md).
 # NF-P2-017 is the first writer, for `transfers` only; NF-P3-010 adds the rest.
@@ -68,12 +71,22 @@ class FibRepository:
         """Overwrite `users/{uid}/financial_profile/current`: one document per user, never
         appended to (fib.md).
 
-        `latest_export` is not the recompute's to change (the PDF export, NF-P3-014, writes
-        it into this same document), so it is carried over instead of being wiped.
+        `latest_export` (the PDF export, NF-P3-014) and `goals` (the Coach plan, NF-FC-015) are
+        not the recompute's to change, since other features write them into this same document,
+        so they are carried over instead of being wiped.
         """
         current = self.get_profile(uid) or {}
-        carried = {key: current[key] for key in ("latest_export",) if key in current}
+        carried = {key: current[key] for key in CARRIED_FIELDS if key in current}
         self._profile(uid).set(profile | carried | {"schema_version": SCHEMA_VERSION})
+
+    def set_goals(self, uid: str, goals: dict[str, Any]) -> bool:
+        """Record the Coach plan's goals on the profile; False if there is no profile yet (the
+        next recompute then takes them from the newest plan)."""
+        try:
+            self._profile(uid).update({"goals": goals})
+        except NotFound:
+            return False
+        return True
 
     def set_latest_export(self, uid: str, export: dict[str, Any]) -> None:
         """Record the newest PDF on the profile; raises NotFound if there is no profile."""

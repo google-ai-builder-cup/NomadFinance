@@ -352,6 +352,22 @@ def test_a_yes_confirms_the_value_that_was_asked_about() -> None:
     assert result.updates[0].value == pending["recruitment_fee_paid"]["value"]
 
 
+def test_a_yes_to_a_salary_offered_from_a_contract_keeps_its_source() -> None:
+    offered = {
+        "monthly_salary": {
+            **stored(SALARY, confirmed=False),
+            "source": "contract_prefill",
+        }
+    }
+    reading = read("answer", cand("monthly_salary", "Yes", confirms_pending=True))
+
+    result = interpret(reading, ctx("Yes.", asking="monthly_salary", slots=offered))
+
+    assert [(u.slot, u.confirmed, u.source) for u in result.updates] == [
+        ("monthly_salary", True, "contract_prefill")
+    ]
+
+
 def test_a_yes_with_nothing_to_confirm_confirms_nothing() -> None:
     reading = read("answer", cand("recruitment_fee_paid", "Yes", confirms_pending=True))
 

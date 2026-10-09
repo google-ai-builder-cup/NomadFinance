@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from typing import Any
 
 from app.integrations.gemini import ChatTurn
@@ -17,6 +18,7 @@ from app.schemas.coach_profile import parse_slot_value
 from app.schemas.coach_questions import QuestionBank
 from app.schemas.contract import ReportLanguage
 from app.services.coach.guard_rules import fence, visible_to_model
+from app.services.coach.prefill import PREFILL_SLOT, apply_prefill, prefill_question
 from app.services.coach.session_document import jsonable
 from app.services.coach.session_machine import next_slot, settle
 from app.services.coach.turn_types import Understanding
@@ -49,14 +51,28 @@ def history_from(messages: Sequence[dict[str, Any]]) -> list[ChatTurn]:
 
 
 def projected(
-    bank: QuestionBank, document: dict[str, Any], understanding: Understanding
+    bank: QuestionBank,
+    document: dict[str, Any],
+    understanding: Understanding,
+    *,
+    worker_spoke: bool = True,
 ) -> tuple[dict[str, dict[str, Any]], list[str], str, str | None]:
-    """The answers, declined slots, stage and next slot as they will stand after this turn."""
+    """The answers, declined slots, stage and next slot as they will stand after this turn,
+    including the salary offered from the worker's contract (`prefill.apply_prefill`, the same
+    rule the stored turn follows)."""
     slots = dict(document["slots"])
     for update in understanding.updates:
         value = parse_slot_value(update.slot, update.value)
-        slots[update.slot] = {"value": jsonable(value), "confirmed": update.confirmed}
+        slots[update.slot] = {
+            "value": jsonable(value),
+            "confirmed": update.confirmed,
+            "source": update.source,
+        }
     declined = sorted({*document.get("declined_slots", []), *understanding.declined} - set(slots))
+    stage = settle(bank, document["stage"], slots, declined)
+    slots, _ = apply_prefill(
+        document, slots, stage, now=datetime.now(UTC), turn=0, worker_spoke=worker_spoke
+    )
     stage = settle(bank, document["stage"], slots, declined)
     return slots, declined, stage, next_slot(bank, stage, slots, declined)
 
@@ -81,8 +97,19 @@ def reply_message(
     language: ReportLanguage,
 ) -> str:
     """The user message of the reply call, filled from `coach/reply.v1`."""
-    slots, _, stage, ask_slot = projected(bank, document, understanding)
+    slots, _, stage, ask_slot = projected(bank, document, understanding, worker_spoke=bool(text))
     ask_next, follow_up = question_to_ask(bank, understanding, ask_slot)
+    offer = document.get("prefill")
+    record = slots.get(PREFILL_SLOT)
+    if (  # the salary from the contract is asked about, in the offer's own words
+        offer
+        and ask_slot == PREFILL_SLOT
+        and not follow_up
+        and record is not None
+        and record.get("source") == "contract_prefill"
+        and not record.get("confirmed")
+    ):
+        ask_next = prefill_question(offer)
     understood = {u.slot: parse_slot_value(u.slot, u.value) for u in understanding.updates}
     return REPLY_PROMPT.render_user(
         language=LANGUAGE_NAMES[language],
