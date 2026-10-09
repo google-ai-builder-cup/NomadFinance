@@ -1,3 +1,4 @@
+import { FirebaseError } from "firebase/app";
 import { describe, expect, it } from "vitest";
 
 import { ApiError } from "@/services/apiClient";
@@ -87,5 +88,17 @@ describe("coachErrorView", () => {
       messageKey: "errors.server",
       action: "retry",
     });
+  });
+});
+
+describe("toFailure for a lapsed sign-in with no connection", () => {
+  it("calls Firebase's network error `network`, like a request that never arrived", () => {
+    const error = new FirebaseError("auth/network-request-failed", "Network error");
+
+    expect(toFailure(error)).toEqual({ code: "network", status: 0 });
+  });
+
+  it("leaves another Firebase error as unknown", () => {
+    expect(toFailure(new FirebaseError("auth/user-disabled", "x")).code).toBe("unknown");
   });
 });

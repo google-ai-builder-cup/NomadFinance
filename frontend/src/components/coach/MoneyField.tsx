@@ -3,6 +3,7 @@ import { useId, useState, type FormEvent } from "react";
 import QuickReplyChips from "@/components/common/QuickReplyChips";
 import { FIELD_CLASS } from "@/components/coach/fieldClasses";
 import { Button } from "@/components/ui/button";
+import { useDraftFields } from "@/hooks/useCoachDraft";
 import { useI18n } from "@/hooks/useI18n";
 import {
   COACH_CURRENCIES,
@@ -34,9 +35,16 @@ export default function MoneyField({
 }: MoneyFieldProps) {
   const { t } = useI18n("coach");
   const id = useId();
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState<CoachCurrency>(defaultCurrency);
-  const [period, setPeriod] = useState<MoneyPeriod>(periods[0] ?? "month");
+  // An empty currency or period is "not chosen yet": the defaults apply and nothing is kept.
+  const [fields, change] = useDraftFields("money", { amount: "", currency: "", period: "" });
+  const amount = fields.amount;
+  const currency = (COACH_CURRENCIES as readonly string[]).includes(fields.currency)
+    ? (fields.currency as CoachCurrency)
+    : defaultCurrency;
+  const period = (periods as readonly string[]).includes(fields.period)
+    ? (fields.period as MoneyPeriod)
+    : (periods[0] ?? "month");
+  const setAmount = (value: string) => change({ amount: value });
   const [invalid, setInvalid] = useState(false);
 
   function submit(event: FormEvent) {
@@ -95,7 +103,7 @@ export default function MoneyField({
           <select
             id={`${id}-currency`}
             value={currency}
-            onChange={(event) => setCurrency(event.target.value as CoachCurrency)}
+            onChange={(event) => change({ currency: event.target.value })}
             className={FIELD_CLASS}
           >
             {COACH_CURRENCIES.map((code) => (
@@ -111,7 +119,7 @@ export default function MoneyField({
           groupLabel={t("input.periodLabel")}
           options={periods.map((value) => ({ id: value, label: t(`input.period.${value}`) }))}
           selectedId={period}
-          onSelect={(option) => setPeriod(option.id as MoneyPeriod)}
+          onSelect={(option) => change({ period: option.id })}
         />
       )}
       {invalid && (

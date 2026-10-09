@@ -51,11 +51,12 @@ export default defineConfig({
         // Its own service worker (NF-P3-009, registered on its own scope in
         // lib/messaging.ts), not part of the installable app shell: a service worker script
         // must never be precached by another one, or the browser's own update check for it
-        // (a fresh network fetch) would be served a stale cached copy instead.
+        // (a fresh network fetch) would be served a stale cached copy instead. The same goes
+        // for the Coach's offline-queue worker (NF-FC-019, lib/coachOutboxStore.ts).
         // Also not the iOS launch images (public/splash): there are eleven sizes and a phone
         // uses one, which iOS fetches itself when the app is added to the home screen. That
         // was a quarter of what every first visit downloaded in the background (NF-P4-003).
-        globIgnores: ["firebase-messaging-sw.js", "splash/**"],
+        globIgnores: ["firebase-messaging-sw.js", "coach-outbox-sw.js", "splash/**"],
         navigateFallbackDenylist: [/^\/__\//],
       },
     }),

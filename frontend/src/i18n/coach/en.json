@@ -116,5 +116,19 @@
   },
   "language": {
     "label": "Coach language"
+  },
+  "resume": {
+    "label": "Welcome back",
+    "lastSeen": "You last answered {{when}}.",
+    "saved": "Your answers are saved.",
+    "continue": "Continue",
+    "confirm": "Starting a new interview closes this one and its answers. Do you want to start over?",
+    "confirmYes": "Yes, start over",
+    "confirmNo": "No, keep going"
+  },
+  "offline": {
+    "waiting": "Waiting for signal",
+    "notice": "No connection. Your answer is saved on this phone and will be sent when you are back online.",
+    "sendNow": "Send now"
   }
 }

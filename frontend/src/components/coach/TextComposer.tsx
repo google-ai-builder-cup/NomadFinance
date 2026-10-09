@@ -1,8 +1,9 @@
 import { Mic, SendHorizontal, Square } from "lucide-react";
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, type FormEvent, type KeyboardEvent } from "react";
 
 import { FIELD_CLASS } from "@/components/coach/fieldClasses";
 import { Button } from "@/components/ui/button";
+import { useDraftFields } from "@/hooks/useCoachDraft";
 import { useI18n } from "@/hooks/useI18n";
 import { useSpeechInput } from "@/hooks/useSpeechInput";
 import { cn } from "@/lib/utils";
@@ -38,7 +39,9 @@ export default function TextComposer({
 }: TextComposerProps) {
   const { t } = useI18n("coach");
   const id = useId();
-  const [text, setText] = useState("");
+  // Kept as a draft, so what was typed comes back after a reload (NF-FC-019).
+  const [{ text }, change] = useDraftFields("text", { text: "" });
+  const setText = (value: string) => change({ text: value });
   const count = text.trim().length;
   const tooLong = count > MAX_ANSWER_CHARS;
   const canSend = count > 0 && !tooLong && !busy;

@@ -6,6 +6,7 @@ import MoneyField from "@/components/coach/MoneyField";
 import { CountField, DateField, InterestField } from "@/components/coach/SimpleFields";
 import TextComposer from "@/components/coach/TextComposer";
 import { Button } from "@/components/ui/button";
+import { useDraftFields } from "@/hooks/useCoachDraft";
 import { useI18n } from "@/hooks/useI18n";
 import type { CoachSlot, CoachStage } from "@/types/coach";
 import type { LanguageCode } from "@/types/enums";
@@ -59,18 +60,22 @@ export default function AnswerPanel({
 }: AnswerPanelProps) {
   const { t } = useI18n("coach");
   const input = answerInputFor(stage, slot);
-  const [typing, setTyping] = useState(false);
+  // Whether the answer box replaces the helper. Kept with the draft, so a worker who was typing
+  // finds the box (and what was in it) again after a reload.
+  const [choice, changeChoice] = useDraftFields("panel", { typing: "" }, `${stage}:${slot}`);
+  const typing = choice.typing === "1";
+  const setTyping = (value: boolean | ((was: boolean) => boolean)) =>
+    changeChoice({ typing: (typeof value === "function" ? value(typing) : value) ? "1" : "" });
   // The microphone was pressed on a helper: the answer box opens already listening.
   const [speaking, setSpeaking] = useState(false);
   const voiceReady = isVoiceAvailable(language ?? "en");
   const [question, setQuestion] = useState(`${stage}:${slot}`);
   const panel = useRef<HTMLDivElement>(null);
 
-  // A new question starts with its helper again; a clarifying turn (same question) keeps the
-  // worker's choice of typing.
+  // A new question starts with its helper again (the draft hook drops the choice of typing with
+  // the question); a clarifying turn (same question) keeps it.
   if (question !== `${stage}:${slot}`) {
     setQuestion(`${stage}:${slot}`);
-    setTyping(false);
     setSpeaking(false);
   }
 

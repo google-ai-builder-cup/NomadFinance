@@ -6,22 +6,34 @@ import { cleanup, render, screen, waitFor, within } from "@testing-library/react
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { replayTurns, sessionFrom } from "@/mocks/coachTurns";
 import { handlerForMock } from "@/mocks/handlers";
 import { server, setupMockServer } from "@/mocks/server";
 import { loadNamespace } from "@/lib/i18n";
+import { memoryBackend, setOutboxBackend } from "@/lib/coachOutboxStore";
 import CoachHome from "@/pages/coach/CoachHome";
 
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
+// The page keeps drafts and a waiting answer under the signed-in person (NF-FC-019).
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: () => ({ user: { uid: "worker-1" }, loading: false }),
+}));
 
 setupMockServer();
 
 beforeAll(async () => {
   await loadNamespace("coach");
 });
-afterEach(cleanup);
+beforeEach(() => {
+  setOutboxBackend(memoryBackend());
+  localStorage.clear();
+});
+afterEach(() => {
+  cleanup();
+  setOutboxBackend(null);
+});
 
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -76,6 +88,26 @@ describe("starting", () => {
     await inLog(/नमस्ते! मैं आपका पैसों का साथी हूँ।/);
     expect(sent).toHaveLength(0);
     expect(screen.getByText("Step 4 of 6: Debt")).toBeTruthy();
+  });
+
+  it("welcomes a worker back to an interview that is under way, and says where it stopped", async () => {
+    server.use(handlerForMock("coach/sessions-create-02-resumed.json"));
+    replayTurns("coach/turn-02-answer.sse");
+
+    renderPage();
+
+    const banner = await screen.findByRole("region", { name: "Welcome back" });
+    expect(banner.textContent).toContain("Step 4 of 6: Debt");
+    expect(banner.textContent).toContain("Your answers are saved.");
+  });
+
+  it("does not welcome a worker back to an interview that has just begun", async () => {
+    replayTurns("coach/turn-01-start.sse");
+
+    renderPage();
+
+    await inLog(/Which country are you going to work in\?/);
+    expect(screen.queryByRole("region", { name: "Welcome back" })).toBeNull();
   });
 
   it("says the coach could not be opened, and tries again", async () => {

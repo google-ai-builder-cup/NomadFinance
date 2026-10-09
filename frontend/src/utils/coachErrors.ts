@@ -1,3 +1,5 @@
+import { FirebaseError } from "firebase/app";
+
 import { CoachStreamDropped } from "@/services/coachService";
 import { ApiError } from "@/services/apiClient";
 import type { CoachFailure } from "@/types/coach";
@@ -26,6 +28,11 @@ export function toFailure(error: unknown): CoachFailure {
       status: error.status,
       retryAfterSeconds: error.retryAfterSeconds,
     };
+  }
+  // Offline with an ID token that has lapsed: Firebase cannot refresh it, so the call fails
+  // before the request is made. To the worker that is the same as having no connection.
+  if (error instanceof FirebaseError && error.code === "auth/network-request-failed") {
+    return { code: "network", status: 0 };
   }
   return { code: "unknown", status: 0 };
 }

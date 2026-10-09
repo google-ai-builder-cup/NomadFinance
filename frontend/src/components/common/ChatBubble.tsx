@@ -1,4 +1,4 @@
-import { RotateCw } from "lucide-react";
+import { Clock, RotateCw } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,9 @@ export interface ChatBubbleProps {
   failedLabel?: string;
   retryLabel?: string;
   onRetry?: () => void;
+  /** The message is kept on the device and goes when the connection is back (not a failure). */
+  pending?: boolean;
+  pendingLabel?: string;
   className?: string;
 }
 
@@ -36,6 +39,8 @@ export default function ChatBubble({
   failedLabel,
   retryLabel,
   onRetry,
+  pending = false,
+  pendingLabel,
   className,
 }: ChatBubbleProps) {
   const fromUser = role === "user";
@@ -80,9 +85,15 @@ export default function ChatBubble({
           )}
           {streaming && typingLabel && <span className="sr-only">{typingLabel}</span>}
         </div>
-        {(timeLabel || failed) && (
+        {(timeLabel || failed || pending) && (
           <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
             {timeLabel && <span>{timeLabel}</span>}
+            {pending && pendingLabel && (
+              <span className="flex items-center gap-1 font-semibold">
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                {pendingLabel}
+              </span>
+            )}
             {failed && failedLabel && (
               <span role="alert" className="font-semibold text-danger-ink">
                 {failedLabel}

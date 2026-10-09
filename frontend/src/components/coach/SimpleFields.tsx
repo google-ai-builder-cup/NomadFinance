@@ -3,6 +3,7 @@ import { useId, useState, type FormEvent, type ReactNode } from "react";
 import QuickReplyChips from "@/components/common/QuickReplyChips";
 import { FIELD_CLASS } from "@/components/coach/fieldClasses";
 import { Button } from "@/components/ui/button";
+import { useDraftFields } from "@/hooks/useCoachDraft";
 import { useI18n } from "@/hooks/useI18n";
 import {
   isDependents,
@@ -54,7 +55,8 @@ function Form({ busy, onSend, accept, invalid, errorId, errorText, children }: F
 export function CountField({ busy, onSend }: FieldProps) {
   const { t } = useI18n("coach");
   const id = useId();
-  const [value, setValue] = useState("");
+  const [{ value }, change] = useDraftFields("count", { value: "" });
+  const setValue = (next: string) => change({ value: next });
   const [invalid, setInvalid] = useState(false);
 
   function accept() {
@@ -101,8 +103,10 @@ const INTEREST_PERIODS: readonly InterestPeriod[] = ["month", "year"];
 export function InterestField({ busy, onSend }: FieldProps) {
   const { t } = useI18n("coach");
   const id = useId();
-  const [rate, setRate] = useState("");
-  const [period, setPeriod] = useState<InterestPeriod>("month");
+  const [fields, change] = useDraftFields("interest", { rate: "", period: "" });
+  const rate = fields.rate;
+  const period: InterestPeriod = fields.period === "year" ? "year" : "month";
+  const setRate = (value: string) => change({ rate: value });
   const [invalid, setInvalid] = useState(false);
 
   function accept() {
@@ -146,7 +150,7 @@ export function InterestField({ busy, onSend }: FieldProps) {
           label: t(`input.period.${value}`),
         }))}
         selectedId={period}
-        onSelect={(option) => setPeriod(option.id as InterestPeriod)}
+        onSelect={(option) => change({ period: option.id })}
       />
     </Form>
   );
@@ -158,7 +162,8 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 export function DateField({ busy, onSend }: FieldProps) {
   const { t } = useI18n("coach");
   const id = useId();
-  const [day, setDay] = useState("");
+  const [{ day }, change] = useDraftFields("date", { day: "" });
+  const setDay = (value: string) => change({ day: value });
   const [invalid, setInvalid] = useState(false);
 
   function accept() {
