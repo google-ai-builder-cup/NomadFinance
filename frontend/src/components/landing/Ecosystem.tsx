@@ -1,3 +1,5 @@
+import { type SVGProps, useLayoutEffect, useRef, useState } from "react";
+
 import SectionHeading from "@/components/landing/SectionHeading";
 import AnimatedBackground from "@/components/visual/AnimatedBackground";
 import { useI18n } from "@/hooks/useI18n";
@@ -6,61 +8,241 @@ const NODE = "fill-card stroke-[1.5]";
 const FLOW =
   "fill-none stroke-[2.2] animate-dash-flow [stroke-dasharray:6_8] [stroke-linecap:round]";
 
-function Pill({ x, y, w, label }: { x: number; y: number; w: number; label: string }) {
+// The diagram is drawn on this grid: four columns and four rows of 196 x 84 cards, with 120 between
+// columns, so a label on a short connector fits in the gap. It is planar on purpose (no connector
+// crosses another), which is why the Coach sits beside Contract Shield and above Remittance and
+// Scam Check beside the Radar: every pair that exchanges data is next to each other.
+const NODE_W = 196;
+const NODE_H = 84;
+const COLUMNS = [14, 330, 646, 962] as const;
+const NODES = {
+  coach: { x: COLUMNS[0], y: 72 },
+  contract: { x: COLUMNS[1], y: 72 },
+  radar: { x: COLUMNS[1], y: 256, h: 94 },
+  scam: { x: COLUMNS[2], y: 261 },
+  identity: { x: COLUMNS[3], y: 261 },
+  remit: { x: COLUMNS[0], y: 470 },
+  banks: { x: COLUMNS[3], y: 440 },
+} as const;
+
+/** One connector: where it goes, and whose colour it wears. `gold` is the arrow into the banks. */
+interface Connector {
+  id: string;
+  d: string;
+  stroke: string;
+  gold?: boolean;
+}
+
+// Each connector starts and ends on a card's edge. The data behind each one is the table in
+// docs/future-scope/design.md section 8 (and the four v1.0 links the diagram always had).
+const CONNECTORS: readonly Connector[] = [
+  // Contract Shield <-> Exploitation Radar: contract flags in, warnings back.
+  { id: "contractToRadar", d: "M382 156V256", stroke: "stroke-primary" },
+  { id: "radarToContract", d: "M474 256V156", stroke: "stroke-radar" },
+  // Exploitation Radar -> Remittance X-Ray: warnings.
+  { id: "radarToRemit", d: "M330 312C280 330 250 440 210 492", stroke: "stroke-radar" },
+  // Contract Shield -> Financial Coach: the salary and employer, and the legal fee cap.
+  { id: "contractToCoach", d: "M330 114H210", stroke: "stroke-contract" },
+  // Financial Coach <-> Remittance X-Ray: a link with the amount filled in, the cheapest quote back.
+  { id: "coachToRemit", d: "M76 156V470", stroke: "stroke-coach" },
+  { id: "remitToCoach", d: "M148 470V156", stroke: "stroke-remit" },
+  // Scam Check <-> Exploitation Radar: an anonymous report in, "seen before" back.
+  { id: "scamToRadar", d: "M646 286H526", stroke: "stroke-scam" },
+  { id: "radarToScam", d: "M526 320H646", stroke: "stroke-radar" },
+  // Into Financial Identity: scam-check activity, verified employment, transfers, savings goals.
+  { id: "scamToIdentity", d: "M842 303H962", stroke: "stroke-scam" },
+  { id: "contractToIdentity", d: "M526 114C760 96 1010 112 1020 261", stroke: "stroke-contract" },
+  { id: "remitToIdentity", d: "M210 532C520 650 880 600 962 334", stroke: "stroke-primary" },
+  { id: "coachToIdentity", d: "M112 72C112 -48 1130 -48 1130 261", stroke: "stroke-coach" },
+  { id: "identityToBanks", d: "M1060 345V440", stroke: "stroke-gold-ink", gold: true },
+];
+
+/** A label on a connector: where its middle goes, and which string. `max` is the most room it has
+ * (a label between two cards has only the gap), where the others may be as wide as they need. */
+interface PillSpec {
+  x: number;
+  y: number;
+  label: string;
+  max?: number;
+}
+
+// The gap between two columns, less a few units of air, is what a label between them may take.
+const GAP_MAX = 112;
+
+const PILLS: readonly PillSpec[] = [
+  { x: 382, y: 188, label: "flags" },
+  { x: 474, y: 224, label: "warnings" },
+  { x: 266, y: 389, label: "warnings" },
+  { x: 270, y: 114, label: "salary", max: GAP_MAX },
+  { x: 112, y: 313, label: "quote" },
+  { x: 586, y: 286, label: "reports", max: GAP_MAX },
+  { x: 586, y: 320, label: "seen", max: GAP_MAX },
+  { x: 902, y: 303, label: "scamActivity", max: GAP_MAX },
+  { x: 790, y: 114, label: "employment" },
+  { x: 672, y: 577, label: "transfers" },
+  { x: 621, y: 6, label: "goals" },
+  { x: 1060, y: 392, label: "profile" },
+];
+
+const PILL_PAD = 24;
+// A guess at a label's width before the text can be measured (the first paint, and a test).
+const estimate = (label: string) => [...label].length * 7.6 + PILL_PAD;
+
+/**
+ * Makes `el`'s text at most `max` wide and returns the width it has now. A text that is short enough
+ * keeps its own width; a longer one is squeezed to `max` (glyphs and spacing together), so a long
+ * word in another language never runs out of its card or its gap. 0 where the browser cannot
+ * measure (the tests).
+ */
+function fitText(el: SVGTextElement, max: number): number {
+  el.removeAttribute("textLength");
+  el.removeAttribute("lengthAdjust");
+  const natural = el.getComputedTextLength?.() ?? 0;
+  if (natural > max) {
+    el.setAttribute("textLength", String(max));
+    el.setAttribute("lengthAdjust", "spacingAndGlyphs");
+    return max;
+  }
+  return natural;
+}
+
+/** Runs `fit` now and again once the web font has arrived, which changes every width. */
+function useFontAwareLayout(fit: () => void, deps: readonly unknown[]) {
+  useLayoutEffect(() => {
+    fit();
+    void document.fonts?.ready.then(fit);
+    // `fit` is rebuilt every render; what it depends on is in `deps`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
+
+/**
+ * A label that sits on a connector. Its width comes from the text itself: six languages, and a word
+ * in Bengali is not as wide as one in Indonesian, so a fixed width would clip one and leave the other
+ * loose.
+ */
+function Pill({ x, y, label, max = Infinity }: PillSpec) {
+  const text = useRef<SVGTextElement>(null);
+  const [width, setWidth] = useState(() => Math.min(estimate(label), max));
+
+  useFontAwareLayout(() => {
+    const used = text.current ? fitText(text.current, max - PILL_PAD) : 0;
+    if (used > 0) {
+      setWidth(Math.ceil(used) + PILL_PAD);
+    }
+  }, [label, max]);
+
   return (
     <g transform={`translate(${x} ${y})`}>
-      <rect x={-w / 2} y="-13" width={w} height="26" rx="13" className="fill-card stroke-border" />
-      <text y="4.5" textAnchor="middle" className="fill-foreground text-[12.5px] font-bold">
+      <rect
+        x={-width / 2}
+        y="-13"
+        width={width}
+        height="26"
+        rx="13"
+        className="fill-card stroke-border"
+      />
+      <text
+        ref={text}
+        y="4.5"
+        textAnchor="middle"
+        className="fill-foreground text-[12.5px] font-bold"
+      >
         {label}
       </text>
     </g>
   );
 }
 
+/** A card's text, squeezed to fit if it is longer than the card has room for. */
+function CardText({
+  label,
+  max,
+  ...props
+}: SVGProps<SVGTextElement> & { label: string; max: number }) {
+  const text = useRef<SVGTextElement>(null);
+  useFontAwareLayout(() => {
+    if (text.current) {
+      fitText(text.current, max);
+    }
+  }, [label, max]);
+  return (
+    <text ref={text} {...props}>
+      {label}
+    </text>
+  );
+}
+
+// What is left of a card to the right of its icon tile.
+const TEXT_MAX = NODE_W - 66 - 12;
+
 function Node({
+  id,
   x,
   y,
   stroke,
   tile,
   name,
   sub,
-  w = 200,
-  h = 84,
+  h = NODE_H,
 }: {
+  /** Which card this is; the tests find it by this. */
+  id: keyof typeof NODES;
   x: number;
   y: number;
   stroke: string;
   tile: string;
   name: string;
   sub?: string;
-  w?: number;
   h?: number;
 }) {
   return (
-    <g>
-      <rect x={x} y={y} width={w} height={h} rx="20" className={`${NODE} ${stroke}`} />
+    <g data-node={id}>
+      <rect x={x} y={y} width={NODE_W} height={h} rx="20" className={`${NODE} ${stroke}`} />
       <rect x={x + 18} y={y + h / 2 - 18} width="36" height="36" rx="11" className={tile} />
-      <text x={x + 66} y={y + h / 2 - 2} className="fill-foreground text-base font-extrabold">
-        {name}
-      </text>
+      <CardText
+        label={name}
+        max={TEXT_MAX}
+        x={x + 66}
+        y={y + h / 2 - 2}
+        className="fill-foreground text-base font-extrabold"
+      />
       {sub && (
-        <text
+        <CardText
+          label={sub}
+          max={TEXT_MAX}
           x={x + 66}
           y={y + h / 2 + 18}
           className="fill-muted-foreground text-[13px] font-semibold"
-        >
-          {sub}
-        </text>
+        />
       )}
     </g>
   );
 }
 
-/** How the pillars share data, drawn as an SVG with animated dashed connectors. The meaning is
+/** "Contract Shield" is drawn as "Contract" over "Shield": the first word large, the rest small. */
+function splitName(name: string): { name: string; sub: string } {
+  const [first, ...rest] = name.split(" ");
+  return { name: first, sub: rest.join(" ") };
+}
+
+const FLOWS = [
+  "contractToRadar",
+  "radarToTools",
+  "scamAndRadar",
+  "remitToIdentity",
+  "coachInputs",
+  "coachToIdentity",
+  "scamToIdentity",
+  "identityToBanks",
+] as const;
+
+/** How the six pillars share data, drawn as an SVG with animated dashed connectors. The meaning is
  * also written out as a list below it, so the diagram is never the only way to read it. */
 export default function Ecosystem() {
   const { t } = useI18n();
-  const flows = ["contractToRadar", "radarToTools", "remitToIdentity", "identityToBanks"] as const;
+  const pillar = (key: "contract" | "remittance" | "radar" | "identity" | "scam" | "coach") =>
+    splitName(t(`pillars.${key}.name`));
   return (
     <section
       aria-labelledby="eco-heading"
@@ -76,10 +258,10 @@ export default function Ecosystem() {
         />
         <div className="card-surface card-edge overflow-x-auto p-3 md:p-7">
           <svg
-            viewBox="0 0 1000 480"
+            viewBox="0 -24 1172 650"
             role="img"
             aria-label={t("landing.ecosystem.diagramLabel")}
-            className="block h-auto min-w-[640px] w-full"
+            className="block h-auto min-w-[800px] w-full"
           >
             <defs>
               <marker
@@ -105,77 +287,67 @@ export default function Ecosystem() {
                 <path d="M1 1l8 4-8 4z" className="fill-gold-ink" />
               </marker>
             </defs>
-            <path
-              d="M240 84C330 84 330 212 400 212"
-              className={`${FLOW} stroke-primary`}
-              markerEnd="url(#eco-arrow)"
-            />
-            <path
-              d="M400 232C340 232 330 122 240 112"
-              className={`${FLOW} stroke-radar [animation-direction:reverse]`}
-              markerEnd="url(#eco-arrow)"
-            />
-            <path
-              d="M400 262C340 262 330 360 240 366"
-              className={`${FLOW} stroke-radar`}
-              markerEnd="url(#eco-arrow)"
-            />
-            <path
-              d="M240 398C560 470 700 130 760 106"
-              className={`${FLOW} stroke-primary`}
-              markerEnd="url(#eco-arrow)"
-            />
-            <path
-              d="M240 70C420 20 600 20 760 70"
-              className={`${FLOW} stroke-contract`}
-              markerEnd="url(#eco-arrow)"
-            />
-            <path
-              d="M860 130V320"
-              className={`${FLOW} stroke-gold-ink`}
-              markerEnd="url(#eco-arrow-gold)"
-            />
-            <Pill x={318} y={146} w={96} label={t("landing.ecosystem.flags")} />
-            <Pill x={318} y={330} w={84} label={t("landing.ecosystem.warnings")} />
-            <Pill x={560} y={432} w={116} label={t("landing.ecosystem.transfers")} />
-            <Pill x={500} y={24} w={124} label={t("landing.ecosystem.employment")} />
-            <Pill x={860} y={228} w={132} label={t("landing.ecosystem.profile")} />
+            {CONNECTORS.map(({ id, d, stroke, gold }) => (
+              <path
+                key={id}
+                data-connector={id}
+                d={d}
+                className={`${FLOW} ${stroke}`}
+                markerEnd={gold ? "url(#eco-arrow-gold)" : "url(#eco-arrow)"}
+              />
+            ))}
+            {PILLS.map((pill) => (
+              <Pill
+                key={`${pill.label}-${pill.x}-${pill.y}`}
+                {...pill}
+                label={t(`landing.ecosystem.${pill.label}`)}
+              />
+            ))}
             <Node
-              x={40}
-              y={52}
+              id="coach"
+              {...NODES.coach}
+              stroke="stroke-coach"
+              tile="fill-coach"
+              {...pillar("coach")}
+            />
+            <Node
+              id="contract"
+              {...NODES.contract}
               stroke="stroke-contract"
               tile="fill-contract"
-              name={t("pillars.contract.name").split(" ")[0]}
-              sub={t("pillars.contract.name").split(" ").slice(1).join(" ")}
+              {...pillar("contract")}
             />
             <Node
-              x={40}
-              y={356}
-              stroke="stroke-remit"
-              tile="fill-remit"
-              name={t("pillars.remittance.name").split(" ")[0]}
-              sub={t("pillars.remittance.name").split(" ").slice(1).join(" ")}
-            />
-            <Node
-              x={400}
-              y={190}
-              h={94}
+              id="radar"
+              {...NODES.radar}
               stroke="stroke-radar"
               tile="fill-radar"
-              name={t("pillars.radar.name").split(" ")[0]}
-              sub={t("pillars.radar.name").split(" ").slice(1).join(" ")}
+              {...pillar("radar")}
             />
             <Node
-              x={760}
-              y={52}
+              id="scam"
+              {...NODES.scam}
+              stroke="stroke-scam"
+              tile="fill-scam"
+              {...pillar("scam")}
+            />
+            <Node
+              id="identity"
+              {...NODES.identity}
               stroke="stroke-identity"
               tile="fill-identity"
-              name={t("pillars.identity.name").split(" ")[0]}
-              sub={t("pillars.identity.name").split(" ").slice(1).join(" ")}
+              {...pillar("identity")}
             />
             <Node
-              x={760}
-              y={324}
+              id="remit"
+              {...NODES.remit}
+              stroke="stroke-remit"
+              tile="fill-remit"
+              {...pillar("remittance")}
+            />
+            <Node
+              id="banks"
+              {...NODES.banks}
               stroke="stroke-gold-ink [stroke-dasharray:5_5]"
               tile="fill-gold"
               name={t("landing.ecosystem.banks")}
@@ -184,7 +356,7 @@ export default function Ecosystem() {
           </svg>
         </div>
         <ul className="mt-6 grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
-          {flows.map((flow) => (
+          {FLOWS.map((flow) => (
             <li key={flow} className="flex gap-2">
               <span
                 className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
