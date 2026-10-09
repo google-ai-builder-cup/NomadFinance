@@ -1,0 +1,107 @@
+{
+  "host_country": "MY",
+  "currency": "MYR",
+  "categories": {
+    "accommodation": {
+      "low": 50,
+      "typical": 100,
+      "high": 150,
+      "unit": "month",
+      "notes": "What the worker pays, not the bed price. High is the most an employer may collect or deduct for housing: RM150 from 1 March 2026 (P.U.(A) 49/2026), RM100 before. Low is the RM50 a contractor said in 2019 was a nominal fee. Typical is the old RM100 cap, an assumption.",
+      "source": {
+        "url": "https://raineandhorne.com.my/the-demand-and-supply-dynamics-of-centralised-labour-quarters-in-the-klang-valley/",
+        "publisher": "Raine & Horne International Zaki + Partners, centralised labour quarters in the Klang Valley",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.themalaysianinsight.com/s/171753",
+          "publisher": "The Malaysian Insight, article of 29 July 2019",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "food": {
+      "low": 300,
+      "typical": 525,
+      "high": 750,
+      "unit": "month",
+      "notes": "UNITAR's student budget: RM300 to 500 cooking at home, RM500 to 750 eating out. Low and high are the ends of the two ranges; typical is the midpoint of 300 to 750. A student budget, not a measured worker average.",
+      "source": {
+        "url": "https://www.unitar.my/guides/living-costs-and-budgeting-tips-for-international-students-in-malaysia/",
+        "publisher": "UNITAR International University, living costs for international students (December 2024)",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "transport": {
+      "low": 100,
+      "typical": 125,
+      "high": 150,
+      "unit": "month",
+      "notes": "UNITAR's estimate for public transport passes, RM100 to 150; typical is the midpoint. The My50 pass is for citizens only, so a foreign worker pays full fares. Many employers also carry workers to the site.",
+      "source": {
+        "url": "https://www.unitar.my/guides/living-costs-and-budgeting-tips-for-international-students-in-malaysia/",
+        "publisher": "UNITAR International University, living costs for international students (December 2024)",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "phone_data": {
+      "low": 30,
+      "typical": 40,
+      "high": 55,
+      "unit": "month",
+      "notes": "Hotlink prepaid 30-day plans with unlimited calls: RM30 (18 Mbps, 50 GB fair use), RM40 (Best Seller) and RM55 (uncapped). Cheaper RM4 and RM12 passes also exist.",
+      "source": {
+        "url": "https://www.hotlink.com.my/en/products/prepaid/",
+        "publisher": "Hotlink (Maxis), prepaid plans",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "mandatory_deductions": {
+      "low": 3.25,
+      "typical": 3.25,
+      "high": 3.5,
+      "unit": "pct_of_wage",
+      "notes": "Worker's share: EPF 2% (mandatory for foreign workers from October 2025, not domestic helpers) plus SOCSO 1.25% (invalidity 0.5%, non-employment injury 0.75%). High is when the SOCSO share rises to 1.00% in years 3 to 5 from 1 June 2026. Employment injury is the employer's. Income tax not checked.",
+      "source": {
+        "url": "https://perkeso.gov.my/en/our-services/protection/foreign-worker.html",
+        "publisher": "PERKESO (Social Security Organisation, Malaysia), foreign workers",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.bernama.com/en/news.php?id=2438262",
+          "publisher": "Bernama, mandatory EPF for foreign workers, article of 25 June 2025",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  },
+  "setup_costs": {
+    "foreign_worker_levy": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "one_off",
+      "notes": "The employer pays the levy: the Kathmandu Post reported on 1 January 2017 that employers could no longer charge workers for it. The rule was reversed once before (2009, The Nut Graph), so check the current position with the Ministry of Human Resources.",
+      "source": {
+        "url": "https://kathmandupost.com/miscellaneous/2017/01/01/levy-burden-taken-off-workers-in-malaysia",
+        "publisher": "The Kathmandu Post, article of 1 January 2017",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.thenutgraph.com/employers-can-deduct-levy-from-wages/",
+          "publisher": "The Nut Graph, article of 16 April 2009",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  }
+}
