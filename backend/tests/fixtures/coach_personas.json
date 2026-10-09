@@ -1,0 +1,2279 @@
+{
+  "version": 1,
+  "rubric_version": 1,
+  "description": "Twelve synthetic workers, two per corridor, for the Financial Coach (NF-FC-007). Every name and number is invented. Scripts are what the worker types, in order; expected_slots is what the interview must end with (CoachProfile); expected_score is the rubric of docs/features/coach-scoring.md worked out with the fixed rates below, so it never depends on the live rate.",
+  "rates_note": "Fixed illustrative rates, units of the home currency per one unit of the host currency. Not market rates.",
+  "rates": {
+    "SGD_PHP": 42.0,
+    "SGD_INR": 62.0,
+    "AUD_INR": 54.0,
+    "MYR_IDR": 3700.0,
+    "JPY_PHP": 0.38,
+    "AUD_PHP": 37.0
+  },
+  "personas": [
+    {
+      "id": "p01_sg_ph_maricel",
+      "name": "Maricel",
+      "demo": false,
+      "corridor": "SG-PH",
+      "host_country": "SG",
+      "home_country": "PH",
+      "language": "tl",
+      "summary": "Live-in domestic worker with a recruitment fee well over the Singapore cap, a high-interest debt, no savings and only a mobile wallet.",
+      "script": [
+        {
+          "say": "Pupunta po ako sa Singapore.",
+          "language": "tl",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Magiging kasambahay po ako sa bahay ng amo.",
+          "language": "tl",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Sa December 5, 2026 po ang alis ko.",
+          "language": "tl",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "650 Singapore dollars po kada buwan.",
+          "language": "tl",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Apat po ang umaasa sa akin: dalawang anak, nanay at tatay ko.",
+          "language": "tl",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Gusto ko pong magpadala ng 400 Singapore dollars kada buwan.",
+          "language": "tl",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Nagbayad po ako ng 120,000 pesos sa ahensya.",
+          "language": "tl",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May utang pa po ako na 100,000 pesos.",
+          "language": "tl",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Five percent po kada buwan ang tubo.",
+          "language": "tl",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Wala po akong ipon, zero po, 0 pesos.",
+          "language": "tl",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May GCash lang po ako, wala akong bank account.",
+          "language": "tl",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Opo, tama po lahat.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "SG",
+        "job_type": "domestic_worker",
+        "departure_date": "2026-12-05",
+        "monthly_salary": {
+          "amount": 650.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "dependents": 4,
+        "remittance_target": {
+          "amount": 400.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 120000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 100000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 5.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "bank_or_wallet": "mobile_wallet"
+      },
+      "expected_score": {
+        "rate_pair": "SGD_PHP",
+        "rate": 42.0,
+        "amounts_in_host_currency": {
+          "salary": 650.0,
+          "remittance": 400.0,
+          "fee": 2857.14,
+          "debt": 2380.95,
+          "savings": 0.0,
+          "essentials": 112.0,
+          "outgoings": 512.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 3.66,
+            "points": 33,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.0,
+            "points": 0,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.62,
+            "points": 47,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 4.4,
+            "points": 0,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 0.5,
+            "points": 55,
+            "weight": 0.1
+          }
+        ],
+        "total": 22,
+        "band": "needs_work"
+      }
+    },
+    {
+      "id": "p02_sg_ph_jun",
+      "name": "Jun",
+      "demo": false,
+      "corridor": "SG-PH",
+      "host_country": "SG",
+      "home_country": "PH",
+      "language": "en",
+      "summary": "Construction worker paid by the week, no debt, fee under the cap, savings and both a bank account and a wallet. Gives destination and job in one answer; the coach asks whether 450 is a week or a month.",
+      "script": [
+        {
+          "say": "I am going to Singapore to work in construction.",
+          "language": "en",
+          "fills": [
+            "destination_country",
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I plan to leave on 15 November 2026.",
+          "language": "en",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I will earn 450 Singapore dollars.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": "unclear_period"
+        },
+        {
+          "say": "Sorry, that is 450 dollars every week.",
+          "language": "en",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Two people depend on me: my wife and my mother.",
+          "language": "en",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I want to send 700 Singapore dollars every month.",
+          "language": "en",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I paid 60,000 pesos to my agent.",
+          "language": "en",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have no debt. I paid from my own savings, so 0 pesos owed.",
+          "language": "en",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have 150,000 pesos in savings.",
+          "language": "en",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have a bank account and a GCash wallet.",
+          "language": "en",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Yes, that is correct.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [
+        "debt_interest"
+      ],
+      "declined_slots": [],
+      "expected_turn_count": 11,
+      "expected_slots": {
+        "destination_country": "SG",
+        "job_type": "construction_worker",
+        "departure_date": "2026-11-15",
+        "monthly_salary": {
+          "amount": 450.0,
+          "currency": "SGD",
+          "period": "week"
+        },
+        "dependents": 2,
+        "remittance_target": {
+          "amount": 700.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 60000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "savings": {
+          "amount": 150000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "bank_or_wallet": "both"
+      },
+      "expected_score": {
+        "rate_pair": "SGD_PHP",
+        "rate": 42.0,
+        "amounts_in_host_currency": {
+          "salary": 1950.0,
+          "remittance": 700.0,
+          "fee": 1428.57,
+          "debt": 0.0,
+          "savings": 3571.43,
+          "essentials": 727.0,
+          "outgoings": 1427.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 2.5,
+            "points": 65,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.36,
+            "points": 91,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.73,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 100,
+            "weight": 0.1
+          }
+        ],
+        "total": 90,
+        "band": "well_prepared"
+      }
+    },
+    {
+      "id": "p03_sg_in_priya",
+      "name": "Priya",
+      "demo": true,
+      "corridor": "SG-IN",
+      "host_country": "SG",
+      "home_country": "IN",
+      "language": "hi",
+      "summary": "The demo user Priya (data-scripts/data/seed/users/priya_sg_domestic.json): domestic worker in Singapore, answers in Hindi, fee inside the cap, a small family debt, a bank account.",
+      "script": [
+        {
+          "say": "मैं सिंगापुर जा रही हूँ।",
+          "language": "hi",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मैं घरेलू काम करूँगी, एक घर में।",
+          "language": "hi",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मैं 12 दिसंबर 2026 को जाऊँगी।",
+          "language": "hi",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "हर महीने 650 सिंगापुर डॉलर मिलेंगे।",
+          "language": "hi",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मेरे ऊपर तीन लोग निर्भर हैं: दो बच्चे और मेरी माँ।",
+          "language": "hi",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मैं हर महीने 350 सिंगापुर डॉलर घर भेजना चाहती हूँ।",
+          "language": "hi",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "एजेंट को मैंने 40,000 रुपये दिए थे।",
+          "language": "hi",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मुझ पर अभी 60,000 रुपये का कर्ज़ है।",
+          "language": "hi",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "उस पर हर महीने 2 प्रतिशत ब्याज लगता है।",
+          "language": "hi",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मेरे पास 20,000 रुपये की बचत है।",
+          "language": "hi",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मेरा बैंक खाता है, मोबाइल वॉलेट नहीं।",
+          "language": "hi",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "हाँ, सब सही है।",
+          "language": "hi",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "SG",
+        "job_type": "domestic_worker",
+        "departure_date": "2026-12-12",
+        "monthly_salary": {
+          "amount": 650.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "dependents": 3,
+        "remittance_target": {
+          "amount": 350.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 40000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 60000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 2.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 20000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "bank_or_wallet": "bank_account"
+      },
+      "expected_score": {
+        "rate_pair": "SGD_INR",
+        "rate": 62.0,
+        "amounts_in_host_currency": {
+          "salary": 650.0,
+          "remittance": 350.0,
+          "fee": 645.16,
+          "debt": 967.74,
+          "savings": 322.58,
+          "essentials": 112.0,
+          "outgoings": 462.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 1.49,
+            "points": 69,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.7,
+            "points": 24,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.54,
+            "points": 62,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.99,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 90,
+            "weight": 0.1
+          }
+        ],
+        "total": 65,
+        "band": "getting_ready"
+      }
+    },
+    {
+      "id": "p04_sg_in_ravi",
+      "name": "Ravi",
+      "demo": false,
+      "corridor": "SG-IN",
+      "host_country": "SG",
+      "home_country": "IN",
+      "language": "en",
+      "summary": "Factory operator on a good wage with no debt, fee inside the cap, solid savings and both account types. Short answers.",
+      "script": [
+        {
+          "say": "Singapore.",
+          "language": "en",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Factory work, I will be a machine operator.",
+          "language": "en",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I leave on 10 January 2027.",
+          "language": "en",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I will earn 2,400 Singapore dollars a month.",
+          "language": "en",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Two dependents, my wife and my son.",
+          "language": "en",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I plan to send 800 Singapore dollars every month.",
+          "language": "en",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I paid 150,000 rupees to the recruiter.",
+          "language": "en",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I do not owe anyone. No debt, 0 rupees.",
+          "language": "en",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have saved 300,000 rupees.",
+          "language": "en",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have a bank account and a wallet app.",
+          "language": "en",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Yes, correct.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [
+        "debt_interest"
+      ],
+      "declined_slots": [],
+      "expected_turn_count": 11,
+      "expected_slots": {
+        "destination_country": "SG",
+        "job_type": "manufacturing_worker",
+        "departure_date": "2027-01-10",
+        "monthly_salary": {
+          "amount": 2400.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "dependents": 2,
+        "remittance_target": {
+          "amount": 800.0,
+          "currency": "SGD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 150000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 0.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "savings": {
+          "amount": 300000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "bank_or_wallet": "both"
+      },
+      "expected_score": {
+        "rate_pair": "SGD_INR",
+        "rate": 62.0,
+        "amounts_in_host_currency": {
+          "salary": 2400.0,
+          "remittance": 800.0,
+          "fee": 2419.35,
+          "debt": 0.0,
+          "savings": 4838.71,
+          "essentials": 727.0,
+          "outgoings": 1527.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 3.17,
+            "points": 76,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.33,
+            "points": 95,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 1.01,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 100,
+            "weight": 0.1
+          }
+        ],
+        "total": 93,
+        "band": "well_prepared"
+      }
+    },
+    {
+      "id": "p05_au_in_gurpreet",
+      "name": "Gurpreet",
+      "demo": false,
+      "corridor": "AU-IN",
+      "host_country": "AU",
+      "home_country": "IN",
+      "language": "hi",
+      "summary": "Care worker who starts in Hindi and switches to English in the fifth answer. Employer-paid fee and good factors elsewhere, but almost no savings: the total is over 70 and a factor under 20 holds the band at getting_ready (the floor rule).",
+      "script": [
+        {
+          "say": "मैं ऑस्ट्रेलिया जा रहा हूँ।",
+          "language": "hi",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मैं बुज़ुर्गों की देखभाल का काम करूँगा।",
+          "language": "hi",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "मुझे 1 मार्च 2027 को जाना है।",
+          "language": "hi",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "हर महीने 3,900 ऑस्ट्रेलियाई डॉलर मिलेंगे।",
+          "language": "hi",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Sorry, I will answer in English now. Three people depend on me.",
+          "language": "en",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I want to send 1,000 Australian dollars home every month.",
+          "language": "en",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "My employer paid the agent, so I paid 0 rupees.",
+          "language": "en",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I still owe 150,000 rupees to a relative.",
+          "language": "en",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "He charges 18 percent a year.",
+          "language": "en",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have 80,000 rupees saved.",
+          "language": "en",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Bank account only.",
+          "language": "en",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Yes, that is right.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "AU",
+        "job_type": "care_worker",
+        "departure_date": "2027-03-01",
+        "monthly_salary": {
+          "amount": 3900.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "dependents": 3,
+        "remittance_target": {
+          "amount": 1000.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 0.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 150000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 18.0,
+          "period": "year"
+        },
+        "savings": {
+          "amount": 80000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "bank_or_wallet": "bank_account"
+      },
+      "expected_score": {
+        "rate_pair": "AUD_INR",
+        "rate": 54.0,
+        "amounts_in_host_currency": {
+          "salary": 3900.0,
+          "remittance": 1000.0,
+          "fee": 0.0,
+          "debt": 2777.78,
+          "savings": 1481.48,
+          "essentials": 2062.0,
+          "outgoings": 3062.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.71,
+            "points": 89,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.48,
+            "points": 17,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.26,
+            "points": 100,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 90,
+            "weight": 0.1
+          }
+        ],
+        "total": 75,
+        "band": "getting_ready"
+      }
+    },
+    {
+      "id": "p06_au_in_anil",
+      "name": "Anil",
+      "demo": false,
+      "corridor": "AU-IN",
+      "host_country": "AU",
+      "home_country": "IN",
+      "language": "en",
+      "summary": "Construction worker whose pay is a yearly figure and who does not know his leaving date yet; a bank loan, no fee, a wallet only.",
+      "script": [
+        {
+          "say": "I am going to Australia for construction work.",
+          "language": "en",
+          "fills": [
+            "destination_country",
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I do not know the date yet.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        },
+        {
+          "say": "The job pays 62,000 Australian dollars a year.",
+          "language": "en",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "One dependent, my wife.",
+          "language": "en",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I want to send 1,500 Australian dollars each month.",
+          "language": "en",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I paid nothing to an agent, 0 rupees. My employer paid.",
+          "language": "en",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I owe 500,000 rupees on a bank loan.",
+          "language": "en",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "The interest is 12 percent a year.",
+          "language": "en",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have 400,000 rupees in savings.",
+          "language": "en",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I use a mobile wallet only.",
+          "language": "en",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Yes.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [
+        "departure_date"
+      ],
+      "expected_turn_count": 11,
+      "expected_slots": {
+        "destination_country": "AU",
+        "job_type": "construction_worker",
+        "monthly_salary": {
+          "amount": 62000.0,
+          "currency": "AUD",
+          "period": "year"
+        },
+        "dependents": 1,
+        "remittance_target": {
+          "amount": 1500.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 0.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 500000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 12.0,
+          "period": "year"
+        },
+        "savings": {
+          "amount": 400000.0,
+          "currency": "INR",
+          "period": "once"
+        },
+        "bank_or_wallet": "mobile_wallet"
+      },
+      "expected_score": {
+        "rate_pair": "AUD_INR",
+        "rate": 54.0,
+        "amounts_in_host_currency": {
+          "salary": 5166.67,
+          "remittance": 1500.0,
+          "fee": 0.0,
+          "debt": 9259.26,
+          "savings": 7407.41,
+          "essentials": 2062.0,
+          "outgoings": 3562.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 1.79,
+            "points": 75,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 2.08,
+            "points": 57,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.29,
+            "points": 100,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 0.5,
+            "points": 55,
+            "weight": 0.1
+          }
+        ],
+        "total": 77,
+        "band": "well_prepared"
+      }
+    },
+    {
+      "id": "p07_my_id_slamet",
+      "name": "Slamet",
+      "demo": false,
+      "corridor": "MY-ID",
+      "host_country": "MY",
+      "home_country": "ID",
+      "language": "id",
+      "summary": "Plantation worker on the Malaysian minimum wage with a fee well over the cap, a 4% a month loan, almost no savings and no account.",
+      "script": [
+        {
+          "say": "Saya mau kerja di Malaysia.",
+          "language": "id",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya akan bekerja di perkebunan kelapa sawit.",
+          "language": "id",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya berangkat tanggal 20 November 2026.",
+          "language": "id",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Gaji saya 1.700 ringgit per bulan.",
+          "language": "id",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Ada tiga orang yang bergantung pada saya: istri dan dua anak.",
+          "language": "id",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya mau kirim 900 ringgit setiap bulan.",
+          "language": "id",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya bayar 12 juta rupiah ke calo.",
+          "language": "id",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya masih berutang 10 juta rupiah.",
+          "language": "id",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Bunganya 4 persen per bulan.",
+          "language": "id",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Tabungan saya cuma 1 juta rupiah.",
+          "language": "id",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya tidak punya rekening bank dan tidak pakai dompet digital.",
+          "language": "id",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Ya, benar.",
+          "language": "id",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "MY",
+        "job_type": "plantation_worker",
+        "departure_date": "2026-11-20",
+        "monthly_salary": {
+          "amount": 1700.0,
+          "currency": "MYR",
+          "period": "month"
+        },
+        "dependents": 3,
+        "remittance_target": {
+          "amount": 900.0,
+          "currency": "MYR",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 12000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 10000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 4.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 1000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "bank_or_wallet": "none"
+      },
+      "expected_score": {
+        "rate_pair": "MYR_IDR",
+        "rate": 3700.0,
+        "amounts_in_host_currency": {
+          "salary": 1700.0,
+          "remittance": 900.0,
+          "fee": 3243.24,
+          "debt": 2702.7,
+          "savings": 270.27,
+          "essentials": 790.0,
+          "outgoings": 1690.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 1.59,
+            "points": 58,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.16,
+            "points": 6,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.53,
+            "points": 64,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 1.91,
+            "points": 35,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 0.0,
+            "points": 0,
+            "weight": 0.1
+          }
+        ],
+        "total": 36,
+        "band": "needs_work"
+      }
+    },
+    {
+      "id": "p08_my_id_siti",
+      "name": "Siti",
+      "demo": false,
+      "corridor": "MY-ID",
+      "host_country": "MY",
+      "home_country": "ID",
+      "language": "id",
+      "summary": "Domestic worker with a fee inside the Malaysian cap, a small cooperative loan at 1.5% a month, savings and a bank account. Gives destination and job in one answer.",
+      "script": [
+        {
+          "say": "Saya akan kerja di Malaysia sebagai pembantu rumah tangga.",
+          "language": "id",
+          "fills": [
+            "destination_country",
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya berangkat tanggal 3 Desember 2026.",
+          "language": "id",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Gaji saya 1.500 ringgit sebulan.",
+          "language": "id",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Dua orang bergantung pada saya: anak dan ibu saya.",
+          "language": "id",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya mau kirim 500 ringgit per bulan.",
+          "language": "id",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya bayar 4 juta rupiah ke agen.",
+          "language": "id",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya masih berutang 3 juta rupiah ke koperasi.",
+          "language": "id",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Bunganya 1,5 persen per bulan.",
+          "language": "id",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya punya tabungan 6 juta rupiah.",
+          "language": "id",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Saya punya rekening bank.",
+          "language": "id",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Ya, sudah benar.",
+          "language": "id",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 11,
+      "expected_slots": {
+        "destination_country": "MY",
+        "job_type": "domestic_worker",
+        "departure_date": "2026-12-03",
+        "monthly_salary": {
+          "amount": 1500.0,
+          "currency": "MYR",
+          "period": "month"
+        },
+        "dependents": 2,
+        "remittance_target": {
+          "amount": 500.0,
+          "currency": "MYR",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 4000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 3000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 1.5,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 6000000.0,
+          "currency": "IDR",
+          "period": "once"
+        },
+        "bank_or_wallet": "bank_account"
+      },
+      "expected_score": {
+        "rate_pair": "MYR_IDR",
+        "rate": 3700.0,
+        "amounts_in_host_currency": {
+          "salary": 1500.0,
+          "remittance": 500.0,
+          "fee": 1081.08,
+          "debt": 810.81,
+          "savings": 1621.62,
+          "essentials": 790.0,
+          "outgoings": 1290.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.54,
+            "points": 92,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 1.26,
+            "points": 40,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.33,
+            "points": 95,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.72,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 90,
+            "weight": 0.1
+          }
+        ],
+        "total": 81,
+        "band": "well_prepared"
+      }
+    },
+    {
+      "id": "p09_jp_ph_mark",
+      "name": "Mark",
+      "demo": false,
+      "corridor": "JP-PH",
+      "host_country": "JP",
+      "home_country": "PH",
+      "language": "tl",
+      "summary": "Technical intern in a factory. States his pay without a currency (the coach asks), then mistypes the fee with an extra zero (the coach checks and he corrects it). Fee over the Japanese rule, a 3% a month loan, mobile wallet only.",
+      "script": [
+        {
+          "say": "Pupunta po ako sa Japan.",
+          "language": "tl",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Magtatrabaho po ako sa pabrika bilang technical intern.",
+          "language": "tl",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Aalis po ako sa January 20, 2027.",
+          "language": "tl",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "168,000 po ang sahod ko kada buwan.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": "missing_currency"
+        },
+        {
+          "say": "Yen po, 168,000 yen kada buwan.",
+          "language": "tl",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Dalawa po ang umaasa sa akin, asawa ko at anak.",
+          "language": "tl",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Magpapadala po ako ng 60,000 yen kada buwan.",
+          "language": "tl",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Nagbayad po ako ng 800,000 pesos sa recruiter.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": "out_of_range"
+        },
+        {
+          "say": "Ay, mali po. 80,000 pesos po pala.",
+          "language": "tl",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May utang po ako na 50,000 pesos.",
+          "language": "tl",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "3 percent po kada buwan.",
+          "language": "tl",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "10,000 pesos po ang ipon ko.",
+          "language": "tl",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "GCash lang po ang meron ako.",
+          "language": "tl",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Opo, tama po.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 14,
+      "expected_slots": {
+        "destination_country": "JP",
+        "job_type": "manufacturing_worker",
+        "departure_date": "2027-01-20",
+        "monthly_salary": {
+          "amount": 168000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "dependents": 2,
+        "remittance_target": {
+          "amount": 60000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 80000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 50000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 3.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 10000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "bank_or_wallet": "mobile_wallet"
+      },
+      "expected_score": {
+        "rate_pair": "JPY_PHP",
+        "rate": 0.38,
+        "amounts_in_host_currency": {
+          "salary": 168000.0,
+          "remittance": 60000.0,
+          "fee": 210526.32,
+          "debt": 131578.95,
+          "savings": 26315.79,
+          "essentials": 65100.0,
+          "outgoings": 125100.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.78,
+            "points": 78,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.21,
+            "points": 7,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.36,
+            "points": 91,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 1.25,
+            "points": 22,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 0.5,
+            "points": 55,
+            "weight": 0.1
+          }
+        ],
+        "total": 49,
+        "band": "getting_ready"
+      }
+    },
+    {
+      "id": "p10_jp_ph_miguel",
+      "name": "Miguel",
+      "demo": true,
+      "corridor": "JP-PH",
+      "host_country": "JP",
+      "home_country": "PH",
+      "language": "tl",
+      "summary": "The demo user Miguel (data-scripts/data/seed/users/miguel_jp_care.json): care worker in Japan who paid no fee, has no debt and has real savings. Gives destination and job in one answer.",
+      "script": [
+        {
+          "say": "Sa Japan po ako pupunta, care worker po ako.",
+          "language": "tl",
+          "fills": [
+            "destination_country",
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Aalis po ako sa February 10, 2027.",
+          "language": "tl",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "152,000 yen po kada buwan ang sahod ko.",
+          "language": "tl",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Isa po ang umaasa sa akin, ang nanay ko.",
+          "language": "tl",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Magpapadala po ako ng 50,000 yen kada buwan.",
+          "language": "tl",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Hindi po ako nagbayad sa agency, 0 pesos po.",
+          "language": "tl",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Wala po akong utang, 0 pesos.",
+          "language": "tl",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May ipon po akong 400,000 yen.",
+          "language": "tl",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May bank account po ako at GCash.",
+          "language": "tl",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Opo, tama.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [
+        "debt_interest"
+      ],
+      "declined_slots": [],
+      "expected_turn_count": 10,
+      "expected_slots": {
+        "destination_country": "JP",
+        "job_type": "care_worker",
+        "departure_date": "2027-02-10",
+        "monthly_salary": {
+          "amount": 152000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "dependents": 1,
+        "remittance_target": {
+          "amount": 50000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "savings": {
+          "amount": 400000.0,
+          "currency": "JPY",
+          "period": "once"
+        },
+        "bank_or_wallet": "both"
+      },
+      "expected_score": {
+        "rate_pair": "JPY_PHP",
+        "rate": 0.38,
+        "amounts_in_host_currency": {
+          "salary": 152000.0,
+          "remittance": 50000.0,
+          "fee": 0.0,
+          "debt": 0.0,
+          "savings": 400000.0,
+          "essentials": 65100.0,
+          "outgoings": 115100.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 3.48,
+            "points": 79,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.33,
+            "points": 96,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.0,
+            "points": 100,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 100,
+            "weight": 0.1
+          }
+        ],
+        "total": 94,
+        "band": "well_prepared"
+      }
+    },
+    {
+      "id": "p11_au_ph_jenny",
+      "name": "Jenny",
+      "demo": false,
+      "corridor": "AU-PH",
+      "host_country": "AU",
+      "home_country": "PH",
+      "language": "tl",
+      "summary": "Care worker in an aged-care home: a fee over what the Australian rule would expect, a 2% a month loan, decent savings, a bank account.",
+      "script": [
+        {
+          "say": "Pupunta po ako sa Australia.",
+          "language": "tl",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Magiging care worker po ako sa nursing home.",
+          "language": "tl",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Aalis po ako sa December 15, 2026.",
+          "language": "tl",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "4,000 Australian dollars po kada buwan.",
+          "language": "tl",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Dalawa po ang umaasa sa akin, mga anak ko.",
+          "language": "tl",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "900 Australian dollars po ang gusto kong ipadala kada buwan.",
+          "language": "tl",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "90,000 pesos po ang binayad ko sa ahensya.",
+          "language": "tl",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May utang po ako na 60,000 pesos.",
+          "language": "tl",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "2 percent po kada buwan.",
+          "language": "tl",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "120,000 pesos po ang ipon ko.",
+          "language": "tl",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "May bank account po ako.",
+          "language": "tl",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Opo.",
+          "language": "tl",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "AU",
+        "job_type": "care_worker",
+        "departure_date": "2026-12-15",
+        "monthly_salary": {
+          "amount": 4000.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "dependents": 2,
+        "remittance_target": {
+          "amount": 900.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 90000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 60000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 2.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 120000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "bank_or_wallet": "bank_account"
+      },
+      "expected_score": {
+        "rate_pair": "AUD_PHP",
+        "rate": 37.0,
+        "amounts_in_host_currency": {
+          "salary": 4000.0,
+          "remittance": 900.0,
+          "fee": 2432.43,
+          "debt": 1621.62,
+          "savings": 3243.24,
+          "essentials": 2062.0,
+          "outgoings": 2962.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 0.41,
+            "points": 84,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 1.09,
+            "points": 37,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.23,
+            "points": 100,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 0.61,
+            "points": 50,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 1.0,
+            "points": 90,
+            "weight": 0.1
+          }
+        ],
+        "total": 68,
+        "band": "getting_ready"
+      }
+    },
+    {
+      "id": "p12_au_ph_ricardo",
+      "name": "Ricardo",
+      "demo": false,
+      "corridor": "AU-PH",
+      "host_country": "AU",
+      "home_country": "PH",
+      "language": "en",
+      "summary": "Part-time kitchen and cleaning work: plans to send more than he can afford after living costs (the shortfall cap), a 6% a month lender, no savings, a wallet only.",
+      "script": [
+        {
+          "say": "I am going to Australia.",
+          "language": "en",
+          "fills": [
+            "destination_country"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I will do odd jobs, kitchen help and cleaning, part time.",
+          "language": "en",
+          "fills": [
+            "job_type"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I leave on 8 January 2027.",
+          "language": "en",
+          "fills": [
+            "departure_date"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "About 3,000 Australian dollars a month.",
+          "language": "en",
+          "fills": [
+            "monthly_salary"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Five people depend on me.",
+          "language": "en",
+          "fills": [
+            "dependents"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I want to send 1,200 Australian dollars every month.",
+          "language": "en",
+          "fills": [
+            "remittance_target"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I paid 150,000 pesos to the agency.",
+          "language": "en",
+          "fills": [
+            "recruitment_fee_paid"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I borrowed 200,000 pesos from a lender.",
+          "language": "en",
+          "fills": [
+            "debt_outstanding"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "He charges 6 percent a month.",
+          "language": "en",
+          "fills": [
+            "debt_interest"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "I have no savings, 0 pesos.",
+          "language": "en",
+          "fills": [
+            "savings"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Only a mobile wallet.",
+          "language": "en",
+          "fills": [
+            "bank_or_wallet"
+          ],
+          "coach_follow_up": null
+        },
+        {
+          "say": "Yes, that is right.",
+          "language": "en",
+          "fills": [],
+          "coach_follow_up": null
+        }
+      ],
+      "skipped_slots": [],
+      "declined_slots": [],
+      "expected_turn_count": 12,
+      "expected_slots": {
+        "destination_country": "AU",
+        "job_type": "other",
+        "departure_date": "2027-01-08",
+        "monthly_salary": {
+          "amount": 3000.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "dependents": 5,
+        "remittance_target": {
+          "amount": 1200.0,
+          "currency": "AUD",
+          "period": "month"
+        },
+        "recruitment_fee_paid": {
+          "amount": 150000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_outstanding": {
+          "amount": 200000.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "debt_interest": {
+          "rate_percent": 6.0,
+          "period": "month"
+        },
+        "savings": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "bank_or_wallet": "mobile_wallet"
+      },
+      "expected_score": {
+        "rate_pair": "AUD_PHP",
+        "rate": 37.0,
+        "amounts_in_host_currency": {
+          "salary": 3000.0,
+          "remittance": 1200.0,
+          "fee": 4054.05,
+          "debt": 5405.41,
+          "savings": 0.0,
+          "essentials": 2062.0,
+          "outgoings": 3262.0
+        },
+        "factors": [
+          {
+            "id": "debt_to_income",
+            "value": 1.8,
+            "points": 55,
+            "weight": 0.3
+          },
+          {
+            "id": "emergency_buffer",
+            "value": 0.0,
+            "points": 0,
+            "weight": 0.25
+          },
+          {
+            "id": "remittance_ratio",
+            "value": 0.4,
+            "points": 25,
+            "weight": 0.15
+          },
+          {
+            "id": "recruitment_fee_vs_cap",
+            "value": 1.35,
+            "points": 19,
+            "weight": 0.2
+          },
+          {
+            "id": "banked_status",
+            "value": 0.5,
+            "points": 55,
+            "weight": 0.1
+          }
+        ],
+        "total": 30,
+        "band": "needs_work"
+      }
+    }
+  ]
+}

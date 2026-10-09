@@ -189,7 +189,7 @@ The `low` row: debt 2,400 SGD / 650 = 3.69 months gives 53.08, minus 20 for 5% a
 ## For the screen and for the tests
 
 - **Words.** The explanation of a factor ("what this means", "how to improve") is chosen by factor and level, not written per score: level `strong` for 70 or more points, `fair` for 40 to 69, `weak` for under 40. NF-FC-020 and NF-FC-023 hold the six languages.
-- **Hand-computed checks (NF-FC-007, NF-FC-011).** Each persona's expected score is worked out with this page, by hand, and the engine must match it. Properties to test: the total is a whole number from 0 to 100; each factor's points are a whole number from 0 to 100; the weights add up to 1; more debt, less savings, a higher fee or no account never raises the score; the same answers always give the same score; the band follows the table and the floor rule.
+- **Hand-computed checks (NF-FC-007, NF-FC-011).** Each persona's expected score is worked out with this page and stored in `backend/tests/fixtures/coach_personas.json`; the engine must match all twelve (see `docs/runbooks/NF-FC-007-coach-personas.md`). Properties to test: the total is a whole number from 0 to 100; each factor's points are a whole number from 0 to 100; the weights add up to 1; more debt, less savings, a higher fee or no account never raises the score; the same answers always give the same score; the band follows the table and the floor rule.
 - **Rounding of values.** `value` is reported to 2 decimals; the points are whole numbers.
 
 ## Changing the rubric
