@@ -2,6 +2,7 @@ import { GraduationCap } from "lucide-react";
 
 import CoachChat from "@/components/coach/CoachChat";
 import CoachNotice from "@/components/coach/CoachNotice";
+import LanguageSwitch from "@/components/coach/LanguageSwitch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCoachRestart, useCoachSession } from "@/hooks/useCoachSession";
 import { useI18n } from "@/hooks/useI18n";
@@ -39,6 +40,7 @@ export default function CoachHome() {
           {/* Left out on a phone: the room goes to the conversation. */}
           <p className="hidden text-sm text-muted-foreground sm:block">{t("home.description")}</p>
         </div>
+        <LanguageSwitch />
       </header>
 
       {session.isPending ? (

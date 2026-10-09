@@ -345,7 +345,9 @@
     "actions": {
       "compare": "Bandingkan kurs",
       "contract": "Periksa kontrak",
-      "report": "Laporkan masalah"
+      "report": "Laporkan masalah",
+      "scam": "Periksa pesan",
+      "coach": "Susun rencana dengan Coach"
     },
     "kpi": {
       "heading": "Ringkasan Anda",

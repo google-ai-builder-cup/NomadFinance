@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useCoachChat, type CoachChatTiming } from "@/hooks/useCoachChat";
 import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
+import { useUiLanguage } from "@/hooks/useUiLanguage";
 import type { CoachSessionStart } from "@/types/coach";
 import { toFailure } from "@/utils/coachErrors";
 
@@ -32,7 +33,8 @@ export default function CoachChat({
   timing,
 }: CoachChatProps) {
   const { t } = useI18n("coach");
-  const { state, busy, send, retry } = useCoachChat(session, timing);
+  const language = useUiLanguage();
+  const { state, busy, send, retry } = useCoachChat(session, timing, language);
   // A restart that failed is shown the same way as a turn that failed.
   const failure = restartError ? toFailure(restartError) : state.failure;
   const confirmed = state.stage === "plan";
@@ -80,6 +82,7 @@ export default function CoachChat({
           slots={state.slots}
           busy={busy}
           onSend={send}
+          language={language}
         />
       )}
     </div>
