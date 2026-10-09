@@ -230,7 +230,7 @@ Tests use a fake classifier and run in CI. `tests/test_scam_eval_backend.py` che
 Full steps, how to read the report and its limits: [`docs/runbooks/NF-SA-014-scam-eval-runner.md`](../docs/runbooks/NF-SA-014-scam-eval-runner.md).
 
 ## Cost baselines (NF-FC-003)
-Monthly cost-of-living figures for a migrant worker, one file per host country in `data/source/cost-baselines/{host}.json`: `SG.json` and `AU.json` (NF-FC-003); `KR`, `MY` (NF-FC-004) and `JP`, `HK` (NF-FC-005) follow. Each file has the five recurring costs (accommodation, food, transport, phone and data, mandatory deductions) and the one-off costs of the first month, each as low, typical and high in the country's currency. Every figure names the page it was read from (URL, publisher, the day it was read) and its curator; nothing is written from memory. The fields and how a figure is read are in [`docs/data-model/collections/cost_baselines.md`](../docs/data-model/collections/cost_baselines.md).
+Monthly cost-of-living figures for a migrant worker, one file per host country in `data/source/cost-baselines/{host}.json`: `SG.json` and `AU.json` (NF-FC-003); `KR.json` and `MY.json` (NF-FC-004); `JP` and `HK` (NF-FC-005) follow. Each file has the five recurring costs (accommodation, food, transport, phone and data, mandatory deductions) and the one-off costs of the first month, each as low, typical and high in the country's currency. Every figure names the page it was read from (URL, publisher, the day it was read) and its curator; nothing is written from memory. The fields and how a figure is read are in [`docs/data-model/collections/cost_baselines.md`](../docs/data-model/collections/cost_baselines.md).
 
 ```bash
 python -m src.validators.cost_baselines                # check every file
@@ -243,4 +243,4 @@ The loader validates every selected file first; if any fails, nothing is written
 
 To add a country, copy `SG.json`, replace every figure, note and source, and run the checker. Keep to these rules (the checker enforces the ones it can): read the page, and do not fill a gap from memory; a figure of 0 needs a note that says why; low, typical and high are a published range or median, and a midpoint or a piece of arithmetic is said so in `notes`; set `retrieved_on` to the day you read the page; give a second page in `other_sources` when the range needs one.
 
-Full steps, the figures and their limits: [`docs/runbooks/NF-FC-003-cost-baselines-sg-au.md`](../docs/runbooks/NF-FC-003-cost-baselines-sg-au.md).
+Full steps, the figures and their limits: [`docs/runbooks/NF-FC-003-cost-baselines-sg-au.md`](../docs/runbooks/NF-FC-003-cost-baselines-sg-au.md) and [`docs/runbooks/NF-FC-004-cost-baselines-kr-my.md`](../docs/runbooks/NF-FC-004-cost-baselines-kr-my.md).

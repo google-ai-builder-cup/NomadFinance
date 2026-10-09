@@ -1,0 +1,155 @@
+{
+  "host_country": "KR",
+  "currency": "KRW",
+  "categories": {
+    "accommodation": {
+      "low": 172550,
+      "typical": 301963,
+      "high": 431376,
+      "unit": "month",
+      "notes": "A ceiling, not a measured price: the 8% to 20% of ordinary wage that MOEL's guideline allowed for employer housing, on the 2026 minimum monthly wage (10,320 x 209 h = 2,156,880). Typical is the midpoint (14%). MOEL moved to market-based rents in 2023; the current cap was not confirmed.",
+      "source": {
+        "url": "https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=15223",
+        "publisher": "Ministry of Employment and Labor (Korea), press release of 5 July 2023",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.korea.net/NewsFocus/policies/view?articleId=295961",
+          "publisher": "Korea.net, minimum wage 2026 and 2027, article of 15 July 2026",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://hrdc.hrdkorea.or.kr/hrdc/185230",
+          "publisher": "HRD Korea, notice on deducting food and lodging from foreign workers",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "food": {
+      "low": 200000,
+      "typical": 250000,
+      "high": 300000,
+      "unit": "month",
+      "notes": "Study in Korea's monthly meal estimate for an international student (page of June 2024); typical is the midpoint. It is a student budget, not a measured worker average. Where the employer serves meals, the cost comes through a deduction instead.",
+      "source": {
+        "url": "https://studyinkorea.go.kr/ko/life/livingExpense.do",
+        "publisher": "Study in Korea (Korean Ministry of Education), living expenses, page of June 2024",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "transport": {
+      "low": 50000,
+      "typical": 75000,
+      "high": 100000,
+      "unit": "month",
+      "notes": "Study in Korea's monthly transport estimate; typical is the midpoint. Check: 52 journeys at the Seoul card base fare of 1,550 is 80,600. A worker living at the workplace may spend less.",
+      "source": {
+        "url": "https://studyinkorea.go.kr/ko/life/livingExpense.do",
+        "publisher": "Study in Korea (Korean Ministry of Education), living expenses, page of June 2024",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://english.seoul.go.kr/policy/transportation/modes-of-transport/subway/",
+          "publisher": "Seoul Metropolitan Government, subway fares (from 28 June 2025)",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "phone_data": {
+      "low": 35000,
+      "typical": 45000,
+      "high": 55000,
+      "unit": "month",
+      "notes": "KT Welcome prepaid for foreign customers, 30 days with 200 minutes: 1 GB at 35,000, 3 GB at 45,000, 5 GB at 55,000. A worker with a residence card can take a cheaper contract plan; those prices were not read.",
+      "source": {
+        "url": "https://globalshop.kt.com/mobile/mobileLteWelcomePrepaid.do",
+        "publisher": "KT Global Shop, LTE Welcome Prepaid",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "mandatory_deductions": {
+      "low": 4.97,
+      "typical": 9.72,
+      "high": 9.72,
+      "unit": "pct_of_wage",
+      "notes": "Worker's share in 2026: pension 4.75%, health 3.595% (half of 7.19%), long-term care 0.4724% (half of 0.9448%), employment insurance 0.9%. Low leaves out the pension, which a worker whose country gives Koreans no equal cover is excluded from. Income tax not checked.",
+      "source": {
+        "url": "https://m.4insure.or.kr/pbiz/ntcn/inscSmlCalcMobView.do",
+        "publisher": "4 Social Insurance Information Centre (Korea), premium calculator, 2026 rates",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.nps.or.kr/eng/ntnlpnsplan/cntb/getOHAI0013M0.do",
+          "publisher": "National Pension Service, contribution rates (July 2026 to June 2027)",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://www.nps.or.kr/eng/ntnlpnsplan/frgnrlpsmrfnd/getOHAI0015M0.do",
+          "publisher": "National Pension Service, foreigners and the lump-sum refund (reciprocity)",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://www.nhis.or.kr/english/wbheaa02500m01.do",
+          "publisher": "National Health Insurance Service, contribution rate 2026",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  },
+  "setup_costs": {
+    "residence_card": {
+      "low": 35000,
+      "typical": 35000,
+      "high": 35000,
+      "unit": "one_off",
+      "notes": "Issuance fee of the foreign residence card, 35,000 from 1 January 2025 (30,000 before). A foreigner must register within 90 days of arrival.",
+      "source": {
+        "url": "https://www.immigration.go.kr/immigration_eng/1832/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGaW1taWdyYXRpb25fZW5nJTJGMjI5JTJGNTkwMzE0JTJGYXJ0Y2xWaWV3LmRvJTNGcGFzc3dvcmQlM0QlMjZyZ3NCZ25kZVN0ciUzRCUyNmJic0NsU2VxJTNEJTI2cmdzRW5kZGVTdHIlM0QlMjZpc1ZpZXdNaW5lJTNEZmFsc2UlMjZwYWdlJTNEMSUyNmJic09wZW5XcmRTZXElM0QlMjZzcmNoQ29sdW1uJTNEJTI2c3JjaFdyZCUzRCUyNg%3D%3D",
+        "publisher": "Korea Immigration Service, fee increase for foreign residence cards (posted 14 December 2024)",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "transport_card": {
+      "low": 2500,
+      "typical": 3000,
+      "high": 5000,
+      "unit": "one_off",
+      "notes": "A T-money card at a convenience store: 2,500 to 5,000 by design (gogohanguk, May 2026); Visit Seoul gives 3,000 for the standard card, an older page. The balance is spent on rides.",
+      "source": {
+        "url": "https://gogohanguk.com/en/blog/koreas-public-transportation-cards/",
+        "publisher": "GoGoHanguk, guide to Korea's transport cards, article of 20 May 2026",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://english.visitseoul.net/transportation",
+          "publisher": "Visit Seoul (Seoul Tourism Organization), transportation",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "return_cost_insurance": {
+      "low": 400000,
+      "typical": 500000,
+      "high": 600000,
+      "unit": "one_off",
+      "notes": "Insurance an E-9 worker pays for the flight home, 400,000 to 600,000 by country (EPS page for the Philippines); typical is the midpoint. The page's pension and health rates are older than 2026, so check this figure. A casualty policy is a small yearly cost, not counted.",
+      "source": {
+        "url": "https://www.eps.go.kr/eo/EmployPerSystem.eo?natNm=ph&tabGb=06",
+        "publisher": "Employment Permit System (EPS, Korea), insurance for E-9 workers",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    }
+  }
+}
