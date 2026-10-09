@@ -339,7 +339,21 @@
         "open": "Check a message"
       },
       "coach": {
-        "open": "Open the Coach"
+        "open": "Open the Coach",
+        "start": "Start my interview",
+        "resume": "Continue my interview",
+        "viewPlan": "View my plan",
+        "step": "Step {{current}} of {{total}}",
+        "lastAnswer": "Your last answer was {{when}}.",
+        "saved": "Your answers are saved.",
+        "planReady": "Your 90-day plan is ready.",
+        "score": "Score {{total}} out of 100.",
+        "scoreBand": "Score {{total}} out of 100: {{band}}.",
+        "band": {
+          "needs_work": "Needs more preparation",
+          "getting_ready": "Getting ready",
+          "well_prepared": "Well prepared"
+        }
       }
     },
     "actions": {
@@ -1004,7 +1018,9 @@
   },
   "toast": {
     "region": "Notifications",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "coachCheckin": "Your Coach check-in is ready",
+    "coachCheckinAction": "Answer"
   },
   "fib": {
     "log": {

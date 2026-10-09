@@ -1,0 +1,13 @@
+{
+  "description": "A plan that does not exist, or is not the caller's: the same 404 either way.",
+  "request": "PUT /api/v2/coach/plans/0123456789abcdef0123/checkins/d30",
+  "status": 404,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e602"
+  },
+  "body": {
+    "code": "not_found",
+    "message": "Not Found",
+    "request_id": "0000000000000000000000000000e602"
+  }
+}

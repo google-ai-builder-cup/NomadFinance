@@ -339,7 +339,21 @@
         "open": "Periksa pesan"
       },
       "coach": {
-        "open": "Buka Pelatih"
+        "open": "Buka Pelatih",
+        "start": "Mulai wawancara saya",
+        "resume": "Lanjutkan wawancara saya",
+        "viewPlan": "Lihat rencana saya",
+        "step": "Langkah {{current}} dari {{total}}",
+        "lastAnswer": "Terakhir kali Anda menjawab {{when}}.",
+        "saved": "Jawaban Anda tersimpan.",
+        "planReady": "Rencana 90 hari Anda sudah siap.",
+        "score": "Skor {{total}} dari 100.",
+        "scoreBand": "Skor {{total}} dari 100: {{band}}.",
+        "band": {
+          "needs_work": "Perlu persiapan lagi",
+          "getting_ready": "Sedang bersiap",
+          "well_prepared": "Siap dengan baik"
+        }
       }
     },
     "actions": {
@@ -1004,7 +1018,9 @@
   },
   "toast": {
     "region": "Notifikasi",
-    "dismiss": "Tutup"
+    "dismiss": "Tutup",
+    "coachCheckin": "Cek Coach Anda sudah siap",
+    "coachCheckinAction": "Jawab"
   },
   "fib": {
     "log": {

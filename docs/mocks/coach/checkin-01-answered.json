@@ -1,0 +1,19 @@
+{
+  "description": "The first answers to the day 30 check-in of the plan 5a20...: stored, 200. The request body is {\"answers\": {\"remittance\": \"on_track\", \"savings\": \"behind\", \"pay\": \"full_on_time\"}}.",
+  "request": "PUT /api/v2/coach/plans/5a202702c922fc9b4fcf/checkins/d30",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c601"
+  },
+  "body": {
+    "plan_id": "5a202702c922fc9b4fcf",
+    "milestone": "d30",
+    "answers": {
+      "remittance": "on_track",
+      "savings": "behind",
+      "pay": "full_on_time"
+    },
+    "answered_at": "2026-12-31T09:12:40Z",
+    "already_answered": false
+  }
+}

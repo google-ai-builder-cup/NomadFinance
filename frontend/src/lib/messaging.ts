@@ -1,6 +1,7 @@
 import { getMessaging, getToken, isSupported, onMessage, type Messaging } from "firebase/messaging";
 
 import { firebaseApp } from "@/lib/firebase";
+import { safeAppPath } from "@/utils/appLinks";
 
 const SENDER_ID = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
@@ -80,15 +81,53 @@ export async function requestPushToken(): Promise<string | null> {
  * Foreground pushes only (the tab open and focused); a backgrounded or closed tab is the
  * service worker's job (public/firebase-messaging-sw.js). No-op unsubscribe when push isn't
  * configured, so the caller can always call the returned function on unmount.
+ *
+ * `deepLink` is the in-app path the sender attached (`data.deep_link`), not yet checked: run it
+ * through `safeAppPath` before following it.
  */
 export async function listenForPushes(
-  onPush: (title: string, body: string) => void
+  onPush: (title: string, body: string, deepLink?: string) => void
 ): Promise<() => void> {
   const messaging = await messagingConfig();
   if (messaging === null) {
     return () => {};
   }
   return onMessage(messaging, (payload) => {
-    onPush(payload.notification?.title ?? "", payload.notification?.body ?? "");
+    onPush(
+      payload.notification?.title ?? "",
+      payload.notification?.body ?? "",
+      payload.data?.deep_link
+    );
   });
+}
+
+/** What the service worker posts to an open window when a system notification is tapped. */
+export const PUSH_CLICK_MESSAGE = "nf-push-click";
+
+/**
+ * A tap on a system notification while the app is already open. The worker cannot steer a window
+ * it does not control (this app's own worker controls it, not the push one), so it focuses the
+ * window and posts the link, and the app follows it with its router. The link is checked here
+ * again: it came through a message, and only a path inside the app is followed.
+ */
+export function listenForPushClicks(onOpen: (deepLink: string) => void): () => void {
+  if (!("serviceWorker" in navigator)) {
+    return () => {};
+  }
+  const container = navigator.serviceWorker;
+  const handler = (event: MessageEvent<unknown>) => {
+    const data = event.data as { type?: unknown; deep_link?: unknown } | null;
+    if (data?.type !== PUSH_CLICK_MESSAGE) {
+      return;
+    }
+    const link = safeAppPath(data.deep_link);
+    if (link !== null) {
+      onOpen(link);
+    }
+  };
+  container.addEventListener("message", handler);
+  // A page that only adds a listener may not be sent messages until the document has finished
+  // loading; this makes sure it is.
+  container.startMessages?.();
+  return () => container.removeEventListener("message", handler);
 }

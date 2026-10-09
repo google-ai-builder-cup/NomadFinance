@@ -1,0 +1,13 @@
+{
+  "description": "Day 60 sent on day 40, or a plan with no departure date: 409. The screen says the check-in is not open yet.",
+  "request": "PUT /api/v2/coach/plans/5a202702c922fc9b4fcf/checkins/d60",
+  "status": 409,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000e601"
+  },
+  "body": {
+    "code": "checkin_not_due",
+    "message": "This check-in is not open yet.",
+    "request_id": "0000000000000000000000000000e601"
+  }
+}

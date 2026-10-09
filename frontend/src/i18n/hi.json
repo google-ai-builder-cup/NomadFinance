@@ -339,7 +339,21 @@
         "open": "संदेश जाँचें"
       },
       "coach": {
-        "open": "कोच खोलें"
+        "open": "कोच खोलें",
+        "start": "मेरा इंटरव्यू शुरू करें",
+        "resume": "मेरा इंटरव्यू जारी रखें",
+        "viewPlan": "मेरी योजना देखें",
+        "step": "चरण {{current}} / {{total}}",
+        "lastAnswer": "आपने आखिरी जवाब {{when}} दिया था।",
+        "saved": "आपके जवाब सुरक्षित हैं।",
+        "planReady": "आपकी 90 दिन की योजना तैयार है।",
+        "score": "स्कोर {{total}} / 100।",
+        "scoreBand": "स्कोर {{total}} / 100: {{band}}।",
+        "band": {
+          "needs_work": "और तैयारी चाहिए",
+          "getting_ready": "तैयारी हो रही है",
+          "well_prepared": "अच्छी तैयारी"
+        }
       }
     },
     "actions": {
@@ -1004,7 +1018,9 @@
   },
   "toast": {
     "region": "सूचनाएँ",
-    "dismiss": "खारिज करें"
+    "dismiss": "खारिज करें",
+    "coachCheckin": "आपकी कोच जाँच तैयार है",
+    "coachCheckinAction": "जवाब दें"
   },
   "fib": {
     "log": {

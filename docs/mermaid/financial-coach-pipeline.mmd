@@ -41,6 +41,8 @@ flowchart LR
         DUE -->|Push| FCM[Firebase Cloud Messaging]
         DUE -->|Write| NT[(users notifications)]
         FCM --> U
+        U -->|Opens the link - 3 fixed-choice answers| CK[Answer Check-In - PUT plans checkins milestone]
+        CK -.First answers kept, written by field path.-> PL
     end
 
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff

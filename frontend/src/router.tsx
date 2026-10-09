@@ -103,6 +103,10 @@ export const router = createBrowserRouter([
                         ...page(() => import("@/pages/coach/CoachPlanRoute")),
                       },
                       {
+                        path: "/coach/checkin/:planId",
+                        ...page(() => import("@/pages/coach/CoachCheckinRoute")),
+                      },
+                      {
                         path: "/scam-check",
                         ...page(() => import("@/pages/scam/ScamCheckRoute")),
                       },

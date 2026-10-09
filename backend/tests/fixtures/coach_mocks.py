@@ -41,7 +41,9 @@ def plans_by_key() -> dict[str, dict[str, Any]]:
     found = {}
     for path in JSON_FILES:
         mock = load(path)
-        if mock["status"] < 400 and "/plan" in mock["request"].split("?")[0].split("coach")[1]:
+        path = mock["request"].split("?")[0].split("coach")[1]
+        # A check-in answer is under /plans/ too, but it is not a plan.
+        if mock["status"] < 400 and "/plan" in path and "/checkins/" not in path:
             body = mock["body"]
             found[f"{body['id']}/{body['language']}"] = body
     return found

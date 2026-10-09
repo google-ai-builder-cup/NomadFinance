@@ -4,7 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/useToast";
-import { listenForPushes, pushPermission, requestPushToken } from "@/lib/messaging";
+import {
+  listenForPushClicks,
+  listenForPushes,
+  pushPermission,
+  requestPushToken,
+} from "@/lib/messaging";
 import {
   countUnreadNotifications,
   listNotifications,
@@ -12,6 +17,7 @@ import {
   NOTIFICATIONS_PAGE_SIZE,
 } from "@/services/notificationService";
 import { saveFcmToken } from "@/services/userService";
+import { isCoachCheckinPath, safeAppPath } from "@/utils/appLinks";
 
 function notificationsKey(uid: string | undefined) {
   return ["notifications", uid] as const;
@@ -98,7 +104,16 @@ export function usePushSync(): void {
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
-    void listenForPushes(() => {
+    void listenForPushes((_title, _body, deepLink) => {
+      // A Coach check-in opens its own questions; every other push is a Radar alert (NF-FC-022).
+      const checkin = safeAppPath(deepLink);
+      if (checkin !== null && isCoachCheckinPath(checkin)) {
+        toast({
+          messageKey: "toast.coachCheckin",
+          action: { labelKey: "toast.coachCheckinAction", onClick: () => navigate(checkin) },
+        });
+        return;
+      }
       toast({
         messageKey: "radar.alerts.pushToast",
         action: {
@@ -113,9 +128,12 @@ export function usePushSync(): void {
         unsubscribe = unsub;
       }
     });
+    // A tap on a system notification while the app is open (the worker cannot navigate it itself).
+    const stopClicks = listenForPushClicks((link) => navigate(link));
     return () => {
       cancelled = true;
       unsubscribe?.();
+      stopClicks();
     };
   }, [navigate]);
 }

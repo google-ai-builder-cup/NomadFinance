@@ -339,7 +339,21 @@
         "open": "Suriin ang mensahe"
       },
       "coach": {
-        "open": "Buksan ang Coach"
+        "open": "Buksan ang Coach",
+        "start": "Simulan ang interview ko",
+        "resume": "Ituloy ang interview ko",
+        "viewPlan": "Tingnan ang plano ko",
+        "step": "Hakbang {{current}} sa {{total}}",
+        "lastAnswer": "Huli kang sumagot {{when}}.",
+        "saved": "Naka-save ang iyong mga sagot.",
+        "planReady": "Handa na ang 90-araw mong plano.",
+        "score": "Marka {{total}} sa 100.",
+        "scoreBand": "Marka {{total}} sa 100: {{band}}.",
+        "band": {
+          "needs_work": "Kailangan pa ng paghahanda",
+          "getting_ready": "Naghahanda na",
+          "well_prepared": "Handang-handa"
+        }
       }
     },
     "actions": {
@@ -1004,7 +1018,9 @@
   },
   "toast": {
     "region": "Mga abiso",
-    "dismiss": "I-dismiss"
+    "dismiss": "I-dismiss",
+    "coachCheckin": "Handa na ang check-in mo sa Coach",
+    "coachCheckinAction": "Sagutin"
   },
   "fib": {
     "log": {

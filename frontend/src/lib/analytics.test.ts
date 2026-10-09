@@ -345,6 +345,7 @@ describe("analytics", () => {
       "/radar/alerts",
       "/scam-check",
       "/scam-check/history",
+      "/coach",
       "/identity/log",
       "/no-such-page",
     ])("leaves %s as it is", (path) => {
@@ -357,6 +358,9 @@ describe("analytics", () => {
       ["/contract/historyx", "/contract/:contractId"],
       ["/radar/entity/some-slug", "/radar/entity/:slug"],
       ["/scam-check/history/abc%20def", "/scam-check/history/:id"],
+      ["/coach/plan/5a202702c922fc9b4fcf", "/coach/plan/:planId"],
+      // The reminder's `?m=30` is the query, which `safeLocation` never sends.
+      ["/coach/checkin/5a202702c922fc9b4fcf", "/coach/checkin/:planId"],
     ])("turns %s into %s", (path, shape) => {
       expect(anonymisePath(path)).toBe(shape);
     });

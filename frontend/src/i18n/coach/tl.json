@@ -352,5 +352,57 @@
       "pressAgain": "Handa na ang PDF mo. Pindutin ulit ang “Ibahagi”.",
       "shareTitle": "Ang 90-araw kong plano"
     }
+  },
+  "checkin": {
+    "title": "Check-in sa ika-{{days}} araw",
+    "description": "Tatlong maikling tanong kung kumusta ang plano mo sa pera.",
+    "progress": "Tanong {{current}} sa {{total}}",
+    "next": "Susunod",
+    "back": "Bumalik",
+    "send": "Ipadala ang mga sagot ko",
+    "sending": "Ipinapadala…",
+    "questions": {
+      "remittance": "Nagpadala ka ba ng pera sa inyo ayon sa plano mo?",
+      "savings": "Nakapag-ipon ka ba ayon sa plano mo?",
+      "pay": "Binabayaran ka ba ng amo mo nang buo at nasa oras?"
+    },
+    "options": {
+      "remittance": {
+        "on_track": "Oo, ayon sa plano ko",
+        "behind": "Mas kaunti ang naipadala ko kaysa sa plano",
+        "not_yet": "Hindi pa"
+      },
+      "savings": {
+        "on_track": "Oo, ayon sa plano ko",
+        "behind": "Mas kaunti ang naipon ko kaysa sa plano",
+        "not_yet": "Hindi pa"
+      },
+      "pay": {
+        "full_on_time": "Oo, buo at nasa oras",
+        "late_or_less": "Huli, o kulang sa napagkasunduan",
+        "not_paid": "Hindi pa ako nababayaran"
+      }
+    },
+    "done": {
+      "title": "Salamat",
+      "saved": "Naka-save ang iyong mga sagot.",
+      "already": "Nasagot mo na ang check-in na ito. Pinananatili ang una mong mga sagot.",
+      "planHelp": "Maaaring magbago ang plano mo habang nagbabago ang buhay mo sa ibang bansa. Tingnan ulit ito.",
+      "planLink": "Tingnan ang plano ko",
+      "payHelp": "Kung hindi ka binabayaran ng amo mo ayon sa napagkasunduan, maaari mo siyang i-report para mabigyan ng babala ang ibang manggagawa.",
+      "payLink": "Mag-report ng amo",
+      "home": "Bumalik sa home"
+    },
+    "error": {
+      "notDue": "Hindi pa bukas ang check-in na ito. Ipapaalala namin sa iyo sa araw nito.",
+      "notFound": "Hindi namin makita ang planong ito. Maaaring sa ibang account ito.",
+      "inProgress": "Sine-save pa ang mga sagot mo. Maghintay sandali at subukan ulit.",
+      "invalid": "Hindi na-save ang mga sagot na ito. Bumalik at pumili ulit."
+    },
+    "invalid": {
+      "title": "Hindi kumpleto ang link ng check-in na ito",
+      "description": "Buksan ang Coach para makita ang plano mo.",
+      "open": "Buksan ang Coach"
+    }
   }
 }

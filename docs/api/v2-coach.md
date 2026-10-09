@@ -7,7 +7,7 @@ The contract of the Financial Coach (NF-FC-002): a worker who is about to leave 
 | This file | The routes, the fields and the rules |
 | `backend/app/schemas/coach_session.py`, `coach_plan.py` | The same contract as Pydantic models, with the rules that can be checked (the stage, the budget's arithmetic, the plan id). The endpoints import them (NF-FC-008 to -012, -014); the models win if this file and they ever disagree, and a test makes them agree with the mocks |
 | `backend/app/schemas/coach_profile.py` | The eleven slots and their limits (NF-FC-001); a session and a plan hold their values |
-| `docs/mocks/coach/` | One sample of every answer, 30 JSON files and 10 streams. The frontend's mock API (MSW) serves them, so the screens (NF-FC-017, -020, -021) can be built before the backend exists |
+| `docs/mocks/coach/` | One sample of every answer, 34 JSON files and 10 streams. The frontend's mock API (MSW) serves them, so the screens (NF-FC-017, -020, -021) can be built before the backend exists |
 | `docs/data-model/collections/coach.md` | Where a session and a plan are stored, and for how long |
 | `backend/app/services/coach/question_bank.json` | The questions, in order, with their skip rules (NF-FC-001) |
 
@@ -17,10 +17,11 @@ The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/se
 
 | Route | Built by |
 |---|---|
-| `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (built), NF-FC-022 uses the overview |
+| `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (built); NF-FC-022 (built) reads the overview for the dashboard card |
 | `POST /coach/sessions/{id}/messages` | NF-FC-009 (the stream, built), NF-FC-010 (understanding the answer, built), NF-FC-013 (guardrails, built) |
 | `POST /coach/sessions/{id}/plan`, `GET /coach/plans/{id}` | NF-FC-011 (score, built), NF-FC-012 (plan, built), NF-FC-014 (translation, built) |
 | `GET /coach/plans/{id}.pdf` | NF-FC-014 (built) |
+| `PUT /coach/plans/{id}/checkins/{milestone}` | NF-FC-022 (built): the answers to a day 30, 60 or 90 check-in. The reminder that opens it is NF-FC-016 (built) |
 
 ## Routes
 
@@ -33,6 +34,7 @@ The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/se
 | `GET` | `/api/v2/coach/plans/{id}` | A stored plan, in one language | 60 a minute; 10 a minute when it has to translate |
 | `GET` | `/api/v2/coach/plans/{id}.pdf` | The plan as a PDF file | 60 a minute; 10 a minute when it has to make the file |
 | `GET` | `/api/v2/coach/overview` | The active session and the newest plan, for the dashboard card | 60 a minute |
+| `PUT` | `/api/v2/coach/plans/{id}/checkins/{milestone}` | The answers to a day 30, 60 or 90 check-in; the first ones are kept | 60 a minute |
 
 "When it calls Gemini" means the Gemini budget (10 a minute per worker, `RATE_LIMIT_AI`) is used only by a request that really makes a Gemini call; a plan or a translation that is already stored costs none of it.
 
@@ -50,6 +52,7 @@ The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/se
   | `POST /sessions` | not used | One active session per worker: asking twice gives the same session |
   | `POST /sessions/{id}/messages` | **required** | A turn spends Gemini quota and changes the session; a dropped connection is retried with the same key |
   | `POST /sessions/{id}/plan` | optional, ignored | Idempotent by its own nature: the plan is found by the hash of the answers (below) |
+  | `PUT /plans/{id}/checkins/{milestone}` | not used | Idempotent by its own nature: the milestone is the key, and the first answers are kept |
 
   A missing key where it is required is `400 idempotency_key_invalid`.
 - **What no answer ever contains:** model names, prompt versions, the revision of a session, the slot hash's inputs, another worker's data, or a stack trace. Transcript text is always the redacted one (phone numbers, emails, ID and account numbers and URLs masked; amounts stay).
@@ -287,6 +290,34 @@ What the dashboard card (NF-FC-022) needs to say Start, Resume or View plan, wit
 
 Both can be present: a worker with a plan who started a new interview. Errors: `401`, `404` (flag off), `429`. Samples: `overview-01-active-session.json` (the default), `-02-plan-only`, `-03-session-and-plan`, `-04-empty`.
 
+## `PUT /api/v2/coach/plans/{id}/checkins/{milestone}`
+
+The answers to the day 30, 60 or 90 check-in (NF-FC-022). The reminder (a `coach_checkin` notification and a push, NF-FC-016) carries the link `/coach/checkin/{planId}?m=30`; the screen opens the three questions and sends the choices here. `{milestone}` is `d30`, `d60` or `d90`.
+
+**Request**, `CheckinAnswerRequest`: `{ "answers": { "remittance": ..., "savings": ..., "pay": ... } }`. All three are required and nothing else is accepted (`422 validation_failed`). Every answer is a choice from a fixed list, so nothing a worker typed is stored and the screen can translate each one. The words of the questions are the screen's (`checkin.*` in `frontend/src/i18n/coach/`); the API keeps only the choice.
+
+| Question | Field | Choices |
+|---|---|---|
+| Did you send money home as in your plan? | `remittance` | `on_track`, `behind`, `not_yet` |
+| Did you save money as in your plan? | `savings` | `on_track`, `behind`, `not_yet` |
+| Is your employer paying you in full and on time? | `pay` | `full_on_time`, `late_or_less`, `not_paid` |
+
+**Response `200`**, `CheckinAnswerResponse`: `plan_id`, `milestone`, `answers`, `answered_at` and `already_answered`. It is `200` every time, never `201`:
+
+- **The first answers** are stored and returned, `already_answered: false`.
+- **A milestone that already has answers** is left as it is, and the stored (first) answers come back with `already_answered: true`. That covers a second tap, a second phone and a retry after a lost response, so the screen never needs to know which of them it was. The worker's later answers are not stored: a check-in is a record of how it was on that day, not a form to edit.
+
+**Rules**
+
+- **Open from its day.** A milestone is open from the plan's `departure_date` plus 30, 60 or 90 days, as a UTC date (the reminder job runs at 02:00 UTC and reminds on that date, so a worker who has the link has reached it). Before then, and for a plan with no usable departure date, the answer is `409 checkin_not_due`.
+- **Any plan of the worker's.** Only the newest plan is reminded (NF-FC-016), but an older plan's milestone whose day has come is accepted.
+- **Where it is kept:** `checkins.{milestone}.answers` and `checkins.{milestone}.answered_at` on the plan, written by field path beside the reminder's `due_on` and `notified_at` (`docs/data-model/collections/coach.md`). The write is a transaction, so two requests at once store one set of answers; if they cannot both get through the answer is `409 request_in_progress` with `Retry-After: 2`, and the screen sends the same answers again.
+- **The reminder in the feed.** The screen marks the notification `coach_checkin_{planId}_{milestone}` read after the answers are saved, through Firestore (the rules let a worker change `read` and `read_at` and nothing else). That is the screen's own tidy-up, not part of this route.
+
+**Errors:** `401`, `404 not_found` (the flag is off, no such plan or not the worker's, or an id that is not 20 hex characters), `409 checkin_not_due`, `409 request_in_progress`, `422`, `429`.
+
+Samples: `checkin-01-answered.json` (the default), `-02-already-answered`, `-error-not-due` and `-error-not-found`.
+
 ## The score
 
 `score` is pure arithmetic on the answers, the exchange rates and the legal fee cap: no model (NF-FC-006, -011). The formula, weights, bands and a worked example are in [`docs/features/coach-scoring.md`](../features/coach-scoring.md).
@@ -310,6 +341,7 @@ The conventions allow a feature its own codes (section 2). These do not reuse an
 | 409 | `session_full` | messages |
 | 409 | `turn_in_progress` | messages |
 | 409 | `plan_not_ready` | plan |
+| 409 | `checkin_not_due` | check-in answers |
 
 The plan route also answers `409 request_in_progress` when the plan for the same answers is still being made. That is the conventions' code with its meaning (the same request is still being processed), without a key: the answers are the key.
 
@@ -324,7 +356,7 @@ The rules of the conventions (section 6) apply. Adding a field to a response, an
 | 1 | The score at `review` and the score in the plan are worked out at different times, so an exchange rate can move them apart. Freezing the score on the session when it reaches `review` and copying it into the plan would make them equal. **NF-FC-012:** the plan stores the score it was made with; the session's is still worked out on each read (D-217) | NF-FC-012 |
 | 2 | The band ids and cut-offs of the samples are now the rubric's (NF-FC-006, `docs/features/coach-scoring.md`). The factor points and totals in the samples are still placeholders and differ from the rubric by up to 10 points, always within the same band (D-200) | NF-FC-011 |
 | 3 | Answers from the chips and fields are sent as text and understood again. A structured `answer` field (`{slot, value}`) would skip that and could be added later without breaking anything. **NF-FC-017 (2026-10-09) kept to text:** the helpers write plain digits, the currency code and the period in the worker's language ("4200 AUD per month"), which the server's cue lists find in all six languages (D-236) | NF-FC-010, NF-FC-017 (done) |
-| 4 | **The reminder is built (NF-FC-016, 2026-10-09):** a daily internal job writes a `coach_checkin` notification whose `deep_link` is `/coach/checkin/{planId}?m=30` (or 60, 90) and sets `checkins.d30`, `d60` or `d90` (`due_on`, `notified_at`) on the plan. It adds no route to this contract (see `POST /api/v1/internal/send-coach-checkins` in `docs/api/endpoints.md`). **Still open:** the three questions and the routes that store an answer (`answered_at`, `answers`); no tracker row owns the backend half (D-233) | NF-FC-022 and a backend owner |
+| 4 | **The reminder is built (NF-FC-016, 2026-10-09):** a daily internal job writes a `coach_checkin` notification whose `deep_link` is `/coach/checkin/{planId}?m=30` (or 60, 90) and sets `checkins.d30`, `d60` or `d90` (`due_on`, `notified_at`) on the plan. It adds no route to this contract (see `POST /api/v1/internal/send-coach-checkins` in `docs/api/endpoints.md`). **Resolved by NF-FC-022 (2026-10-09):** the three questions are a remittance, a savings and a pay question with fixed choices, and `PUT /plans/{id}/checkins/{milestone}` stores the answers (section above). The sheet and the push handler that opens the link are the app's (`/coach/checkin/:planId`). D-233 closed | done |
 | 5 | **Built by NF-FC-015, in the chat, with no new route.** When the interview reaches the income stage the salary of the worker's latest analysed employment contract is stored as an **unconfirmed** `monthly_salary` slot (`source: "contract_prefill"`, `confirmed: false`) and the coach asks "Your contract with {employer} says the pay is {amount} {currency} each {period}. Is that right?". A yes confirms it (the source stays `contract_prefill`); another figure replaces it as the worker's own answer (`source: "user"`); any other reply drops it and the plain question is asked. It is never used before the yes. A daily or hourly pay is not offered | NF-FC-015 |
 | 6 | **Decided in NF-FC-013: text only.** A worker in distress gets fixed referral text in the stream (see "A blocked turn"). No structured referral card was added; an optional field of `done` can be added later without breaking anything, once the team has sourced organisations and numbers to put in it (D-224) | done |
 | 7 | NF-FC-014 says "return a signed URL"; this contract returns the stored file through the API. **Decided in NF-FC-014: through the API, as specified** (the bucket has no CORS policy, and a signed link would be a link to a worker's debts); the tracker's wording is out of date | NF-FC-014 |

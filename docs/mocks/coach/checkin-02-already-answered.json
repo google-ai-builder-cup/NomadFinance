@@ -1,0 +1,19 @@
+{
+  "description": "The same milestone sent again (a second tap, or another phone) with different answers: nothing changes, the first answers come back (200) with already_answered true.",
+  "request": "PUT /api/v2/coach/plans/5a202702c922fc9b4fcf/checkins/d30",
+  "status": 200,
+  "headers": {
+    "X-Request-ID": "0000000000000000000000000000c602"
+  },
+  "body": {
+    "plan_id": "5a202702c922fc9b4fcf",
+    "milestone": "d30",
+    "answers": {
+      "remittance": "on_track",
+      "savings": "behind",
+      "pay": "full_on_time"
+    },
+    "answered_at": "2026-12-31T09:12:40Z",
+    "already_answered": true
+  }
+}
