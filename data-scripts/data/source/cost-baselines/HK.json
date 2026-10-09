@@ -1,0 +1,120 @@
+{
+  "host_country": "HK",
+  "currency": "HKD",
+  "categories": {
+    "accommodation": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "month",
+      "notes": "Default worker is a live-in foreign domestic helper. The employer must provide suitable accommodation free of charge (Labour Department FAQ). Other workers are not covered; no housing standard or price was read for them.",
+      "source": {
+        "url": "https://www.fdh.labour.gov.hk/en/faq.html",
+        "publisher": "Labour Department (Hong Kong), foreign domestic helpers, frequently asked questions",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "food": {
+      "low": 0,
+      "typical": 1236,
+      "high": 1236,
+      "unit": "month",
+      "notes": "The employer must give free food or a food allowance of at least HK$1,236 a month (unchanged from 30 September 2025). Low is free food. With the allowance the helper pays for food herself, so typical and high are the allowance.",
+      "source": {
+        "url": "https://www.info.gov.hk/gia/general/202509/29/P2025092900318.htm",
+        "publisher": "Hong Kong Government press release of 29 September 2025: Minimum Allowable Wage HK$5,100, food allowance unchanged",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html",
+          "publisher": "Labour Department (Hong Kong), foreign domestic helpers, frequently asked questions",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "transport": {
+      "low": 32,
+      "typical": 126,
+      "high": 240,
+      "unit": "month",
+      "notes": "Assumed 8 journeys a month (4 rest days, 2 each) times 4.0 (cheapest MTR fare), 15.7 (Citybus top fare on Hong Kong Island) and 30.0 (Citybus top Kowloon and New Territories fare), single adult fares. The 8 journeys is an assumption.",
+      "source": {
+        "url": "https://www.td.gov.hk/en/publications_and_press_releases/publications/free_publications/fact_sheet_on_transport/index.html",
+        "publisher": "Transport Department (Hong Kong), fact sheet on transport, July 2025",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "phone_data": {
+      "low": 48,
+      "typical": 73,
+      "high": 98,
+      "unit": "month",
+      "notes": "csl local prepaid SIM cards: 48 (6 GB), 58 (student), 78 (simple communication) and 98 (monthly SIM, flexible data packs); typical is the midpoint of 48 to 98. Voice allowances per plan were not read.",
+      "source": {
+        "url": "https://www.hkcsl.com/en/prepaid/",
+        "publisher": "csl (Hong Kong), local prepaid SIM cards",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "mandatory_deductions": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "pct_of_wage",
+      "notes": "Domestic employees, including live-in helpers, are exempt from the Mandatory Provident Fund. The employer pays work-injury insurance and medical care. Unlawful deductions are an offence. Salaries tax was not checked.",
+      "source": {
+        "url": "https://www.mpfa.org.hk/en/mpf-system/mpf-coverage",
+        "publisher": "Mandatory Provident Fund Schemes Authority (Hong Kong), MPF coverage",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.fdh.labour.gov.hk/en/faq.html",
+          "publisher": "Labour Department (Hong Kong), foreign domestic helpers, frequently asked questions",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  },
+  "setup_costs": {
+    "transport_card": {
+      "low": 50,
+      "typical": 200,
+      "high": 200,
+      "unit": "one_off",
+      "notes": "Adult Standard Octopus: HK$50 refundable deposit plus HK$150 first stored value, which is spent on rides. Low counts the deposit only.",
+      "source": {
+        "url": "https://www.octopus.com.hk/en/consumer/octopus-cards/products/on-loan/standard.html",
+        "publisher": "Octopus Cards Limited (Hong Kong), Standard Octopus",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "agency_commission": {
+      "low": 0,
+      "typical": 510,
+      "high": 510,
+      "unit": "one_off",
+      "notes": "The most a licensed agency may charge the helper: 10% of the first month's wage, payable only after that wage is received. On the HK$5,100 minimum that is 510. What an agency actually charges was not read.",
+      "source": {
+        "url": "https://www.fdh.labour.gov.hk/en/faq.html",
+        "publisher": "Labour Department (Hong Kong), foreign domestic helpers, frequently asked questions",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.info.gov.hk/gia/general/202509/29/P2025092900318.htm",
+          "publisher": "Hong Kong Government press release of 29 September 2025: Minimum Allowable Wage HK$5,100, food allowance unchanged",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  }
+}

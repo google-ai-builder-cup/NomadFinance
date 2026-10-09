@@ -1,0 +1,149 @@
+{
+  "host_country": "JP",
+  "currency": "JPY",
+  "categories": {
+    "accommodation": {
+      "low": 20000,
+      "typical": 30000,
+      "high": 57000,
+      "unit": "month",
+      "notes": "Rent deducted for company housing: a site says 20,000 to 30,000 is usual (cost shared by residents, never above actual cost, no legal cap); high is the Tokyo student-housing average. Utilities (5,000 to 10,000) are extra and not counted.",
+      "source": {
+        "url": "https://gaikokusaiyo.com/housing-for-technical-interns-ssw/",
+        "publisher": "Gaikoku Saiyo no Madoguchi (gaikokusaiyo.com), housing for technical interns, article of 11 September 2025",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.studyinjapan.go.jp/en/life/accomodation/",
+          "publisher": "Study in Japan (JASSO), accommodation: Tokyo average rent 57,000, 2023 survey",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "food": {
+      "low": 20000,
+      "typical": 27700,
+      "high": 45000,
+      "unit": "month",
+      "notes": "A single person's monthly food: 20,000 cooking on a budget, 27,700 groceries on average, 45,000 mixing cooking and eating out (E-Housing, July 2025). Company cafeteria meals, if any, are deducted separately and not counted.",
+      "source": {
+        "url": "https://e-housing.jp/post/how-much-does-food-really-cost",
+        "publisher": "E-Housing, how much food costs in Japan, article of 28 July 2025",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://japanlivinglife.com/japan-monthly-budget-guide-foreigners",
+          "publisher": "Japan Living Life, monthly budget guide for foreign residents, updated 7 October 2026",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "transport": {
+      "low": 0,
+      "typical": 6000,
+      "high": 12000,
+      "unit": "month",
+      "notes": "Low: employers often pay the commuter pass (Tokyo metropolitan government FAQ). High: 12,000 in a moderate Tokyo budget (Japan Living Life). Typical is the midpoint, an assumption. Tokyo Metro IC fares could not be read.",
+      "source": {
+        "url": "https://www.tdh.metro.tokyo.lg.jp/english/faq/working/cost.html",
+        "publisher": "Tokyo Metropolitan Government, Tokyo Career Guide, cost of living FAQ",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://japanlivinglife.com/japan-monthly-budget-guide-foreigners",
+          "publisher": "Japan Living Life, monthly budget guide for foreign residents, updated 7 October 2026",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "phone_data": {
+      "low": 950,
+      "typical": 1400,
+      "high": 2970,
+      "unit": "month",
+      "notes": "Tax-included monthly prices: IIJmio 5 GB 950 and 10 GB 1,400 (April 2025), ahamo 30 GB 2,970 with no admin fee. ahamo's price structure changes on 1 December 2026. Japan Living Life puts mobile plus internet at 8,000.",
+      "source": {
+        "url": "https://www.iijmio.jp/hml/20250415.html",
+        "publisher": "IIJmio, Giga plan price changes, article of 15 April 2025",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://ahamo.com/plan/index.html",
+          "publisher": "ahamo (NTT docomo), plans and prices",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    },
+    "mandatory_deductions": {
+      "low": 14.49,
+      "typical": 14.69,
+      "high": 15.04,
+      "unit": "pct_of_wage",
+      "notes": "Worker's half, FY2026: pension 9.15 (18.3 split), health 4.72 / 4.925 / 5.275 (Okinawa / Tokyo / Saga, half of 9.44 / 9.85 / 10.55), child-support levy 0.115, employment insurance 0.5. Income and resident tax not checked.",
+      "source": {
+        "url": "https://www.nenkin.go.jp/service/kounen/hokenryo/hoshu/20150515-01.html",
+        "publisher": "Japan Pension Service, employees' pension premium: 18.3%, half each",
+        "retrieved_on": "2026-10-09"
+      },
+      "other_sources": [
+        {
+          "url": "https://www.kyoukaikenpo.or.jp/about/business/insurance_rate/rate_prefectures/r08/index.html",
+          "publisher": "Japan Health Insurance Association, FY2026 rates by prefecture",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://www.kyoukaikenpo.or.jp/lp/2026hokenryou/",
+          "publisher": "Japan Health Insurance Association, FY2026 premium notice (shared by employer and employee)",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://www.cfa.go.jp/policies/kodomokosodateshienkinseido",
+          "publisher": "Children and Families Agency, child and child-rearing support levy (0.23%, half each)",
+          "retrieved_on": "2026-10-09"
+        },
+        {
+          "url": "https://jsite.mhlw.go.jp/tokyo-hellowork/list/tachikawa/kyushokusha/koyouhokenryouritu08.html",
+          "publisher": "Tachikawa Hello Work (MHLW), employment insurance rates FY2026: worker 5/1,000",
+          "retrieved_on": "2026-10-09"
+        }
+      ],
+      "curator": "AB"
+    }
+  },
+  "setup_costs": {
+    "sim_card": {
+      "low": 0,
+      "typical": 0,
+      "high": 0,
+      "unit": "one_off",
+      "notes": "ahamo charges no admin fee and no shipping for a new SIM; the first month's plan is counted in phone_data. IIJmio's initial fees were not read.",
+      "source": {
+        "url": "https://ahamo.com/plan/index.html",
+        "publisher": "ahamo (NTT docomo), plans and prices",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    },
+    "private_rental_move_in": {
+      "low": 400000,
+      "typical": 600000,
+      "high": 800000,
+      "unit": "one_off",
+      "notes": "Only if the worker rents privately instead of living in the employer's housing: first-time renters should budget 400,000 to 800,000 for deposit, key money and agent fee; typical is the midpoint. Japan Living Life, not an official figure.",
+      "source": {
+        "url": "https://japanlivinglife.com/japan-monthly-budget-guide-foreigners",
+        "publisher": "Japan Living Life, monthly budget guide for foreign residents, updated 7 October 2026",
+        "retrieved_on": "2026-10-09"
+      },
+      "curator": "AB"
+    }
+  }
+}
