@@ -13,11 +13,11 @@ The contract of the Financial Coach (NF-FC-002): a worker who is about to leave 
 
 ## Implementation status
 
-Specified only. Nothing is built yet.
+The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. Until the scoring engine exists (NF-FC-011) `score` is `null` at `review` and `plan`, which the contract allows. The rest is specified only.
 
 | Route | Built by |
 |---|---|
-| `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (session state), NF-FC-022 uses the overview |
+| `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (built), NF-FC-022 uses the overview |
 | `POST /coach/sessions/{id}/messages` | NF-FC-009 (the stream), NF-FC-010 (understanding the answer), NF-FC-013 (staying on topic) |
 | `POST /coach/sessions/{id}/plan`, `GET /coach/plans/{id}` | NF-FC-011 (score), NF-FC-012 (plan), NF-FC-014 (translation) |
 | `GET /coach/plans/{id}.pdf` | NF-FC-014 |
@@ -109,7 +109,7 @@ Start the interview, or resume the open one. **Request**, `CoachSessionCreateReq
 
 **Response**, `CoachSessionCreateResponse`: the session of `GET` below plus `resumed` (`true` when the worker already had an active one). **`201`** for a new session, **`200`** when it was resumed. A new session has no messages: the screen opens the interview with a turn that has no text. No Gemini call is made here.
 
-A worker has one active session (`status: "active"`); a completed or abandoned one does not count. Two requests at the same moment still give one session (the backend checks and creates in one transaction, `coach.md`). Errors: `401`, `404` (flag off), `422 validation_failed` (a language outside the six), `429`. Samples: `sessions-create-01-new.json` (the default), `sessions-create-02-resumed.json`.
+A worker has one active session (`status: "active"`); a completed or abandoned one does not count. Two requests at the same moment still give one session (the backend checks and creates in one transaction, `coach.md`). Errors: `401`, `404` (flag off), `409 request_in_progress` (a burst of starts at the same moment made the transaction give up; sends `Retry-After: 2`, retry), `422 validation_failed` (a language outside the six), `429`. Samples: `sessions-create-01-new.json` (the default), `sessions-create-02-resumed.json`.
 
 ## `GET /api/v2/coach/sessions/{id}`
 
@@ -312,6 +312,6 @@ The rules of the conventions (section 6) apply. Adding a field to a response, an
 | 5 | A salary taken from a contract (NF-FC-015) enters as a slot with `source: "contract_prefill"` after a confirmation turn. There is no route for it | NF-FC-015 |
 | 6 | A worker in distress gets referral text in the stream. A structured referral card (an optional field of `done`) would be added then | NF-FC-013 |
 | 7 | NF-FC-014 says "return a signed URL"; this contract returns the stored file through the API. It needs the owner's agreement | NF-FC-014 (Aditya) |
-| 8 | A worker who answered "not sure" to the departure date must be told apart from one who was never asked, or the stage does not advance (D-171). `next_slot` is all the contract shows; where the session remembers it is NF-FC-008's choice | NF-FC-008 |
+| 8 | **Resolved by NF-FC-008.** A worker who answered "not sure" to the departure date is kept apart from one never asked by `declined_slots` on the stored session (`coach.md`); the contract still shows only `next_slot` | done |
 | 9 | NPR and BDT have no exchange rate yet (D-170), so a fee or debt in those currencies leaves `score` empty at `review` until the rates exist or the coach asks the worker to restate the amount | NF-FC-011, NF-FC-006 |
 | 10 | The streams in `docs/mocks/coach/` are written to this contract, byte for byte, **not captured** from a running server (there is none). Replace or add to them with a capture when NF-FC-009 runs on staging | NF-FC-009 |

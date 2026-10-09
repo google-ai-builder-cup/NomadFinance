@@ -55,6 +55,8 @@ One interview. Auto id. **One active session per user** (NF-FC-008): Firestore h
 | `last_active` | timestamp | yes | Time of the last completed turn |
 | `expires_at` | timestamp | yes | TTL field. `last_active` + 30 days, moved forward on every turn; on completion, `completed_at` + 30 days |
 | `completed_at` | timestamp | when completed | |
+| `declined_slots` | array of string | yes | Optional slots the worker was asked and chose not to answer (today only `departure_date`: "I do not know yet"). It tells "not sure" from "not asked yet", so the stage can advance without the slot (closes D-171, part 1). Removed from the list when the slot is answered later |
+| `question_bank_version` | number | yes | `version` of `question_bank.json` the session was created with (D-171, part 2) |
 | `models` | map | yes | `{ "extraction": "...", "reply": "..." }` as of the last turn (ADR-002) |
 | `prompt_versions` | map | yes | `{ "coach.extract_slots": 1, "coach.reply": 1 }` |
 | `created_at` | timestamp | yes | |

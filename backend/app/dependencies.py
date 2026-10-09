@@ -22,6 +22,12 @@ from app.integrations.cloud_storage import UserFileStore
 from app.integrations.firebase_auth import delete_firebase_user
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.base import get_firestore_client
+from app.repositories.coach_session_repo import (
+    CoachPlanRepository,
+    CoachSessionRepository,
+    get_coach_plan_repository,
+    get_coach_session_repository,
+)
 from app.repositories.config_repo import get_config_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
@@ -38,6 +44,7 @@ from app.repositories.scam_taxonomy_repo import (
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.auth_service import AccountService
+from app.services.coach.session_service import CoachSessions
 from app.services.feature_flag_service import FeatureFlagService, FlagName
 from app.services.scam.check_store import CheckStore
 from app.services.scam.report import ScamReporter
@@ -183,6 +190,14 @@ def get_scam_check_store(
 ) -> CheckStore:
     """The worker's stored scam checks and the cache over them (NF-SA-012)."""
     return CheckStore(checks, indicators)
+
+
+def get_coach_sessions(
+    sessions: Annotated[CoachSessionRepository, Depends(get_coach_session_repository)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+) -> CoachSessions:
+    """The worker's Financial Coach sessions and their state machine (NF-FC-008)."""
+    return CoachSessions(sessions, plans)
 
 
 def get_scam_reporter(
