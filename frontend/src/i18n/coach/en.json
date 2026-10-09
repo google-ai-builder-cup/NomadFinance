@@ -1,8 +1,106 @@
 {
   "home": {
     "title": "Financial Coach",
-    "comingSoonTitle": "Coming soon",
-    "comingSoonDescription": "We're still building this part of NomadFinance. Check back soon.",
+    "description": "Answer a few questions about your job and your money. The coach helps you get ready before you leave.",
+    "loading": "Opening the coach…"
+  },
+  "chat": {
+    "log": "Conversation with the coach",
+    "coachSays": "Coach:",
+    "youSaid": "You said:",
+    "typing": "The coach is typing",
+    "latest": "Latest message",
+    "notSent": "Not sent",
+    "error": {
+      "sessionNotActive": "This interview is finished. You can start a new one.",
+      "sessionFull": "This conversation is full. You can start a new interview.",
+      "notFound": "We could not find this interview. You can start a new one.",
+      "inProgress": "The coach is still working on your last message. Wait a moment and try again.",
+      "invalid": "That message could not be sent. Change it and try again.",
+      "rateLimited": "You are sending messages very fast. Wait a minute and try again.",
+      "rateLimitedWait": "You are sending messages very fast. Wait {{seconds}} seconds and try again.",
+      "busy": "The coach is busy right now. Your answers are safe. Try again in a minute.",
+      "timeout": "The coach took too long to answer. Your answers are safe. Please try again.",
+      "dropped": "The connection broke before the coach finished. Please try again.",
+      "restart": "Start a new interview"
+    }
+  },
+  "stage": {
+    "listLabel": "Interview progress",
+    "intro": "Basics",
+    "income": "Income",
+    "obligations": "Family",
+    "debt": "Debt",
+    "savings": "Savings",
+    "review": "Review",
+    "position": "Step {{current}} of {{total}}: {{name}}",
+    "complete": "All questions answered",
+    "done": "completed",
+    "current": "current step",
+    "upcoming": "not started"
+  },
+  "input": {
+    "panel": "Your answer",
+    "suggestions": "Quick answers",
+    "typeInstead": "Type my own answer",
+    "useQuick": "Use quick answers",
+    "textLabel": "Your answer",
+    "textPlaceholder": "Type your answer",
+    "send": "Send",
+    "counter": "{{count}} / {{max}}",
+    "tooLong": "Too long: shorten it to {{max}} characters or fewer.",
+    "none": "None (0)",
+    "amountLabel": "Amount",
+    "currencyLabel": "Currency",
+    "periodLabel": "How often",
+    "period": {
+      "month": "Per month",
+      "week": "Per week",
+      "year": "Per year"
+    },
+    "rateLabel": "Interest rate (%)",
+    "countLabel": "Number of people",
+    "dateLabel": "Departure date",
+    "dateUnknown": "I do not know yet",
+    "country": {
+      "SG": "Singapore",
+      "KR": "South Korea",
+      "MY": "Malaysia",
+      "JP": "Japan",
+      "HK": "Hong Kong",
+      "AU": "Australia"
+    },
+    "bank": {
+      "bank_account": "Bank account",
+      "mobile_wallet": "Mobile wallet",
+      "both": "Both a bank account and a mobile wallet",
+      "none": "I have neither"
+    },
+    "review": {
+      "yes": "Yes, that is right",
+      "change": "I want to change something"
+    },
+    "compose": {
+      "month": "{{amount}} {{currency}} per month",
+      "week": "{{amount}} {{currency}} per week",
+      "year": "{{amount}} {{currency}} per year",
+      "once": "{{amount}} {{currency}}",
+      "interest": {
+        "month": "{{rate}}% interest per month",
+        "year": "{{rate}}% interest per year"
+      }
+    },
+    "error": {
+      "amount": "Enter an amount above zero, for example 2500.",
+      "amountOrZero": "Enter an amount, for example 2500, or 0 if you have none.",
+      "count": "Enter a whole number from 0 to 20.",
+      "rate": "Enter a rate from 0 to 1000.",
+      "date": "Choose a date."
+    }
+  },
+  "confirmed": {
+    "title": "All your answers are in",
+    "description": "Your preparedness score and your 90-day plan come next. They are not on this screen yet.",
     "backToDashboard": "Back to home"
   }
 }
