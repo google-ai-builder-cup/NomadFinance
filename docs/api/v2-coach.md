@@ -13,12 +13,12 @@ The contract of the Financial Coach (NF-FC-002): a worker who is about to leave 
 
 ## Implementation status
 
-The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. Until the scoring engine exists (NF-FC-011) `score` is `null` at `review` and `plan`, which the contract allows. The rest is specified only.
+The session routes are built (NF-FC-008): `POST /coach/sessions`, `GET /coach/sessions/{id}` and `GET /coach/overview`. The turn route is built (NF-FC-009): `POST /coach/sessions/{id}/messages`, with the stream, the idempotency rules, the history window and the summary. **Until the slot extraction exists (NF-FC-010) a turn understands nothing**: no `slot_update` is sent, no answer is stored and the coach asks the same question again; the stage moves only when extraction is wired in. Until the scoring engine exists (NF-FC-011) `score` is `null` at `review` and `plan`, which the contract allows. The rest is specified only.
 
 | Route | Built by |
 |---|---|
 | `POST /coach/sessions`, `GET /coach/sessions/{id}`, `GET /coach/overview` | NF-FC-008 (built), NF-FC-022 uses the overview |
-| `POST /coach/sessions/{id}/messages` | NF-FC-009 (the stream), NF-FC-010 (understanding the answer), NF-FC-013 (staying on topic) |
+| `POST /coach/sessions/{id}/messages` | NF-FC-009 (the stream, built), NF-FC-010 (understanding the answer), NF-FC-013 (staying on topic) |
 | `POST /coach/sessions/{id}/plan`, `GET /coach/plans/{id}` | NF-FC-011 (score), NF-FC-012 (plan), NF-FC-014 (translation) |
 | `GET /coach/plans/{id}.pdf` | NF-FC-014 |
 

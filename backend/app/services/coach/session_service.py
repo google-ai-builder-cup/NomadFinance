@@ -28,8 +28,6 @@ from app.schemas.coach_session import (
     MAX_TRANSCRIPT_MESSAGES,
     CoachOverview,
     CoachSession,
-    OverviewPlan,
-    OverviewSession,
 )
 from app.schemas.contract import ReportLanguage
 from app.services.coach.question_bank import load_question_bank
@@ -50,6 +48,7 @@ from app.services.coach.session_machine import (
     status_transition,
     transition,
 )
+from app.services.coach.session_overview import build_overview
 from app.services.coach.session_types import (
     NewMessage,
     SessionConflictError,
@@ -100,21 +99,7 @@ class CoachSessions:
 
     async def overview(self, uid: str, now: datetime) -> CoachOverview:
         """The open session and the newest plan, without creating or changing anything."""
-        active = await run_in_threadpool(self._sessions.active, uid)
-        session = None
-        for session_id, document in active:
-            if not idle(document, now) and not expired(document, now):
-                view = to_session(session_id, document, self._bank)
-                session = OverviewSession(
-                    id=session_id,
-                    stage=view.stage,
-                    language=view.language,
-                    turn_count=view.turn_count,
-                    last_active=view.last_active,
-                )
-                break
-        newest = await run_in_threadpool(self._plans.newest, uid)
-        return CoachOverview(session=session, plan=_overview_plan(newest))
+        return await build_overview(self._sessions, self._plans, self._bank, uid, now)
 
     async def record_turn(
         self,
@@ -243,6 +228,42 @@ class CoachSessions:
         }
         return await self._write(uid, session_id, document, changes)
 
+    async def document(self, uid: str, session_id: str, now: datetime) -> dict[str, Any]:
+        """The stored session as the turn endpoint needs it (messages, `last_turn`, `summary`).
+
+        Raises:
+            SessionNotFoundError: No such session, or it has expired.
+        """
+        return await self._load(uid, session_id, now)
+
+    async def set_last_turn(
+        self,
+        uid: str,
+        session_id: str,
+        last_turn: dict[str, Any],
+        now: datetime,
+        *,
+        read: dict[str, Any] | None = None,
+    ) -> None:
+        """Record the turn in progress (or how it ended), apart from the turn itself.
+
+        Pass the `read` document the decision to start was made on, and the write is refused if
+        the session has changed since: that is what stops two turns starting at once.
+
+        Raises:
+            SessionConflictError: The session changed since it was read.
+        """
+        document = read if read is not None else await self._load(uid, session_id, now)
+        await self._write_document(uid, session_id, document, {"last_turn": last_turn})
+
+    async def save_summary(
+        self, uid: str, session_id: str, summary: str, turns: int, now: datetime
+    ) -> None:
+        """Store the summary of the turns older than the history window, and how many it covers."""
+        document = await self._load(uid, session_id, now)
+        changes = {"summary": summary, "summarised_turns": turns}
+        await self._write_document(uid, session_id, document, changes)
+
     def _declined(
         self, document: dict[str, Any], declined: Sequence[SlotName], slots: dict[str, Any]
     ) -> list[str]:
@@ -288,16 +309,3 @@ class CoachSessions:
     ) -> CoachSession:
         stored = await self._write_document(uid, session_id, document, changes)
         return to_session(session_id, stored, self._bank, self._scorer)
-
-
-def _overview_plan(newest: tuple[str, dict[str, Any]] | None) -> OverviewPlan | None:
-    if newest is None:
-        return None
-    plan_id, plan = newest
-    return OverviewPlan(
-        id=plan_id,
-        created_at=plan["created_at"],
-        score_total=plan["score"]["total"],
-        band=plan["score"]["band"],
-        departure_date=plan.get("departure_date"),
-    )

@@ -1,0 +1,104 @@
+"""What the Coach reply is asked to say, and the history it sees (NF-FC-009).
+
+The reply model is told which question comes next and which figures it may repeat; it is never
+asked to decide where the interview stands. The stage and the next question come from the state
+machine, so the model cannot skip a question or invent one.
+"""
+
+from __future__ import annotations
+
+import json
+from collections.abc import Sequence
+from typing import Any
+
+from app.integrations.gemini import ChatTurn
+from app.prompts.loader import load_prompt
+from app.schemas.coach_profile import parse_slot_value
+from app.schemas.coach_questions import QuestionBank
+from app.schemas.contract import ReportLanguage
+from app.services.coach.session_document import jsonable
+from app.services.coach.session_machine import next_slot, settle
+from app.services.coach.turn_types import Understanding
+
+REPLY_PROMPT = load_prompt("coach", "reply", 1)
+SUMMARISE_PROMPT = load_prompt("coach", "summarise", 1)
+
+LANGUAGE_NAMES: dict[str, str] = {
+    "en": "English",
+    "hi": "Hindi",
+    "tl": "Tagalog (Filipino)",
+    "id": "Indonesian",
+    "ne": "Nepali",
+    "bn": "Bengali",
+}
+# Shown to the model in place of a message the worker did not type (the coach speaks first).
+NO_MESSAGE = "(none)"
+
+
+def history_from(messages: Sequence[dict[str, Any]]) -> list[ChatTurn]:
+    """The stored transcript as chat turns: the worker is `user`, the coach is `model`."""
+    return [
+        ChatTurn("user" if message["role"] == "user" else "model", message["text"])
+        for message in messages
+    ]
+
+
+def projected(
+    bank: QuestionBank, document: dict[str, Any], understanding: Understanding
+) -> tuple[dict[str, dict[str, Any]], list[str], str, str | None]:
+    """The answers, declined slots, stage and next slot as they will stand after this turn."""
+    slots = dict(document["slots"])
+    for update in understanding.updates:
+        value = parse_slot_value(update.slot, update.value)
+        slots[update.slot] = {"value": jsonable(value), "confirmed": update.confirmed}
+    declined = sorted({*document.get("declined_slots", []), *understanding.declined} - set(slots))
+    stage = settle(bank, document["stage"], slots, declined)
+    return slots, declined, stage, next_slot(bank, stage, slots, declined)
+
+
+def question_to_ask(
+    bank: QuestionBank, understanding: Understanding, ask_slot: str | None
+) -> tuple[str, str]:
+    """`(ask_next, follow_up)`: the bank's own wording, in English; the model puts it in words."""
+    if understanding.clarify is not None:
+        clarify = understanding.clarify
+        return "", bank.follow_up(clarify.slot, clarify.trigger).prompt_en
+    if ask_slot is None:
+        return "", ""
+    return bank.question(ask_slot).prompt_en, ""
+
+
+def reply_message(
+    bank: QuestionBank,
+    document: dict[str, Any],
+    understanding: Understanding,
+    text: str | None,
+    language: ReportLanguage,
+) -> str:
+    """The user message of the reply call, filled from `coach/reply.v1`."""
+    slots, _, stage, ask_slot = projected(bank, document, understanding)
+    ask_next, follow_up = question_to_ask(bank, understanding, ask_slot)
+    understood = {u.slot: parse_slot_value(u.slot, u.value) for u in understanding.updates}
+    return REPLY_PROMPT.render_user(
+        language=LANGUAGE_NAMES[language],
+        stage=stage,
+        first_message="yes" if not document["messages"] else "no",
+        ask_next=ask_next,
+        follow_up=follow_up,
+        understood_json=_json({k: jsonable(v) for k, v in understood.items()}),
+        slots_json=_json({name: record["value"] for name, record in slots.items()}),
+        summary=document.get("summary") or "(none)",
+        worker_message=text if text else NO_MESSAGE,
+    )
+
+
+def summary_message(earlier: str | None, turns: Sequence[ChatTurn]) -> str:
+    """The user message that asks for a summary of `turns`, after any `earlier` summary."""
+    lines = "\n".join(
+        f"{'Worker' if turn.role == 'user' else 'Coach'}: {turn.text}" for turn in turns
+    )
+    return SUMMARISE_PROMPT.render_user(earlier_summary=earlier or "(none)", turns=lines)
+
+
+def _json(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True)
