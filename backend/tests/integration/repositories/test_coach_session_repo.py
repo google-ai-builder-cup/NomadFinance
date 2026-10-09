@@ -173,3 +173,30 @@ async def test_a_session_survives_a_restart_with_real_storage(uid: str) -> None:
     assert set(resumed.session.slots) == {"destination_country", "job_type", "departure_date"}
     assert [m.role for m in resumed.session.messages] == ["user", "coach"]
     assert resumed.session.turn_count == 1 and resumed.session.language == "tl"
+
+
+async def test_a_turn_is_saved_and_replayed_with_real_storage(uid: str) -> None:
+    """The timestamps of `last_turn` come back from Firestore as dates and still compare."""
+    from app.schemas.coach_session import CoachTurnRequest
+    from app.services.coach.turn_replay import STALE_AFTER
+    from app.services.coach.turn_service import CoachTurns, ReplayTurn
+    from tests.fixtures.coach_turns import StubGemini
+
+    client = get_firestore_client()
+    sessions = CoachSessions(CoachSessionRepository(client), CoachPlanRepository(client))
+    turns = CoachTurns(sessions, StubGemini())  # type: ignore[arg-type]
+    started = await sessions.start(uid, "en", restart=False, now=NOW)
+    body = CoachTurnRequest(language="en")
+    key = "key-0123456789abcdef"
+
+    live = await turns.start(uid, started.session.id, body, key, NOW + timedelta(minutes=1))
+    frames = [frame async for frame in turns.frames(live, "req-1")]  # type: ignore[arg-type]
+    replay = await turns.start(uid, started.session.id, body, key, NOW + timedelta(minutes=2))
+
+    assert frames[-1].startswith("event: done")
+    assert isinstance(replay, ReplayTurn) and replay.frames[-1] == frames[-1]
+    stored = CoachSessionRepository(client).get(uid, started.session.id)
+    assert stored is not None
+    assert stored["last_turn"]["state"] == "done" and stored["last_turn"]["message_id"] == "m001-c"
+    assert [m["role"] for m in stored["messages"]] == ["coach"]
+    assert STALE_AFTER.total_seconds() == 90

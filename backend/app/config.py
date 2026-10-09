@@ -100,6 +100,13 @@ class Settings(BaseSettings):
     gemini_chat_history_turns: int = Field(default=24, ge=1)
     gemini_chat_history_tokens: int = Field(default=6000, ge=1)
 
+    # The Financial Coach's reply (NF-FC-009) is short and scripted by the question bank, so it
+    # starts on the fast tier with thinking off: the reasoning tier took 18 s to its first piece
+    # with default thinking (D-115). Move it to "reasoning" once a staging run shows the first
+    # piece inside 2 s there; `None` keeps the model's default thinking.
+    gemini_coach_reply_tier: Literal["reasoning", "extraction", "classification"] = "classification"
+    gemini_coach_reply_thinking_budget: int | None = Field(default=0, ge=0)
+
     # How long a Financial Identity PDF link (NF-P3-014) works. A day is long enough to hand to a
     # lender, short enough to limit a leaked link. V4 signed URLs allow 7 days at most.
     export_url_expiry_minutes: int = Field(default=24 * 60, gt=0, le=7 * 24 * 60)

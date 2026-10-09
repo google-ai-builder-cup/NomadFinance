@@ -126,6 +126,16 @@ def _response_for(exc: Exception) -> tuple[int, str, str]:
     return status.HTTP_500_INTERNAL_SERVER_ERROR, "internal_error", "Document processing failed."
 
 
+def error_parts(exc: Exception) -> tuple[int, str, str]:
+    """Status, `/api/v2` code and message for an error that reaches a client as an `error` event.
+
+    A Gemini failure keeps its `ai_*` code; anything else is `internal_error` with the neutral
+    text, never the exception's own.
+    """
+    status_code, code, message = _response_for(exc)
+    return status_code, code, _INTERNAL_MESSAGE if code == "internal_error" else message
+
+
 async def gemini_error_handler(request: Request, exc: Exception) -> JSONResponse:
     """Turn a `GeminiError` into a short JSON error without internals or a traceback."""
     status_code, code, message = _response_for(exc)

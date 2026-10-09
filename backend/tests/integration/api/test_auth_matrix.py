@@ -263,6 +263,8 @@ AI_LIMITED = {
     ("POST", "/api/v1/remittance/recommend"),
     # Embeds the report text (a Gemini call) before it writes the Radar report (NF-SA-013).
     ("POST", "/api/v2/scam/checks/{check_id}/report"),
+    # One turn of the Financial Coach: a streamed Gemini reply (NF-FC-009, 10 a minute).
+    ("POST", "/api/v2/coach/sessions/{session_id}/messages"),
 }
 
 # Calls Gemini but spends its own budget inside the handler (20 an hour per worker, and only for
