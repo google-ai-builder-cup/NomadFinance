@@ -79,7 +79,7 @@ export default function CoachWidget({ item }: { item: ModuleItem }) {
             />
           ))}
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground max-sm:!line-clamp-2">
           {when !== null && `${t("dashboard.widgets.coach.lastAnswer", { when })} `}
           {t("dashboard.widgets.coach.saved")}
         </p>

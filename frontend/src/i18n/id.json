@@ -346,7 +346,16 @@
         "empty": "Catat aktivitas untuk mulai membangun skor Anda."
       },
       "scam": {
-        "open": "Periksa pesan"
+        "open": "Periksa pesan",
+        "empty": "Tempel pesan untuk memeriksanya sebelum bertindak.",
+        "last": "Pemeriksaan terakhir: {{result}}, {{when}}.",
+        "lastNoWhen": "Pemeriksaan terakhir: {{result}}.",
+        "result": {
+          "low": "risiko rendah",
+          "medium": "risiko sedang",
+          "high": "risiko tinggi",
+          "benign": "tidak ada penipuan"
+        }
       },
       "coach": {
         "open": "Buka Pelatih",
@@ -364,7 +373,8 @@
           "getting_ready": "Sedang bersiap",
           "well_prepared": "Siap dengan baik"
         }
-      }
+      },
+      "openShort": "Buka"
     },
     "actions": {
       "compare": "Bandingkan kurs",
@@ -400,6 +410,27 @@
         "empty": "Belum ada riwayat kurs untuk koridor Anda.",
         "action": "Buka Remittance X-Ray",
         "change": "{{value}}% dalam 30 hari"
+      }
+    },
+    "tour": {
+      "label": "Yang baru di NomadFinance",
+      "step": "Langkah {{current}} dari {{total}}",
+      "next": "Berikutnya",
+      "back": "Kembali",
+      "skip": "Lewati",
+      "done": "Mengerti",
+      "close": "Tutup panduan",
+      "scam": {
+        "title": "Periksa pesan sebelum bertindak",
+        "body": "Ada tawaran kerja, pinjaman, atau pesan yang meminta uang? Tempel di sini atau bagikan tangkapan layar, lalu lihat apakah itu penipuan."
+      },
+      "coach": {
+        "title": "Rencanakan sebelum berangkat",
+        "body": "Jawab beberapa pertanyaan dan dapatkan rencana 90 hari: anggaran bulanan, uang yang dikirim pulang, dan daftar periksa."
+      },
+      "outro": {
+        "title": "Semua di satu tempat",
+        "body": "Buka kartu di halaman ini untuk mulai atau melanjutkan. Hasil terakhir Anda tampil di kartu."
       }
     }
   },

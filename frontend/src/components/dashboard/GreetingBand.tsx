@@ -40,8 +40,8 @@ export default function GreetingBand() {
         aria-hidden="true"
         className="dotted pointer-events-none absolute inset-0 [mask-image:linear-gradient(100deg,transparent_30%,#000)]"
       />
-      <div className="relative grid items-center gap-6 p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="flex flex-col gap-4">
+      <div className="relative grid items-center gap-4 p-4 sm:gap-6 sm:p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="text-[13px] font-semibold text-muted-foreground">{today}</span>
             {preferred && (
@@ -52,33 +52,52 @@ export default function GreetingBand() {
             )}
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-balance text-[clamp(1.75rem,3.4vw,2.625rem)] font-extrabold leading-tight tracking-tight">
+            <h1 className="text-balance text-[clamp(1.5rem,3.4vw,2.625rem)] font-extrabold leading-tight tracking-tight">
               {firstName
                 ? t("dashboard.greeting", { name: firstName })
                 : t("dashboard.greetingGeneric")}
             </h1>
-            <p className="text-base text-muted-foreground md:text-lg">{t("dashboard.subtitle")}</p>
+            <p className="hidden text-base text-muted-foreground sm:block md:text-lg">
+              {t("dashboard.subtitle")}
+            </p>
           </div>
-          <div className="flex flex-wrap gap-2.5 pt-1">
-            <Button asChild className="h-12 rounded-xl px-5 font-bold">
+          {/* On a phone the actions are one row that scrolls sideways inside the card (the page itself
+              does not), so six buttons do not stack to a third of the screen. */}
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden">
+            <Button
+              asChild
+              className="h-11 shrink-0 whitespace-nowrap rounded-xl px-4 font-bold sm:h-12 sm:px-5"
+            >
               <Link to="/remittance">
                 <ArrowLeftRight className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t("dashboard.actions.compare")}
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-12 rounded-xl bg-card px-5 font-bold">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 shrink-0 whitespace-nowrap rounded-xl bg-card px-4 font-bold sm:h-12 sm:px-5"
+            >
               <Link to="/contract">
                 <ShieldCheck className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t("dashboard.actions.contract")}
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-12 rounded-xl bg-card px-5 font-bold">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 shrink-0 whitespace-nowrap rounded-xl bg-card px-4 font-bold sm:h-12 sm:px-5"
+            >
               <Link to="/radar/report">
                 <Flag className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t("dashboard.actions.report")}
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-12 rounded-xl bg-card px-5 font-bold">
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 shrink-0 whitespace-nowrap rounded-xl bg-card px-4 font-bold sm:h-12 sm:px-5"
+            >
               <Link to="/identity/log">
                 <Fingerprint className="mr-2 h-4 w-4" aria-hidden="true" />
                 {t("fib.dashboard.logActivity")}
@@ -89,7 +108,7 @@ export default function GreetingBand() {
                 key={to}
                 asChild
                 variant="outline"
-                className="h-12 rounded-xl bg-card px-5 font-bold"
+                className="h-11 shrink-0 whitespace-nowrap rounded-xl bg-card px-4 font-bold sm:h-12 sm:px-5"
               >
                 <Link to={to}>
                   <Icon className="mr-2 h-4 w-4" aria-hidden="true" />

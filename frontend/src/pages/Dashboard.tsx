@@ -1,11 +1,12 @@
 import CoachWidget from "@/components/dashboard/CoachWidget";
+import FirstRunTour from "@/components/dashboard/FirstRunTour";
 import GreetingBand from "@/components/dashboard/GreetingBand";
-import ModuleWidget from "@/components/dashboard/ModuleWidget";
 import FIBProgressWidget from "@/components/dashboard/FIBProgressWidget";
 import KpiRow from "@/components/dashboard/KpiRow";
 import RadarAlertsWidget from "@/components/dashboard/RadarAlertsWidget";
 import RecentContractsWidget from "@/components/dashboard/RecentContractsWidget";
 import RemittanceShortcutWidget from "@/components/dashboard/RemittanceShortcutWidget";
+import ScamWidget from "@/components/dashboard/ScamWidget";
 import { MODULE_ITEMS } from "@/components/layout/navItems";
 import Reveal from "@/components/visual/Reveal";
 import { useFeatureFlags } from "@/hooks/useFeatureFlag";
@@ -13,22 +14,24 @@ import { useI18n } from "@/hooks/useI18n";
 
 /** Signed-in home: a greeting, four live KPIs, and a widget per pillar — recent contracts, a
  * remittance shortcut, radar alerts, Financial Identity progress (NF-P3-019), then a card for
- * each Future Scope pillar (Scam Check, Financial Coach) that is on for the worker; the Coach's
- * says Start, Continue or View plan (NF-FC-022). Every KPI
- * and widget loads independently, so a slow or empty one never blocks the others. */
+ * each Future Scope pillar (Scam Check, Financial Coach) that is on for the worker, each with
+ * its own live status (NF-FC-022, NF-HR-002), and a first-run tour of the new ones. On a phone
+ * the page is compact (two columns of tiles) so it stays within two screens. Every KPI and
+ * widget loads independently, so a slow or empty one never blocks the others. */
 export default function Dashboard() {
   const { t } = useI18n();
   const { flags } = useFeatureFlags();
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
+      <FirstRunTour />
       <GreetingBand />
       <KpiRow />
       <section aria-labelledby="pillars-heading">
         <h2 id="pillars-heading" className="sr-only">
           {t("dashboard.pillarsHeading")}
         </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-1 sm:gap-4 md:grid-cols-2">
           <Reveal className="h-full">
             <RemittanceShortcutWidget />
           </Reveal>
@@ -43,7 +46,7 @@ export default function Dashboard() {
           </Reveal>
           {MODULE_ITEMS.filter(({ flag }) => flags[flag]).map((item, index) => (
             <Reveal key={item.to} delay={240 + index * 60} className="h-full">
-              {item.flag === "coach" ? <CoachWidget item={item} /> : <ModuleWidget item={item} />}
+              {item.flag === "coach" ? <CoachWidget item={item} /> : <ScamWidget item={item} />}
             </Reveal>
           ))}
         </div>
