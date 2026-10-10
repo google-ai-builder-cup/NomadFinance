@@ -20,7 +20,7 @@ import type {
   ContractSummary,
   ContractUploadResponse,
 } from "@/types/contract";
-import type { LanguageCode } from "@/types/enums";
+import { type HostCountry, isHostCountry, type LanguageCode } from "@/types/enums";
 import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
 /** Step 1: read and store the file (`POST /api/v1/contracts`). Usually 3 to 40 s. */
@@ -146,4 +146,18 @@ export type StoredContract = ContractProgressDoc & ContractSummary;
 export async function getContract(uid: string, contractId: string): Promise<StoredContract | null> {
   const snapshot = await getDoc(doc(db, "users", uid, "contracts", contractId));
   return snapshot.exists() ? ({ id: snapshot.id, ...snapshot.data() } as StoredContract) : null;
+}
+
+/**
+ * The country step 2 read from the contract (`detected.host_country`), or null when it could not
+ * tell. The check itself uses the worker's choice, so this is only what the document shows: when
+ * the two differ the report says so (NF-HR-004).
+ */
+export async function getDetectedCountry(
+  uid: string,
+  contractId: string
+): Promise<HostCountry | null> {
+  const snapshot = await getDoc(doc(db, "users", uid, "contracts", contractId));
+  const detected = (snapshot.data()?.detected ?? {}) as Record<string, unknown>;
+  return isHostCountry(detected.host_country) ? detected.host_country : null;
 }

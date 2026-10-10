@@ -26,7 +26,12 @@ export function currencyDecimals(currency: string): number {
   return ZERO_DECIMAL_CURRENCIES.has(currency) ? 0 : 2;
 }
 
-export type AmountProblem = "empty" | "invalid" | "decimals";
+// The most one entry can be, as on the server (backend/app/schemas/fib.py): an extra zero would
+// otherwise sit in the profile for a year. The yen and the won run to larger numbers.
+export const MAX_AMOUNT = 1_000_000;
+export const MAX_AMOUNT_WHOLE_UNIT = 100_000_000;
+
+export type AmountProblem = "empty" | "invalid" | "decimals" | "tooLarge";
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
 /**
@@ -60,6 +65,9 @@ export function parseAmount(text: string, currency: string): AmountCheck {
   const amount = Number(normalized);
   if (!Number.isFinite(amount) || amount <= 0) {
     return { ok: false, problem: "invalid" };
+  }
+  if (amount > (decimals === 0 ? MAX_AMOUNT_WHOLE_UNIT : MAX_AMOUNT)) {
+    return { ok: false, problem: "tooLarge" };
   }
   return { ok: true, amount };
 }

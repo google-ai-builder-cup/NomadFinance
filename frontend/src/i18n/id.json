@@ -618,7 +618,8 @@
       "errors": {
         "tooLarge": "File ini lebih besar dari 10 MB. Pilih file yang lebih kecil.",
         "badType": "Unggah PDF atau foto (PNG, JPEG, WebP, atau HEIC).",
-        "generic": "File ini tidak dapat digunakan. Coba file lain."
+        "generic": "File ini tidak dapat digunakan. Coba file lain.",
+        "notAContract": "Ini tidak tampak seperti kontrak. Unggah PDF atau foto yang jelas dari seluruh kontrak."
       },
       "hostCountry": "Negara tempat Anda bekerja",
       "hostCountryHint": "Kami memeriksa kontrak Anda dengan hukum ketenagakerjaan negara ini.",
@@ -701,7 +702,13 @@
       "languageHint": "Bahasa lain diterjemahkan saat pertama kali Anda memilihnya. Ini butuh beberapa detik.",
       "switching": "Laporan Anda sedang diterjemahkan…",
       "switchOutOfDate": "Laporan ini sudah kedaluwarsa. Periksa kontrak Anda lagi untuk melihatnya dalam bahasa ini.",
-      "summaryHeading": "Ringkasan"
+      "summaryHeading": "Ringkasan",
+      "countryMismatch": {
+        "body": "Kontrak ini tampaknya dari {{detected}}, tetapi diperiksa dengan hukum ketenagakerjaan {{used}}.",
+        "action": "Periksa dengan hukum {{detected}}",
+        "working": "Memeriksa…",
+        "failed": "Kami tidak dapat mengulang pemeriksaan. Silakan coba lagi."
+      }
     },
     "category": {
       "minimum_wage": "Upah minimum",
@@ -1097,7 +1104,8 @@
         "amount": {
           "empty": "Masukkan jumlah.",
           "invalid": "Masukkan jumlah yang valid.",
-          "decimals": "Terlalu banyak angka desimal untuk mata uang ini."
+          "decimals": "Terlalu banyak angka desimal untuk mata uang ini.",
+          "tooLarge": "Jumlah ini terlalu besar. Periksa lalu coba lagi."
         }
       },
       "transfer": {

@@ -28,6 +28,7 @@ import {
   type Phase,
   progressView,
   requestFailureKey,
+  uploadFailureKey,
 } from "@/utils/pipelineProgress";
 import { HOST_COUNTRIES, type HostCountry, isLanguageCode, type LanguageCode } from "@/types/enums";
 
@@ -107,6 +108,24 @@ export default function ContractUpload() {
     );
   }
 
+  // The contract shows another country than the one the check used: run the check again for it,
+  // through the same retry the page already follows live.
+  function recheckForCountry(country: HostCountry) {
+    if (contractId === null) {
+      return;
+    }
+    const choices = {
+      ...(submitted ?? { report_language: effectiveReportLanguage }),
+      host_country: country,
+    };
+    setSubmitted(choices);
+    setAttempt((count) => count + 1);
+    retry.mutate(
+      { contractId, choices },
+      { onSuccess: (analysis) => trackContractAnalyzed(analysis.host_country) }
+    );
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (!file || upload.isPending) {
@@ -146,7 +165,7 @@ export default function ContractUpload() {
           compact
         />
 
-        <ReportView analysis={result} />
+        <ReportView analysis={result} onRecheck={recheckForCountry} />
 
         <Button
           className="h-12 w-full rounded-xl font-bold"
@@ -275,7 +294,7 @@ export default function ContractUpload() {
 
           {upload.isError && (
             <p role="alert" className="text-sm font-medium text-destructive">
-              {t(requestFailureKey(upload.error))}
+              {t(uploadFailureKey(upload.error))}
             </p>
           )}
 

@@ -123,3 +123,31 @@ def test_endpoints_are_documented_in_openapi(api: TestClient) -> None:
     assert "post" in paths["/api/v1/fib/income"]
     assert "post" in paths["/api/v1/fib/bill"]
     assert "post" in paths["/api/v1/fib/savings"]
+
+
+# --- NF-HR-004: no entry is beyond the limit ------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("url", "body"),
+    [
+        (INCOME_URL, {"amount": 1_000_001, "currency": "SGD", "category": "salary"}),
+        (BILL_URL, {"amount": 1e15, "currency": "AUD", "paid": True}),
+        (SAVINGS_URL, {"amount": 100_000_001, "currency": "JPY", "direction": "deposit"}),
+    ],
+)
+def test_an_amount_beyond_the_limit_is_refused_and_nothing_is_stored(
+    api: TestClient, fib: FakeFib, url: str, body: dict[str, Any]
+) -> None:
+    response = api.post(url, json=body)
+
+    assert response.status_code == 422
+    assert fib.docs == {}
+
+
+def test_the_largest_amounts_are_still_accepted(api: TestClient) -> None:
+    sgd = {"amount": 1_000_000, "currency": "SGD", "category": "salary"}
+    yen = {"amount": 100_000_000, "currency": "JPY", "category": "salary"}
+
+    assert api.post(INCOME_URL, json=sgd).status_code == 201
+    assert api.post(INCOME_URL, json=yen).status_code == 201

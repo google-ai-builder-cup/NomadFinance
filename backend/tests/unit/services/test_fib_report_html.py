@@ -261,3 +261,48 @@ def test_the_section_is_in_the_reports_own_language() -> None:
 
     assert LABELS["bn"]["shared_heading"] in html
     assert LABELS["en"]["shared_heading"] not in html
+
+
+# --- NF-HR-004: a row is one unit ----------------------------------------------------------
+
+
+def test_every_row_keeps_its_label_and_value_together() -> None:
+    html = build_report_html(_profile(coach_signal=_COACH, scam_signal=_SCAM), None, NOW)
+
+    labels = LABELS["en"]
+    assert f'<div class="row"><dt>{labels["coach_pay"]}</dt><dd>2 / 2</dd></div>' in html
+    # The rule that stops a page break between the two halves of a row.
+    assert ".row {" in html and "break-inside: avoid" in html
+
+
+def _pages_of_each_row(html: str) -> dict[str, set[int]]:
+    from weasyprint import HTML
+
+    pages: dict[str, set[int]] = {}
+    for number, page in enumerate(HTML(string=html).render().pages):
+        for box in page._page_box.descendants():  # noqa: SLF001
+            element = getattr(box, "element", None)
+            if element is not None and element.tag == "div" and element.get("class") == "row":
+                pages.setdefault(str(element[0].text), set()).add(number)
+    return pages
+
+
+@pytest.mark.skipif(not _can_render(), reason="weasyprint's system libraries are missing")
+@pytest.mark.parametrize("language", ["en", "hi", "bn"])
+def test_no_row_is_split_over_two_pages_wherever_the_page_ends(language: str) -> None:
+    """The foot of page 1 fell inside the shared-activity rows in Bengali, Hindi and Tagalog:
+    a value at the bottom of one page and its label at the top of the next. Filler of every
+    length moves the page end through the rows, so one of them lands inside them."""
+    for filler in range(0, 14):
+        narrative = {
+            "language": language,
+            "text": "\n\n".join([LABELS[language]["summary"]] * (4 + filler)),
+            "activity_text": LABELS[language]["summary"],
+            "model": "m",
+        }
+        profile = _profile(narrative=narrative, coach_signal=_COACH, scam_signal=_SCAM)
+
+        pages = _pages_of_each_row(build_report_html(profile, None, NOW))
+
+        split = {label: shown for label, shown in pages.items() if len(shown) > 1}
+        assert pages and not split, f"with {filler} extra paragraphs, split across pages: {split}"

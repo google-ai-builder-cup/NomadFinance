@@ -1168,7 +1168,7 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 | Status | `detail` | Cause |
 |---|---|---|
 | 401 | see Authentication | No or invalid token |
-| 422 | FastAPI validation list | Missing a required field (`category` for income, `paid` for a bill, `direction` for savings), a non-positive `amount`, or `currency` not 3 uppercase letters |
+| 422 | FastAPI validation list | Missing a required field (`category` for income, `paid` for a bill, `direction` for savings), a non-positive `amount`, an `amount` over 1,000,000 (100,000,000 for `JPY` and `KRW`, which have no minor unit; NF-HR-004), or `currency` not 3 uppercase letters |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
 ---
