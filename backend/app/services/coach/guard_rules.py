@@ -43,6 +43,9 @@ _WORDS = re.compile(r"[\s,.;:!?()\[\]{}<>\-–—\"“”'/।|]+")
 # A long run of letters and digits with no space is an encoded payload, not an answer.
 _BLOB = re.compile(r"[A-Za-z0-9+/_=-]{40,}")
 _CLOSING_TAG = re.compile(r"<\s*/\s*(worker_message|summary_of_earlier_talk|recent_talk)", re.I)
+# A web link or an e-mail address. The coach never gives one (the screens link where a worker
+# should go), so one in a reply came from an attack, and a worker would follow it.
+_LINK = re.compile(r"\b(?:https?|ftp)://|\bwww\.|[\w.+-]+@[\w-]+\.[\w.-]+", re.I)
 
 
 def _compile(patterns: Iterable[str]) -> re.Pattern[str]:
@@ -97,6 +100,11 @@ def visible_to_model(role: str, text: str) -> str:
 def fence(text: str) -> str:
     """`text` with any closing tag of a data section broken, so it cannot end the section early."""
     return _CLOSING_TAG.sub(lambda match: f"< /{match.group(1).lower()}", text)
+
+
+def contains_link(reply: str) -> bool:
+    """Whether a coach reply holds a web link or an e-mail address."""
+    return bool(_LINK.search(unicodedata.normalize("NFKC", reply)))
 
 
 def recommends_product(reply: str) -> bool:

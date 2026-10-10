@@ -1,6 +1,6 @@
 # Security
 
-NomadFinance handles migrant workers' contracts, pay records and complaints. This page says how to report a problem and what is in place. The detail, with evidence, is in [`runbooks/NF-P4-004-security-audit.md`](runbooks/NF-P4-004-security-audit.md).
+NomadFinance handles migrant workers' contracts, pay records and complaints. This page says how to report a problem and what is in place. The detail, with evidence, is in [`runbooks/NF-P4-004-security-audit.md`](runbooks/NF-P4-004-security-audit.md) (v1) and [`security-review-v2.md`](security-review-v2.md) (the Scam Analyzer, the Coach and the Financial Identity signals).
 
 ## Reporting a problem
 
@@ -14,7 +14,8 @@ Tell a team member directly (Devam, Aditya or Pranjal) or open a private note in
 | API | Every endpoint except `/health` needs a Firebase ID token, verified with its signature, audience, issuer, expiry and revocation. A test sends 21 kinds of bad token to every route. |
 | Scheduled jobs | `/api/v1/internal/*` accept only Cloud Scheduler's signed token from one service account. |
 | Data in the browser | Firestore and Storage rules let a worker read only their own documents. Everything a worker writes, apart from their profile and marking alerts read, goes through the API. The rules are tested, including cross-user reads and collection-group queries. |
-| Abuse | 60 requests a minute per worker, 10 for endpoints that call Gemini, and a 10 MB upload cap. Uploads are identified by their content, not by the name or type the browser claims. |
+| Abuse | 60 requests a minute per worker, 10 for endpoints that call Gemini, a 10 MB upload cap and a 128 KB cap on the JSON bodies of `/api/v2`. Uploads are identified by their content, not by the name or type the browser claims. |
+| Answers | Every answer under `/api/` is `Cache-Control: no-store` and `nosniff`. A Coach reply that holds a web link or an e-mail address is dropped and not saved. |
 | Secrets | Only in Secret Manager, readable by the backend's own service account. None in the repository or its history, or in the built app. |
 | Deployment | Keyless GitHub-to-Google deploys. The API's documentation pages are served only in local development. |
 

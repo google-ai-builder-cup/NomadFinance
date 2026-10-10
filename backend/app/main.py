@@ -8,7 +8,11 @@ from app.api.v2.router import api_router as api_v2_router
 from app.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import REQUEST_ID_HEADER, configure_logging
-from app.core.middleware import BodySizeLimitMiddleware, RequestLoggingMiddleware
+from app.core.middleware import (
+    BodySizeLimitMiddleware,
+    RequestLoggingMiddleware,
+    SecurityHeadersMiddleware,
+)
 from app.core.rate_limit import RateLimitMiddleware
 from app.schemas.common import HealthResponse
 
@@ -47,9 +51,9 @@ def create_app() -> FastAPI:
     register_exception_handlers(app)
 
     # The last middleware added is the outermost. Order of a request, outside in:
-    # logging -> CORS -> rate limit -> body size -> app. CORS wraps the two that can refuse a
-    # request, so a 429 or 413 still carries CORS headers; without them the browser hides
-    # the status and the app can only say "network error".
+    # logging -> security headers -> CORS -> rate limit -> body size -> app. CORS wraps the two
+    # that can refuse a request, so a 429 or 413 still carries CORS headers; without them the
+    # browser hides the status and the app can only say "network error".
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.request_max_bytes)
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(
@@ -75,6 +79,8 @@ def create_app() -> FastAPI:
     )
     # Added last so it is the outermost layer: it also times and logs whatever other
     # middleware answers or rejects a request.
+    # Outside CORS, so a 413 or 429 from a middleware inside it carries the headers too.
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestLoggingMiddleware)
     return app
 

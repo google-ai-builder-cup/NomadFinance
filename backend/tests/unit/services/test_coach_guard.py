@@ -148,6 +148,34 @@ class TestTheLog:
         ]
         assert not any(w in line for line in lines for w in ("loan", "2000", "calling", "unsafe"))
 
+    @pytest.mark.parametrize(
+        "reply",
+        [
+            "Send it to https://evil.example/collect",
+            "Open HTTP://EVIL.EXAMPLE now",
+            "Visit www.evil.example",
+            "Write to someone@evil.example",
+            "Ｈｔｔｐｓ://evil.example",
+        ],
+    )
+    def test_a_reply_with_a_link_or_an_address_is_blocked(self, reply: str) -> None:
+        guard, _ = _guard()
+
+        assert guard.check_reply(reply) == "reply_contains_link"
+
+    @pytest.mark.parametrize(
+        "reply",
+        [
+            "Which country will you work in?",
+            "Your plan has 13 weeks, e.g. save 200 SGD each week.",
+            "Send 2,000 PHP home, that is about 1.5 percent of the cost.",
+        ],
+    )
+    def test_an_ordinary_reply_is_not_taken_for_a_link(self, reply: str) -> None:
+        guard, _ = _guard()
+
+        assert guard.check_reply(reply) is None
+
     def test_a_blocked_reply_is_logged_as_a_warning(self, caplog: pytest.LogCaptureFixture) -> None:
         guard, _ = _guard()
         caplog.set_level(logging.INFO, logger="app.services.coach.guard")
