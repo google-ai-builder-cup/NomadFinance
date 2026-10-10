@@ -30,6 +30,7 @@ from app.services.fib.profile_metrics import (
     entries_in_window,
     overall_score,
 )
+from app.services.fib.signals import SignalReader, sharing_of
 from app.utils.hashing import hash_user_id
 
 logger = logging.getLogger(__name__)
@@ -151,8 +152,21 @@ def _verified_employment(income: list[Entry]) -> list[dict[str, Any]]:
     return list(by_contract.values())
 
 
+def _as_json(block: dict[str, Any]) -> dict[str, Any]:
+    """A signal with its timestamps as dates: the prompt gets JSON, and a day is all it needs."""
+    return {k: v.date().isoformat() if isinstance(v, datetime) else v for k, v in block.items()}
+
+
 def _narrative_input(profile: dict[str, Any]) -> dict[str, Any]:
     """What the narrative prompt may see: no overall score, no employer names."""
+    shared = {
+        name: _as_json(profile[key])
+        for name, key in (("coach", "coach_signal"), ("scam", "scam_signal"))
+        if key in profile
+    }
+    if "coach" in shared:
+        # So that "2 of 3 check-ins" states only numbers the data holds.
+        shared["coach"]["checkins_in_plan"] = 3
     return {
         "period_start": profile["period_start"],
         "period_end": profile["period_end"],
@@ -161,6 +175,7 @@ def _narrative_input(profile: dict[str, Any]) -> dict[str, Any]:
         "entry_counts": profile["entry_counts"],
         "metrics": profile["metrics"],
         "income_verified_by_contract": bool(profile.get("verified_employment")),
+        **({"shared_activity": shared} if shared else {}),
     }
 
 
@@ -172,6 +187,7 @@ async def recompute_profile(
     rate_repo: RateRepository,
     now: datetime,
     goals_source: GoalsSource | None = None,
+    signals: SignalReader | None = None,
 ) -> Literal["recomputed", "no_data"]:
     """Recompute one user's profile and overwrite `financial_profile/current`.
 
@@ -232,10 +248,17 @@ async def recompute_profile(
     if verified:
         profile["verified_employment"] = verified
 
+    # What the worker chose to share from the Coach and the Scam Analyzer (NF-HR-001). A block
+    # they have not opted into is not read, and one written last week is not carried over.
+    if signals is not None:
+        profile.update(await signals.read(uid, sharing_of(user), metrics, now))
+
     language = user.get("preferred_language")
     language = language if language in APP_LANGUAGES else "en"
-    text, model = await write_narrative(_narrative_input(profile), language, gemini)
-    profile["narrative"] = {"language": language, "text": text, "model": model}
+    written = await write_narrative(_narrative_input(profile), language, gemini)
+    profile["narrative"] = {"language": language, "text": written.text, "model": written.model}
+    if written.activity_text:
+        profile["narrative"]["activity_text"] = written.activity_text
     profile["prompt_versions"] = {NARRATIVE_PROMPT.key: NARRATIVE_PROMPT.version}
     profile["computed_at"] = now
     # Goals the profile already holds are carried over by `save_profile`; this is for a profile
@@ -257,6 +280,7 @@ async def recompute_all(
     rate_repo: RateRepository,
     now: datetime,
     goals_source: GoalsSource | None = None,
+    signals: SignalReader | None = None,
 ) -> RecomputeResponse:
     """Recompute every user's profile. A failure on one user is logged and counted, never
     raised: the others still run, and the previous profile of that user stays."""
@@ -267,7 +291,7 @@ async def recompute_all(
         async with gate:
             try:
                 return await recompute_profile(
-                    uid, gemini, fib, users, rate_repo, now, goals_source
+                    uid, gemini, fib, users, rate_repo, now, goals_source, signals
                 )
             except (GeminiError, GoogleAPICallError, *_BAD_DATA):
                 logger.exception("fib_profile_failed user=%s", hash_user_id(uid))

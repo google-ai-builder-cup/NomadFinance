@@ -4,7 +4,7 @@ Assigned to Devam; built by Aditya.
 
 ## Summary
 
-A Cloud Scheduler job (`fib-recompute`, Sundays 02:00 UTC) calls `POST /api/v1/internal/recompute-fib-profiles`. For each user with activity in the last 12 months the backend reads income, transfers, bills and savings, computes the four metrics, has the reasoning tier write the report text (prompt `fib/synthesize_narrative.v1`) in the worker's language, and overwrites `users/{uid}/financial_profile/current`. It is the "Financial Score Recompute" subgraph of `docs/mermaid/financial-identity-pipeline.mmd`.
+A Cloud Scheduler job (`fib-recompute`, Sundays 02:00 UTC) calls `POST /api/v1/internal/recompute-fib-profiles`. For each user with activity in the last 12 months the backend reads income, transfers, bills and savings, computes the four metrics, has the reasoning tier write the report text (prompt `fib/synthesize_narrative.v1`, v2 since NF-HR-001) in the worker's language, and overwrites `users/{uid}/financial_profile/current`. It is the "Financial Score Recompute" subgraph of `docs/mermaid/financial-identity-pipeline.mmd`.
 
 PDF export (NF-P3-014), contract income writes (NF-P3-024), demo seed data (NF-P3-015, -021), a user-triggered recompute and the frontend are separate.
 

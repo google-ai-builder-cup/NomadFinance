@@ -20,6 +20,15 @@ from app.repositories.user_repo import UserRepository
 from app.schemas.fib_profile import NarrativeAnswer
 from app.services.fib.narrative import write_narrative
 from app.services.fib.profile_builder import recompute_all, recompute_profile
+from app.services.fib.signals import SignalReader
+from tests.unit.services.test_fib_signals import (
+    _CHECKS,
+    _PLAN,
+    FakeChecks,
+    FakeFlags,
+    FakePlans,
+    _reader,
+)
 
 pytestmark = pytest.mark.anyio
 
@@ -125,6 +134,7 @@ def _run(
     gemini: FakeGemini,
     rates: FakeRates | None = None,
     uid: str = "u1",
+    signals: SignalReader | None = None,
 ) -> Any:
     return recompute_profile(
         uid,
@@ -133,6 +143,7 @@ def _run(
         cast(UserRepository, users),
         cast(RateRepository, rates or FakeRates()),
         NOW,
+        signals=signals,
     )
 
 
@@ -167,7 +178,7 @@ async def test_a_full_history_is_stored_as_the_data_model_describes() -> None:
         "text": "Line one.\n\nLine two.",
         "model": "gemini-3.5-flash",
     }
-    assert profile["prompt_versions"] == {"fib.synthesize_narrative": 1}
+    assert profile["prompt_versions"] == {"fib.synthesize_narrative": 2}
     assert profile["computed_at"] == NOW
     assert "verified_employment" not in profile
 
@@ -179,7 +190,7 @@ async def test_the_narrative_prompt_gets_the_metrics_but_no_overall_score_or_nam
     await _run(fib, FakeUsers({"u1": {"home_country": "IN"}}), gemini)
 
     call = gemini.calls[0]
-    prompt = load_prompt("fib", "synthesize_narrative", 1)
+    prompt = load_prompt("fib", "synthesize_narrative", 2)
     assert call["tier"] is ModelTier.REASONING
     assert call["operation"] == "fib.synthesize_narrative"
     assert call["system_instruction"] == prompt.system
@@ -329,10 +340,11 @@ async def test_a_narrative_failure_keeps_the_previous_profile() -> None:
 async def test_the_narrative_turns_a_literal_backslash_n_into_a_line_break() -> None:
     gemini = FakeGemini(NarrativeAnswer(text="First.\\n\\nSecond.\\n"))
 
-    text, model = await write_narrative({"metrics": {}}, "en", cast(GeminiClient, gemini))
+    written = await write_narrative({"metrics": {}}, "en", cast(GeminiClient, gemini))
 
-    assert text == "First.\n\nSecond."
-    assert model == "gemini-3.5-flash"
+    assert written.text == "First.\n\nSecond."
+    assert written.activity_text == ""
+    assert written.model == "gemini-3.5-flash"
 
 
 async def test_an_empty_narrative_is_an_error() -> None:
@@ -366,3 +378,161 @@ async def test_one_users_failure_does_not_stop_the_run() -> None:
     assert response.skipped_no_data == 1
     assert response.failed == 2
     assert list(fib.saved) == ["ok"]
+
+
+# --- NF-HR-001: what the worker chose to share -------------------------------------------------
+
+SHARES_BOTH = {"home_country": "IN", "signal_sharing": {"coach": True, "scam": True}}
+
+
+def _both_reader(**kwargs: Any) -> SignalReader:
+    return _reader(
+        kwargs.get("plans", FakePlans(_PLAN)),
+        kwargs.get("checks", FakeChecks(_CHECKS)),
+        FakeFlags({"coach", "scam"}),
+    )
+
+
+async def test_shared_activity_is_in_the_profile_and_the_narrative_prompt() -> None:
+    fib = FakeFib({"u1": _priya()})
+    gemini = FakeGemini(
+        NarrativeAnswer(
+            text="Report.",
+            activity_text="1 plan check-in was answered. 1 of 1 message checked was flagged.",
+        )
+    )
+
+    outcome = await _run(fib, FakeUsers({"u1": SHARES_BOTH}), gemini, signals=_both_reader())
+
+    assert outcome == "recomputed"
+    profile = fib.saved["u1"]
+    assert profile["coach_signal"]["checkins_answered"] == 1
+    assert profile["scam_signal"]["checks"] == 1
+    assert profile["narrative"]["activity_text"].startswith("1 plan check-in")
+    shared = gemini.profile_sent()["shared_activity"]
+    assert shared["coach"]["last_checkin_at"] == "2026-10-03"
+    assert shared["scam"]["last_check_at"] == "2026-10-13"
+    assert shared["scam"]["scams_found"] == 1
+    assert shared["coach"]["checkins_in_plan"] == 3
+
+
+async def test_nothing_is_read_or_sent_without_the_workers_opt_in() -> None:
+    fib = FakeFib({"u1": _priya()})
+    gemini = FakeGemini(NarrativeAnswer(text="Report.", activity_text="Invented 99 checks."))
+    plans, checks = FakePlans(_PLAN), FakeChecks(_CHECKS)
+
+    await _run(
+        fib,
+        FakeUsers({"u1": {"home_country": "IN"}}),
+        gemini,
+        signals=_both_reader(plans=plans, checks=checks),
+    )
+
+    profile = fib.saved["u1"]
+    assert "coach_signal" not in profile and "scam_signal" not in profile
+    assert "activity_text" not in profile["narrative"]
+    assert "shared_activity" not in gemini.profile_sent()
+    assert plans.reads == 0 and checks.asked == []
+
+
+async def test_turning_sharing_off_removes_the_signals_at_the_next_recompute() -> None:
+    fib = FakeFib({"u1": _priya()})
+    gemini = FakeGemini(NarrativeAnswer(text="Report.", activity_text="1 check-in answered."))
+    await _run(fib, FakeUsers({"u1": SHARES_BOTH}), gemini, signals=_both_reader())
+    assert "coach_signal" in fib.saved["u1"]
+
+    off = {"home_country": "IN", "signal_sharing": {"coach": False, "scam": False}}
+    await _run(fib, FakeUsers({"u1": off}), gemini, signals=_both_reader())
+
+    profile = fib.saved["u1"]
+    assert "coach_signal" not in profile and "scam_signal" not in profile
+    assert "activity_text" not in profile["narrative"]
+
+
+async def test_one_shared_signal_is_written_without_the_other() -> None:
+    fib = FakeFib({"u1": _priya()})
+    only_scam = {"home_country": "IN", "signal_sharing": {"scam": True}}
+
+    await _run(fib, FakeUsers({"u1": only_scam}), FakeGemini(), signals=_both_reader())
+
+    assert "scam_signal" in fib.saved["u1"]
+    assert "coach_signal" not in fib.saved["u1"]
+
+
+async def test_a_paragraph_with_a_number_the_worker_did_not_share_is_not_kept() -> None:
+    fib = FakeFib({"u1": _priya()})
+    gemini = FakeGemini(
+        NarrativeAnswer(text="Report.", activity_text="The worker checked 40 messages.")
+    )
+
+    await _run(fib, FakeUsers({"u1": SHARES_BOTH}), gemini, signals=_both_reader())
+
+    profile = fib.saved["u1"]
+    assert "activity_text" not in profile["narrative"]
+    # The figures themselves are still there for the structured section of the PDF.
+    assert profile["scam_signal"]["checks"] == 1
+
+
+async def test_a_signal_that_cannot_be_read_does_not_stop_the_profile() -> None:
+    fib = FakeFib({"u1": _priya()})
+    reader = _both_reader(plans=FakePlans(_PLAN, fail=True), checks=FakeChecks([], fail=True))
+
+    outcome = await _run(fib, FakeUsers({"u1": SHARES_BOTH}), FakeGemini(), signals=reader)
+
+    assert outcome == "recomputed"
+    assert "coach_signal" not in fib.saved["u1"]
+    assert "scam_signal" not in fib.saved["u1"]
+
+
+async def test_the_activity_paragraph_may_write_a_date_the_way_a_person_would() -> None:
+    gemini = FakeGemini(
+        NarrativeAnswer(
+            text="Report.", activity_text="The last check-in was answered on 3 October 2026."
+        )
+    )
+
+    written = await write_narrative(
+        {"shared_activity": {"coach": {"last_checkin_at": "2026-10-03", "checkins_answered": 1}}},
+        "en",
+        cast(GeminiClient, gemini),
+    )
+
+    assert written.activity_text.startswith("The last check-in")
+
+
+async def test_a_paragraph_is_ignored_when_the_profile_shares_nothing() -> None:
+    gemini = FakeGemini(NarrativeAnswer(text="Report.", activity_text="Made up 2 things."))
+
+    written = await write_narrative({"metrics": {}}, "en", cast(GeminiClient, gemini))
+
+    assert written.activity_text == ""
+
+
+async def test_a_paragraph_that_is_dropped_is_logged_by_its_numbers_only(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    gemini = FakeGemini(
+        NarrativeAnswer(text="Report.", activity_text="The worker checked 40 messages.")
+    )
+
+    with caplog.at_level("WARNING"):
+        await write_narrative(
+            {"shared_activity": {"scam": {"checks": 7}}}, "en", cast(GeminiClient, gemini)
+        )
+
+    assert "numbers_not_shared=[40]" in caplog.text
+    assert "worker checked" not in caplog.text
+
+
+async def test_two_of_three_check_ins_is_grounded() -> None:
+    gemini = FakeGemini(
+        NarrativeAnswer(text="Report.", activity_text="2 of 3 plan check-ins were answered.")
+    )
+
+    written = await write_narrative(
+        {"shared_activity": {"coach": {"checkins_answered": 2, "checkins_in_plan": 3}}},
+        "en",
+        cast(GeminiClient, gemini),
+    )
+
+    assert written.activity_text == "2 of 3 plan check-ins were answered."

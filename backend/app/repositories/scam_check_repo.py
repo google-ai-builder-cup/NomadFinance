@@ -66,6 +66,32 @@ class ScamCheckRepository:
             query = query.start_after({"created_at": before})
         return [(doc.id, doc.to_dict() or {}) for doc in query.limit(limit).stream()]
 
+    def activity_since(
+        self, uid: str, since: datetime, limit: int
+    ) -> list[tuple[str, dict[str, Any]]]:
+        """Checks last made on or after `since`, newest first, as `(id, fields)`.
+
+        Only what the Financial Identity signal and the activity feed need (NF-HR-001): the
+        dates and the verdict's flag, level and type, never the message, its indicators or the
+        explainer. One range on one field, so it needs no composite index.
+        """
+        query = (
+            self._checks(uid)
+            .where("last_checked_at", ">=", since)
+            .order_by("last_checked_at", direction=Query.DESCENDING)
+            .select(
+                [
+                    "created_at",
+                    "last_checked_at",
+                    "verdict.is_scam",
+                    "verdict.risk_level",
+                    "verdict.scam_type",
+                ]
+            )
+            .limit(limit)
+        )
+        return [(doc.id, doc.to_dict() or {}) for doc in query.stream()]
+
 
 @lru_cache
 def get_scam_check_repository() -> ScamCheckRepository:

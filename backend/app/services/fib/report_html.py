@@ -41,6 +41,7 @@ td.score { width: 26%; text-align: right; font-weight: 600; }
 .fill { height: 3mm; background: #1f7a8c; border-radius: 1.5mm; }
 .none { color: #7b8794; font-weight: 400; }
 .summary p { margin: 0 0 3mm; }
+.note { margin: 0 0 3mm; font-size: 9pt; color: #52606d; }
 .disclaimer { margin-top: 6mm; padding-top: 3mm; border-top: 1px solid #c5ced6;
               font-size: 8.5pt; color: #52606d; }
 """
@@ -76,6 +77,55 @@ def _indicator_row(name: str, metric: dict[str, Any], labels: dict[str, str]) ->
     return (
         f'<tr><td class="name">{escape(name)}</td><td class="bar">{bar}</td>'
         f'<td class="score">{text}</td></tr>'
+    )
+
+
+def _number(value: Any) -> str:
+    """A count or percentage as digits 0-9, without a trailing ".0"."""
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
+    return escape(str(value))
+
+
+def _shared_section(profile: dict[str, Any], labels: dict[str, str]) -> str:
+    """What the worker shared from the Coach and the Scam Analyzer (NF-HR-001), or "".
+
+    The exporter has already removed what the worker no longer shares, so what is in `profile`
+    is printed as it is. Counts and dates only, each with the fixed wording of the report.
+    """
+    rows: list[tuple[str, str]] = []
+    coach = profile.get("coach_signal")
+    if isinstance(coach, dict):
+        answered = int(coach.get("checkins_answered", 0))
+        rows += [
+            (labels["coach_checkins"], _number(answered)),
+            (
+                labels["coach_remittance"],
+                f'{_number(coach.get("remittance_on_track", 0))} / {answered}',
+            ),
+            (labels["coach_savings"], f'{_number(coach.get("savings_on_track", 0))} / {answered}'),
+            (labels["coach_pay"], f'{_number(coach.get("pay_on_time", 0))} / {answered}'),
+            (labels["coach_last"], _day(coach.get("last_checkin_at", ""))),
+        ]
+        if "savings_rate_target_pct" in coach and "savings_rate_recorded_pct" in coach:
+            rows += [
+                (labels["coach_target"], f'{_number(coach["savings_rate_target_pct"])} %'),
+                (labels["coach_recorded"], f'{_number(coach["savings_rate_recorded_pct"])} %'),
+            ]
+    scam = profile.get("scam_signal")
+    if isinstance(scam, dict):
+        rows += [
+            (labels["scam_checks"], _number(scam.get("checks", 0))),
+            (labels["scam_found"], _number(scam.get("scams_found", 0))),
+            (labels["scam_last"], _day(scam.get("last_check_at", ""))),
+        ]
+    if not rows:
+        return ""
+    paragraph = _paragraphs(str(profile.get("narrative", {}).get("activity_text", "")))
+    return (
+        f'<h2>{escape(labels["shared_heading"])}</h2>{_facts(rows)}'
+        f'<div class="summary">{paragraph}</div>'
+        f'<p class="note">{escape(labels["shared_note"])}</p>'
     )
 
 
@@ -149,6 +199,7 @@ def build_report_html(
         f'<h2>{escape(labels["summary"])}</h2>'
         f'<div class="summary">{_paragraphs(str(narrative.get("text", "")))}</div>'
         f"{verified}"
+        f"{_shared_section(profile, labels)}"
         f'<p class="disclaimer">{escape(labels["disclaimer"])}</p>'
         "</body></html>"
     )

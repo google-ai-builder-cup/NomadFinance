@@ -13,6 +13,7 @@ from app.repositories.coach_session_repo import CoachPlanRepository, get_coach_p
 from app.repositories.fib_repo import FibRepository, get_fib_repository
 from app.repositories.radar_repo import RadarRepository, get_radar_repository
 from app.repositories.rate_repo import RateRepository, get_rate_repository
+from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
 from app.repositories.scam_stats_repo import ScamStatsRepository, get_scam_stats_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.coach_checkin import SendCheckinsResponse
@@ -24,6 +25,7 @@ from app.services.coach.checkin_job import send_checkins
 from app.services.coach.plan_goals import newest_plan_goals
 from app.services.feature_flag_service import FeatureFlagService
 from app.services.fib.profile_builder import recompute_all
+from app.services.fib.signals import SignalReader
 from app.services.radar.alerts import run_aggregation
 from app.services.remittance.rates import refresh_rates
 from app.services.scam.stats import run_scam_stats
@@ -76,6 +78,8 @@ async def recompute_fib_profiles_endpoint(
     rates: Annotated[RateRepository, Depends(get_rate_repository)],
     gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
     plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    scam_checks: Annotated[ScamCheckRepository, Depends(get_scam_check_repository)],
+    flags: Annotated[FeatureFlagService, Depends(get_feature_flag_service)],
 ) -> RecomputeResponse:
     """Weekly Financial Identity recompute (NF-P3-013): metrics and narrative per user.
 
@@ -83,7 +87,13 @@ async def recompute_fib_profiles_endpoint(
     user keeps the previous profile. A retry would run (and pay for) every other user again.
     """
     return await recompute_all(
-        gemini, fib, users, rates, datetime.now(UTC), newest_plan_goals(plans)
+        gemini,
+        fib,
+        users,
+        rates,
+        datetime.now(UTC),
+        newest_plan_goals(plans),
+        SignalReader(plans, scam_checks, flags),
     )
 
 

@@ -11,6 +11,13 @@ class NarrativeAnswer(BaseModel):
     text: str = Field(
         description="The whole report as plain text, paragraphs separated by a blank line."
     )
+    activity_text: str = Field(
+        default="",
+        description=(
+            "One short paragraph about the activity the worker shared (Coach check-ins, scam "
+            "checks), or an empty string when the profile has none (NF-HR-001)."
+        ),
+    )
 
 
 class RecomputeResponse(BaseModel):

@@ -29,6 +29,18 @@ LABEL_KEYS: Final = (
     "verified_heading",
     "verified_employer",
     "verified_salary",
+    "shared_heading",
+    "shared_note",
+    "coach_checkins",
+    "coach_remittance",
+    "coach_savings",
+    "coach_pay",
+    "coach_last",
+    "coach_target",
+    "coach_recorded",
+    "scam_checks",
+    "scam_found",
+    "scam_last",
     "disclaimer",
     "income_stability",
     "savings_rate",
@@ -57,6 +69,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Employment verified from a contract",
         "verified_employer": "Employer",
         "verified_salary": "Salary stated in the contract",
+        "shared_heading": "Activity the worker chose to share",
+        "shared_note": (
+            "These are counts of what the worker did in NomadFinance. "
+            "They include no message, answer or other text the worker wrote."
+        ),
+        "coach_checkins": "Plan check-ins answered (of 3)",
+        "coach_remittance": "Check-ins where sending money home was on track",
+        "coach_savings": "Check-ins where saving was on track",
+        "coach_pay": "Check-ins where pay arrived in full and on time",
+        "coach_last": "Last check-in answered on",
+        "coach_target": "Savings rate the plan aimed for",
+        "coach_recorded": "Savings rate recorded in this period",
+        "scam_checks": "Messages checked for scams (last 90 days)",
+        "scam_found": "Of these, flagged as likely scams",
+        "scam_last": "Last message checked on",
         "disclaimer": (
             "This report is based on entries the worker recorded in NomadFinance and on the "
             "transfers they logged. Except for employment marked as verified from a contract, "
@@ -88,6 +115,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "अनुबंध से सत्यापित रोज़गार",
         "verified_employer": "नियोक्ता",
         "verified_salary": "अनुबंध में लिखा वेतन",
+        "shared_heading": "कामगार द्वारा साझा की गई गतिविधि",
+        "shared_note": (
+            "ये NomadFinance में कामगार की गतिविधि की गिनती हैं। "
+            "इनमें कामगार का लिखा कोई संदेश, जवाब या अन्य पाठ शामिल नहीं है।"
+        ),
+        "coach_checkins": "जवाब दिए गए योजना चेक-इन (3 में से)",
+        "coach_remittance": "चेक-इन जिनमें घर पैसे भेजना योजना के अनुसार रहा",
+        "coach_savings": "चेक-इन जिनमें बचत योजना के अनुसार रही",
+        "coach_pay": "चेक-इन जिनमें वेतन पूरा और समय पर मिला",
+        "coach_last": "आख़िरी चेक-इन का जवाब दिया गया",
+        "coach_target": "योजना में तय बचत दर",
+        "coach_recorded": "इस अवधि में दर्ज बचत दर",
+        "scam_checks": "धोखाधड़ी के लिए जाँचे गए संदेश (पिछले 90 दिन)",
+        "scam_found": "इनमें से संभावित धोखाधड़ी के रूप में चिह्नित",
+        "scam_last": "आख़िरी संदेश जाँचा गया",
         "disclaimer": (
             "यह रिपोर्ट उन प्रविष्टियों पर आधारित है जो कामगार ने NomadFinance में दर्ज कीं और "
             "उन ट्रांसफ़र पर जो उन्होंने लॉग किए। अनुबंध से सत्यापित रोज़गार को छोड़कर, "
@@ -119,6 +161,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Trabahong napatunayan mula sa kontrata",
         "verified_employer": "Employer",
         "verified_salary": "Sahod ayon sa kontrata",
+        "shared_heading": "Aktibidad na piniling ibahagi ng manggagawa",
+        "shared_note": (
+            "Mga bilang ito ng ginawa ng manggagawa sa NomadFinance. Walang "
+            "kasamang mensahe, sagot o iba pang tekstong isinulat ng manggagawa."
+        ),
+        "coach_checkins": "Mga check-in ng plano na nasagot (sa 3)",
+        "coach_remittance": "Mga check-in na nasa takbo ang pagpapadala ng pera sa pamilya",
+        "coach_savings": "Mga check-in na nasa takbo ang pag-iipon",
+        "coach_pay": "Mga check-in na buo at nasa oras ang sahod",
+        "coach_last": "Huling check-in na nasagot noong",
+        "coach_target": "Rate ng pag-iipon na target ng plano",
+        "coach_recorded": "Rate ng pag-iipon na naitala sa panahong ito",
+        "scam_checks": "Mga mensaheng sinuri para sa scam (huling 90 araw)",
+        "scam_found": "Sa mga ito, minarkahang posibleng scam",
+        "scam_last": "Huling mensaheng sinuri noong",
         "disclaimer": (
             "Batay ang ulat na ito sa mga tala na inilagay ng manggagawa sa NomadFinance at sa "
             "mga padalang kanyang itinala. Maliban sa trabahong napatunayan mula sa kontrata, "
@@ -151,6 +208,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Pekerjaan terverifikasi dari kontrak",
         "verified_employer": "Pemberi kerja",
         "verified_salary": "Gaji yang tertulis di kontrak",
+        "shared_heading": "Aktivitas yang dipilih pekerja untuk dibagikan",
+        "shared_note": (
+            "Ini adalah jumlah kegiatan pekerja di NomadFinance. "
+            "Tidak ada pesan, jawaban, atau teks lain yang ditulis pekerja."
+        ),
+        "coach_checkins": "Check-in rencana yang dijawab (dari 3)",
+        "coach_remittance": "Check-in dengan pengiriman uang sesuai rencana",
+        "coach_savings": "Check-in dengan tabungan sesuai rencana",
+        "coach_pay": "Check-in dengan gaji diterima penuh dan tepat waktu",
+        "coach_last": "Check-in terakhir dijawab pada",
+        "coach_target": "Tingkat tabungan yang ditargetkan rencana",
+        "coach_recorded": "Tingkat tabungan tercatat pada periode ini",
+        "scam_checks": "Pesan yang diperiksa untuk penipuan (90 hari terakhir)",
+        "scam_found": "Dari jumlah itu, ditandai sebagai kemungkinan penipuan",
+        "scam_last": "Pesan terakhir diperiksa pada",
         "disclaimer": (
             "Laporan ini didasarkan pada catatan yang dimasukkan pekerja di NomadFinance dan "
             "pengiriman uang yang dicatatnya. Kecuali pekerjaan yang terverifikasi dari kontrak, "
@@ -182,6 +254,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "सम्झौताबाट प्रमाणित रोजगारी",
         "verified_employer": "रोजगारदाता",
         "verified_salary": "सम्झौतामा उल्लेख गरिएको तलब",
+        "shared_heading": "कामदारले साझा गर्न रोजेको गतिविधि",
+        "shared_note": (
+            "यी NomadFinance मा कामदारले गरेका कामको गणना हुन्। यसमा "
+            "कामदारले लेखेको कुनै सन्देश, जवाफ वा अन्य पाठ समावेश छैन।"
+        ),
+        "coach_checkins": "जवाफ दिइएका योजना चेक-इन (3 मध्ये)",
+        "coach_remittance": "घरमा पैसा पठाउने काम योजनाअनुसार भएका चेक-इन",
+        "coach_savings": "बचत योजनाअनुसार भएका चेक-इन",
+        "coach_pay": "तलब पूरा र समयमै आएका चेक-इन",
+        "coach_last": "अन्तिम चेक-इनको जवाफ दिइएको मिति",
+        "coach_target": "योजनाले लक्ष्य राखेको बचत दर",
+        "coach_recorded": "यस अवधिमा अभिलेख गरिएको बचत दर",
+        "scam_checks": "ठगीका लागि जाँचिएका सन्देश (पछिल्लो 90 दिन)",
+        "scam_found": "यीमध्ये सम्भावित ठगीका रूपमा चिनो लगाइएका",
+        "scam_last": "अन्तिम सन्देश जाँचिएको मिति",
         "disclaimer": (
             "यो प्रतिवेदन कामदारले NomadFinance मा दर्ता गरेका अभिलेख र आफूले लग गरेका रकम "
             "पठाइमा आधारित छ। सम्झौताबाट प्रमाणित रोजगारी बाहेक, NomadFinance ले यिनलाई बैंक "
@@ -213,6 +300,21 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "চুক্তি থেকে যাচাই করা কর্মসংস্থান",
         "verified_employer": "নিয়োগকর্তা",
         "verified_salary": "চুক্তিতে উল্লেখ করা বেতন",
+        "shared_heading": "কর্মী যে কার্যকলাপ শেয়ার করতে বেছে নিয়েছেন",
+        "shared_note": (
+            "এগুলো NomadFinance-এ কর্মীর কাজের গণনা। এতে "
+            "কর্মীর লেখা কোনো বার্তা, উত্তর বা অন্য লেখা নেই।"
+        ),
+        "coach_checkins": "উত্তর দেওয়া পরিকল্পনার চেক-ইন (3টির মধ্যে)",
+        "coach_remittance": "যেসব চেক-ইনে দেশে টাকা পাঠানো পরিকল্পনা অনুযায়ী ছিল",
+        "coach_savings": "যেসব চেক-ইনে সঞ্চয় পরিকল্পনা অনুযায়ী ছিল",
+        "coach_pay": "যেসব চেক-ইনে বেতন পুরো এবং সময়মতো এসেছে",
+        "coach_last": "সর্বশেষ চেক-ইনের উত্তর দেওয়া হয়েছে",
+        "coach_target": "পরিকল্পনায় লক্ষ্য করা সঞ্চয়ের হার",
+        "coach_recorded": "এই সময়ে রেকর্ড করা সঞ্চয়ের হার",
+        "scam_checks": "প্রতারণার জন্য যাচাই করা বার্তা (গত 90 দিন)",
+        "scam_found": "এর মধ্যে সম্ভাব্য প্রতারণা হিসেবে চিহ্নিত",
+        "scam_last": "সর্বশেষ বার্তা যাচাই করা হয়েছে",
         "disclaimer": (
             "এই প্রতিবেদন কর্মী NomadFinance-এ যে এন্ট্রি দিয়েছেন এবং যে ট্রান্সফার লগ করেছেন "
             "তার ওপর ভিত্তি করে। চুক্তি থেকে যাচাই করা কর্মসংস্থান ছাড়া NomadFinance এগুলো "

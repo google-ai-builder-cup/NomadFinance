@@ -3,12 +3,13 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 
 from app.api.v1.contract_analysis import read_contract_upload
 from app.config import Settings, get_settings
 from app.core.rate_limit import limit_ai_calls
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, get_feature_flag_service
 from app.integrations.cloud_storage import (
     BillImageStore,
     ExportStore,
@@ -16,7 +17,10 @@ from app.integrations.cloud_storage import (
     get_export_store,
 )
 from app.integrations.gemini import GeminiClient, get_gemini_client
+from app.repositories.coach_session_repo import CoachPlanRepository, get_coach_plan_repository
 from app.repositories.fib_repo import FibRepository, get_fib_repository
+from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
+from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.fib import (
     BillLogRequest,
     BillLogResponse,
@@ -27,8 +31,11 @@ from app.schemas.fib import (
     SavingsLogRequest,
     SavingsLogResponse,
 )
+from app.schemas.fib_activity import ActivityFeedResponse
 from app.schemas.fib_export import ExportReportRequest, ExportReportResponse
 from app.schemas.user import AuthenticatedUser
+from app.services.feature_flag_service import FeatureFlagService
+from app.services.fib.activity_feed import build_feed
 from app.services.fib.categorizer import categorize_pending
 from app.services.fib.exporter import (
     NoExportError,
@@ -38,6 +45,7 @@ from app.services.fib.exporter import (
 )
 from app.services.fib.logger import log_bill, log_income, log_savings
 from app.services.fib.ocr import BillUnreadableError, NotABillError, scan_bill
+from app.services.fib.signals import sharing_of
 
 router = APIRouter(prefix="/fib", tags=["fib"])
 
@@ -202,6 +210,7 @@ async def export_financial_report(
     fib: Annotated[FibRepository, Depends(get_fib_repository)],
     store: Annotated[ExportStore, Depends(get_export_store)],
     settings: Annotated[Settings, Depends(get_settings)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
     body: ExportReportRequest | None = None,
 ) -> ExportReportResponse:
     """Make a PDF of your current Financial Identity profile and return a signed download link.
@@ -210,6 +219,9 @@ async def export_financial_report(
     language of the profile's report text. `holder_name` is optional, printed on the PDF only
     and never stored. A new export replaces the previous PDF. The link works for
     `EXPORT_URL_EXPIRY_MINUTES` (default 24 hours) and gives the PDF to anyone who has it.
+
+    The Coach check-ins and scam checks appear only while `signal_sharing` says so at the
+    moment of the export (NF-HR-001), whatever the stored profile still holds.
     """
     try:
         return await export_report(
@@ -219,6 +231,7 @@ async def export_financial_report(
             store,
             datetime.now(UTC),
             timedelta(minutes=settings.export_url_expiry_minutes),
+            sharing_of(await run_in_threadpool(users.get_profile, user.uid)),
         )
     except NoProfileError as exc:
         raise HTTPException(
@@ -238,8 +251,13 @@ async def latest_financial_report(
     fib: Annotated[FibRepository, Depends(get_fib_repository)],
     store: Annotated[ExportStore, Depends(get_export_store)],
     settings: Annotated[Settings, Depends(get_settings)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
 ) -> ExportReportResponse:
-    """A fresh signed link to the PDF you exported last, without making it again."""
+    """A fresh signed link to the PDF you exported last, without making it again.
+
+    A PDF that holds Coach or scam-check activity you have since stopped sharing is not linked:
+    export again to get one without it (404 until then).
+    """
     try:
         return await latest_report_link(
             user.uid,
@@ -247,6 +265,44 @@ async def latest_financial_report(
             store,
             datetime.now(UTC),
             timedelta(minutes=settings.export_url_expiry_minutes),
+            sharing_of(await run_in_threadpool(users.get_profile, user.uid)),
         )
     except NoExportError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No report has been exported yet.") from exc
+
+
+@router.get(
+    "/activity",
+    response_model=ActivityFeedResponse,
+    responses={
+        401: {"description": "Missing or invalid Firebase ID token"},
+        422: {"description": "`days` or `limit` out of range"},
+    },
+    summary="Your activity in one list: money log, Coach plan and check-ins, scam checks",
+)
+async def activity_feed(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    scam_checks: Annotated[ScamCheckRepository, Depends(get_scam_check_repository)],
+    flags: Annotated[FeatureFlagService, Depends(get_feature_flag_service)],
+    days: Annotated[int, Query(ge=1, le=365)] = 90,
+    limit: Annotated[int, Query(ge=1, le=200)] = 100,
+) -> ActivityFeedResponse:
+    """Your income, transfers, bills and savings entries, your Coach plans and check-in
+    answers, and your scam checks, newest first.
+
+    Coach events appear while the `coach` flag is on for you, scam checks while `scam` is. Each
+    item is a kind, a day and fixed fields; no note, message or typed answer is in it. This is
+    your own view and does not depend on `signal_sharing`, which is only about reports.
+    """
+    return await build_feed(
+        user.uid,
+        days=days,
+        limit=limit,
+        now=datetime.now(UTC),
+        fib=fib,
+        plans=plans,
+        scam_checks=scam_checks,
+        flags=flags,
+    )

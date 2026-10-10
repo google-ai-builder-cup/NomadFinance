@@ -16,7 +16,7 @@ Firebase Auth already stores the name, email, phone number and photo. **Do not c
 | `preferred_language` | string | after onboarding | `en`, `hi`, `tl`, `id`, `ne`, `bn`. Drives report language, notifications and SMS language. |
 | `onboarding_completed_at` | timestamp | no | Absent until onboarding finishes. The app shows onboarding while it is absent. |
 | `notification_prefs` | map | no | `radar_alerts` (bool), `radar_corridors` (array of corridor ids), `reminders` (bool). Missing means all on for the user's own corridor. |
-| `signal_sharing` | map | no | **Future Scope (NF-HR-001).** `{ "coach": bool, "scam": bool }`: whether the worker lets the Coach plan or the scam-check activity appear as a signal in their Financial Identity report. **Off when absent: it is opt-in**, and setting it back to `false` removes the signal at the next recompute. Changed only on the profile page. |
+| `signal_sharing` | map | no | **Future Scope (NF-HR-001).** `{ "coach": bool, "scam": bool }`: whether the worker lets the Coach plan or the scam-check activity appear as a signal in their Financial Identity report. **Off when absent: it is opt-in**, and setting it back to `false` removes the signal at the next recompute. Changed only on the profile page. **Read by the weekly recompute and by every report export (NF-HR-001)**; only a boolean `true` counts. |
 | `fcm_tokens` | array of string | no | Push tokens of the user's browsers, at most 5. Remove a token when FCM reports it invalid. |
 | `created_at` | timestamp | yes | Set once when the document is first written |
 | `updated_at` | timestamp | yes | Updated on every write |

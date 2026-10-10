@@ -193,6 +193,17 @@ class CoachPlanRepository:
             return str(snapshot.id), snapshot.to_dict() or {}
         return None
 
+    def activity(self, uid: str, limit: int) -> list[tuple[str, dict[str, Any]]]:
+        """The worker's newest plans without their bodies, as `(id, fields)`: when each was
+        made, its route and departure, and its check-ins (NF-HR-001)."""
+        query = (
+            self._plans(uid)
+            .order_by("created_at", direction=Query.DESCENDING)
+            .select(["created_at", "corridor_id", "departure_date", "checkins"])
+            .limit(limit)
+        )
+        return [(str(snapshot.id), snapshot.to_dict() or {}) for snapshot in query.stream()]
+
     def departing_between(self, first: str, last: str) -> list[tuple[str, str, dict[str, Any]]]:
         """Every worker's plans whose `departure_date` is `first` to `last`, both `YYYY-MM-DD`.
 
