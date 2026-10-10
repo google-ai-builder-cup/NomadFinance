@@ -19,7 +19,7 @@ app/prompts/<pillar>/<step>.v<N>.yaml
 | `radar/categorize.v1` | Violation type and a one-line English summary (NF-P3-001) | classification | `entity_json`, `report_text` |
 | `fib/extract_bill.v1` | Read a bill photo (NF-P3-011) | extraction | none: the image is a separate part |
 | `fib/categorize.v1` | Categories for a batch of entries (NF-P3-012) | classification | `entries_json` |
-| `fib/synthesize_narrative.v1` | Financial Identity report text (NF-P3-013) | reasoning | `report_language`, `profile_json` |
+| `fib/synthesize_narrative.v2` | Financial Identity report text, and when the worker shares them a short paragraph on their Coach check-ins and scam checks (NF-P3-013, NF-HR-001; v1 removed) | reasoning | `report_language`, `profile_json` |
 | `scam/classify.v2` | Is a pasted message a scam: type, tactics, risk, trigger phrases, details; v2 also gets the fixed rules' signals, flags and amounts but never a link or number (NF-SA-007, NF-SA-011; v1 removed) | classification | `taxonomy_json`, `signals_json`, `message` |
 | `scam/read_screenshot.v1` | Transcribe a message screenshot: text and visible sender (NF-SA-008) | extraction | none: the image is a separate part |
 | `scam/explain.v1` | For a scam: why each detected tactic works, what the scammer wants, 3 safe next steps, in the worker's language at grade 6 (NF-SA-009) | reasoning | `language`, `host_country`, `verdict_json`, `details_json`, `tactics_json`, `tactic_notes_json`, `safe_response_json`, `message` |

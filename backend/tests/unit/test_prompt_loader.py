@@ -26,7 +26,7 @@ EXPECTED_PROMPTS = {
     "radar/alert_notification.v1",
     "fib/extract_bill.v1",
     "fib/categorize.v1",
-    "fib/synthesize_narrative.v1",
+    "fib/synthesize_narrative.v2",
     "scam/classify.v2",
     "scam/explain.v1",
     "scam/reassure.v1",
@@ -109,10 +109,10 @@ def test_loads_contract_extract_prompt() -> None:
 
 
 def test_key_and_version_match_stored_prompt_versions() -> None:
-    prompt = load_prompt("fib", "synthesize_narrative", 1)
+    prompt = load_prompt("fib", "synthesize_narrative", 2)
 
     assert prompt.key == "fib.synthesize_narrative"
-    assert prompt.version == 1
+    assert prompt.version == 2
 
 
 def test_render_user_fills_placeholders() -> None:

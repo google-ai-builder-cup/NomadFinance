@@ -16,6 +16,8 @@ from app.services.fib.exporter import (
     export_report,
     latest_report_link,
 )
+from app.services.fib.report_labels import LABELS
+from app.services.fib.signals import NOT_SHARED, Sharing
 
 pytestmark = pytest.mark.anyio
 
@@ -88,9 +90,11 @@ def rendered(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return html_seen
 
 
-async def _export(fib: FakeFib, store: FakeStore, holder: str | None = None) -> Any:
+async def _export(
+    fib: FakeFib, store: FakeStore, holder: str | None = None, sharing: Sharing = NOT_SHARED
+) -> Any:
     return await export_report(
-        "u1", holder, cast(FibRepository, fib), cast(ExportStore, store), NOW, EXPIRES
+        "u1", holder, cast(FibRepository, fib), cast(ExportStore, store), NOW, EXPIRES, sharing
     )
 
 
@@ -185,3 +189,109 @@ async def test_the_latest_link_needs_an_earlier_export(profile: dict[str, Any] |
             NOW,
             EXPIRES,
         )
+
+
+# --- NF-HR-001: the Coach and scam activity is printed only while it is shared -----------------
+
+COACH = {
+    "plan_id": "p1",
+    "checkins_answered": 2,
+    "remittance_on_track": 1,
+    "savings_on_track": 1,
+    "pay_on_time": 2,
+    "last_checkin_at": datetime(2026, 9, 28, 9, tzinfo=UTC),
+}
+SCAM = {
+    "window_days": 90,
+    "checks": 7,
+    "scams_found": 3,
+    "last_check_at": datetime(2026, 9, 30, 9, tzinfo=UTC),
+}
+
+
+def _with_signals() -> dict[str, Any]:
+    return _profile(
+        coach_signal=COACH,
+        scam_signal=SCAM,
+        narrative={
+            "language": "en",
+            "text": "Report.",
+            "activity_text": "Two check-ins.",
+            "model": "m",
+        },
+    )
+
+
+async def test_the_shared_activity_is_printed_and_recorded_on_the_export(
+    rendered: list[str],
+) -> None:
+    fib = FakeFib(_with_signals())
+
+    await _export(fib, FakeStore(), sharing=Sharing(True, True))
+
+    assert "Activity the worker chose to share" in rendered[0]
+    assert "Two check-ins." in rendered[0]
+    assert fib.exports[0]["signals"] == ["coach", "scam"]
+
+
+async def test_a_worker_who_stopped_sharing_gets_a_report_without_it(rendered: list[str]) -> None:
+    # The stored profile still holds the signals until the next weekly recompute.
+    fib = FakeFib(_with_signals())
+
+    await _export(fib, FakeStore(), sharing=NOT_SHARED)
+
+    assert "Activity the worker chose to share" not in rendered[0]
+    assert "Two check-ins." not in rendered[0]
+    assert "signals" not in fib.exports[0]
+    assert fib.profile is not None and "coach_signal" in fib.profile  # not edited in place
+
+
+async def test_one_signal_turned_off_removes_the_paragraph_and_that_signal(
+    rendered: list[str],
+) -> None:
+    fib = FakeFib(_with_signals())
+
+    await _export(fib, FakeStore(), sharing=Sharing(coach=False, scam=True))
+
+    assert "Two check-ins." not in rendered[0]
+    assert LABELS["en"]["scam_checks"] in rendered[0]
+    assert LABELS["en"]["coach_checkins"] not in rendered[0]
+    assert fib.exports[0]["signals"] == ["scam"]
+
+
+async def test_the_latest_link_is_refused_for_a_pdf_with_activity_no_longer_shared() -> None:
+    fib = FakeFib(
+        _profile(latest_export={"storage_path": OLD_PATH, "created_at": NOW, "signals": ["coach"]})
+    )
+
+    with pytest.raises(NoExportError):
+        await latest_report_link(
+            "u1", cast(FibRepository, fib), cast(ExportStore, FakeStore()), NOW, EXPIRES, NOT_SHARED
+        )
+
+
+async def test_the_latest_link_is_given_while_the_activity_is_still_shared() -> None:
+    fib = FakeFib(
+        _profile(latest_export={"storage_path": OLD_PATH, "created_at": NOW, "signals": ["coach"]})
+    )
+
+    link = await latest_report_link(
+        "u1",
+        cast(FibRepository, fib),
+        cast(ExportStore, FakeStore()),
+        NOW,
+        EXPIRES,
+        Sharing(coach=True, scam=False),
+    )
+
+    assert link.download_url.endswith(OLD_PATH)
+
+
+async def test_a_pdf_made_without_signals_is_always_linkable() -> None:
+    fib = FakeFib(_profile(latest_export={"storage_path": OLD_PATH, "created_at": NOW}))
+
+    link = await latest_report_link(
+        "u1", cast(FibRepository, fib), cast(ExportStore, FakeStore()), NOW, EXPIRES, NOT_SHARED
+    )
+
+    assert link.download_url.endswith(OLD_PATH)

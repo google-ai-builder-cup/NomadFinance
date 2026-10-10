@@ -180,3 +180,84 @@ def test_every_language_renders_to_a_pdf(language: str) -> None:
     assert pdf.startswith(b"%PDF-")
     assert pdf.rstrip().endswith(b"%%EOF")
     assert len(pdf) > 5_000
+
+
+# --- NF-HR-001 -----------------------------------------------------------------------------
+
+_COACH = {
+    "plan_id": "p1",
+    "checkins_answered": 2,
+    "remittance_on_track": 1,
+    "savings_on_track": 2,
+    "pay_on_time": 2,
+    "last_checkin_at": datetime(2026, 9, 28, 9, tzinfo=UTC),
+    "savings_rate_target_pct": 9.5,
+    "savings_rate_recorded_pct": 7.0,
+}
+_SCAM = {
+    "window_days": 90,
+    "checks": 7,
+    "scams_found": 3,
+    "last_check_at": datetime(2026, 9, 30, 9, tzinfo=UTC),
+}
+
+
+def test_a_report_without_shared_activity_has_no_such_section() -> None:
+    html = build_report_html(_profile(), None, NOW)
+
+    assert LABELS["en"]["shared_heading"] not in html
+
+
+def test_the_shared_activity_is_printed_as_numbers_and_dates() -> None:
+    html = build_report_html(_profile(coach_signal=_COACH, scam_signal=_SCAM), None, NOW)
+
+    labels = LABELS["en"]
+    assert labels["shared_heading"] in html
+    assert f"<dt>{labels['coach_checkins']}</dt><dd>2</dd>" in html
+    assert f"<dt>{labels['coach_remittance']}</dt><dd>1 / 2</dd>" in html
+    assert f"<dt>{labels['coach_pay']}</dt><dd>2 / 2</dd>" in html
+    assert f"<dt>{labels['coach_last']}</dt><dd>2026-09-28</dd>" in html
+    assert f"<dt>{labels['coach_target']}</dt><dd>9.5 %</dd>" in html
+    assert f"<dt>{labels['scam_checks']}</dt><dd>7</dd>" in html
+    assert f"<dt>{labels['scam_found']}</dt><dd>3</dd>" in html
+    assert labels["shared_note"] in html
+
+
+def test_a_whole_number_percentage_has_no_decimal() -> None:
+    coach = _COACH | {"savings_rate_target_pct": 10.0}
+
+    html = build_report_html(_profile(coach_signal=coach), None, NOW)
+
+    assert "<dd>10 %</dd>" in html
+
+
+def test_only_the_shared_signal_is_printed() -> None:
+    html = build_report_html(_profile(scam_signal=_SCAM), None, NOW)
+
+    assert LABELS["en"]["scam_checks"] in html
+    assert LABELS["en"]["coach_checkins"] not in html
+
+
+def test_the_activity_paragraph_is_printed_and_escaped() -> None:
+    narrative = {
+        "language": "en",
+        "text": "Report.",
+        "activity_text": "Two <b>check-ins</b>.",
+        "model": "m",
+    }
+
+    html = build_report_html(_profile(coach_signal=_COACH, narrative=narrative), None, NOW)
+
+    assert "Two &lt;b&gt;check-ins&lt;/b&gt;." in html
+    assert "<b>check-ins</b>" not in html
+
+
+def test_the_section_is_in_the_reports_own_language() -> None:
+    profile = _profile(
+        coach_signal=_COACH, narrative={"language": "bn", "text": "পাঠ", "model": "m"}
+    )
+
+    html = build_report_html(profile, None, NOW)
+
+    assert LABELS["bn"]["shared_heading"] in html
+    assert LABELS["en"]["shared_heading"] not in html

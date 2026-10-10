@@ -45,6 +45,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
 | POST | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
 | GET | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
+| GET | `/api/v1/fib/activity` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-HR-001 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | POST | `/api/v1/internal/recompute-fib-profiles` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-013 |
@@ -1266,12 +1267,13 @@ The portable Financial Identity report as a PDF (NF-P3-014), made with weasyprin
 - **Response:** `ExportReportResponse` (`app/schemas/fib_export.py`): `download_url` (a V4 signed link; anyone who has it can download the PDF), `expires_at`, `created_at` (when the PDF was made), `language`, `filename`. The link lasts `EXPORT_URL_EXPIRY_MINUTES` (default 1440, 24 hours) and downloads the file as `financial-identity-report.pdf`.
 - **Content:** title, period, months of records, reporting currency, dates; entry counts; the four metric scores as bars (`Not enough records` for a metric with no score); the narrative; verified employment (employer and salary) when the profile has it; a disclaimer. The overall score is left out on purpose (it is an average of this project's own formulas and could be read as a credit score). No uid, email or phone.
 - **Language:** the profile narrative's (`en`, `hi`, `tl`, `id`, `ne`, `bn`); the headings and disclaimer come from `app/services/fib/report_labels.py`.
+- **Shared activity (NF-HR-001):** when the worker shares their Coach check-ins or scam checks (`users/{uid}.signal_sharing`), the report has one more section, "Activity the worker chose to share": counts and dates only, and a short paragraph that states them. **The choice is read at the moment of the export**, not at the weekly recompute: a worker who has stopped sharing gets a report without the section, and without the paragraph (it names both signals, so it goes when either is off), even though the stored profile keeps the signals until its next recompute. A PDF made while an activity was shared is recorded with `latest_export.signals`; once the worker stops sharing that activity, `GET` answers `404` for it (export again to get one without it).
 
 | Status | `detail` | Cause |
 |---|---|---|
 | 401 | see Authentication | No or invalid token |
 | 404 | `No Financial Identity profile yet. It is computed weekly from your logged activity.` | `POST` before the first weekly recompute |
-| 404 | `No report has been exported yet.` | `GET` before any export |
+| 404 | `No report has been exported yet.` | `GET` before any export, or the latest PDF holds activity the worker no longer shares |
 | 422 | FastAPI validation list | `holder_name` longer than 100 characters |
 | 429 | `Too many requests. Please wait a minute and try again.` | Over 60 API calls a minute |
 
@@ -1289,6 +1291,52 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/
   "created_at": "2026-10-02T09:30:15Z",
   "language": "hi",
   "filename": "financial-identity-report.pdf"
+}
+```
+
+---
+
+## `GET /api/v1/fib/activity`
+
+The worker's unified activity feed (NF-HR-001): income, transfers, bills and savings entries, Coach plans and check-in answers, and scam checks, in one list, newest first. The worker's **own** view of their own activity: it does not depend on `signal_sharing`, which is only about what goes into a report that others read.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>`
+- **Query:** `days` (1 to 365, default 90) and `limit` (1 to 200, default 100).
+- **Response `200`:** `ActivityFeedResponse` (`app/schemas/fib_activity.py`): `items`, `days`, `truncated` (`true` when older items in the range were left out).
+- **Items** (`kind` tells them apart; `on` is the day, UTC; `id` is the entry, plan or check):
+
+| `kind` | Fields besides `id` and `on` |
+|---|---|
+| `income` | `amount`, `currency`, `category`, `verified` |
+| `transfer` | `amount` (sent), `currency`, `corridor_id` |
+| `bill` | `amount`, `currency`, `category`, `paid` |
+| `savings` | `amount`, `currency`, `direction` |
+| `coach_plan` | `corridor_id`, `departure_date` |
+| `coach_checkin` | `milestone` (`d30`, `d60`, `d90`), `remittance`, `savings`, `pay`: the three fixed answers |
+| `scam_check` | `is_scam`, `risk_level`, `scam_type` (a taxonomy id) |
+
+- **What is never in it:** notes, employer or vendor names, a message, an explainer, or anything a worker typed. Coach events appear while the `coach` flag is on for the worker and scam checks while `scam` is; with both off the feed is the money log alone.
+- **Bounds:** the money log of the range is read whole (a few dozen entries), at most 20 plans and 1,000 scam checks.
+
+| Status | Cause |
+|---|---|
+| 401 | No or invalid token |
+| 422 | `days` or `limit` out of range |
+| 429 | Over 60 API calls a minute |
+
+```bash
+curl -s -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:8080/api/v1/fib/activity?days=30&limit=20"
+```
+
+```json
+{
+  "items": [
+    { "kind": "scam_check", "id": "k_01", "on": "2026-10-13", "is_scam": true, "risk_level": "high", "scam_type": "illegal_recruitment_fee" },
+    { "kind": "coach_checkin", "id": "9f3a1c5e7b2d4a60c8e1", "on": "2026-10-12", "milestone": "d30", "remittance": "on_track", "savings": "behind", "pay": "full_on_time" },
+    { "kind": "transfer", "id": "t_01", "on": "2026-10-11", "amount": 400, "currency": "SGD", "corridor_id": "SG-IN" }
+  ],
+  "days": 30,
+  "truncated": false
 }
 ```
 

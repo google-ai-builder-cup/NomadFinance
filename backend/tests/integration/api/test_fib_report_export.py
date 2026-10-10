@@ -12,6 +12,7 @@ from app.dependencies import get_current_user
 from app.integrations.cloud_storage import get_export_store
 from app.main import create_app
 from app.repositories.fib_repo import get_fib_repository
+from app.repositories.user_repo import get_user_repository
 from app.schemas.user import AuthenticatedUser
 from app.services.fib import exporter
 
@@ -57,6 +58,19 @@ class FakeStore:
         return f"https://signed.example/{path}?name={download_name}"
 
 
+class FakeUsers:
+    def __init__(self) -> None:
+        self.profile: dict[str, Any] = {}
+
+    def get_profile(self, uid: str) -> dict[str, Any]:
+        return self.profile
+
+
+@pytest.fixture
+def users() -> FakeUsers:
+    return FakeUsers()
+
+
 @pytest.fixture
 def fib() -> FakeFib:
     return FakeFib()
@@ -75,10 +89,11 @@ def html_seen(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 
 
 @pytest.fixture
-def app(fib: FakeFib, store: FakeStore, html_seen: list[str]) -> FastAPI:
+def app(fib: FakeFib, store: FakeStore, users: FakeUsers, html_seen: list[str]) -> FastAPI:
     app = create_app()
     app.dependency_overrides[get_current_user] = lambda: AuthenticatedUser(uid="test-user")
     app.dependency_overrides[get_fib_repository] = lambda: fib
+    app.dependency_overrides[get_user_repository] = lambda: users
     app.dependency_overrides[get_export_store] = lambda: store
     return app
 
@@ -175,3 +190,61 @@ def test_both_are_in_the_openapi_docs(api: TestClient) -> None:
     methods = api.get("/openapi.json").json()["paths"][URL]
 
     assert {"post", "get"} <= set(methods)
+
+
+# --- NF-HR-001: the choice is read when the report is made --------------------------------------
+
+
+def _with_signal(fib: FakeFib) -> None:
+    assert fib.profile is not None
+    fib.profile["coach_signal"] = {
+        "plan_id": "p1",
+        "checkins_answered": 1,
+        "remittance_on_track": 1,
+        "savings_on_track": 1,
+        "pay_on_time": 1,
+        "last_checkin_at": CREATED,
+    }
+
+
+def test_the_export_prints_the_activity_while_the_worker_shares_it(
+    api: TestClient, fib: FakeFib, users: FakeUsers, html_seen: list[str]
+) -> None:
+    _with_signal(fib)
+    users.profile = {"signal_sharing": {"coach": True}}
+
+    response = api.post(URL)
+
+    assert response.status_code == 201
+    assert "Plan check-ins answered" not in html_seen[0]  # Filipino report: its own wording
+    assert "Mga check-in ng plano" in html_seen[0]
+    assert fib.exports[0]["signals"] == ["coach"]
+
+
+def test_the_export_leaves_it_out_once_the_worker_stopped_sharing(
+    api: TestClient, fib: FakeFib, users: FakeUsers, html_seen: list[str]
+) -> None:
+    _with_signal(fib)
+    users.profile = {"signal_sharing": {"coach": False}}
+
+    api.post(URL)
+
+    assert "Mga check-in ng plano" not in html_seen[0]
+    assert "signals" not in fib.exports[0]
+
+
+def test_the_link_to_an_older_pdf_with_activity_is_withdrawn_after_opt_out(
+    api: TestClient, fib: FakeFib, users: FakeUsers
+) -> None:
+    fib.profile = fib.profile or {}
+    fib.profile["latest_export"] = {
+        "storage_path": "exports/test-user/financial-identity-20260920T020000Z.pdf",
+        "created_at": CREATED,
+        "signals": ["coach"],
+    }
+    users.profile = {"signal_sharing": {"coach": True}}
+    assert api.get(URL).status_code == 200
+
+    users.profile = {"signal_sharing": {"coach": False}}
+
+    assert api.get(URL).status_code == 404

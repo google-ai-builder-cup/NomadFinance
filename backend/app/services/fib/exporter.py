@@ -19,6 +19,7 @@ from app.repositories.fib_repo import FibRepository
 from app.schemas.fib_export import ExportReportResponse
 from app.services.fib.report_html import build_report_html
 from app.services.fib.report_labels import LABELS
+from app.services.fib.signals import NOT_SHARED, Sharing, shared_now, signals_shown
 
 logger = logging.getLogger(__name__)
 
@@ -76,16 +77,21 @@ async def export_report(
     store: ExportStore,
     now: datetime,
     expires_in: timedelta,
+    sharing: Sharing = NOT_SHARED,
 ) -> ExportReportResponse:
     """Render, store and link a new report. The previous export is deleted afterwards, so a
     worker has at most one PDF.
 
+    `sharing` is the worker's choice now (NF-HR-001): the Coach and scam-check activity is
+    printed only while they share it, whatever the stored profile still holds.
+
     Raises:
         NoProfileError: There is no profile to print.
     """
-    profile = await run_in_threadpool(fib.get_profile, uid)
-    if profile is None:
+    stored = await run_in_threadpool(fib.get_profile, uid)
+    if stored is None:
         raise NoProfileError("No financial profile yet")
+    profile = shared_now(stored, sharing)
 
     html = build_report_html(profile, holder_name, now)
     pdf = await run_in_threadpool(render_pdf, html)
@@ -94,14 +100,17 @@ async def export_report(
     )
     try:
         await run_in_threadpool(
-            fib.set_latest_export, uid, {"storage_path": path, "created_at": now}
+            fib.set_latest_export,
+            uid,
+            {"storage_path": path, "created_at": now}
+            | ({"signals": shown} if (shown := signals_shown(profile)) else {}),
         )
     except GoogleAPICallError:
         # Never leave a file the profile does not point to.
         await run_in_threadpool(store.delete, uid, path)
         raise
 
-    previous = (profile.get("latest_export") or {}).get("storage_path")
+    previous = (stored.get("latest_export") or {}).get("storage_path")
     if previous and previous != path:
         try:
             await run_in_threadpool(store.delete, uid, previous)
@@ -113,17 +122,26 @@ async def export_report(
 
 
 async def latest_report_link(
-    uid: str, fib: FibRepository, store: ExportStore, now: datetime, expires_in: timedelta
+    uid: str,
+    fib: FibRepository,
+    store: ExportStore,
+    now: datetime,
+    expires_in: timedelta,
+    sharing: Sharing = NOT_SHARED,
 ) -> ExportReportResponse:
     """A fresh link to the worker's latest export, without rendering it again.
 
     Raises:
-        NoExportError: Nothing has been exported yet.
+        NoExportError: Nothing has been exported yet, or the PDF holds activity the worker no
+            longer shares (they export again to get one without it).
     """
     profile = await run_in_threadpool(fib.get_profile, uid)
     export = (profile or {}).get("latest_export")
     if profile is None or not export:
         raise NoExportError("No report exported yet")
+    allowed = {"coach": sharing.coach, "scam": sharing.scam}
+    if any(not allowed.get(name, False) for name in export.get("signals", [])):
+        raise NoExportError("The latest report holds activity that is no longer shared")
     return await _link(
         uid, profile, export["storage_path"], export["created_at"], now, expires_in, store
     )

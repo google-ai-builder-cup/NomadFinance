@@ -9,12 +9,13 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.dependencies import require_cloud_scheduler
+from app.dependencies import get_feature_flag_service, require_cloud_scheduler
 from app.integrations.gemini import get_gemini_client
 from app.main import create_app
 from app.repositories.coach_session_repo import get_coach_plan_repository
 from app.repositories.fib_repo import EntryKind, get_fib_repository
 from app.repositories.rate_repo import get_rate_repository
+from app.repositories.scam_check_repo import get_scam_check_repository
 from app.repositories.user_repo import get_user_repository
 from app.schemas.fib_profile import NarrativeAnswer
 from tests.fixtures.coach_mocks import MOCKS
@@ -49,16 +50,44 @@ class FakeFib:
 
 
 class FakeUsers:
+    def __init__(self) -> None:
+        self.sharing: dict[str, bool] | None = None
+
     def list_user_ids(self) -> list[str]:
         return ["active", "quiet"]
 
     def get_profile(self, uid: str) -> dict[str, Any]:
-        return {"home_country": "IN", "preferred_language": "hi"}
+        profile: dict[str, Any] = {"home_country": "IN", "preferred_language": "hi"}
+        if self.sharing is not None:
+            profile["signal_sharing"] = self.sharing
+        return profile
+
+
+class FakeChecks:
+    def activity_since(
+        self, uid: str, since: datetime, limit: int
+    ) -> list[tuple[str, dict[str, Any]]]:
+        return [
+            (
+                "c1",
+                {"last_checked_at": datetime.now(UTC), "verdict": {"is_scam": True}},
+            )
+        ]
+
+
+class FakeFlags:
+    async def is_enabled(self, flag: str, uid: str) -> bool:
+        return True
 
 
 class FakeRates:
     def get_rate(self, pair_id: str) -> None:
         return None
+
+
+@pytest.fixture
+def users() -> FakeUsers:
+    return FakeUsers()
 
 
 @pytest.fixture
@@ -77,15 +106,18 @@ def gemini() -> FakeGemini:
 
 
 @pytest.fixture
-def app(fib: FakeFib, gemini: FakeGemini, plans: FakePlanRepo) -> FastAPI:
+def app(fib: FakeFib, gemini: FakeGemini, plans: FakePlanRepo, users: FakeUsers) -> FastAPI:
     app = create_app()
     app.dependency_overrides[require_cloud_scheduler] = lambda: CRON_SA
     app.dependency_overrides[get_fib_repository] = lambda: fib
-    app.dependency_overrides[get_user_repository] = lambda: FakeUsers()
+    app.dependency_overrides[get_user_repository] = lambda: users
     app.dependency_overrides[get_rate_repository] = lambda: FakeRates()
     app.dependency_overrides[get_gemini_client] = lambda: gemini
     # The Coach plans the recompute reads goals from (NF-FC-015): never the real Firestore.
     app.dependency_overrides[get_coach_plan_repository] = lambda: plans
+    # What a worker shares from the Scam Analyzer and the flags that gate it (NF-HR-001).
+    app.dependency_overrides[get_scam_check_repository] = lambda: FakeChecks()
+    app.dependency_overrides[get_feature_flag_service] = lambda: FakeFlags()
     return app
 
 
@@ -131,6 +163,42 @@ def test_a_worker_with_no_coach_plan_gets_no_goals(api: TestClient, fib: FakeFib
     assert api.post(URL, json={}).status_code == 200
 
     assert "goals" not in fib.saved["active"]
+
+
+def test_a_worker_who_shares_gets_the_signals_in_the_new_profile(
+    api: TestClient, fib: FakeFib, plans: FakePlanRepo, users: FakeUsers
+) -> None:
+    users.sharing = {"coach": True, "scam": True}
+    plans.add(
+        "active",
+        "p1",
+        {
+            "created_at": datetime(2026, 10, 1, tzinfo=UTC),
+            "checkins": {
+                "d30": {
+                    "answered_at": datetime(2026, 10, 9, tzinfo=UTC),
+                    "answers": {
+                        "remittance": "on_track",
+                        "savings": "on_track",
+                        "pay": "full_on_time",
+                    },
+                }
+            },
+        },
+    )
+
+    assert api.post(URL, json={}).status_code == 200
+
+    profile = fib.saved["active"]
+    assert profile["coach_signal"]["checkins_answered"] == 1
+    assert profile["scam_signal"]["scams_found"] == 1
+
+
+def test_a_worker_who_does_not_share_gets_none(api: TestClient, fib: FakeFib) -> None:
+    assert api.post(URL, json={}).status_code == 200
+
+    assert "coach_signal" not in fib.saved["active"]
+    assert "scam_signal" not in fib.saved["active"]
 
 
 def test_a_caller_that_is_not_the_scheduler_is_refused(app: FastAPI) -> None:
