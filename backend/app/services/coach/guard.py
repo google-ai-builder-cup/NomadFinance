@@ -22,7 +22,7 @@ from app.integrations.gemini import GeminiClient, ModelTier
 from app.prompts.loader import load_prompt
 from app.schemas.coach_guard import ScopeVerdict
 from app.schemas.contract import ReportLanguage
-from app.services.coach.guard_rules import fence, recommends_product, screen
+from app.services.coach.guard_rules import contains_link, fence, recommends_product, screen
 from app.services.coach.guard_types import GuardDecision, GuardReason
 from app.services.coach.question_bank import load_question_bank
 from app.services.coach.session_machine import next_slot
@@ -79,11 +79,15 @@ class CoachGuard:
 
     def check_reply(self, reply: str) -> GuardReason | None:
         """`reply_recommends_product` when the coach's finished reply recommends a loan, an
-        investment or an app; the turn then ends in an error and nothing is saved."""
-        if not recommends_product(reply):
-            return None
-        logger.warning("coach_guard action=block_reply reason=reply_recommends_product")
-        return "reply_recommends_product"
+        investment or an app, `reply_contains_link` when it holds a web link or an e-mail address;
+        the turn then ends in an error and nothing is saved."""
+        if recommends_product(reply):
+            logger.warning("coach_guard action=block_reply reason=reply_recommends_product")
+            return "reply_recommends_product"
+        if contains_link(reply):
+            logger.warning("coach_guard action=block_reply reason=reply_contains_link")
+            return "reply_contains_link"
+        return None
 
     async def _ask_model(
         self, document: dict[str, Any], text: str, language: ReportLanguage

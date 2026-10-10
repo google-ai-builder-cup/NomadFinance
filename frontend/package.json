@@ -72,7 +72,8 @@
   },
   "pnpm": {
     "overrides": {
-      "@grpc/grpc-js": "~1.13.6"
+      "@grpc/grpc-js": "~1.13.6",
+      "source-map-js": ">=1.2.2"
     }
   }
 }

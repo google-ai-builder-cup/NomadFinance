@@ -24,6 +24,7 @@ GuardReason = Literal[
     "product_request_model",
     "off_topic_model",
     "reply_recommends_product",
+    "reply_contains_link",
 ]
 
 
