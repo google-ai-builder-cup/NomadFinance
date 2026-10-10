@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import ReportView from "@/components/contract/ReportView";
 import { Button } from "@/components/ui/button";
 import { useRecheckForCountry, useStoredContract } from "@/hooks/useContract";
@@ -24,14 +25,20 @@ export default function ContractReport() {
   const recheck = useRecheckForCountry();
 
   if (contract.isPending || profile.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="contract" icon={ShieldCheck} title={t("contract.result.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
   if (contract.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("contract.history.loadError")}</p>
-        <Button onClick={() => void contract.refetch()}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="contract" icon={ShieldCheck} title={t("contract.result.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("contract.history.loadError")}</p>
+          <Button onClick={() => void contract.refetch()}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
 

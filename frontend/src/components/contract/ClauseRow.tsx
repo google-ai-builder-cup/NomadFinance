@@ -68,7 +68,7 @@ export default function ClauseRow({ clause, expanded, onToggle }: ClauseRowProps
         {expanded && (
           <div id={detailId} className="grid grid-cols-1 gap-3 p-4 pt-0 md:grid-cols-2">
             <div className={cn("space-y-1 rounded-xl p-3.5", CONTRACT_PANEL[clause.risk])}>
-              <p className="text-xs font-bold uppercase tracking-wide opacity-80">
+              <p className="text-xs font-bold uppercase tracking-wide">
                 {t("contract.report.contractColumn")}
               </p>
               <p className="text-sm">{clause.text}</p>

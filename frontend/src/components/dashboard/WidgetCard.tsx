@@ -30,7 +30,7 @@ export default function WidgetCard({
   const { t } = useI18n();
   const style = PILLAR_STYLES[pillar];
   return (
-    <div className="card-surface flex h-full flex-col gap-2 overflow-hidden p-3.5 text-card-foreground transition-shadow duration-base hover:shadow-md sm:gap-4 sm:p-5">
+    <div className="card-surface flex h-full flex-col gap-1.5 overflow-hidden p-3 text-card-foreground transition-shadow duration-base hover:shadow-md sm:gap-4 sm:p-5">
       <span className={cn("absolute inset-x-0 top-0 h-1", style.bar)} aria-hidden="true" />
       <div className="flex items-center gap-2 sm:gap-3">
         <span

@@ -281,7 +281,7 @@ export default function SignIn() {
       )}
 
       {errorKey !== null && (
-        <p role="alert" className="text-center text-sm font-medium text-destructive">
+        <p role="alert" className="text-center text-sm font-medium text-danger-ink">
           {t(errorKey)}
         </p>
       )}

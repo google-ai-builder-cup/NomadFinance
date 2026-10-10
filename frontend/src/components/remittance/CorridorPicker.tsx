@@ -171,7 +171,7 @@ export default function CorridorPicker({
           <p
             id="remittance-amount-error"
             role="alert"
-            className="text-sm font-medium text-destructive"
+            className="text-sm font-medium text-danger-ink"
           >
             {problemText}
           </p>
@@ -206,7 +206,7 @@ export default function CorridorPicker({
       </div>
 
       {serverError && (
-        <p role="alert" className="text-sm font-medium text-destructive">
+        <p role="alert" className="text-sm font-medium text-danger-ink">
           {t(serverError.key, serverError.values)}
         </p>
       )}

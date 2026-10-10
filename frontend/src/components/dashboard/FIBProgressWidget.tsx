@@ -4,7 +4,7 @@ import WidgetCard from "@/components/dashboard/WidgetCard";
 import ScoreRing from "@/components/visual/ScoreRing";
 import { useFinancialProfile } from "@/hooks/useFIB";
 import { useI18n } from "@/hooks/useI18n";
-import { STATUS_COLOR, statusFor } from "@/utils/fibScore";
+import { STATUS_COLOR, STATUS_INK, statusFor } from "@/utils/fibScore";
 
 /** Home dashboard widget: the worker's overall Financial Identity score, reusing the exact
  * status colors `ScoreMeter`/`ReportPreviewModal` already use (NF-P3-019). */
@@ -40,7 +40,7 @@ export default function FIBProgressWidget() {
           />
           <p
             className="text-sm font-semibold"
-            style={{ color: STATUS_COLOR[statusFor(profile.data.overall_score)] }}
+            style={{ color: STATUS_INK[statusFor(profile.data.overall_score)] }}
           >
             {t(`fib.score.status.${statusFor(profile.data.overall_score)}`)}
           </p>

@@ -256,7 +256,14 @@ export default function Ecosystem() {
           title={t("landing.ecosystem.heading")}
           lead={t("landing.ecosystem.lead")}
         />
-        <div className="card-surface card-edge overflow-x-auto p-3 md:p-7">
+        {/* A phone scrolls the diagram sideways, so the region takes focus and has a name:
+            without them a keyboard cannot reach the part that is off screen. */}
+        <div
+          role="region"
+          aria-label={t("landing.ecosystem.diagramLabel")}
+          tabIndex={0}
+          className="card-surface card-edge overflow-x-auto p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring md:p-7"
+        >
           <svg
             viewBox="0 -24 1172 650"
             role="img"

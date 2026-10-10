@@ -6,6 +6,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import AlertItem from "@/components/radar/AlertItem";
 import RouteAlertItem from "@/components/radar/RouteAlertItem";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import { Button } from "@/components/ui/button";
 import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
@@ -35,21 +36,27 @@ export default function RadarAlerts() {
     notifications.isPending ||
     (routes.length > 0 && routeAlerts.isPending)
   ) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="radar" icon={Radar} title={t("radar.alerts.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
   if (notifications.isError || routeAlerts.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("radar.alerts.loadError")}</p>
-        <Button
-          onClick={() => {
-            void notifications.refetch();
-            void routeAlerts.refetch();
-          }}
-        >
-          {t("common.retry")}
-        </Button>
-      </div>
+      <PageStateFrame pillar="radar" icon={Radar} title={t("radar.alerts.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("radar.alerts.loadError")}</p>
+          <Button
+            onClick={() => {
+              void notifications.refetch();
+              void routeAlerts.refetch();
+            }}
+          >
+            {t("common.retry")}
+          </Button>
+        </div>
+      </PageStateFrame>
     );
   }
 

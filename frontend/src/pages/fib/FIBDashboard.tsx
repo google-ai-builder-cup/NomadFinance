@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import CategorizeEntriesCard from "@/components/fib/CategorizeEntriesCard";
 import CategoryBreakdown from "@/components/fib/CategoryBreakdown";
 import ScoreMeter from "@/components/fib/ScoreMeter";
@@ -25,15 +26,21 @@ export default function FIBDashboard() {
   const timeline = useFinancialTimeline();
 
   if (timeline.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="identity" icon={Fingerprint} title={t("fib.dashboard.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
 
   if (timeline.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("fib.dashboard.loadError")}</p>
-        <Button onClick={() => void timeline.refetch()}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="identity" icon={Fingerprint} title={t("fib.dashboard.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("fib.dashboard.loadError")}</p>
+          <Button onClick={() => void timeline.refetch()}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
 
@@ -72,7 +79,7 @@ export default function FIBDashboard() {
 
       <ScoreMeter profile={profile.isSuccess ? profile.data : null} />
       {profile.isError && (
-        <p className="text-xs text-destructive">
+        <p className="text-xs text-danger-ink">
           {t("fib.dashboard.scoreLoadError")}{" "}
           <button type="button" onClick={() => void profile.refetch()} className="underline">
             {t("common.retry")}

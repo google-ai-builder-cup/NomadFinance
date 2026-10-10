@@ -47,7 +47,7 @@ export default function ReportConfirmation({ result, onAnother }: ReportConfirma
         </p>
       )}
       {failed > 0 && (
-        <p role="alert" className="text-sm font-medium text-destructive">
+        <p role="alert" className="text-sm font-medium text-danger-ink">
           {t("radar.report.done.evidenceFailed", { n: failed })}
         </p>
       )}

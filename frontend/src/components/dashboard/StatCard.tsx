@@ -36,15 +36,18 @@ export default function StatCard({
   return (
     <article
       aria-busy={state === "loading"}
-      className="card-surface flex min-h-[7rem] flex-col gap-2 p-3.5 sm:min-h-[10.5rem] sm:gap-3 sm:p-5"
+      className="card-surface flex min-h-[7rem] flex-col gap-1.5 p-3 sm:min-h-[10.5rem] sm:gap-3 sm:p-5"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-[10px] font-extrabold uppercase tracking-wider text-subtle sm:text-[11px] sm:tracking-widest">
+        {/* On a phone the heading has the card's width and no icon beside it: with the icon it had
+            about 100 px, and a long Tagalog or Indonesian label wrapped to three lines (the 360 px
+            limit, NF-HR-009). The icon is decoration; the heading names the card. */}
+        <h3 className="text-[10px] font-extrabold uppercase leading-tight tracking-normal text-subtle sm:text-[11px] sm:leading-normal sm:tracking-widest">
           {label}
         </h3>
         <span
           className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8",
+            "hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:flex",
             style.tint,
             style.text
           )}

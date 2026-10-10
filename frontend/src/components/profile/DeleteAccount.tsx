@@ -74,7 +74,7 @@ export default function DeleteAccount() {
 
   return (
     <section className={`${sectionClass} border-destructive/40`} aria-labelledby="delete-heading">
-      <h2 id="delete-heading" className="text-lg font-semibold text-destructive">
+      <h2 id="delete-heading" className="text-lg font-semibold text-danger-ink">
         {t("profile.delete.heading")}
       </h2>
       <div className="space-y-2 text-sm">
@@ -90,7 +90,7 @@ export default function DeleteAccount() {
       {stage === "idle" && (
         <Button
           variant="outline"
-          className="h-11 w-full border-destructive text-destructive sm:w-auto"
+          className="h-11 w-full border-destructive text-danger-ink sm:w-auto"
           onClick={() => setStage("confirm")}
         >
           {t("profile.delete.start")}
@@ -110,7 +110,7 @@ export default function DeleteAccount() {
             <span>{t("profile.delete.confirmLabel")}</span>
           </label>
           {failed && (
-            <p role="alert" className="text-sm text-destructive">
+            <p role="alert" className="text-sm text-danger-ink">
               {t("profile.delete.error")}
             </p>
           )}

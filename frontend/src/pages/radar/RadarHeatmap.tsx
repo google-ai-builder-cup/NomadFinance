@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import CorridorDetails from "@/components/radar/CorridorDetails";
 import HeatmapMap from "@/components/radar/HeatmapMap";
 import { Button } from "@/components/ui/button";
@@ -56,14 +57,20 @@ export default function RadarHeatmap() {
   );
 
   if (entities.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="radar" icon={Radar} title={t("radar.heatmap.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
   if (entities.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("radar.heatmap.loadError")}</p>
-        <Button onClick={() => void entities.refetch()}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="radar" icon={Radar} title={t("radar.heatmap.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("radar.heatmap.loadError")}</p>
+          <Button onClick={() => void entities.refetch()}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
   if (entities.data.length === 0) {

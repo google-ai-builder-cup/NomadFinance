@@ -61,7 +61,7 @@ function CorridorChip({ id }: { id: string }) {
         <span className="grid h-7 w-7 place-items-center rounded-full border-2 border-card bg-primary text-[10px] font-extrabold text-primary-foreground">
           {from}
         </span>
-        <span className="-ml-2 grid h-7 w-7 place-items-center rounded-full border-2 border-card bg-gold-ink text-[10px] font-extrabold text-white">
+        <span className="-ml-2 grid h-7 w-7 place-items-center rounded-full border-2 border-card bg-gold-ink text-[10px] font-extrabold text-white dark:text-background">
           {to}
         </span>
       </span>

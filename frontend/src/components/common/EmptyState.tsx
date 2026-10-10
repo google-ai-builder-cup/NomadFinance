@@ -11,8 +11,9 @@ export interface EmptyStateProps {
   action?: ReactNode;
   /** A larger illustration (for example a PillarIllustration) shown instead of the icon tile. */
   illustration?: ReactNode;
-  /** Heading level for the title, so the page's heading order stays correct. Defaults to 2. */
-  headingLevel?: 2 | 3 | 4;
+  /** Heading level for the title, so the page's heading order stays correct. Defaults to 2; a
+   * page that is only this state (the 404) has no other heading and passes 1. */
+  headingLevel?: 1 | 2 | 3 | 4;
   className?: string;
 }
 

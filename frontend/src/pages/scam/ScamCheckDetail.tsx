@@ -29,17 +29,35 @@ export default function ScamCheckDetail() {
     </Button>
   );
 
+  // Every state carries the page's heading, so a screen reader always starts from a title.
+  const header = (title: string, description?: string) => (
+    <PageHeader
+      pillar="radar"
+      icon={History}
+      title={title}
+      description={description}
+      actions={back}
+      compact
+    />
+  );
+
   if (check.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <div className="space-y-5">
+        {header(t("history.title"))}
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </div>
+    );
   }
 
   // A check that is gone, past its 90 days or someone else's gets the same answer from the server.
   if (check.isError && check.error instanceof ApiError && check.error.status === 404) {
     return (
       <div className="space-y-5">
-        {back}
+        {header(t("history.title"))}
         <EmptyState
           icon={FileSearch}
+          headingLevel={2}
           title={t("history.notFound.title")}
           description={t("history.notFound.description")}
         />
@@ -50,7 +68,7 @@ export default function ScamCheckDetail() {
   if (check.isError) {
     return (
       <div className="space-y-5">
-        {back}
+        {header(t("history.title"))}
         <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center">
           <p className="text-sm text-muted-foreground">{t("history.detailLoadError")}</p>
           <Button className="min-h-11" onClick={() => void check.refetch()}>
@@ -63,16 +81,10 @@ export default function ScamCheckDetail() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        pillar="radar"
-        icon={History}
-        title={t("history.detailTitle", { date: formatCheckDate(check.data.created_at, language) })}
-        description={t("history.keptUntil", {
-          date: formatCheckDate(check.data.expires_at, language),
-        })}
-        actions={back}
-        compact
-      />
+      {header(
+        t("history.detailTitle", { date: formatCheckDate(check.data.created_at, language) }),
+        t("history.keptUntil", { date: formatCheckDate(check.data.expires_at, language) })
+      )}
       <ScamResult result={check.data} />
       <Button asChild variant="outline" className="min-h-11 w-full">
         <Link to="/scam-check">{t("result.checkAnother")}</Link>

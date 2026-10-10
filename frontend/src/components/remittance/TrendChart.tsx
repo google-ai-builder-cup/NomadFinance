@@ -167,7 +167,7 @@ export default function TrendChart({ comparison }: TrendChartProps) {
 
       {trends.isError && !notLoaded && (
         <div role="alert" className="flex flex-col items-start gap-2 text-sm">
-          <p className="text-destructive">{t("remittance.trend.loadError")}</p>
+          <p className="text-danger-ink">{t("remittance.trend.loadError")}</p>
           <Button size="sm" variant="outline" onClick={() => void trends.refetch()}>
             {t("common.retry")}
           </Button>

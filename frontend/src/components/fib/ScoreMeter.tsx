@@ -6,7 +6,7 @@ import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
 import { METRIC_KEYS, type FinancialProfile, type MetricKey, type MetricResult } from "@/types/fib";
-import { savingsRatePct, STATUS_COLOR, statusFor } from "@/utils/fibScore";
+import { savingsRatePct, STATUS_COLOR, STATUS_INK, statusFor } from "@/utils/fibScore";
 
 export interface ScoreMeterProps {
   /** `null` before the weekly cron has ever scored this worker (NF-P3-013). */
@@ -21,6 +21,7 @@ const ARC_LENGTH = 0.75 * 2 * Math.PI * 98;
 function RadialGauge({ score, status, label }: { score: number; status: string; label: string }) {
   const id = useId().replace(/:/g, "");
   const color = STATUS_COLOR[statusFor(score)];
+  const ink = STATUS_INK[statusFor(score)];
   const clamped = Math.max(0, Math.min(100, score));
   return (
     <svg
@@ -69,7 +70,7 @@ function RadialGauge({ score, status, label }: { score: number; status: string; 
         fontSize="13"
         fontWeight="800"
         letterSpacing=".08em"
-        fill={color}
+        fill={ink}
       >
         {status.toUpperCase()}
       </text>
@@ -100,7 +101,7 @@ function MetricMeter({ metricKey, result }: { metricKey: MetricKey; result: Metr
         <p className="text-sm font-bold">{label}</p>
         <p
           className="shrink-0 text-sm font-extrabold tabular-nums"
-          style={{ color: STATUS_COLOR[status] }}
+          style={{ color: STATUS_INK[status] }}
         >
           {pct ?? result.score} · {t(`fib.score.status.${status}`)}
         </p>

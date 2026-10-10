@@ -85,7 +85,10 @@ Every number on the landing page comes from `frontend/src/utils/landingMetrics.t
 
 - Reduced motion: all animation stops; content never stays hidden. Done.
 - WebGL / heavy visual fallback: static SVG poster of the same scene; canvas globe is lazy and gated. Done.
-- Contrast: text and surface pairs in `tokens.css` were checked against WCAG 2.2 AA (4.5:1) in the light theme; the dark values were chosen to match.
+- Contrast: text and surface pairs in `tokens.css` are held to WCAG 2.2 AA (4.5:1) in both themes, and `frontend/e2e/accessibility.spec.ts` fails if a screen breaks it. Three rules came out of NF-HR-009:
+  - **Words use an ink, never a fill.** Status words take `text-safe-ink`, `text-caution-ink` or `text-danger-ink` (they follow the theme); `STATUS_COLOR` and the other fills are for rings, bars and arcs only. Error text is `text-danger-ink`, not `text-destructive`, which is the button's background and is 2.9:1 as text on the dark surface.
+  - **No `opacity-*` on text.** It lowers the contrast of whatever is in the element; choose the right ink instead.
+  - **A bright ink is not a background for white text.** In the dark theme the `-ink` tokens are light colours; a tile that holds white text in the light theme takes `dark:text-background`.
 - Fonts: Devanagari and Bengali render through the font stack.
 - No raw hex in components (illustration skin tones, the printed-letter paper and the SDG colours are tokens).
 - Presentation only: services, hooks, API calls, types, routing, auth and Firestore rules are untouched.
