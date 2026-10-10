@@ -618,7 +618,8 @@
       "errors": {
         "tooLarge": "This file is larger than 10 MB. Choose a smaller file.",
         "badType": "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
-        "generic": "This file couldn't be used. Try a different one."
+        "generic": "This file couldn't be used. Try a different one.",
+        "notAContract": "That doesn't look like a contract. Upload a PDF or a clear photo of the whole contract."
       },
       "hostCountry": "Country you work in",
       "hostCountryHint": "We check your contract against this country's labor law.",
@@ -701,7 +702,13 @@
       "languageHint": "Other languages are translated the first time you choose them. This takes a few seconds.",
       "switching": "Translating your report…",
       "switchOutOfDate": "This report is out of date. Check your contract again to see it in this language.",
-      "summaryHeading": "Summary"
+      "summaryHeading": "Summary",
+      "countryMismatch": {
+        "body": "This contract looks like it is from {{detected}}, but it was checked against {{used}} labor law.",
+        "action": "Check it against {{detected}} law",
+        "working": "Checking…",
+        "failed": "We couldn't run the check again. Please try again."
+      }
     },
     "category": {
       "minimum_wage": "Minimum wage",
@@ -1097,7 +1104,8 @@
         "amount": {
           "empty": "Enter an amount.",
           "invalid": "Enter a valid amount.",
-          "decimals": "Too many decimal places for this currency."
+          "decimals": "Too many decimal places for this currency.",
+          "tooLarge": "That amount is too large. Check it and try again."
         }
       },
       "transfer": {

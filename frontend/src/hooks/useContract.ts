@@ -6,6 +6,7 @@ import {
   analyzeContract,
   getContract,
   getContractParties,
+  getDetectedCountry,
   getContractReport,
   listRecentContracts,
   switchReportLanguage,
@@ -19,7 +20,7 @@ import type {
   ContractReport,
   Legibility,
 } from "@/types/contract";
-import type { LanguageCode } from "@/types/enums";
+import type { HostCountry, LanguageCode } from "@/types/enums";
 import { isRetryable } from "@/utils/errors";
 import type { ContractProgressDoc } from "@/utils/pipelineProgress";
 
@@ -248,5 +249,46 @@ export function useStoredContract(contractId: string) {
     queryKey: ["storedContract", uid, contractId] as const,
     queryFn: () => getContract(uid ?? "", contractId),
     enabled: uid !== undefined,
+  });
+}
+
+/** The country the contract itself shows, to compare with the one it was checked against. */
+export function useDetectedCountry(contractId: string | null) {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: ["contractDetected", uid, contractId] as const,
+    queryFn: () => getDetectedCountry(uid ?? "", contractId ?? ""),
+    enabled: Boolean(uid && contractId),
+    // The check writes it once; checking again for another country does not change it.
+    staleTime: Infinity,
+  });
+}
+
+/**
+ * Check a stored contract again against another country's law, from the report of a past check
+ * (the upload page re-checks through its own retry, which it already follows live). Every read
+ * of the contract is refreshed, so the report that replaces this one is the new check.
+ */
+export function useRecheckForCountry() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const uid = user?.uid;
+  return useMutation({
+    mutationFn: ({ analysis, country }: { analysis: ContractAnalysis; country: HostCountry }) =>
+      analyzeContract(analysis.contract_id, {
+        host_country: country,
+        job_type: analysis.job_type,
+        report_language: analysis.report_language,
+      }),
+    retry: false,
+    meta: { inlineError: true },
+    onSuccess: async (_result, { analysis }) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["storedContract", uid, analysis.contract_id] }),
+        queryClient.invalidateQueries({ queryKey: ["contractReport", uid, analysis.contract_id] }),
+        queryClient.invalidateQueries({ queryKey: ["recentContracts", uid] }),
+      ]);
+    },
   });
 }

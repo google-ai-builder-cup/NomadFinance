@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useRouteError } from "react-router-dom";
 
 import ErrorFallback from "@/components/common/ErrorFallback";
 import { trackCrash } from "@/lib/analytics";
+import { isChunkLoadError } from "@/utils/chunkError";
 
 export interface RouteErrorProps {
   /** True for the top-level route, where no app shell is left around the error. */
@@ -23,8 +24,14 @@ export default function RouteError({ fullScreen = false }: RouteErrorProps) {
   }, [error, location.pathname]);
 
   // Navigating to the same address clears the router's error and renders the page again,
-  // without a full reload, so the header, navigation and signed-in state stay as they are.
+  // without a full reload, so the header, navigation and signed-in state stay as they are. A page
+  // whose code file is gone (a new release since this tab opened) fails the same way until the
+  // page is loaded again, so that one gets a real reload.
   function retry() {
+    if (isChunkLoadError(error)) {
+      window.location.reload();
+      return;
+    }
     navigate(location, { replace: true });
   }
 

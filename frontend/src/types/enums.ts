@@ -4,6 +4,10 @@
 export const HOST_COUNTRIES = ["SG", "MY", "HK", "JP", "KR", "AU"] as const;
 export type HostCountry = (typeof HOST_COUNTRIES)[number];
 
+export function isHostCountry(value: unknown): value is HostCountry {
+  return (HOST_COUNTRIES as readonly unknown[]).includes(value);
+}
+
 export const HOME_COUNTRIES = ["PH", "IN", "ID", "NP", "BD"] as const;
 export type HomeCountry = (typeof HOME_COUNTRIES)[number];
 

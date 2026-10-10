@@ -8,6 +8,7 @@ import {
   failureMessageKey,
   progressView,
   requestFailureKey,
+  uploadFailureKey,
 } from "@/utils/pipelineProgress";
 
 describe("progressView", () => {
@@ -168,5 +169,22 @@ describe("request failure messages", () => {
     [0, "errors.offline"],
   ])("maps HTTP %i to %s", (status, key) => {
     expect(requestFailureKey(new ApiError(status, "detail"))).toBe(key);
+  });
+});
+
+describe("uploadFailureKey", () => {
+  it("says a file with no document in it is not a contract, instead of 'something went wrong'", () => {
+    expect(uploadFailureKey(new ApiError(422, "No readable document"))).toBe(
+      "contract.upload.errors.notAContract"
+    );
+  });
+
+  it.each([
+    [503, "contract.progress.errors.aiBusy"],
+    [504, "contract.progress.errors.aiSlow"],
+    [429, "errors.tooManyRequests"],
+    [500, "errors.server"],
+  ])("leaves a %i to the shared wording", (status, key) => {
+    expect(uploadFailureKey(new ApiError(status, "detail"))).toBe(key);
   });
 });

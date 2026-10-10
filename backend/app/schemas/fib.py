@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 # docs/data-model/collections/fib.md: "Transfers and savings: none needed" — only income and
 # bills carry a category at all.
@@ -19,6 +19,20 @@ CURRENCY_PATTERN = r"^[A-Z]{3}$"
 MAX_NOTES_CHARS = 500
 MAX_VENDOR_CHARS = 200
 MAX_EMPLOYER_CHARS = 200
+
+# The most one entry can be (NF-HR-004). An extra zero or a slipped finger would otherwise sit in
+# the worker's profile for a year: one entry of SGD 99,999 took the income stability score of a
+# worker with three steady months from 67 to 0. Yen and won have no minor unit, so their
+# amounts run a hundred times larger. The app's form holds the same limits (`utils/fibForm.ts`).
+MAX_AMOUNT = 1_000_000
+MAX_AMOUNT_WHOLE_UNIT = 100_000_000
+WHOLE_UNIT_CURRENCIES = frozenset({"JPY", "KRW"})
+
+
+def _within_limit(amount: float, currency: str) -> None:
+    limit = MAX_AMOUNT_WHOLE_UNIT if currency in WHOLE_UNIT_CURRENCIES else MAX_AMOUNT
+    if amount > limit:
+        raise ValueError(f"amount must be at most {limit:,} {currency}")
 
 
 class IncomeLogRequest(BaseModel):
@@ -37,6 +51,11 @@ class IncomeLogRequest(BaseModel):
     @classmethod
     def _blank_is_none(cls, value: str | None) -> str | None:
         return (value.strip() or None) if value is not None else None
+
+    @model_validator(mode="after")
+    def _not_beyond_the_limit(self) -> Self:
+        _within_limit(self.amount, self.currency)
+        return self
 
 
 class IncomeLogResponse(BaseModel):
@@ -76,6 +95,11 @@ class BillLogRequest(BaseModel):
     def _blank_is_none(cls, value: str | None) -> str | None:
         return (value.strip() or None) if value is not None else None
 
+    @model_validator(mode="after")
+    def _not_beyond_the_limit(self) -> Self:
+        _within_limit(self.amount, self.currency)
+        return self
+
 
 class BillLogResponse(BaseModel):
     """Response of `POST /api/v1/fib/bill`: the stored entry."""
@@ -109,6 +133,11 @@ class SavingsLogRequest(BaseModel):
     @classmethod
     def _blank_is_none(cls, value: str | None) -> str | None:
         return (value.strip() or None) if value is not None else None
+
+    @model_validator(mode="after")
+    def _not_beyond_the_limit(self) -> Self:
+        _within_limit(self.amount, self.currency)
+        return self
 
 
 class SavingsLogResponse(BaseModel):

@@ -144,6 +144,18 @@ export function requestFailureKey(error: unknown): string {
   return errorMessageKey(error);
 }
 
+/**
+ * What to tell the worker when the upload itself was refused. A file the reader finds no document
+ * in (a photo of something else) is a 422, and "Something went wrong, try again" would send them
+ * round again with the same file.
+ */
+export function uploadFailureKey(error: unknown): string {
+  if (error instanceof ApiError && error.status === 422) {
+    return "contract.upload.errors.notAContract";
+  }
+  return requestFailureKey(error);
+}
+
 /** Whether running the analysis again can help. Content problems need a different file. */
 export function canRetry(code: PipelineErrorCode | null): boolean {
   return !(

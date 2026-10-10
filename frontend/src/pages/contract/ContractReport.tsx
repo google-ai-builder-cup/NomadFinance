@@ -5,7 +5,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
 import ReportView from "@/components/contract/ReportView";
 import { Button } from "@/components/ui/button";
-import { useStoredContract } from "@/hooks/useContract";
+import { useRecheckForCountry, useStoredContract } from "@/hooks/useContract";
 import { useI18n } from "@/hooks/useI18n";
 import { useUserProfile } from "@/hooks/useUser";
 import { isLanguageCode, type LanguageCode } from "@/types/enums";
@@ -21,6 +21,7 @@ export default function ContractReport() {
   const { contractId = "" } = useParams();
   const contract = useStoredContract(contractId);
   const profile = useUserProfile();
+  const recheck = useRecheckForCountry();
 
   if (contract.isPending || profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -59,7 +60,12 @@ export default function ContractReport() {
       />
 
       {analysis ? (
-        <ReportView analysis={analysis} />
+        <ReportView
+          analysis={analysis}
+          onRecheck={(country) => recheck.mutate({ analysis, country })}
+          rechecking={recheck.isPending}
+          recheckFailed={recheck.isError}
+        />
       ) : (
         <div role="alert" className="flex flex-col items-center gap-4 py-12 text-center">
           <p className="text-sm text-muted-foreground">

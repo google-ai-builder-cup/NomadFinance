@@ -618,7 +618,8 @@
       "errors": {
         "tooLarge": "Mas malaki sa 10 MB ang file na ito. Pumili ng mas maliit na file.",
         "badType": "Mag-upload ng PDF o larawan (PNG, JPEG, WebP o HEIC).",
-        "generic": "Hindi magamit ang file na ito. Subukan ang ibang file."
+        "generic": "Hindi magamit ang file na ito. Subukan ang ibang file.",
+        "notAContract": "Hindi ito mukhang kontrata. Mag-upload ng PDF o malinaw na larawan ng buong kontrata."
       },
       "hostCountry": "Bansang pinagtatrabahuhan mo",
       "hostCountryHint": "Sinusuri namin ang kontrata mo laban sa batas sa paggawa ng bansang ito.",
@@ -701,7 +702,13 @@
       "languageHint": "Isinasalin ang ibang wika sa unang beses na piliin mo ito. Ilang segundo lang ito.",
       "switching": "Isinasalin ang iyong ulat…",
       "switchOutOfDate": "Luma na ang ulat na ito. Suriin muli ang iyong kontrata para makita ito sa wikang ito.",
-      "summaryHeading": "Buod"
+      "summaryHeading": "Buod",
+      "countryMismatch": {
+        "body": "Mukhang mula sa {{detected}} ang kontratang ito, pero ang batas sa paggawa ng {{used}} ang ginamit sa pagsusuri.",
+        "action": "Suriin ito ayon sa batas ng {{detected}}",
+        "working": "Sinusuri…",
+        "failed": "Hindi namin naulit ang pagsusuri. Pakisubukang muli."
+      }
     },
     "category": {
       "minimum_wage": "Minimum na sahod",
@@ -1097,7 +1104,8 @@
         "amount": {
           "empty": "Ilagay ang halaga.",
           "invalid": "Ilagay ang tamang halaga.",
-          "decimals": "Masyadong marami ang decimal para sa pera na ito."
+          "decimals": "Masyadong marami ang decimal para sa pera na ito.",
+          "tooLarge": "Masyadong malaki ang halagang ito. Suriin ito at subukang muli."
         }
       },
       "transfer": {

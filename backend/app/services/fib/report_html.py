@@ -29,7 +29,11 @@ h1 { font-size: 20pt; margin: 0 0 2mm; color: #0b3d62; }
 h2 { font-size: 12pt; margin: 5mm 0 2mm; padding-bottom: 1mm; border-bottom: 1px solid #c5ced6;
      color: #0b3d62; }
 .holder { font-size: 12pt; margin: 0 0 3mm; }
-dl { display: grid; grid-template-columns: 55mm 1fr; gap: 0.5mm 4mm; margin: 0 0 2mm; }
+dl { margin: 0 0 2mm; }
+/* A row is one unit: laid out as a grid of its own, a label and its value could land on two
+   pages (the value at the foot of one, the label at the top of the next). */
+.row { display: grid; grid-template-columns: 55mm 1fr; gap: 0 4mm; margin: 0 0 0.5mm;
+       break-inside: avoid; }
 dt { color: #52606d; }
 dd { margin: 0; font-weight: 600; }
 table { width: 100%; border-collapse: collapse; }
@@ -62,7 +66,8 @@ def _paragraphs(text: str) -> str:
 
 
 def _facts(rows: list[tuple[str, str]]) -> str:
-    return "<dl>" + "".join(f"<dt>{escape(k)}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
+    cells = "".join(f'<div class="row"><dt>{escape(k)}</dt><dd>{v}</dd></div>' for k, v in rows)
+    return f"<dl>{cells}</dl>"
 
 
 def _indicator_row(name: str, metric: dict[str, Any], labels: dict[str, str]) -> str:

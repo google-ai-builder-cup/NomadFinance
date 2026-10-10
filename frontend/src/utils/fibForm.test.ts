@@ -1,0 +1,47 @@
+import { describe, expect, it } from "vitest";
+
+import { MAX_AMOUNT, MAX_AMOUNT_WHOLE_UNIT, parseAmount } from "@/utils/fibForm";
+
+describe("parseAmount", () => {
+  it.each([
+    ["650", 650],
+    ["650.50", 650.5],
+    ["1,000.50", 1000.5],
+    ["1.000,50", 1000.5],
+    ["6,500", 6500],
+  ])("reads %s as %d", (text, amount) => {
+    expect(parseAmount(text, "SGD")).toEqual({ ok: true, amount });
+  });
+
+  it.each([
+    ["", "empty"],
+    ["abc", "invalid"],
+    ["-5", "invalid"],
+    ["0", "invalid"],
+    ["1e3", "invalid"],
+  ])("refuses '%s' as %s", (text, problem) => {
+    expect(parseAmount(text, "SGD")).toEqual({ ok: false, problem });
+  });
+
+  it("refuses more decimals than the currency has", () => {
+    expect(parseAmount("10.5", "JPY")).toEqual({ ok: false, problem: "decimals" });
+    expect(parseAmount("10.5555", "AUD")).toEqual({ ok: false, problem: "decimals" });
+  });
+
+  it("refuses an amount beyond the most one entry can be, as the server does", () => {
+    expect(parseAmount(String(MAX_AMOUNT), "SGD")).toEqual({ ok: true, amount: MAX_AMOUNT });
+    expect(parseAmount(String(MAX_AMOUNT + 1), "SGD")).toEqual({ ok: false, problem: "tooLarge" });
+    expect(parseAmount("99999999999999", "MYR")).toEqual({ ok: false, problem: "tooLarge" });
+  });
+
+  it("lets the yen and the won run a hundred times higher", () => {
+    expect(parseAmount(String(MAX_AMOUNT_WHOLE_UNIT), "KRW")).toEqual({
+      ok: true,
+      amount: MAX_AMOUNT_WHOLE_UNIT,
+    });
+    expect(parseAmount(String(MAX_AMOUNT_WHOLE_UNIT + 1), "JPY")).toEqual({
+      ok: false,
+      problem: "tooLarge",
+    });
+  });
+});
