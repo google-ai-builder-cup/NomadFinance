@@ -110,6 +110,7 @@ class World:
         self.turns = CoachTurns(
             self.service, self.stub, extractor=StubExtractor()  # type: ignore[arg-type]
         )
+        self.checkin_plans = FakePlans()
         self.session_id = asyncio.run(reach_plan_stage(self.service, MARICEL))
         with self.client(UID) as owner:
             self.plan_id: str = owner.post(
@@ -127,6 +128,9 @@ class World:
         app.dependency_overrides[get_coach_sessions] = lambda: self.service
         app.dependency_overrides[get_coach_plans] = lambda: self.plans
         app.dependency_overrides[get_coach_turns] = lambda: self.turns
+        # The check-in route reads its own repository; without this it would build a real
+        # Firestore client, which a machine with no Google credentials (CI) cannot.
+        app.dependency_overrides[get_coach_plan_repository] = lambda: self.checkin_plans
         return TestClient(app, raise_server_exceptions=False)
 
     def calls(self, session_id: str, plan_id: str, check_id: str) -> list[tuple[str, str, Any]]:
