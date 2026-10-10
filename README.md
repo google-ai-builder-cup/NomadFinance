@@ -22,6 +22,7 @@ Scam Check and Financial Coach are behind feature flags, so they are off for a w
 | Feature | What it does | Docs |
 |---|---|---|
 | **Scam Analyzer** | A worker pastes a message or uploads a screenshot and gets a verdict, the tricks used and safe next steps in their own language, and can warn other workers through Exploitation Radar. | [Feature doc](./docs/features/scam-analyzer.md) · [Prompt notes](./docs/gemini-prompts.md) · [API contract](./docs/api/v2-scam.md) |
+| **Financial Coach** | A worker who is about to leave answers a short interview in their own language and gets a preparedness score, a 13-week plan with a PDF to download or share, and a check-in at day 30, 60 and 90. | [Feature doc](./docs/features/financial-coach.md) · [Prompt notes](./docs/gemini-prompts.md#financial-coach) · [API contract](./docs/api/v2-coach.md) |
 
 ## Google Cloud Services
 
