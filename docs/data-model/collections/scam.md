@@ -304,3 +304,7 @@ Three Firebase Analytics events (NF-SA-022, `frontend/src/lib/analytics.ts`). On
 ## Tasks that use it
 
 NF-SA-001 (taxonomy), NF-SA-006 (patterns), NF-SA-007 (verdict), NF-SA-008 (screenshot), NF-SA-009 (explainer), NF-SA-010 (similar), NF-SA-011 (indicators), NF-SA-012 (history, cache), NF-SA-022 (stats and events), NF-SA-013 (report to Radar, writes `scam_indicators`), NF-SA-010 and NF-SA-016 (show "reported N times"), NF-SA-015 to -019 (screens), NF-HR-001 (Financial Identity signal).
+
+## Demo data
+
+The demo workers' five stored checks each (NF-HR-003, `data-scripts/data/seed/scam-checks/`) are ordinary checks plus one extra field, `demo_seed: true`, which only the demo loader reads. They carry the backend's cache key and prompt versions, so the same message in the same language is answered from the check while the taxonomy version and the prompts still match.

@@ -1,0 +1,772 @@
+{
+  "_comment": "Miguel: the Coach persona p10 (Japan to the Philippines), the high score.",
+  "uid": "uid_miguel_demo",
+  "language": "tl",
+  "session_id": "demo_s_01",
+  "departure_in_days": -40,
+  "plan_created_days_ago": 55,
+  "checkins": {
+    "d30": {
+      "answered_days_after_due": 1,
+      "answers": {
+        "remittance": "on_track",
+        "savings": "on_track",
+        "pay": "full_on_time"
+      }
+    }
+  },
+  "signal_sharing": {
+    "coach": true,
+    "scam": true
+  },
+  "session": {
+    "status": "completed",
+    "stage": "plan",
+    "language": "tl",
+    "slots": {
+      "destination_country": {
+        "value": "JP",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "job_type": {
+        "value": "care_worker",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "departure_date": {
+        "value": "@departure",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 152000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "dependents": {
+        "value": 1,
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 50000.0,
+          "currency": "JPY",
+          "period": "month"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "recruitment_fee_paid": {
+        "value": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "debt_outstanding": {
+        "value": {
+          "amount": 0.0,
+          "currency": "PHP",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "savings": {
+        "value": {
+          "amount": 400000.0,
+          "currency": "JPY",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "bank_or_wallet": {
+        "value": "both",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      }
+    },
+    "declined_slots": [],
+    "messages": [],
+    "turn_count": 12,
+    "revision": 5,
+    "last_active": "2026-10-20T08:01:00Z",
+    "expires_at": "2026-11-19T08:10:00Z",
+    "models": {
+      "extraction": "gemini-3.1-flash-lite",
+      "reply": "gemini-3.5-flash"
+    },
+    "prompt_versions": {},
+    "question_bank_version": 1,
+    "created_at": "2026-10-20T08:00:00Z",
+    "schema_version": 1,
+    "completed_at": "2026-10-20T08:10:00Z"
+  },
+  "plan": {
+    "session_id": "demo_s_01",
+    "slots": {
+      "destination_country": "JP",
+      "job_type": "care_worker",
+      "departure_date": "@departure",
+      "monthly_salary": {
+        "amount": 152000.0,
+        "currency": "JPY",
+        "period": "month"
+      },
+      "dependents": 1,
+      "remittance_target": {
+        "amount": 50000.0,
+        "currency": "JPY",
+        "period": "month"
+      },
+      "recruitment_fee_paid": {
+        "amount": 0.0,
+        "currency": "PHP",
+        "period": "once"
+      },
+      "debt_outstanding": {
+        "amount": 0.0,
+        "currency": "PHP",
+        "period": "once"
+      },
+      "savings": {
+        "amount": 400000.0,
+        "currency": "JPY",
+        "period": "once"
+      },
+      "bank_or_wallet": "both"
+    },
+    "host_country": "JP",
+    "reporting_currency": "JPY",
+    "score": {
+      "total": 94,
+      "band": "well_prepared",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.0,
+          "score": 100.0,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 3.48,
+          "score": 79.0,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.33,
+          "score": 96.0,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 0.0,
+          "score": 100.0,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 100.0,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan": {
+      "summary": "You will earn about 152,000 JPY a month. After your costs, you can send 50,000 JPY home each month. Wise is the cheapest service we found and your family would receive 18,775 PHP.",
+      "monthly_budget": {
+        "income": {
+          "amount": 152000.0,
+          "currency": "JPY"
+        },
+        "costs": [
+          {
+            "id": "accommodation",
+            "amount": {
+              "amount": 30000.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "id": "food",
+            "amount": {
+              "amount": 27700.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "id": "transport",
+            "amount": {
+              "amount": 6000.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "id": "phone_data",
+            "amount": {
+              "amount": 1400.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "id": "deductions",
+            "amount": {
+              "amount": 22328.8,
+              "currency": "JPY"
+            }
+          }
+        ],
+        "goals": [
+          {
+            "id": "remittance",
+            "amount": {
+              "amount": 50000.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "id": "emergency_fund",
+            "amount": {
+              "amount": 11656.0,
+              "currency": "JPY"
+            }
+          }
+        ],
+        "left_over": {
+          "amount": 2915.2,
+          "currency": "JPY"
+        },
+        "setup_costs": {
+          "amount": 600000.0,
+          "currency": "JPY"
+        }
+      },
+      "remittance": {
+        "corridor_id": "JP-PH",
+        "monthly_amount": {
+          "amount": 50000.0,
+          "currency": "JPY"
+        },
+        "provider": {
+          "slug": "wise",
+          "name": "Wise",
+          "fee": {
+            "amount": 592.6,
+            "currency": "JPY"
+          },
+          "receives": {
+            "amount": 18774.81,
+            "currency": "PHP"
+          },
+          "fx_rate": 0.38,
+          "quoted_at": "2026-10-09T07:00:00Z"
+        },
+        "schedule": [
+          {
+            "week": 5,
+            "amount": {
+              "amount": 50000.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "week": 9,
+            "amount": {
+              "amount": 50000.0,
+              "currency": "JPY"
+            }
+          },
+          {
+            "week": 13,
+            "amount": {
+              "amount": 50000.0,
+              "currency": "JPY"
+            }
+          }
+        ]
+      },
+      "debt": null,
+      "emergency_fund": {
+        "target": {
+          "amount": 262286.4,
+          "currency": "JPY"
+        },
+        "months_of_costs": 3,
+        "monthly_saving": {
+          "amount": 11656.0,
+          "currency": "JPY"
+        },
+        "weeks_to_target": 0
+      },
+      "weeks": [
+        {
+          "week": 1,
+          "title": "Arrive and settle in",
+          "actions": [
+            "Keep your passport and contract with you, not with anyone else.",
+            "Save the helpline numbers in your phone."
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Set up your money",
+          "actions": [
+            "Check that you have an account your employer can pay into.",
+            "Write down every cost, even small ones."
+          ]
+        },
+        {
+          "week": 3,
+          "title": "Know your contract",
+          "actions": [
+            "Read your contract again with someone you trust.",
+            "Note your pay day and what is taken from your pay."
+          ]
+        },
+        {
+          "week": 4,
+          "title": "Your first pay",
+          "actions": [
+            "Check that your pay matches your contract.",
+            "Keep the payslip."
+          ]
+        },
+        {
+          "week": 5,
+          "title": "Send money home",
+          "actions": [
+            "Compare services before you send.",
+            "Send the planned amount and keep the receipt."
+          ]
+        },
+        {
+          "week": 6,
+          "title": "Check your spending",
+          "actions": [
+            "Compare what you spent with the plan.",
+            "Cut one cost if money is short."
+          ]
+        },
+        {
+          "week": 7,
+          "title": "Keep to your goals",
+          "actions": [
+            "Set aside what the plan says for each goal.",
+            "Do not skip a goal because one month felt hard."
+          ]
+        },
+        {
+          "week": 8,
+          "title": "Build your safety money",
+          "actions": [
+            "Put aside the amount the plan sets for emergencies.",
+            "Keep it where you can reach it quickly."
+          ]
+        },
+        {
+          "week": 9,
+          "title": "Send money home again",
+          "actions": [
+            "Compare services again, because prices change.",
+            "Keep every receipt."
+          ]
+        },
+        {
+          "week": 10,
+          "title": "Check your papers",
+          "actions": [
+            "Make copies of your documents and keep them safe.",
+            "Check when your permit and passport expire."
+          ]
+        },
+        {
+          "week": 11,
+          "title": "Talk to someone you trust",
+          "actions": [
+            "If pay or work is not as promised, talk to a worker support group early.",
+            "Do not wait until the problem is big."
+          ]
+        },
+        {
+          "week": 12,
+          "title": "Plan the next month",
+          "actions": [
+            "Update the plan with what you really spent.",
+            "Decide what you will change."
+          ]
+        },
+        {
+          "week": 13,
+          "title": "Look back",
+          "actions": [
+            "Send the planned amount home and keep the receipt.",
+            "Look back over these three months: what worked and what did not."
+          ]
+        }
+      ],
+      "warnings": [],
+      "checklist": [
+        {
+          "id": "keep_documents",
+          "text": "Keep copies of your contract, passport and agent receipts together."
+        },
+        {
+          "id": "compare_transfer_providers",
+          "text": "Compare ways to send money home before each transfer."
+        },
+        {
+          "id": "save_helpline_numbers",
+          "text": "Save the numbers of a worker support group and your embassy."
+        },
+        {
+          "id": "track_spending",
+          "text": "Write down your spending for the first month."
+        }
+      ],
+      "disclaimer": "This plan is a guide to help you think ahead. It is not professional financial advice. Check important decisions with a trusted adviser or a worker support organisation."
+    },
+    "grounding": {
+      "baselines": {
+        "host_country": "JP",
+        "version": null
+      },
+      "labor_law": {
+        "country": "JP",
+        "version": 1
+      },
+      "fx": [
+        {
+          "pair": "JPY_PHP",
+          "rate": 0.38,
+          "fetched_at": "2026-10-09T07:00:00Z",
+          "provider": "frankfurter"
+        }
+      ],
+      "provider_quote": {
+        "slug": "wise",
+        "name": "Wise",
+        "fetched_at": "2026-10-09T07:00:00Z"
+      }
+    },
+    "rates_as_of": "2026-10-09T07:00:00Z",
+    "language_generated": "en",
+    "models": {
+      "plan": "gemini-3.5-flash"
+    },
+    "prompt_versions": {
+      "coach.plan": 1
+    },
+    "plan_rules_version": 1,
+    "rubric_version": 1,
+    "created_at": "2026-10-20T08:10:00Z",
+    "updated_at": "2026-10-20T08:10:00Z",
+    "schema_version": 1,
+    "home_country": "PH",
+    "corridor_id": "JP-PH",
+    "departure_date": "@departure"
+  },
+  "translations": {
+    "tl": {
+      "language": "tl",
+      "plan": {
+        "summary": "Kikita ka ng humigit-kumulang 152,000 JPY bawat buwan. Pagkatapos ng mga gastos, makapagpapadala ka ng 50,000 JPY sa pamilya bawat buwan. Ang Wise ang pinakamurang serbisyong nakita namin at tatanggap ang pamilya mo ng 18,775 PHP.",
+        "monthly_budget": {
+          "income": {
+            "amount": 152000.0,
+            "currency": "JPY"
+          },
+          "costs": [
+            {
+              "id": "accommodation",
+              "amount": {
+                "amount": 30000.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "id": "food",
+              "amount": {
+                "amount": 27700.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "id": "transport",
+              "amount": {
+                "amount": 6000.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "id": "phone_data",
+              "amount": {
+                "amount": 1400.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "id": "deductions",
+              "amount": {
+                "amount": 22328.8,
+                "currency": "JPY"
+              }
+            }
+          ],
+          "goals": [
+            {
+              "id": "remittance",
+              "amount": {
+                "amount": 50000.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "id": "emergency_fund",
+              "amount": {
+                "amount": 11656.0,
+                "currency": "JPY"
+              }
+            }
+          ],
+          "left_over": {
+            "amount": 2915.2,
+            "currency": "JPY"
+          },
+          "setup_costs": {
+            "amount": 600000.0,
+            "currency": "JPY"
+          }
+        },
+        "remittance": {
+          "corridor_id": "JP-PH",
+          "monthly_amount": {
+            "amount": 50000.0,
+            "currency": "JPY"
+          },
+          "provider": {
+            "slug": "wise",
+            "name": "Wise",
+            "fee": {
+              "amount": 592.6,
+              "currency": "JPY"
+            },
+            "receives": {
+              "amount": 18774.81,
+              "currency": "PHP"
+            },
+            "fx_rate": 0.38,
+            "quoted_at": "2026-10-09T07:00:00Z"
+          },
+          "schedule": [
+            {
+              "week": 5,
+              "amount": {
+                "amount": 50000.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "week": 9,
+              "amount": {
+                "amount": 50000.0,
+                "currency": "JPY"
+              }
+            },
+            {
+              "week": 13,
+              "amount": {
+                "amount": 50000.0,
+                "currency": "JPY"
+              }
+            }
+          ]
+        },
+        "debt": null,
+        "emergency_fund": {
+          "target": {
+            "amount": 262286.4,
+            "currency": "JPY"
+          },
+          "months_of_costs": 3,
+          "monthly_saving": {
+            "amount": 11656.0,
+            "currency": "JPY"
+          },
+          "weeks_to_target": 0
+        },
+        "weeks": [
+          {
+            "week": 1,
+            "title": "Dumating at mag-ayos",
+            "actions": [
+              "Itago ang passport at kontrata mo; huwag ipaiwan sa iba.",
+              "I-save ang mga helpline number sa phone mo."
+            ]
+          },
+          {
+            "week": 2,
+            "title": "Ayusin ang pera mo",
+            "actions": [
+              "Tiyaking may account ka na mapagpapasahan ng sahod ng employer.",
+              "Isulat ang bawat gastos, kahit maliit."
+            ]
+          },
+          {
+            "week": 3,
+            "title": "Unawain ang kontrata",
+            "actions": [
+              "Basahin muli ang kontrata kasama ang taong pinagkakatiwalaan mo.",
+              "Itala ang araw ng sahod at kung ano ang kinakaltas sa sahod mo."
+            ]
+          },
+          {
+            "week": 4,
+            "title": "Ang unang sahod mo",
+            "actions": [
+              "Tiyaking tugma ang sahod sa kontrata mo.",
+              "Itago ang payslip."
+            ]
+          },
+          {
+            "week": 5,
+            "title": "Magpadala ng pera",
+            "actions": [
+              "Ihambing ang mga serbisyo bago magpadala.",
+              "Ipadala ang planadong halaga at itago ang resibo."
+            ]
+          },
+          {
+            "week": 6,
+            "title": "Suriin ang gastos",
+            "actions": [
+              "Ihambing ang ginastos mo sa plano.",
+              "Magbawas ng isang gastos kung kapos ang pera."
+            ]
+          },
+          {
+            "week": 7,
+            "title": "Manatili sa mga layunin",
+            "actions": [
+              "Ilaan ang halagang nasa plano para sa bawat layunin.",
+              "Huwag laktawan ang layunin dahil mahirap ang isang buwan."
+            ]
+          },
+          {
+            "week": 8,
+            "title": "Buuin ang pang-emergency",
+            "actions": [
+              "Ilaan ang halagang itinakda ng plano para sa emergency.",
+              "Itago ito kung saan madali mong makukuha."
+            ]
+          },
+          {
+            "week": 9,
+            "title": "Magpadala muli",
+            "actions": [
+              "Ihambing muli ang mga serbisyo, dahil nagbabago ang presyo.",
+              "Itago ang bawat resibo."
+            ]
+          },
+          {
+            "week": 10,
+            "title": "Suriin ang mga papeles",
+            "actions": [
+              "Gumawa ng kopya ng mga dokumento mo at itago nang ligtas.",
+              "Alamin kung kailan mag-e-expire ang permit at passport mo."
+            ]
+          },
+          {
+            "week": 11,
+            "title": "Makipag-usap sa mapagkakatiwalaan",
+            "actions": [
+              "Kung hindi ayon sa pangako ang sahod o trabaho, makipag-usap nang maaga sa samahang tumutulong sa manggagawa.",
+              "Huwag hintayin na lumaki ang problema."
+            ]
+          },
+          {
+            "week": 12,
+            "title": "Planuhin ang susunod na buwan",
+            "actions": [
+              "I-update ang plano batay sa totoong ginastos mo.",
+              "Magpasya kung ano ang babaguhin mo."
+            ]
+          },
+          {
+            "week": 13,
+            "title": "Balikan ang nakaraan",
+            "actions": [
+              "Ipadala ang planadong halaga at itago ang resibo.",
+              "Balikan ang tatlong buwang ito: ano ang gumana at ano ang hindi."
+            ]
+          }
+        ],
+        "warnings": [],
+        "checklist": [
+          {
+            "id": "keep_documents",
+            "text": "Itago nang magkakasama ang kopya ng kontrata, passport at resibo ng ahente."
+          },
+          {
+            "id": "compare_transfer_providers",
+            "text": "Ihambing ang mga paraan ng pagpapadala ng pera bago ang bawat padala."
+          },
+          {
+            "id": "save_helpline_numbers",
+            "text": "I-save ang numero ng samahang tumutulong sa manggagawa at ng embahada mo."
+          },
+          {
+            "id": "track_spending",
+            "text": "Isulat ang gastos mo sa unang buwan."
+          }
+        ],
+        "disclaimer": "Gabay lang ang planong ito para makapag-isip ka nang maaga. Hindi ito propesyonal na payong pinansyal. Ipasuri ang mahahalagang desisyon sa pinagkakatiwalaang tagapayo o sa organisasyong tumutulong sa mga manggagawa."
+      },
+      "model": "gemini-3.1-flash-lite",
+      "prompt_version": 1,
+      "created_at": "2026-10-20T08:10:00Z",
+      "schema_version": 1
+    }
+  }
+}

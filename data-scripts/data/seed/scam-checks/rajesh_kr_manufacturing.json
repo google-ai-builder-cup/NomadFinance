@@ -1,0 +1,294 @@
+{
+  "_comment": "Five stored checks for rajesh_kr_manufacturing: rows of the reviewed golden sets, explained in the worker's language. The raw message is here for the drift test only: the loader writes the masked text.",
+  "uid": "uid_rajesh_demo",
+  "checks": [
+    {
+      "id": "demo_k_01",
+      "golden_id": "gold-ne-002",
+      "message": "तपाईंको कोरियाको भिसा तयार भयो। म्यानपावर शुल्क रु. 1,80,000 भोलिसम्म यो खातामा जम्मा गर्नुहोस्: 0000 0000 5678। नत्र तपाईंको ठाउँ अर्कैलाई दिइनेछ।",
+      "days_ago": 3,
+      "hour_utc": 5,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "ne",
+        "redacted_text": "तपाईंको कोरियाको भिसा तयार भयो। म्यानपावर शुल्क रु. 1,80,000 भोलिसम्म यो खातामा जम्मा गर्नुहोस्: [ID]। नत्र तपाईंको ठाउँ अर्कैलाई दिइनेछ।",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "illegal_recruitment_fee",
+          "tactics": [
+            "urgency",
+            "scarcity"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "म्यानपावर शुल्क रु. 1,80,000 भोलिसम्म"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            },
+            {
+              "tactic": "scarcity",
+              "text": "यह कहता है कि बस कुछ जगहें बची हैं, ताकि आपको लगे कि अभी हाँ कहनी है।"
+            }
+          ],
+          "scammer_wants": "आपका पैसा, किसी असली अनुबंध से पहले।",
+          "next_steps": [
+            "अभी कोई पैसा न दें।",
+            "एजेंसी से उसका लाइसेंस नंबर माँगें और सरकारी दफ़्तर से खुद जाँचें।",
+            "यह संदेश किसी मज़दूर सहायता संगठन या श्रम कार्यालय को दिखाएँ।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_02",
+      "golden_id": "gold-hi-014",
+      "message": "Dear customer, aapka bank account aaj band ho jayega. KYC update karne ke liye aapke phone par aaya 6-digit OTP is number par bata dein: +91 00000 00051.",
+      "days_ago": 8,
+      "hour_utc": 12,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "Dear customer, aapka bank account aaj band ho jayega. KYC update karne ke liye aapke phone par aaya 6-digit OTP is number par bata dein: [PHONE].",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "remittance_otp_phishing",
+          "tactics": [
+            "fear",
+            "urgency",
+            "authority"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "aapka bank account aaj band ho jayega",
+            "OTP is number par bata dein"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [
+          {
+            "id": "2543665a",
+            "kind": "phone",
+            "value": "910000000051",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "fear",
+              "text": "यह खाता बंद होने या जुर्माने का डर दिखाता है ताकि आप जल्दी करें।"
+            },
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            },
+            {
+              "tactic": "authority",
+              "text": "यह बैंक या किसी अधिकारी का रूप धरता है ताकि आप भरोसा कर लें।"
+            }
+          ],
+          "scammer_wants": "आपके फ़ोन पर आया कोड, ताकि वह आपका पैसा निकाल सके।",
+          "next_steps": [
+            "कोड किसी को न बताएँ, भले ही वे खुद को बैंक कहें।",
+            "लिंक न खोलें। अपना बैंक या ट्रांसफ़र ऐप खुद खोलें।",
+            "अपने कार्ड पर छपे नंबर पर बैंक को फ़ोन करें।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_03",
+      "golden_id": "gold-en-016",
+      "message": "Reminder: your loan instalment of 250 AUD is due on 15 Nov. You can pay in the bank app or by bank transfer. If you have trouble paying, call us and we will arrange a plan.",
+      "days_ago": 13,
+      "hour_utc": 8,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "en",
+        "redacted_text": "Reminder: your loan instalment of 250 AUD is due on 15 Nov. You can pay in the bank app or by bank transfer. If you have trouble paying, call us and we will arrange a plan.",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "benign",
+          "language": "hi",
+          "reassurance": "यह किस्त की सामान्य याद-दिलाई है, बिना लिंक और बिना धमकी के।",
+          "tip": "भुगतान में दिक्कत हो तो उसी नंबर पर फ़ोन करें जो आपके पास पहले से है।"
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_04",
+      "golden_id": "gold-hi-011",
+      "message": "Bhai, Australia mein farm job hai, salary 5000 AUD, visa hum karwa denge. Interview ki zarurat nahi. Abhi WhatsApp karo +61 000 000 041.",
+      "days_ago": 21,
+      "hour_utc": 15,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "Bhai, Australia mein farm job hai, salary 5000 AUD, visa hum karwa denge. Interview ki zarurat nahi. Abhi WhatsApp karo [PHONE].",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "fake_job_offer",
+          "tactics": [
+            "urgency"
+          ],
+          "risk_level": "medium",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "Interview ki zarurat nahi",
+            "Abhi WhatsApp karo"
+          ]
+        },
+        "details": {
+          "contact_channel": "whatsapp"
+        },
+        "indicators": [
+          {
+            "id": "10e6cef1",
+            "kind": "phone",
+            "value": "61000000041",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            }
+          ],
+          "scammer_wants": "आपके पासपोर्ट की कॉपी और बैंक की जानकारी, या कोई फीस।",
+          "next_steps": [
+            "अपने दस्तावेज़ या बैंक की जानकारी न भेजें।",
+            "नियोक्ता या एजेंसी को खुद ढूँढें और उसकी आधिकारिक वेबसाइट के नंबर पर फ़ोन करें।",
+            "जवाब देने से पहले किसी दोस्त या सहायता संगठन को बताएँ।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_05",
+      "golden_id": "gold-hi-016",
+      "message": "आपकी फिक्स्ड डिपॉज़िट 20 नवंबर को पूरी हो रही है। नवीनीकरण के लिए अपनी शाखा में आएं या बैंक ऐप खोलें। इस संदेश में कोई लिंक नहीं है।",
+      "days_ago": 33,
+      "hour_utc": 9,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "आपकी फिक्स्ड डिपॉज़िट 20 नवंबर को पूरी हो रही है। नवीनीकरण के लिए अपनी शाखा में आएं या बैंक ऐप खोलें। इस संदेश में कोई लिंक नहीं है।",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "benign",
+          "language": "hi",
+          "reassurance": "यह बैंक की सामान्य सूचना है। इसमें आपसे कुछ नहीं माँगा गया है।",
+          "tip": "लिंक की जगह अपना बैंक ऐप खुद खोलकर देखें।"
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    }
+  ]
+}
