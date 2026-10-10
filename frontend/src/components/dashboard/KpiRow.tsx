@@ -32,7 +32,8 @@ function stateOf(query: QueryLike, hasData: boolean): StatState {
   return hasData ? "ready" : "empty";
 }
 
-const bigFigure = "text-[2.5rem] font-extrabold leading-none tracking-tight tabular-nums";
+const bigFigure =
+  "text-[1.75rem] font-extrabold leading-none tracking-tight tabular-nums sm:text-[2.5rem]";
 
 function IdentityKpi() {
   const { t } = useI18n();
@@ -53,8 +54,9 @@ function IdentityKpi() {
       }}
     >
       {score !== undefined && status !== null && (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <ScoreRing
+            className="max-sm:!h-14 max-sm:!w-14 max-sm:[&_svg]:h-14 max-sm:[&_svg]:w-14"
             value={score}
             color={STATUS_COLOR[status]}
             label={t("dashboard.kpi.identity.ring", { score })}
@@ -191,7 +193,7 @@ export default function KpiRow() {
   return (
     <section
       aria-label={t("dashboard.kpi.heading")}
-      className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+      className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4"
     >
       <IdentityKpi />
       <AlertsKpi />

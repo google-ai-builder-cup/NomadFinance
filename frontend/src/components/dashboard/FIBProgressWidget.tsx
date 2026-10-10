@@ -31,8 +31,9 @@ export default function FIBProgressWidget() {
       )}
 
       {profile.isSuccess && profile.data !== null && (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <ScoreRing
+            className="max-sm:!h-14 max-sm:!w-14 max-sm:[&_svg]:h-14 max-sm:[&_svg]:w-14"
             value={profile.data.overall_score}
             color={STATUS_COLOR[statusFor(profile.data.overall_score)]}
             label={t("dashboard.kpi.identity.ring", { score: profile.data.overall_score })}

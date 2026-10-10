@@ -4,6 +4,7 @@ import WidgetCard from "@/components/dashboard/WidgetCard";
 import AlertItem from "@/components/radar/AlertItem";
 import { useI18n } from "@/hooks/useI18n";
 import { useNotifications, useUnreadNotificationCount } from "@/hooks/useNotifications";
+import { cn } from "@/lib/utils";
 
 const MAX_SHOWN = 2;
 
@@ -39,12 +40,12 @@ export default function RadarAlertsWidget() {
 
       {notifications.isSuccess && notifications.data.length > 0 && (
         <div className="space-y-2">
-          {unread > 0 && (
-            <p className="text-xs font-bold text-radar-ink">
-              {t("dashboard.widgets.radar.unread", { count: unread })}
-            </p>
-          )}
-          <ul className="space-y-2">
+          {/* On a phone the card is the count alone (the alerts are one tap away), so it stays
+              as short as its neighbours; the count is shown even at zero there. */}
+          <p className={cn("text-xs font-bold text-radar-ink", unread === 0 && "sm:hidden")}>
+            {t("dashboard.widgets.radar.unread", { count: unread })}
+          </p>
+          <ul className="hidden space-y-2 sm:block">
             {notifications.data.map((notification) => (
               <li key={notification.id}>
                 <AlertItem notification={notification} />

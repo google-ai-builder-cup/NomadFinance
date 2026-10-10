@@ -20,6 +20,16 @@ export function useScamHistory() {
   });
 }
 
+/** Only the newest check, for the home dashboard's card (NF-HR-002). Its key starts with
+ * `SCAM_CHECKS_KEY`, so a new check or a report refreshes it with the history. */
+export function useLatestScamCheck() {
+  return useQuery({
+    queryKey: [...SCAM_CHECKS_KEY, "latest"],
+    queryFn: () => listChecks(1),
+    staleTime: 60_000,
+  });
+}
+
 /** One stored check. Read live, so a contact reported since shows its current count. */
 export function useScamCheck(id: string) {
   return useQuery({

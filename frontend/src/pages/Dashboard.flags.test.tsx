@@ -19,6 +19,10 @@ vi.mock("@/hooks/useFeatureFlag", () => ({
 }));
 // The other cards read the API and Firestore; this test is about which cards there are.
 vi.mock("@/components/dashboard/GreetingBand", () => ({ default: () => null }));
+// The tour has its own tests (it reads the signed-in worker, which this page test has none of).
+vi.mock("@/components/dashboard/FirstRunTour", () => ({
+  default: () => <div data-testid="tour" />,
+}));
 vi.mock("@/components/dashboard/KpiRow", () => ({ default: () => null }));
 vi.mock("@/components/dashboard/RemittanceShortcutWidget", () => ({ default: () => null }));
 vi.mock("@/components/dashboard/RecentContractsWidget", () => ({ default: () => null }));
@@ -86,5 +90,24 @@ describe("the dashboard's Future Scope cards", () => {
     expect(link.getAttribute("href")).toBe("/coach");
     expect(screen.getByText("Step 4 of 6")).toBeTruthy();
     expect(screen.queryByRole("link", { name: /Open the Coach/ })).toBeNull();
+  });
+});
+
+describe("the dashboard's Scam Check card status", () => {
+  it("says what the worker's last check found", async () => {
+    state.flags = { coach: false, scam: true };
+
+    renderDashboard();
+
+    // The default history mock: its newest check is a message that was not a scam.
+    expect(await screen.findByText(/Last check: no scam found/)).toBeTruthy();
+  });
+});
+
+describe("the first-run tour", () => {
+  it("is mounted on the dashboard", () => {
+    renderDashboard();
+
+    expect(screen.getByTestId("tour")).toBeTruthy();
   });
 });

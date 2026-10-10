@@ -346,7 +346,16 @@
         "empty": "Log activity to start building your score."
       },
       "scam": {
-        "open": "Check a message"
+        "open": "Check a message",
+        "empty": "Paste a message to check it before you act.",
+        "last": "Last check: {{result}}, {{when}}.",
+        "lastNoWhen": "Last check: {{result}}.",
+        "result": {
+          "low": "low risk",
+          "medium": "medium risk",
+          "high": "high risk",
+          "benign": "no scam found"
+        }
       },
       "coach": {
         "open": "Open the Coach",
@@ -364,7 +373,8 @@
           "getting_ready": "Getting ready",
           "well_prepared": "Well prepared"
         }
-      }
+      },
+      "openShort": "Open"
     },
     "actions": {
       "compare": "Compare rates",
@@ -400,6 +410,27 @@
         "empty": "No rate history yet for your corridor.",
         "action": "Open Remittance X-Ray",
         "change": "{{value}}% in 30 days"
+      }
+    },
+    "tour": {
+      "label": "What is new in NomadFinance",
+      "step": "Step {{current}} of {{total}}",
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "done": "Got it",
+      "close": "Close the tour",
+      "scam": {
+        "title": "Check a message before you act",
+        "body": "A job offer, a loan or a message asking for money? Paste it here or share a screenshot, and see if it is a scam."
+      },
+      "coach": {
+        "title": "Plan before you leave",
+        "body": "Answer a few questions and get a 90-day plan: your monthly budget, what to send home, and a checklist."
+      },
+      "outro": {
+        "title": "All in one place",
+        "body": "Open a card on this page to start or continue. Your last results show on the card."
       }
     }
   },

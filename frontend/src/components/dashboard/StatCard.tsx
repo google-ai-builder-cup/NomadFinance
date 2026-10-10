@@ -36,15 +36,15 @@ export default function StatCard({
   return (
     <article
       aria-busy={state === "loading"}
-      className="card-surface flex min-h-[10.5rem] flex-col gap-3 p-5"
+      className="card-surface flex min-h-[7rem] flex-col gap-2 p-3.5 sm:min-h-[10.5rem] sm:gap-3 sm:p-5"
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-[11px] font-extrabold uppercase tracking-widest text-subtle">
+        <h3 className="text-[10px] font-extrabold uppercase tracking-wider text-subtle sm:text-[11px] sm:tracking-widest">
           {label}
         </h3>
         <span
           className={cn(
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg sm:h-8 sm:w-8",
             style.tint,
             style.text
           )}
@@ -67,15 +67,15 @@ export default function StatCard({
       {state === "empty" && (
         <div className="flex flex-1 flex-col items-start gap-3">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-dashed text-subtle">
+            <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 border-dashed text-subtle sm:flex">
               <EmptyIcon className="h-5 w-5" aria-hidden="true" />
             </span>
-            <p className="text-sm font-semibold leading-snug">{empty.message}</p>
+            <p className="text-xs font-semibold leading-snug sm:text-sm">{empty.message}</p>
           </div>
           <Link
             to={empty.to}
             className={cn(
-              "mt-auto inline-flex min-h-11 items-center rounded-xl border px-4 text-sm font-bold transition-colors hover:bg-accent",
+              "mt-auto inline-flex min-h-11 items-center rounded-xl border px-3 text-xs font-bold transition-colors hover:bg-accent sm:px-4 sm:text-sm",
               style.text
             )}
           >

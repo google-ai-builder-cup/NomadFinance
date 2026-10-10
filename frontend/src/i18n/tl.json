@@ -346,7 +346,16 @@
         "empty": "Mag-log ng aktibidad para simulan ang iyong score."
       },
       "scam": {
-        "open": "Suriin ang mensahe"
+        "open": "Suriin ang mensahe",
+        "empty": "I-paste ang mensahe para masuri ito bago kumilos.",
+        "last": "Huling pagsusuri: {{result}}, {{when}}.",
+        "lastNoWhen": "Huling pagsusuri: {{result}}.",
+        "result": {
+          "low": "mababang panganib",
+          "medium": "katamtamang panganib",
+          "high": "mataas na panganib",
+          "benign": "walang nakitang scam"
+        }
       },
       "coach": {
         "open": "Buksan ang Coach",
@@ -364,7 +373,8 @@
           "getting_ready": "Naghahanda na",
           "well_prepared": "Handang-handa"
         }
-      }
+      },
+      "openShort": "Buksan"
     },
     "actions": {
       "compare": "Ihambing ang mga rate",
@@ -400,6 +410,27 @@
         "empty": "Wala pang kasaysayan ng rate para sa corridor mo.",
         "action": "Buksan ang Remittance X-Ray",
         "change": "{{value}}% sa loob ng 30 araw"
+      }
+    },
+    "tour": {
+      "label": "Ano ang bago sa NomadFinance",
+      "step": "Hakbang {{current}} ng {{total}}",
+      "next": "Susunod",
+      "back": "Bumalik",
+      "skip": "Laktawan",
+      "done": "Naintindihan ko",
+      "close": "Isara ang gabay",
+      "scam": {
+        "title": "Suriin ang mensahe bago kumilos",
+        "body": "May job offer, utang o mensaheng humihingi ng pera? I-paste ito rito o ibahagi ang screenshot, at alamin kung scam ito."
+      },
+      "coach": {
+        "title": "Magplano bago umalis",
+        "body": "Sagutin ang ilang tanong at makakuha ng 90-araw na plano: ang buwanang budget mo, magkano ang ipapadala sa pamilya, at checklist."
+      },
+      "outro": {
+        "title": "Lahat sa iisang lugar",
+        "body": "Buksan ang isang card sa pahinang ito para magsimula o magpatuloy. Makikita sa card ang huli mong resulta."
       }
     }
   },

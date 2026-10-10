@@ -107,12 +107,15 @@ describe("the Coach card", () => {
 
     renderCard();
 
-    await screen.findByRole("link", { name: /Continue my interview/ });
-    const links = screen.getAllByRole("link");
-    expect(links.map((link) => [link.textContent, link.getAttribute("href")])).toEqual([
-      ["View my plan", `/coach/plan/${PLAN_ID}`],
-      ["Continue my interview", "/coach"],
-    ]);
+    const interview = await screen.findByRole("link", { name: "Continue my interview" });
+    const viewPlan = screen.getByRole("link", { name: "View my plan" });
+    expect(screen.getAllByRole("link")).toHaveLength(2);
+    expect(viewPlan.getAttribute("href")).toBe(`/coach/plan/${PLAN_ID}`);
+    expect(interview.getAttribute("href")).toBe("/coach");
+    // The plan link sits in the card's body, above the card's own link.
+    expect(
+      viewPlan.compareDocumentPosition(interview) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
     expect(screen.getByText("Step 5 of 6")).toBeTruthy();
   });
 
