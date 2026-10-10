@@ -17,6 +17,9 @@ EVALS_DIR = Path(__file__).resolve().parent.parent / "evals"
 EVAL_REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "evals"
 RADAR_SEED_FILE = DATA_DIR / "seed" / "radar-reports" / "seed_reports.json"
 SEED_USERS_DIR = DATA_DIR / "seed" / "users"
+# The demo workers' Coach session and plan, and their stored scam checks (NF-HR-003).
+SEED_COACH_DIR = DATA_DIR / "seed" / "coach"
+SEED_SCAM_DIR = DATA_DIR / "seed" / "scam-checks"
 SEED_CONTRACTS_DIR = DATA_DIR / "seed" / "contracts"
 
 RPW_SOURCE_FILE = DATA_DIR / "source" / "rpw_dataset_2011_2025_q1.xlsx"

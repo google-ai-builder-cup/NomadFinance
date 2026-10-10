@@ -167,6 +167,23 @@ A number that already signs in under another uid (someone signed in before the a
 
 Full steps, the story in each user's data and limits: [`docs/runbooks/NF-P3-021-demo-users.md`](../docs/runbooks/NF-P3-021-demo-users.md).
 
+## Demo Coach plans and scam checks (NF-HR-003)
+The three demo workers (above) also have a completed Coach session and 90-day plan and five stored scam checks each, so the finale (Coach, Contract Shield, Scam Analyzer, a report to Radar) can be shown from one account. The files are `data/seed/coach/<name>.json` and `data/seed/scam-checks/<name>.json`. They are **built by the backend's own code** (`backend/tests/fixtures/demo_seed.py`: the real score, plan rules, plan checks, translation check, masking and analyzer, with the sentences and explanations written by the team standing in for the model), and a backend test fails when a file drifts from it. Rebuild after a deliberate change with `cd backend && python -m tests.fixtures.demo_seed --write`.
+
+```bash
+python -m src.validators.demo_coach           # check the three plan files
+python -m src.validators.demo_scam            # check the three scam-check files
+python -m src.loaders.demo_coach --dry-run    # validate, no Firestore access
+python -m src.loaders.demo_coach              # session, plan, translation, check-ins, opt-in
+python -m src.loaders.demo_scam               # five checks each
+python -m src.loaders.demo_preflight          # read-only: what a cold account still needs
+bash scripts/seed_demo.sh                     # all of it, in order, ending with the preflight
+```
+
+Days are relative to the day the loader runs: a worker left `departure_in_days` ago (or leaves in that many), the plan was made `plan_created_days_ago` days ago, a check was made `days_ago` days ago. Priya and Miguel left 40 days ago and have answered their day 30 check-in; Rajesh leaves in 21 days. Because the departure day is one of the answers, the plan id (a hash of the answers) changes with the day: a later run writes the new plan and removes the one it replaced. Only documents marked `demo_seed` are ever removed, so a plan or check a real person made is never touched. The three workers share both `signal_sharing` opt-ins (NF-HR-001), so a recompute puts the signals in their reports. The loaders need the user document first (`python -m src.loaders.seed`). A stored check carries the backend's cache key and prompt versions, so pasting one of the seeded messages again, in the language it was checked in, is answered from the check with no Gemini call. `seed_demo.sh` also loads cost baselines and the scam taxonomy (offline); the scam patterns need an embedding key and the module flags are an operator's switch, so the preflight only reports them.
+
+Full steps, what is in each file and limits: [`docs/runbooks/NF-HR-003-demo-seed-v2.md`](../docs/runbooks/NF-HR-003-demo-seed-v2.md).
+
 ## Scam taxonomy (NF-SA-001)
 The grounding for the Scam Analyzer: 8 scam types (the seven from the design plus `other_scam`) in `data/source/scam-taxonomy/types.json` and 6 manipulation tactics in `tactics.json`, each with a plain-English definition, 3 to 6 tell-tale signs, a safe response and at least one source (official advisories, read on the date in `retrieved_on`). The labels in other languages are not here: the screens translate by id through the `scam` i18n namespace.
 

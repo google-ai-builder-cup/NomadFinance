@@ -1,0 +1,302 @@
+{
+  "_comment": "Five stored checks for miguel_jp_care: rows of the reviewed golden sets, explained in the worker's language. The raw message is here for the drift test only: the loader writes the masked text.",
+  "uid": "uid_miguel_demo",
+  "checks": [
+    {
+      "id": "demo_k_01",
+      "golden_id": "gold-tl-004",
+      "message": "SendaPay: Naka-hold ang padala mong 60,000 JPY papuntang Pilipinas. I-verify ngayon sa https://sendapay-verify.example at ilagay ang OTP na matatanggap mo, kung hindi ay ibabalik ang pera.",
+      "days_ago": 1,
+      "hour_utc": 4,
+      "document": {
+        "input_type": "text",
+        "language": "tl",
+        "message_language": "tl",
+        "redacted_text": "SendaPay: Naka-hold ang padala mong 60,000 JPY papuntang Pilipinas. I-verify ngayon sa [URL] at ilagay ang OTP na matatanggap mo, kung hindi ay ibabalik ang pera.",
+        "corridor_id": "JP-PH",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "remittance_otp_phishing",
+          "tactics": [
+            "urgency",
+            "authority"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "Naka-hold ang padala mong 60,000 JPY",
+            "ilagay ang OTP na matatanggap mo"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [
+          {
+            "id": "176456f7",
+            "kind": "url",
+            "value": "sendapay-verify.example",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "tl",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "Pinagmamadali ka nito para kumilos ka bago mag-isip."
+            },
+            {
+              "tactic": "authority",
+              "text": "Nagpapanggap itong bangko o opisyal para pagkatiwalaan mo."
+            }
+          ],
+          "scammer_wants": "Ang code sa phone mo, para makuha nila ang pera mo.",
+          "next_steps": [
+            "Huwag ibigay ang code kaninuman, kahit sabihing sila ang bangko.",
+            "Huwag buksan ang link. Ikaw mismo ang magbukas ng bank o transfer app mo.",
+            "Tawagan ang bangko mo sa numerong nakalimbag sa card mo."
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_02",
+      "golden_id": "gold-tl-006",
+      "message": "Lakbay Manpower Agency: ang interview mo ay sa Lunes, 10 ng umaga, sa opisina namin sa 3rd floor. Walang bayad ang pagdalo. Dalhin ang passport mo para ipakita sa counter.",
+      "days_ago": 7,
+      "hour_utc": 10,
+      "document": {
+        "input_type": "text",
+        "language": "tl",
+        "message_language": "tl",
+        "redacted_text": "Lakbay Manpower Agency: ang interview mo ay sa Lunes, 10 ng umaga, sa opisina namin sa 3rd floor. Walang bayad ang pagdalo. Dalhin ang passport mo para ipakita sa counter.",
+        "corridor_id": "JP-PH",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "benign",
+          "language": "tl",
+          "reassurance": "Karaniwang abiso ito ng interview. Walang hinihinging bayad.",
+          "tip": "Suriin mo mismo ang lisensya ng ahensya bago pumunta."
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_03",
+      "golden_id": "gold-en-012",
+      "message": "Your interview for the care worker job in Japan was successful. To release your visa, send a placement fee of 90,000 PHP by GCash to +63 000 000 0021 before Friday.",
+      "days_ago": 12,
+      "hour_utc": 13,
+      "document": {
+        "input_type": "text",
+        "language": "tl",
+        "message_language": "en",
+        "redacted_text": "Your interview for the care worker job in Japan was successful. To release your visa, send a placement fee of 90,000 PHP by GCash to [PHONE] before Friday.",
+        "corridor_id": "JP-PH",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "illegal_recruitment_fee",
+          "tactics": [
+            "urgency",
+            "authority"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "send a placement fee of 90,000 PHP",
+            "before Friday"
+          ]
+        },
+        "details": {
+          "contact_channel": "whatsapp"
+        },
+        "indicators": [
+          {
+            "id": "289b64e7",
+            "kind": "phone",
+            "value": "630000000021",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "tl",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "Pinagmamadali ka nito para kumilos ka bago mag-isip."
+            },
+            {
+              "tactic": "authority",
+              "text": "Nagpapanggap itong bangko o opisyal para pagkatiwalaan mo."
+            }
+          ],
+          "scammer_wants": "Ang pera mo, bago pa may totoong kontrata.",
+          "next_steps": [
+            "Huwag munang magbayad ng kahit ano.",
+            "Hingin sa ahensya ang lisensya nito at ikaw mismo ang mag-verify sa tanggapan ng gobyerno.",
+            "Ipakita ang mensahe sa samahang tumutulong sa manggagawa o sa labor office."
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_04",
+      "golden_id": "gold-id-002",
+      "message": "Kode OTP Anda adalah 619204. Berlaku 5 menit. Jangan berikan kode ini kepada siapa pun, termasuk pihak bank.",
+      "days_ago": 22,
+      "hour_utc": 7,
+      "document": {
+        "input_type": "text",
+        "language": "tl",
+        "message_language": "id",
+        "redacted_text": "Kode OTP Anda adalah 619204. Berlaku 5 menit. Jangan berikan kode ini kepada siapa pun, termasuk pihak bank.",
+        "corridor_id": "JP-PH",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "benign",
+          "language": "tl",
+          "reassurance": "Karaniwang mensahe ito ng one-time password. Wala itong hinihingi sa iyo.",
+          "tip": "Huwag ibigay ang code kaninuman, kahit sabihing sila ang bangko."
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_05",
+      "golden_id": "gold-tl-005",
+      "message": "Pautang Agad! Hanggang 20,000 PHP sa loob ng 10 minuto, walang requirements, walang credit check. I-install ang app: https://pautang-agad.example. Bayaran sa loob ng 7 araw.",
+      "days_ago": 30,
+      "hour_utc": 16,
+      "document": {
+        "input_type": "text",
+        "language": "tl",
+        "message_language": "tl",
+        "redacted_text": "Pautang Agad! Hanggang 20,000 PHP sa loob ng 10 minuto, walang requirements, walang credit check. I-install ang app: [URL]. Bayaran sa loob ng 7 araw.",
+        "corridor_id": "JP-PH",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "loan_app_trap",
+          "tactics": [
+            "urgency"
+          ],
+          "risk_level": "medium",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "walang requirements, walang credit check",
+            "Bayaran sa loob ng 7 araw"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [
+          {
+            "id": "a585c6f2",
+            "kind": "url",
+            "value": "pautang-agad.example",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "tl",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "Pinagmamadali ka nito para kumilos ka bago mag-isip."
+            }
+          ],
+          "scammer_wants": "Na mag-install ka ng app na kukuha ng data mo at maniningil ng mas malaki.",
+          "next_steps": [
+            "Huwag i-install ang app.",
+            "Huwag magbigay ng access sa mga litrato o contact mo kapalit ng utang.",
+            "Makipag-usap sa samahang tumutulong sa manggagawa bago magdesisyon."
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    }
+  ]
+}

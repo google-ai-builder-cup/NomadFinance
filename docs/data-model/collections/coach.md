@@ -204,3 +204,7 @@ None beyond the automatic ones, except the collection-group index on `coach_plan
 ## Tasks that use it
 
 NF-FC-001 (slots), NF-FC-006/-011 (score), NF-FC-008 (sessions), NF-FC-009/-010 (turns), NF-FC-012 (plan), NF-FC-013 (guardrails), NF-FC-014 (translation and PDF), NF-FC-015 (contract prefill, goals), NF-FC-016 (check-ins), NF-FC-017 to -023 (screens), NF-HR-001 (Financial Identity signal).
+
+## Demo data
+
+The demo workers' sessions, plans and translations (NF-HR-003, `data-scripts/data/seed/coach/`) carry one extra field, `demo_seed: true`. It is not part of the contract and nothing reads it but the demo loader, which uses it to replace a demo plan (the id changes with the departure day) without ever touching a real one. Its session id is `demo_s_01`.

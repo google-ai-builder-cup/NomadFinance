@@ -1,0 +1,832 @@
+{
+  "_comment": "Rajesh: Korea to India, no corridor of the six, so no provider is quoted. Leaves in 21 days: the plan is ready and no check-in is due yet. All amounts in won.",
+  "uid": "uid_rajesh_demo",
+  "language": "hi",
+  "session_id": "demo_s_01",
+  "departure_in_days": 21,
+  "plan_created_days_ago": 9,
+  "checkins": {},
+  "signal_sharing": {
+    "coach": true,
+    "scam": true
+  },
+  "session": {
+    "status": "completed",
+    "stage": "plan",
+    "language": "hi",
+    "slots": {
+      "destination_country": {
+        "value": "KR",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "job_type": {
+        "value": "manufacturing_worker",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "departure_date": {
+        "value": "@departure",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "monthly_salary": {
+        "value": {
+          "amount": 1950000.0,
+          "currency": "KRW",
+          "period": "month"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "dependents": {
+        "value": 2,
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "remittance_target": {
+        "value": {
+          "amount": 400000.0,
+          "currency": "KRW",
+          "period": "month"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "recruitment_fee_paid": {
+        "value": {
+          "amount": 1200000.0,
+          "currency": "KRW",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "debt_outstanding": {
+        "value": {
+          "amount": 1500000.0,
+          "currency": "KRW",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "debt_interest": {
+        "value": {
+          "rate_percent": 2.0,
+          "period": "month"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "savings": {
+        "value": {
+          "amount": 150000.0,
+          "currency": "KRW",
+          "period": "once"
+        },
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      },
+      "bank_or_wallet": {
+        "value": "bank_account",
+        "confidence": 0.95,
+        "source": "user",
+        "confirmed": true,
+        "updated_at": "2026-10-20T08:02:00Z",
+        "turn": 0
+      }
+    },
+    "declined_slots": [],
+    "messages": [],
+    "turn_count": 12,
+    "revision": 5,
+    "last_active": "2026-10-20T08:01:00Z",
+    "expires_at": "2026-11-19T08:10:00Z",
+    "models": {
+      "extraction": "gemini-3.1-flash-lite",
+      "reply": "gemini-3.5-flash"
+    },
+    "prompt_versions": {},
+    "question_bank_version": 1,
+    "created_at": "2026-10-20T08:00:00Z",
+    "schema_version": 1,
+    "completed_at": "2026-10-20T08:10:00Z"
+  },
+  "plan": {
+    "session_id": "demo_s_01",
+    "slots": {
+      "destination_country": "KR",
+      "job_type": "manufacturing_worker",
+      "departure_date": "@departure",
+      "monthly_salary": {
+        "amount": 1950000.0,
+        "currency": "KRW",
+        "period": "month"
+      },
+      "dependents": 2,
+      "remittance_target": {
+        "amount": 400000.0,
+        "currency": "KRW",
+        "period": "month"
+      },
+      "recruitment_fee_paid": {
+        "amount": 1200000.0,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "debt_outstanding": {
+        "amount": 1500000.0,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "debt_interest": {
+        "rate_percent": 2.0,
+        "period": "month"
+      },
+      "savings": {
+        "amount": 150000.0,
+        "currency": "KRW",
+        "period": "once"
+      },
+      "bank_or_wallet": "bank_account"
+    },
+    "host_country": "KR",
+    "reporting_currency": "KRW",
+    "score": {
+      "total": 58,
+      "band": "getting_ready",
+      "factors": [
+        {
+          "id": "debt_to_income",
+          "value": 0.77,
+          "score": 78.0,
+          "weight": 0.3
+        },
+        {
+          "id": "emergency_buffer",
+          "value": 0.14,
+          "score": 5.0,
+          "weight": 0.25
+        },
+        {
+          "id": "remittance_ratio",
+          "value": 0.21,
+          "score": 100.0,
+          "weight": 0.15
+        },
+        {
+          "id": "recruitment_fee_vs_cap",
+          "value": 0.62,
+          "score": 49.0,
+          "weight": 0.2
+        },
+        {
+          "id": "banked_status",
+          "value": 1.0,
+          "score": 90.0,
+          "weight": 0.1
+        }
+      ],
+      "rubric_version": 1
+    },
+    "plan": {
+      "summary": "You will earn about 1,950,000 KRW a month. After your costs, you plan to send 400,000 KRW home each month. Your debt can be paid off in about 4 months. An emergency fund of 2,584,509 KRW needs about 62 weeks of saving.",
+      "monthly_budget": {
+        "income": {
+          "amount": 1950000.0,
+          "currency": "KRW"
+        },
+        "costs": [
+          {
+            "id": "accommodation",
+            "amount": {
+              "amount": 301963.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "food",
+            "amount": {
+              "amount": 250000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "transport",
+            "amount": {
+              "amount": 75000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "phone_data",
+            "amount": {
+              "amount": 45000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "deductions",
+            "amount": {
+              "amount": 189540.0,
+              "currency": "KRW"
+            }
+          }
+        ],
+        "goals": [
+          {
+            "id": "remittance",
+            "amount": {
+              "amount": 400000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "debt_payment",
+            "amount": {
+              "amount": 481947.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "id": "emergency_fund",
+            "amount": {
+              "amount": 172124.0,
+              "currency": "KRW"
+            }
+          }
+        ],
+        "left_over": {
+          "amount": 34426.0,
+          "currency": "KRW"
+        },
+        "setup_costs": {
+          "amount": 538000.0,
+          "currency": "KRW"
+        }
+      },
+      "remittance": {
+        "corridor_id": null,
+        "monthly_amount": {
+          "amount": 400000.0,
+          "currency": "KRW"
+        },
+        "provider": null,
+        "schedule": [
+          {
+            "week": 5,
+            "amount": {
+              "amount": 400000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "week": 9,
+            "amount": {
+              "amount": 400000.0,
+              "currency": "KRW"
+            }
+          },
+          {
+            "week": 13,
+            "amount": {
+              "amount": 400000.0,
+              "currency": "KRW"
+            }
+          }
+        ]
+      },
+      "debt": {
+        "outstanding": {
+          "amount": 1500000.0,
+          "currency": "KRW"
+        },
+        "monthly_payment": {
+          "amount": 481947.0,
+          "currency": "KRW"
+        },
+        "months_to_clear": 4
+      },
+      "emergency_fund": {
+        "target": {
+          "amount": 2584509.0,
+          "currency": "KRW"
+        },
+        "months_of_costs": 3,
+        "monthly_saving": {
+          "amount": 172124.0,
+          "currency": "KRW"
+        },
+        "weeks_to_target": 62
+      },
+      "weeks": [
+        {
+          "week": 1,
+          "title": "Arrive and settle in",
+          "actions": [
+            "Keep your passport and contract with you, not with anyone else.",
+            "Save the helpline numbers in your phone."
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Set up your money",
+          "actions": [
+            "Check that you have an account your employer can pay into.",
+            "Write down every cost, even small ones."
+          ]
+        },
+        {
+          "week": 3,
+          "title": "Know your contract",
+          "actions": [
+            "Read your contract again with someone you trust.",
+            "Note your pay day and what is taken from your pay."
+          ]
+        },
+        {
+          "week": 4,
+          "title": "Your first pay",
+          "actions": [
+            "Check that your pay matches your contract.",
+            "Keep the payslip."
+          ]
+        },
+        {
+          "week": 5,
+          "title": "Send money home",
+          "actions": [
+            "Compare services before you send.",
+            "Send the planned amount and keep the receipt."
+          ]
+        },
+        {
+          "week": 6,
+          "title": "Check your spending",
+          "actions": [
+            "Compare what you spent with the plan.",
+            "Cut one cost if money is short."
+          ]
+        },
+        {
+          "week": 7,
+          "title": "Keep to your goals",
+          "actions": [
+            "Set aside what the plan says for each goal.",
+            "Do not skip a goal because one month felt hard."
+          ]
+        },
+        {
+          "week": 8,
+          "title": "Build your safety money",
+          "actions": [
+            "Put aside the amount the plan sets for emergencies.",
+            "Keep it where you can reach it quickly."
+          ]
+        },
+        {
+          "week": 9,
+          "title": "Send money home again",
+          "actions": [
+            "Compare services again, because prices change.",
+            "Keep every receipt."
+          ]
+        },
+        {
+          "week": 10,
+          "title": "Check your papers",
+          "actions": [
+            "Make copies of your documents and keep them safe.",
+            "Check when your permit and passport expire."
+          ]
+        },
+        {
+          "week": 11,
+          "title": "Talk to someone you trust",
+          "actions": [
+            "If pay or work is not as promised, talk to a worker support group early.",
+            "Do not wait until the problem is big."
+          ]
+        },
+        {
+          "week": 12,
+          "title": "Plan the next month",
+          "actions": [
+            "Update the plan with what you really spent.",
+            "Decide what you will change."
+          ]
+        },
+        {
+          "week": 13,
+          "title": "Look back",
+          "actions": [
+            "Send the planned amount home and keep the receipt.",
+            "Look back over these three months: what worked and what did not."
+          ]
+        }
+      ],
+      "warnings": [
+        {
+          "id": "fee_above_legal_limit",
+          "severity": "urgent",
+          "text": "You paid 1,200,000 KRW to the agent. The usual limit here is 0 KRW. Keep your receipts and ask a worker support group to check it."
+        },
+        {
+          "id": "high_interest_debt",
+          "severity": "warning",
+          "text": "Your debt costs 2% each month. That is a lot. Pay it before you save more."
+        },
+        {
+          "id": "thin_emergency_fund",
+          "severity": "warning",
+          "text": "You have 150,000 KRW saved and the emergency target is 2,584,509 KRW. Saving a little each month will close the gap."
+        },
+        {
+          "id": "no_provider_quote",
+          "severity": "info",
+          "text": "We cannot compare prices for sending money from here yet. Compare two or three services before you send."
+        }
+      ],
+      "checklist": [
+        {
+          "id": "keep_documents",
+          "text": "Keep copies of your contract, passport and agent receipts together."
+        },
+        {
+          "id": "keep_agent_receipts",
+          "text": "Keep every receipt for fees you paid to the recruitment agent."
+        },
+        {
+          "id": "pay_costly_debt_first",
+          "text": "Pay the costly debt before saving more."
+        },
+        {
+          "id": "compare_transfer_providers",
+          "text": "Compare ways to send money home before each transfer."
+        },
+        {
+          "id": "save_helpline_numbers",
+          "text": "Save the numbers of a worker support group and your embassy."
+        },
+        {
+          "id": "track_spending",
+          "text": "Write down your spending for the first month."
+        }
+      ],
+      "disclaimer": "This plan is a guide to help you think ahead. It is not professional financial advice. Check important decisions with a trusted adviser or a worker support organisation."
+    },
+    "grounding": {
+      "baselines": {
+        "host_country": "KR",
+        "version": null
+      },
+      "labor_law": {
+        "country": "KR",
+        "version": 1
+      },
+      "fx": [],
+      "provider_quote": null
+    },
+    "rates_as_of": "2026-10-20T08:10:00Z",
+    "language_generated": "en",
+    "models": {
+      "plan": "gemini-3.5-flash"
+    },
+    "prompt_versions": {
+      "coach.plan": 1
+    },
+    "plan_rules_version": 1,
+    "rubric_version": 1,
+    "created_at": "2026-10-20T08:10:00Z",
+    "updated_at": "2026-10-20T08:10:00Z",
+    "schema_version": 1,
+    "home_country": "IN",
+    "departure_date": "@departure"
+  },
+  "translations": {
+    "hi": {
+      "language": "hi",
+      "plan": {
+        "summary": "आप महीने में लगभग 1,950,000 KRW कमाएँगे। खर्चों के बाद आप हर महीने 400,000 KRW घर भेजने की योजना बना रहे हैं। आपका कर्ज़ लगभग 4 महीनों में चुकाया जा सकता है। 2,584,509 KRW का आपात कोष बनाने में लगभग 62 हफ़्ते की बचत लगेगी।",
+        "monthly_budget": {
+          "income": {
+            "amount": 1950000.0,
+            "currency": "KRW"
+          },
+          "costs": [
+            {
+              "id": "accommodation",
+              "amount": {
+                "amount": 301963.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "food",
+              "amount": {
+                "amount": 250000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "transport",
+              "amount": {
+                "amount": 75000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "phone_data",
+              "amount": {
+                "amount": 45000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "deductions",
+              "amount": {
+                "amount": 189540.0,
+                "currency": "KRW"
+              }
+            }
+          ],
+          "goals": [
+            {
+              "id": "remittance",
+              "amount": {
+                "amount": 400000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "debt_payment",
+              "amount": {
+                "amount": 481947.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "id": "emergency_fund",
+              "amount": {
+                "amount": 172124.0,
+                "currency": "KRW"
+              }
+            }
+          ],
+          "left_over": {
+            "amount": 34426.0,
+            "currency": "KRW"
+          },
+          "setup_costs": {
+            "amount": 538000.0,
+            "currency": "KRW"
+          }
+        },
+        "remittance": {
+          "corridor_id": null,
+          "monthly_amount": {
+            "amount": 400000.0,
+            "currency": "KRW"
+          },
+          "provider": null,
+          "schedule": [
+            {
+              "week": 5,
+              "amount": {
+                "amount": 400000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "week": 9,
+              "amount": {
+                "amount": 400000.0,
+                "currency": "KRW"
+              }
+            },
+            {
+              "week": 13,
+              "amount": {
+                "amount": 400000.0,
+                "currency": "KRW"
+              }
+            }
+          ]
+        },
+        "debt": {
+          "outstanding": {
+            "amount": 1500000.0,
+            "currency": "KRW"
+          },
+          "monthly_payment": {
+            "amount": 481947.0,
+            "currency": "KRW"
+          },
+          "months_to_clear": 4
+        },
+        "emergency_fund": {
+          "target": {
+            "amount": 2584509.0,
+            "currency": "KRW"
+          },
+          "months_of_costs": 3,
+          "monthly_saving": {
+            "amount": 172124.0,
+            "currency": "KRW"
+          },
+          "weeks_to_target": 62
+        },
+        "weeks": [
+          {
+            "week": 1,
+            "title": "पहुँचें और बस जाएँ",
+            "actions": [
+              "अपना पासपोर्ट और अनुबंध अपने पास रखें, किसी और के पास नहीं।",
+              "सहायता नंबर अपने फ़ोन में सेव कर लें।"
+            ]
+          },
+          {
+            "week": 2,
+            "title": "अपना पैसा व्यवस्थित करें",
+            "actions": [
+              "देखें कि आपके पास ऐसा खाता है जिसमें नियोक्ता वेतन डाल सके।",
+              "हर खर्च लिख लें, छोटा भी।"
+            ]
+          },
+          {
+            "week": 3,
+            "title": "अपना अनुबंध समझें",
+            "actions": [
+              "अपना अनुबंध किसी भरोसेमंद व्यक्ति के साथ फिर से पढ़ें।",
+              "अपना वेतन का दिन और वेतन से कटने वाली रकम लिख लें।"
+            ]
+          },
+          {
+            "week": 4,
+            "title": "आपका पहला वेतन",
+            "actions": [
+              "देखें कि वेतन आपके अनुबंध से मेल खाता है।",
+              "वेतन पर्ची संभालकर रखें।"
+            ]
+          },
+          {
+            "week": 5,
+            "title": "घर पैसे भेजें",
+            "actions": [
+              "भेजने से पहले सेवाओं की तुलना करें।",
+              "तय रकम भेजें और रसीद रखें।"
+            ]
+          },
+          {
+            "week": 6,
+            "title": "अपना खर्च जाँचें",
+            "actions": [
+              "जो खर्च हुआ उसे योजना से मिलाएँ।",
+              "पैसे कम पड़ें तो कोई एक खर्च घटाएँ।"
+            ]
+          },
+          {
+            "week": 7,
+            "title": "लक्ष्यों पर टिके रहें",
+            "actions": [
+              "योजना के अनुसार हर लक्ष्य के लिए रकम अलग रखें।",
+              "एक महीना मुश्किल लगे तो भी कोई लक्ष्य न छोड़ें।"
+            ]
+          },
+          {
+            "week": 8,
+            "title": "आपात बचत बनाएँ",
+            "actions": [
+              "आपात स्थिति के लिए योजना में तय रकम अलग रखें।",
+              "उसे ऐसी जगह रखें जहाँ से जल्दी निकाल सकें।"
+            ]
+          },
+          {
+            "week": 9,
+            "title": "फिर घर पैसे भेजें",
+            "actions": [
+              "सेवाओं की फिर तुलना करें, क्योंकि दाम बदलते रहते हैं।",
+              "हर रसीद रखें।"
+            ]
+          },
+          {
+            "week": 10,
+            "title": "अपने कागज़ात जाँचें",
+            "actions": [
+              "अपने दस्तावेज़ों की प्रतियाँ बनाकर सुरक्षित रखें।",
+              "देखें कि आपका परमिट और पासपोर्ट कब खत्म होते हैं।"
+            ]
+          },
+          {
+            "week": 11,
+            "title": "किसी भरोसेमंद से बात करें",
+            "actions": [
+              "वेतन या काम वादे के अनुसार न हो तो जल्दी किसी मज़दूर सहायता संगठन से बात करें।",
+              "समस्या बड़ी होने तक इंतज़ार न करें।"
+            ]
+          },
+          {
+            "week": 12,
+            "title": "अगले महीने की योजना",
+            "actions": [
+              "असल में जो खर्च हुआ उसके हिसाब से योजना बदलें।",
+              "तय करें कि आप क्या बदलेंगे।"
+            ]
+          },
+          {
+            "week": 13,
+            "title": "पीछे मुड़कर देखें",
+            "actions": [
+              "तय रकम घर भेजें और रसीद रखें।",
+              "इन तीन महीनों को पीछे मुड़कर देखें: क्या काम आया और क्या नहीं।"
+            ]
+          }
+        ],
+        "warnings": [
+          {
+            "id": "fee_above_legal_limit",
+            "severity": "urgent",
+            "text": "आपने एजेंट को 1,200,000 KRW दिए। यहाँ आम सीमा 0 KRW है। अपनी रसीदें रखें और किसी मज़दूर सहायता संगठन से जँचवाएँ।"
+          },
+          {
+            "id": "high_interest_debt",
+            "severity": "warning",
+            "text": "आपके कर्ज़ पर हर महीने 2% ब्याज लगता है। यह बहुत है। ज़्यादा बचत करने से पहले इसे चुकाएँ।"
+          },
+          {
+            "id": "thin_emergency_fund",
+            "severity": "warning",
+            "text": "आपके पास 150,000 KRW की बचत है और आपात लक्ष्य 2,584,509 KRW है। हर महीने थोड़ी बचत से यह फ़ासला भर जाएगा।"
+          },
+          {
+            "id": "no_provider_quote",
+            "severity": "info",
+            "text": "हम अभी यहाँ से पैसे भेजने के दामों की तुलना नहीं कर सकते। भेजने से पहले दो-तीन सेवाओं की तुलना करें।"
+          }
+        ],
+        "checklist": [
+          {
+            "id": "keep_documents",
+            "text": "अपने अनुबंध, पासपोर्ट और एजेंट की रसीदों की प्रतियाँ एक साथ रखें।"
+          },
+          {
+            "id": "keep_agent_receipts",
+            "text": "भर्ती एजेंट को दी गई फीस की हर रसीद रखें।"
+          },
+          {
+            "id": "pay_costly_debt_first",
+            "text": "ज़्यादा बचत करने से पहले महँगा कर्ज़ चुकाएँ।"
+          },
+          {
+            "id": "compare_transfer_providers",
+            "text": "हर बार पैसे भेजने से पहले तरीकों की तुलना करें।"
+          },
+          {
+            "id": "save_helpline_numbers",
+            "text": "किसी मज़दूर सहायता संगठन और अपने दूतावास के नंबर सेव करें।"
+          },
+          {
+            "id": "track_spending",
+            "text": "पहले महीने का अपना खर्च लिखें।"
+          }
+        ],
+        "disclaimer": "यह योजना आगे की सोचने में मदद करने वाली एक गाइड है। यह पेशेवर वित्तीय सलाह नहीं है। ज़रूरी फ़ैसले किसी भरोसेमंद सलाहकार या प्रवासी मज़दूरों की सहायता संस्था से जाँच लें।"
+      },
+      "model": "gemini-3.1-flash-lite",
+      "prompt_version": 1,
+      "created_at": "2026-10-20T08:10:00Z",
+      "schema_version": 1
+    }
+  }
+}

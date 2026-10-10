@@ -1,0 +1,303 @@
+{
+  "_comment": "Five stored checks for priya_sg_domestic: rows of the reviewed golden sets, explained in the worker's language. The raw message is here for the drift test only: the loader writes the masked text.",
+  "uid": "uid_priya_demo",
+  "checks": [
+    {
+      "id": "demo_k_01",
+      "golden_id": "gold-hi-002",
+      "message": "आपका वीज़ा तैयार है। एजेंसी फीस 1,50,000 रुपये कल तक इस खाते में जमा करें: 0000-0000-5678। नहीं तो आपकी जगह किसी और को दे दी जाएगी।",
+      "days_ago": 2,
+      "hour_utc": 7,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "आपका वीज़ा तैयार है। एजेंसी फीस 1,50,000 रुपये कल तक इस खाते में जमा करें: [ID]। नहीं तो आपकी जगह किसी और को दे दी जाएगी।",
+        "corridor_id": "SG-IN",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "illegal_recruitment_fee",
+          "tactics": [
+            "urgency",
+            "scarcity"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "एजेंसी फीस 1,50,000 रुपये कल तक"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            },
+            {
+              "tactic": "scarcity",
+              "text": "यह कहता है कि बस कुछ जगहें बची हैं, ताकि आपको लगे कि अभी हाँ कहनी है।"
+            }
+          ],
+          "scammer_wants": "आपका पैसा, किसी असली अनुबंध से पहले।",
+          "next_steps": [
+            "अभी कोई पैसा न दें।",
+            "एजेंसी से उसका लाइसेंस नंबर माँगें और सरकारी दफ़्तर से खुद जाँचें।",
+            "यह संदेश किसी मज़दूर सहायता संगठन या श्रम कार्यालय को दिखाएँ।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_02",
+      "golden_id": "gold-en-013",
+      "message": "Reminder from the Ministry of Manpower: your Work Permit renewal is due next month. Please log in to the MOM website yourself to renew. Do not use links in messages.",
+      "days_ago": 6,
+      "hour_utc": 11,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "en",
+        "redacted_text": "Reminder from the Ministry of Manpower: your Work Permit renewal is due next month. Please log in to the MOM website yourself to renew. Do not use links in messages.",
+        "corridor_id": "SG-IN",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "email"
+        },
+        "indicators": [],
+        "explainer": {
+          "kind": "benign",
+          "language": "hi",
+          "reassurance": "यह एक सामान्य याद-दिलाने वाला संदेश है। यह न पैसा माँगता है, न लिंक।",
+          "tip": "नवीनीकरण के लिए आधिकारिक वेबसाइट खुद खोलें, संदेश के लिंक से नहीं।"
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_03",
+      "golden_id": "gold-bn-001",
+      "message": "নমস্কার! সিঙ্গাপুরের হোটেলে হাউসকিপিং কর্মী চাই। বেতন মাসে ২,৬০০ সিঙ্গাপুর ডলার, থাকা-খাওয়া ফ্রি। মাত্র ৩টি পদ বাকি। আজই আপনার পাসপোর্টের ছবি আর ব্যাংক অ্যাকাউন্টের তথ্য এই নম্বরে পাঠান: +65 0000 0058।",
+      "days_ago": 11,
+      "hour_utc": 14,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "bn",
+        "redacted_text": "নমস্কার! সিঙ্গাপুরের হোটেলে হাউসকিপিং কর্মী চাই। বেতন মাসে ২,৬০০ সিঙ্গাপুর ডলার, থাকা-খাওয়া ফ্রি। মাত্র ৩টি পদ বাকি। আজই আপনার পাসপোর্টের ছবি আর ব্যাংক অ্যাকাউন্টের তথ্য এই নম্বরে পাঠান: [PHONE]।",
+        "corridor_id": "SG-IN",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "fake_job_offer",
+          "tactics": [
+            "scarcity",
+            "urgency"
+          ],
+          "risk_level": "high",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "মাত্র ৩টি পদ বাকি",
+            "আজই আপনার পাসপোর্টের ছবি"
+          ]
+        },
+        "details": {
+          "contact_channel": "whatsapp"
+        },
+        "indicators": [
+          {
+            "id": "2e614925",
+            "kind": "phone",
+            "value": "6500000058",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "scarcity",
+              "text": "यह कहता है कि बस कुछ जगहें बची हैं, ताकि आपको लगे कि अभी हाँ कहनी है।"
+            },
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            }
+          ],
+          "scammer_wants": "आपके पासपोर्ट की कॉपी और बैंक की जानकारी, या कोई फीस।",
+          "next_steps": [
+            "अपने दस्तावेज़ या बैंक की जानकारी न भेजें।",
+            "नियोक्ता या एजेंसी को खुद ढूँढें और उसकी आधिकारिक वेबसाइट के नंबर पर फ़ोन करें।",
+            "जवाब देने से पहले किसी दोस्त या सहायता संगठन को बताएँ।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_04",
+      "golden_id": "gold-hi-005",
+      "message": "तुरंत लोन, कोई कागज़ नहीं! 5,000 रुपये अभी पाएं। ऐप डाउनलोड करें: https://fastloan-india.example। 7 दिन में चुकाना होगा।",
+      "days_ago": 19,
+      "hour_utc": 6,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "तुरंत लोन, कोई कागज़ नहीं! 5,000 रुपये अभी पाएं। ऐप डाउनलोड करें: [URL] 7 दिन में चुकाना होगा।",
+        "corridor_id": "SG-IN",
+        "verdict": {
+          "is_scam": true,
+          "scam_type": "loan_app_trap",
+          "tactics": [
+            "urgency"
+          ],
+          "risk_level": "medium",
+          "confidence": 0.93,
+          "trigger_phrases": [
+            "तुरंत लोन, कोई कागज़ नहीं",
+            "7 दिन में चुकाना होगा"
+          ]
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [
+          {
+            "id": "dbb0aef4",
+            "kind": "url",
+            "value": "fastloan-india.xn--example-p4o",
+            "flags": [
+              "punycode"
+            ]
+          }
+        ],
+        "explainer": {
+          "kind": "scam",
+          "language": "hi",
+          "why_it_works": [
+            {
+              "tactic": "urgency",
+              "text": "यह आपको जल्दबाज़ी में डालता है ताकि आप सोचने से पहले कदम उठा लें।"
+            }
+          ],
+          "scammer_wants": "आपसे ऐसा ऐप इंस्टॉल करवाना जो आपका डेटा ले ले और ज़्यादा पैसे वसूले।",
+          "next_steps": [
+            "ऐप इंस्टॉल न करें।",
+            "लोन के लिए अपनी फ़ोटो या कॉन्टैक्ट्स का एक्सेस कभी न दें।",
+            "कोई फ़ैसला करने से पहले मज़दूर सहायता संगठन से बात करें।"
+          ]
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.5-flash"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.explain": 1
+        },
+        "schema_version": 1
+      }
+    },
+    {
+      "id": "demo_k_05",
+      "golden_id": "gold-hi-006",
+      "message": "एजेंसी की सूचना: इस नौकरी के लिए आपको कोई भर्ती शुल्क नहीं देना है। अगर कोई पैसे मांगे तो हमारी हेल्पलाइन +91 00000 00061 पर बताएं।",
+      "days_ago": 27,
+      "hour_utc": 10,
+      "document": {
+        "input_type": "text",
+        "language": "hi",
+        "message_language": "hi",
+        "redacted_text": "एजेंसी की सूचना: इस नौकरी के लिए आपको कोई भर्ती शुल्क नहीं देना है। अगर कोई पैसे मांगे तो हमारी हेल्पलाइन [PHONE] पर बताएं।",
+        "corridor_id": "SG-IN",
+        "verdict": {
+          "is_scam": false,
+          "scam_type": null,
+          "tactics": [],
+          "risk_level": "low",
+          "confidence": 0.9,
+          "trigger_phrases": []
+        },
+        "details": {
+          "contact_channel": "sms"
+        },
+        "indicators": [
+          {
+            "id": "b46828cb",
+            "kind": "phone",
+            "value": "910000000061",
+            "flags": []
+          }
+        ],
+        "explainer": {
+          "kind": "benign",
+          "language": "hi",
+          "reassurance": "इस संदेश में लिखा है कि आपको कोई फीस नहीं देनी है, जो नियम के अनुसार है।",
+          "tip": "अगर कोई नौकरी के लिए पैसे माँगे तो न दें और किसी सहायता संगठन को बताएँ।"
+        },
+        "similar": [],
+        "check_count": 1,
+        "taxonomy_version": 1,
+        "models": {
+          "classifier": "gemini-3.1-flash-lite",
+          "explainer": "gemini-3.1-flash-lite"
+        },
+        "prompt_versions": {
+          "scam.classify": 2,
+          "scam.reassure": 1
+        },
+        "schema_version": 1
+      }
+    }
+  ]
+}
