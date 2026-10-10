@@ -1,0 +1,74 @@
+name: Coach regression
+
+# Manual only: the run plays 12 personas through the live Coach, about 160 Gemini-backed calls
+# at 9 a minute (roughly 20 minutes), so it must never start by itself on a push or a pull
+# request. Run it from the Actions tab after a change to the interview, the extraction, the
+# guardrails, the scoring or the plan (NF-FC-024). It fails when any persona does not pass,
+# and the report is attached either way.
+#
+# It uses a dedicated test account on which the `coach` flag is on (the flag's allow-list holds
+# its uid; there is no staging, see docs/runbooks/NF-F0-011-ci-staging-env.md). The account
+# needs no contract analysed and no Financial Identity entries, or the Coach would offer them
+# and the turn counts would change.
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Run only this persona id (leave empty for all 12)"
+        required: false
+        default: ""
+      plan_language:
+        description: "Language of the plan and its PDF"
+        required: false
+        default: "en"
+        type: choice
+        options: [en, hi, tl, id, ne, bn]
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    # Not a required check, so unlike the CI jobs its name is not listed in branch protection.
+    name: Coach persona regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r backend/requirements.txt
+
+      # A Firebase ID token lives one hour, so a stored one would be stale. The test account's
+      # refresh token is exchanged for a fresh one at the start of every run.
+      - name: Get an ID token for the test account
+        env:
+          FIREBASE_WEB_API_KEY: ${{ secrets.COACH_EVAL_FIREBASE_WEB_API_KEY }}
+          REFRESH_TOKEN: ${{ secrets.COACH_EVAL_REFRESH_TOKEN }}
+        run: |
+          token=$(curl -sf "https://securetoken.googleapis.com/v1/token?key=${FIREBASE_WEB_API_KEY}" \
+            -d grant_type=refresh_token --data-urlencode "refresh_token=${REFRESH_TOKEN}" \
+            | python -c 'import json,sys; print(json.load(sys.stdin)["id_token"])')
+          echo "::add-mask::${token}"
+          echo "COACH_EVAL_ID_TOKEN=${token}" >> "$GITHUB_ENV"
+
+      - name: Run the personas
+        working-directory: backend
+        env:
+          COACH_EVAL_BASE_URL: ${{ vars.COACH_EVAL_BASE_URL }}
+          ONLY: ${{ inputs.only }}
+          PLAN_LANGUAGE: ${{ inputs.plan_language }}
+        run: |
+          only=()
+          if [ -n "${ONLY}" ]; then only=(--only "${ONLY}"); fi
+          python -m tests.regression.run_coach_regression "${only[@]}" \
+            --plan-language "${PLAN_LANGUAGE}" --report /tmp/coach-regression.md
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coach-regression-report
+          path: /tmp/coach-regression.md
