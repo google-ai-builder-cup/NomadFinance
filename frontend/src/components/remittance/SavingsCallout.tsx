@@ -74,7 +74,7 @@ export default function SavingsCallout({ comparison }: SavingsCalloutProps) {
   if (savings.isError) {
     return (
       <div role="alert" className="flex flex-col items-start gap-2 text-sm">
-        <p className="text-destructive">{t("remittance.savings.loadError")}</p>
+        <p className="text-danger-ink">{t("remittance.savings.loadError")}</p>
         <Button size="sm" variant="outline" onClick={() => void savings.refetch()}>
           {t("common.retry")}
         </Button>

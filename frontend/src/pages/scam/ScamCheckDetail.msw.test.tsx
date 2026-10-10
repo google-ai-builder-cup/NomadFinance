@@ -96,6 +96,31 @@ describe("a stored check", () => {
   });
 });
 
+describe("the page's heading", () => {
+  it("is there while the check loads, when it is gone and when the read fails", async () => {
+    server.use(http.get("*/api/v2/scam/checks/k_slow", () => new Promise<never>(() => undefined)));
+    const loading = renderPage("k_slow");
+    expect(screen.getByRole("heading", { level: 1, name: "Your checks" })).toBeTruthy();
+    expect(screen.getByRole("status")).toBeTruthy();
+    loading.unmount();
+
+    server.use(handlerForMock("scam/check-error-not-found.json"));
+    const gone = renderPage("k_missing");
+    await screen.findByRole("heading", { level: 2, name: "We could not find this check" });
+    expect(screen.getByRole("heading", { level: 1, name: "Your checks" })).toBeTruthy();
+    gone.unmount();
+
+    server.use(
+      http.get("*/api/v2/scam/checks/k_broken", () =>
+        HttpResponse.json({ code: "internal_error", message: "x" }, { status: 500 })
+      )
+    );
+    renderPage("k_broken");
+    await screen.findByRole("alert");
+    expect(screen.getByRole("heading", { level: 1, name: "Your checks" })).toBeTruthy();
+  });
+});
+
 describe("a check that cannot be shown", () => {
   it("says it is gone, in the same words for missing, expired and someone else's", async () => {
     server.use(handlerForMock("scam/check-error-not-found.json"));

@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import ComparisonSummary from "@/components/remittance/ComparisonSummary";
 import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
@@ -70,7 +71,11 @@ export default function RemittanceCompare() {
   }
 
   if (profile.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="remit" icon={ArrowLeftRight} title={t("remittance.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
 
   function handleLog(provider: ProviderResult) {

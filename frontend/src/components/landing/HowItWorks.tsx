@@ -70,9 +70,7 @@ export default function HowItWorks() {
                 aria-current={active === i ? "step" : undefined}
                 className={cn(
                   "card-surface flex gap-4 p-5 transition-all duration-base",
-                  active === i
-                    ? "shadow-md ring-1 ring-contract/40 lg:scale-[1.015]"
-                    : "lg:opacity-80"
+                  active === i ? "shadow-md ring-1 ring-contract/40 lg:scale-[1.015]" : ""
                 )}
               >
                 <span

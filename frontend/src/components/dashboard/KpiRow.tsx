@@ -14,7 +14,7 @@ import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
 import { ApiError } from "@/services/apiClient";
 import { defaultCorridor } from "@/utils/corridors";
-import { STATUS_COLOR, statusFor } from "@/utils/fibScore";
+import { STATUS_COLOR, STATUS_INK, statusFor } from "@/utils/fibScore";
 
 // How many recent contracts the "checked" count looks at; past it the card says "50+".
 const CONTRACT_COUNT_WINDOW = 50;
@@ -61,7 +61,7 @@ function IdentityKpi() {
             color={STATUS_COLOR[status]}
             label={t("dashboard.kpi.identity.ring", { score })}
           />
-          <p className="text-sm font-semibold" style={{ color: STATUS_COLOR[status] }}>
+          <p className="text-sm font-semibold" style={{ color: STATUS_INK[status] }}>
             {t(`fib.score.status.${status}`)}
           </p>
         </div>
@@ -193,7 +193,7 @@ export default function KpiRow() {
   return (
     <section
       aria-label={t("dashboard.kpi.heading")}
-      className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4"
+      className="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4"
     >
       <IdentityKpi />
       <AlertsKpi />

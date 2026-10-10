@@ -116,7 +116,7 @@ export default function BillForm({
             disabled={scanPending}
           />
           {scanErrorKey && (
-            <p role="alert" className="text-sm text-destructive">
+            <p role="alert" className="text-sm text-danger-ink">
               {t(scanErrorKey)}
             </p>
           )}
@@ -265,7 +265,7 @@ export default function BillForm({
           </div>
 
           {shownKey && (
-            <p role="alert" className="text-sm text-destructive">
+            <p role="alert" className="text-sm text-danger-ink">
               {t(shownKey)}
             </p>
           )}

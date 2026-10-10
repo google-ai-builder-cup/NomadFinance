@@ -59,7 +59,7 @@ function ToastItem({ toast: item }: { toast: Toast }) {
       <Icon
         className={cn(
           "mt-0.5 h-5 w-5 shrink-0",
-          item.variant === "error" ? "text-destructive" : "text-primary"
+          item.variant === "error" ? "text-danger-ink" : "text-primary"
         )}
         aria-hidden="true"
       />

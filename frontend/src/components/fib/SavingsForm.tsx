@@ -174,7 +174,7 @@ export default function SavingsForm({
       </div>
 
       {shownKey && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(shownKey)}
         </p>
       )}

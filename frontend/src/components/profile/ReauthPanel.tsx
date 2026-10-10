@@ -175,7 +175,7 @@ export default function ReauthPanel({ onConfirmed, onCancel }: ReauthPanelProps)
       )}
 
       {errorKey !== null && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(errorKey)}
         </p>
       )}

@@ -26,7 +26,7 @@ export default function CountryPair({
       </span>
       <span
         className={cn(
-          "-ml-2 grid place-items-center rounded-full border-2 border-card bg-gold-ink font-extrabold text-white",
+          "-ml-2 grid place-items-center rounded-full border-2 border-card bg-gold-ink font-extrabold text-white dark:text-background",
           disc
         )}
       >

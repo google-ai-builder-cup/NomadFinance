@@ -67,7 +67,7 @@ function MissingLetter({ analysis }: { analysis: ContractAnalysis }) {
         </p>
       )}
       {write.isError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(requestFailureKey(write.error))}
         </p>
       )}
