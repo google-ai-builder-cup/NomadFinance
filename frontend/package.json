@@ -16,7 +16,7 @@
     "test": "vitest run src",
     "test:coverage": "vitest run src --coverage",
     "test:e2e": "playwright test",
-    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-nomadfinance \"vitest run tests/rules\""
+    "test:rules": "firebase emulators:exec --only firestore,storage --project demo-nomadfinance \"vitest run --no-file-parallelism tests/rules\""
   },
   "dependencies": {
     "@radix-ui/react-slot": "1.3.3",
