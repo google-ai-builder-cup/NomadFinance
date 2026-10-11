@@ -118,7 +118,7 @@ curl -s http://127.0.0.1:8080/health
 ```
 
 ```json
-{"status": "ok", "version": "0.1.0", "environment": "local"}
+{"status": "ok", "version": "2.0.0", "environment": "local"}
 ```
 
 - **Errors:** none from the handler. If required settings are missing, the process refuses to start, so no response is served.

@@ -53,7 +53,7 @@ class Settings(BaseSettings):
 
     app_env: Literal["local", "staging", "prod"]
     app_name: str = "NomadFinance API"
-    app_version: str = "0.1.0"
+    app_version: str = "2.0.0"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
     # Not a secret — just tells the Firebase Admin SDK which project to talk to.

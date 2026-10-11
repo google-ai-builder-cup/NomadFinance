@@ -37,4 +37,4 @@ Rules by hand: `firebase deploy --only firestore:rules,storage --project nomadfi
 
 ## Roll back
 
-Hosting: Firebase console → Hosting → Release history → Rollback on the earlier release, then revert the commit on `main`. Rules: revert the commit; the workflow republishes the previous rules. Scheduler: revert the YAML change; the workflow updates the job back.
+Hosting: Firebase console → Hosting → Release history → Rollback on the earlier release, then revert the commit on `main`. A phone that already loaded the newer build keeps it until the worker accepts the app's update prompt, so for a problem in the Coach or the Scam Analyzer turn its flag off first (`config/feature_flags`, about 2 minutes, reaches every device). The full procedure is `NF-HR-011-release-v2.0.md`. Rules: revert the commit; the workflow republishes the previous rules. Scheduler: revert the YAML change; the workflow updates the job back.
