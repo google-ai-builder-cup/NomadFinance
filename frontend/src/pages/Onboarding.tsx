@@ -218,7 +218,7 @@ export default function Onboarding() {
         </fieldset>
 
         {save.isError && (
-          <p role="alert" className="text-center text-sm text-destructive">
+          <p role="alert" className="text-center text-sm text-danger-ink">
             {t("onboarding.saveError")}
           </p>
         )}

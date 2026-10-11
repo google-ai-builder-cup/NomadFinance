@@ -293,7 +293,7 @@ export default function ContractUpload() {
           </div>
 
           {upload.isError && (
-            <p role="alert" className="text-sm font-medium text-destructive">
+            <p role="alert" className="text-sm font-medium text-danger-ink">
               {t(uploadFailureKey(upload.error))}
             </p>
           )}

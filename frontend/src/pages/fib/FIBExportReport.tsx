@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import ReportDocCard from "@/components/fib/ReportDocCard";
 import ReportPreviewModal from "@/components/fib/ReportPreviewModal";
 import { fieldClass, submitClass } from "@/components/fib/styles";
@@ -58,15 +59,21 @@ export default function FIBExportReport() {
   const [previewOpen, setPreviewOpen] = useState(false);
 
   if (profile.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="identity" icon={FileDown} title={t("fib.export.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
 
   if (profile.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("fib.export.profileLoadError")}</p>
-        <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="identity" icon={FileDown} title={t("fib.export.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("fib.export.profileLoadError")}</p>
+          <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
 
@@ -157,7 +164,7 @@ export default function FIBExportReport() {
             </div>
 
             {exportReport.isError && (
-              <p role="alert" className="text-sm text-destructive">
+              <p role="alert" className="text-sm text-danger-ink">
                 {t(errorMessageKey(exportReport.error))}
               </p>
             )}

@@ -3,7 +3,7 @@ import ScoreRing from "@/components/visual/ScoreRing";
 import TiltCard from "@/components/visual/TiltCard";
 import { useI18n } from "@/hooks/useI18n";
 import { METRIC_KEYS, type FinancialProfile } from "@/types/fib";
-import { STATUS_COLOR, statusFor } from "@/utils/fibScore";
+import { STATUS_COLOR, STATUS_PAPER_INK, statusFor } from "@/utils/fibScore";
 
 /** A paper-like preview of the exportable PDF, built from the worker's own computed profile: the
  * same score and metrics the report will carry, tilted in 3D so it reads as a document. It is a
@@ -42,7 +42,7 @@ export default function ReportDocCard({
               <p className="truncate text-sm font-extrabold">
                 {holderName || t("fib.export.holderNamePlaceholder")}
               </p>
-              <p className="text-xs font-semibold" style={{ color: STATUS_COLOR[status] }}>
+              <p className="text-xs font-semibold" style={{ color: STATUS_PAPER_INK[status] }}>
                 {t(`fib.score.status.${status}`)}
               </p>
             </div>

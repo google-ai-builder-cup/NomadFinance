@@ -23,7 +23,7 @@ export default function Dashboard() {
   const { flags } = useFeatureFlags();
 
   return (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="space-y-3 sm:space-y-5">
       <FirstRunTour />
       <GreetingBand />
       <KpiRow />
@@ -31,7 +31,7 @@ export default function Dashboard() {
         <h2 id="pillars-heading" className="sr-only">
           {t("dashboard.pillarsHeading")}
         </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-1 sm:gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-1 sm:gap-4 md:grid-cols-2">
           <Reveal className="h-full">
             <RemittanceShortcutWidget />
           </Reveal>

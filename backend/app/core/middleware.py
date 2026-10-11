@@ -30,6 +30,10 @@ _TRACE_ID = re.compile(r"^([0-9a-f]{32})/", re.IGNORECASE)
 # Probes hit these constantly; at INFO they would bury the real traffic.
 _QUIET_PATHS = frozenset({"/health"})
 
+# A v2 JSON body is a short answer: at most a 4,000-character message, which is under 50 KB even
+# when every character is escaped. A screenshot is multipart and keeps the upload cap.
+V2_JSON_MAX_BYTES = 128 * 1024
+
 
 class RequestLoggingMiddleware:
     """Give every request an id and write one `request_completed` line when it ends.
@@ -116,22 +120,34 @@ class BodySizeLimitMiddleware:
         self.app = app
         self.max_bytes = max_bytes
 
-    def _message(self) -> str:
-        return f"The request is larger than {self.max_bytes // (1024 * 1024)} MB."
+    @staticmethod
+    def _message(limit: int) -> str:
+        size = (
+            f"{limit // 1024} KB" if limit == V2_JSON_MAX_BYTES else f"{limit // (1024 * 1024)} MB"
+        )
+        return f"The request is larger than {size}."
+
+    def _limit_for(self, scope: Scope) -> int:
+        """The cap for this request: a short one for v2 JSON, the upload cap for the rest."""
+        content_type = Headers(scope=scope).get("content-type", "").split(";")[0].strip().lower()
+        if is_v2_path(scope["path"]) and content_type == "application/json":
+            return min(self.max_bytes, V2_JSON_MAX_BYTES)
+        return self.max_bytes
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
 
+        limit = self._limit_for(scope)
         declared = Headers(scope=scope).get("content-length", "")
-        if declared.isdigit() and int(declared) > self.max_bytes:
+        if declared.isdigit() and int(declared) > limit:
             if is_v2_path(scope["path"]):
                 response: Response = error_response(
-                    scope, 413, "payload_too_large", self._message()
+                    scope, 413, "payload_too_large", self._message(limit)
                 )
             else:
-                response = JSONResponse(status_code=413, content={"detail": self._message()})
+                response = JSONResponse(status_code=413, content={"detail": self._message(limit)})
             await response(scope, receive, send)
             return
 
@@ -142,9 +158,37 @@ class BodySizeLimitMiddleware:
             message = await receive()
             if message["type"] == "http.request":
                 received += len(message.get("body", b""))
-                if received > self.max_bytes:
+                if received > limit:
                     # FastAPI re-raises an HTTPException from body parsing unchanged.
-                    raise HTTPException(413, self._message())
+                    raise HTTPException(413, self._message(limit))
             return message
 
         await self.app(scope, counting_receive, send)
+
+
+class SecurityHeadersMiddleware:
+    """Keep what a browser or a cache does with an answer from becoming a leak.
+
+    Every answer says its type is not to be guessed. An answer under `/api/` that does not choose
+    its own `Cache-Control` is marked `no-store`: it holds a worker's pay, debts or messages, and
+    a phone is often shared. An answer that sets its own (the plan PDF, a stream) keeps it.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        private = scope["path"].startswith("/api/")
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = MutableHeaders(scope=message)
+                headers.setdefault("X-Content-Type-Options", "nosniff")
+                if private:
+                    headers.setdefault("Cache-Control", "no-store")
+            await send(message)
+
+        await self.app(scope, receive, send_with_headers)

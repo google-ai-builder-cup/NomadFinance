@@ -40,12 +40,14 @@ export default function GreetingBand() {
         aria-hidden="true"
         className="dotted pointer-events-none absolute inset-0 [mask-image:linear-gradient(100deg,transparent_30%,#000)]"
       />
-      <div className="relative grid items-center gap-4 p-4 sm:gap-6 sm:p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="relative grid items-center gap-3 p-3.5 sm:gap-6 sm:p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <div className="flex flex-col gap-2.5 sm:gap-4">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="text-[13px] font-semibold text-muted-foreground">{today}</span>
+            {/* Not on a phone: the language picker in the header already says it, and the badge
+                wraps to a line of its own beside a long date (the 360 px limit, NF-HR-009). */}
             {preferred && (
-              <Badge tone="info">
+              <Badge tone="info" className="hidden sm:inline-flex">
                 <Languages className="h-3.5 w-3.5" aria-hidden="true" />
                 {preferred.nativeName}
               </Badge>

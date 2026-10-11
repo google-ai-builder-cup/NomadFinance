@@ -8,7 +8,7 @@ Now the backend keeps a **daily budget per feature and model tier**, refuses a r
 
 Around that: the routing is reviewed against the daily limits with a measured, re-runnable projection (`backend/scripts/project_demo_usage.py`); the cache hit rate is measurable (a metric and a dashboard chart) and one uncached call is cached; and the demo-day pre-warm plan is written below.
 
-**What is built and what is not.** The code, the tests and the definitions are done. **The budget is off in production until someone reads each model's real daily limit in Google AI Studio** and puts it in `infra/monitoring/quota-limits.json` (D-122, which also arms the NF-F0-016 alerts). Nothing here invents a limit. The "projected usage under 60% of the daily limit" line is met against the design document's figures, marked ASSUMED, and is confirmed only when the real numbers are in (D-282).
+**What is built and what is not.** The code, the tests and the definitions are done. **The budget is off in production until someone reads each model's real daily limit in Google AI Studio** and puts it in `infra/monitoring/quota-limits.json` (D-122, which also arms the NF-F0-016 alerts). Nothing here invents a limit. The "projected usage under 60% of the daily limit" line is met against the design document's figures, marked ASSUMED, and is confirmed only when the real numbers are in (D-286).
 
 ## Where everything is
 
@@ -33,7 +33,7 @@ Around that: the routing is reviewed against the daily limits with a measured, r
 3. **Refused with `source: budget`** if the feature has already sent its share of the tier's daily limit. A share is `SHARES[tier][feature]` times `GEMINI_RPD_<TIER>`, rounded down, at least 1. A feature missing from the table gets 5%. The shares leave 5 to 20% of each model free for retries, other users of the key and what is not listed.
 4. Otherwise the request is counted (`gemini_usage/{day}.calls.<feature>.<tier>`, a server-side increment) and sent. If Google then answers a per-day 429, the tier is closed for the rest of the day and the call is **not retried** (before: three attempts).
 5. A refusal never reaches Google, so it writes no `gemini_call_failed` line and is not counted by `nf_gemini_requests`; it writes `gemini_budget_blocked`, which `nf_gemini_budget_blocks` counts.
-6. The worker gets `503 ai_busy` (v1 routes: `{"detail": ...}`), `Retry-After: <seconds to midnight Pacific>`, and "The AI service has reached its limit for today. Please try again later." The frontend shows its `ai_busy` text and a Try again button; pressing it costs nothing (D-284).
+6. The worker gets `503 ai_busy` (v1 routes: `{"detail": ...}`), `Retry-After: <seconds to midnight Pacific>`, and "The AI service has reached its limit for today. Please try again later." The frontend shows its `ai_busy` text and a Try again button; pressing it costs nothing (D-288).
 
 What the features do with it, with no change of their own:
 
@@ -96,7 +96,7 @@ Every Gemini request the app can make (the left columns are checked against the 
 **Findings.**
 
 - The reasoning tier, which the design called the bottleneck, is not: a Coach interview is 1.3 requests on it. The Coach's demand is on the **fast tier**: the reply and the slot extraction each run once per turn, about 26 requests an interview.
-- The Coach reply is already on the cheapest tier. **Decision (design 11, question 4): it stays there.** The lever kept ready is `GEMINI_COACH_REPLY_TIER=extraction`, which moves the reply to the second Flash-Lite model and its own daily quota (D-283: not yet timed).
+- The Coach reply is already on the cheapest tier. **Decision (design 11, question 4): it stays there.** The lever kept ready is `GEMINI_COACH_REPLY_TIER=extraction`, which moves the reply to the second Flash-Lite model and its own daily quota (D-287: not yet timed).
 - A scam message is cached per worker (NF-SA-012, design question 3), a Coach plan by its answers, a contract analysis by its content hash and the law version; `remittance.recommend` was the one common call with no cache at all.
 
 ## The demo-day projection
@@ -131,7 +131,7 @@ Every lookup writes `cache_lookup feature=… name=… result=hit|miss`, counted
 
 ## Demo-day pre-warm plan
 
-1. **A week before.** Read each model's requests per day in AI Studio (Rate limits). Fill `infra/monitoring/quota-limits.json` (D-122). Merge, then **run the Backend deploy workflow by hand**. Run `setup-monitoring.sh` and the forced-breach test of NF-F0-016. Run `python backend/scripts/project_demo_usage.py`: it must print no ASSUMED and no OVER, or you change the visitor cap or the routing (D-282). If the reply moves to `extraction`, time it first (D-283).
+1. **A week before.** Read each model's requests per day in AI Studio (Rate limits). Fill `infra/monitoring/quota-limits.json` (D-122). Merge, then **run the Backend deploy workflow by hand**. Run `setup-monitoring.sh` and the forced-breach test of NF-F0-016. Run `python backend/scripts/project_demo_usage.py`: it must print no ASSUMED and no OVER, or you change the visitor cap or the routing (D-286). If the reply moves to `extraction`, time it first (D-287).
 2. **Two days before.** Reseed the demo workers (D-271): their scam checks and plans make the team's runs cache hits (NF-HR-003 tests this). Decide whether visitors start interviews or open the seeded workers.
 3. **The evening before.** `gcloud run services update nomadfinance-api --min-instances 1 --region asia-south1 --project nomadfinance-prod` (D-77: removes the 8 s first request; billed while idle). **A deploy after this resets it to 0** (`deploy_manual.sh` passes `--min-instances 0`), so freeze deploys. Run the whole journey once with the demo workers and check `/health`. Recommendations are cached for 30 minutes only: repeat the two comparisons shortly before the demo.
 4. **The morning.** Note the reset time: Google's day turns at midnight Pacific, which is **12:30 IST** until 1 November and **13:30 IST** after (16:00 in Singapore). Rehearse before the reset, then present after it, so the live run has a fresh day. Read today's counts (below) and AI Studio's usage page.
@@ -159,7 +159,7 @@ gcloud run services update nomadfinance-api --project nomadfinance-prod --region
 | # | Decision | Why |
 |---|---|---|
 | 1 | The refusal is a subclass of `GeminiRateLimitError`. | The scam explainer's fallback, the v1 and v2 error handlers, the letter's `ai_daily_limit` and the Coach's error event all handle it with no change |
-| 2 | Same `503 ai_busy` code; the message and `Retry-After` differ. | The v2 contract has no other code, the frontend ignores `Retry-After` for `ai_busy`, and six-language text should be read by a native speaker (D-284) |
+| 2 | Same `503 ai_busy` code; the message and `Retry-After` differ. | The v2 contract has no other code, the frontend ignores `Retry-After` for `ai_busy`, and six-language text should be read by a native speaker (D-288) |
 | 3 | A daily 429 is not retried and closes the tier for the day. | Each retry was a request against a quota that was gone |
 | 4 | Counts in Firestore, one document a day, server-side increments; read every 15 s. | Memory counts are per instance and reset when an instance stops; there are up to two, and the service scales to zero |
 | 5 | The budget is a share of a limit read from `quota-limits.json`, and is off while the limit is null. | The real limits are not in the repository (ADR-002); one file feeds the alerts and the guard |
@@ -175,15 +175,15 @@ gcloud run services update nomadfinance-api --project nomadfinance-prod --region
 |---|---|
 | `black --check`, `ruff`, `mypy app`, `mypy --strict app/services` | clean |
 | Backend suite without the emulator | 3,810 passed, 206 skipped (CI's first step) |
-| Backend integration suite with the Firestore and Auth emulators | 757 passed, 1 failed, 99 skipped (CI's second step). The one failure is `test_scam_history.py` by timing on this Windows machine (D-285), which fails the same way on an untouched copy of `main` |
+| Backend integration suite with the Firestore and Auth emulators | 757 passed, 1 failed, 99 skipped (CI's second step). The one failure is `test_scam_history.py` by timing on this Windows machine (D-289), which fails the same way on an untouched copy of `main` |
 | Tests added | +106 (4,016 collected, 3,910 before) |
 | Coverage gate (`scripts/check_coverage.py`) | passes: `app` 97.6% (needs 93%); `budget.py` 98%, `gemini_usage_repo.py`, `cache.py`, `client.py`, `errors.py` 100% |
 | Firestore rules tests (`vitest`, emulator) | 181 passed, with `gemini_usage` named in the denial tests |
 | Six deliberate breakages (daily 429 retried; refusal counted as a request; another instance's count ignored; another instance's closed tier ignored; wrong `Retry-After`; embedding 429 not flagged daily) | each one made a test fail |
 | `deploy_manual.sh` | `bash -n` clean; `rpd_env.py` prints nothing while the limits are null, and `GEMINI_RPD_*` pairs once they are set (tested) |
-| Two scam-history tests | fail on Windows by timing, on an untouched copy of `main` too (D-285); they passed under coverage |
+| Two scam-history tests | fail on Windows by timing, on an untouched copy of `main` too (D-289); they passed under coverage |
 
-**Not verified, because it needs the project or a key:** that Google accepts the two new metrics and charts (re-run `setup-monitoring.sh`); a run against the real API with a real key and a tiny limit; the real daily limits; the time to the first piece of the Coach reply on the second Flash-Lite model (D-283).
+**Not verified, because it needs the project or a key:** that Google accepts the two new metrics and charts (re-run `setup-monitoring.sh`); a run against the real API with a real key and a tiny limit; the real daily limits; the time to the first piece of the Coach reply on the second Flash-Lite model (D-287).
 
 ## Definition of Done
 
@@ -191,7 +191,7 @@ Tracker line:
 
 - [x] Simulated quota exhaustion degrades gracefully in both features: `test_quota_exhaustion.py` (9 tests: Scam falls back a tier, is a calm 503, still serves a stored check; Coach turn and plan are a calm 503 and work again after the day turns) and `test_quota_exhaustion_firestore.py` (3 tests through the real wiring)
 - [x] Projected demo-day usage under 60% of the daily limit per model: **against the ASSUMED design-document limits**, up to 22 visitors (39 with the reply moved)
-- [ ] The same against the real limits: needs D-122, then D-282
+- [ ] The same against the real limits: needs D-122, then D-286
 
 Firestore Schema Change:
 
@@ -222,7 +222,7 @@ PR title: `feat(gemini): per-feature daily quota budget, graceful degrade and de
 ## Noticed, not fixed
 
 - `backend-deploy.yml` does not run when only `infra/monitoring/quota-limits.json` changes (see the gotcha); a one-line `paths:` addition would fix it. Shared file.
-- Two scam-history tests fail on Windows by timing (D-285).
-- Section 6 of `docs/future-scope/design.md` still lists the Coach reply as `REASONING` (D-286).
+- Two scam-history tests fail on Windows by timing (D-289).
+- Section 6 of `docs/future-scope/design.md` still lists the Coach reply as `REASONING` (D-290).
 - `deploy_manual.sh` resets `--min-instances` to 0 on every deploy, so the evening-before setting is lost if anything is deployed after it (D-77 is where the decision lives).
 - `backend/` and `/infra/` are code-owner paths: this change needs a teammate's review.

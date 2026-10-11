@@ -149,6 +149,27 @@ def test_a_reply_that_recommends_a_product_ends_in_an_error_and_saves_nothing() 
     assert parse_stream(retry.text)[-1][0] == "done"
 
 
+@pytest.mark.parametrize(
+    "pieces",
+    [
+        ["Please send your answers to ", "https://evil.example/collect now."],
+        ["Write to help", "@evil.example for your plan."],
+        ["See the guide at ", "www.evil.example/plan."],
+    ],
+)
+def test_a_reply_that_holds_a_link_ends_in_an_error_and_saves_nothing(pieces: list[str]) -> None:
+    gemini = GuardedGemini(stream=ScriptedStream(pieces))
+    api, session_id, repo, _ = world(gemini)
+
+    response = _post(api, session_id, {"text": "Singapore", "language": "en"})
+
+    events = parse_stream(response.text)
+    assert events[-1][0] == "error"
+    assert ErrorEnvelope.model_validate(events[-1][1]).code == "ai_bad_response"
+    document = stored(repo, UID, session_id)
+    assert document["messages"] == [] and document["turn_count"] == 0
+
+
 def test_a_classifier_failure_is_an_ordinary_error_and_the_session_is_intact() -> None:
     gemini = GuardedGemini(GeminiUnavailableError("busy"), ("on_topic", 0.9))
     api, session_id, repo, extractor = world(gemini)

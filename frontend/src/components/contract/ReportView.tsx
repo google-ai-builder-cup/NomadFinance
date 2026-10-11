@@ -63,7 +63,7 @@ export default function ReportView({
 
       {failureKey !== null && (
         <div role="alert" className={errorBoxClass}>
-          <p className="text-sm text-destructive">{t(failureKey)}</p>
+          <p className="text-sm text-danger-ink">{t(failureKey)}</p>
           {/* Trying again cannot help an out-of-date analysis: the contract must be checked again. */}
           {failureKey !== "contract.report.switchOutOfDate" && (
             <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
@@ -73,7 +73,7 @@ export default function ReportView({
 
       {report.isSuccess && report.data === null && (
         <div role="alert" className={errorBoxClass}>
-          <p className="text-sm text-destructive">{t("contract.result.reportMissing")}</p>
+          <p className="text-sm text-danger-ink">{t("contract.result.reportMissing")}</p>
           <Button onClick={() => void report.refetch()}>{t("common.retry")}</Button>
         </div>
       )}

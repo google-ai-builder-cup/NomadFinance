@@ -73,7 +73,7 @@ export default function EvidencePicker({ files, onChange, disabled = false }: Ev
       </div>
 
       {errorKey && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(errorKey)}
         </p>
       )}

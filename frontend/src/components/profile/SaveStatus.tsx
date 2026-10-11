@@ -15,7 +15,7 @@ export default function SaveStatus({ saving, failed, saved }: SaveStatusProps) {
 
   if (failed) {
     return (
-      <p role="alert" className="text-sm text-destructive">
+      <p role="alert" className="text-sm text-danger-ink">
         {t("profile.saveError")}
       </p>
     );

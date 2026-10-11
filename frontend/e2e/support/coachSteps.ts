@@ -65,7 +65,11 @@ export const STEPS: readonly Step[] = [
 
 /** The coach has asked this question (it is in the conversation). */
 export async function expectAsked(page: Page, slot: Slot): Promise<void> {
-  await expect(conversation(page).getByText(QUESTION[slot]).last()).toBeVisible();
+  // The reply is a stream the page reads and draws; on a loaded CI machine with two browsers
+  // running, 5 seconds (the default) was not always enough after a reload and "Send now".
+  await expect(conversation(page).getByText(QUESTION[slot]).last()).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
 /** Answers the questions from `from` up to (not including) `to`, waiting for each reply. */

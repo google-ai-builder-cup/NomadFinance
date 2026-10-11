@@ -49,7 +49,7 @@ No stack traces, model names, Gemini messages, document paths or other internals
 | 409 | `request_in_progress` | Same `Idempotency-Key` is still being processed (sends `Retry-After`) |
 | 409 | `conflict` | Request conflicts with the resource's current state |
 | 410 | `gone` | Route removed after its sunset date |
-| 413 | `payload_too_large` | Body over the size limit |
+| 413 | `payload_too_large` | Body over the size limit: 128 KB for a JSON body, 10 MB for a screenshot |
 | 422 | `validation_failed` | Body, query or path failed validation; carries `details` |
 | 422 | `idempotency_key_reused` | Same key sent with a different request |
 | 429 | `rate_limited` | Over a rate limit (sends `Retry-After` and `X-RateLimit-*`) |

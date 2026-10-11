@@ -63,7 +63,9 @@ describe("a plan with a provider and a debt", () => {
   it("shows every section, in the order the worker needs them", async () => {
     renderPlan();
 
-    await screen.findByRole("heading", { level: 1, name: "Your 90-day plan" });
+    // The heading is there while the plan loads (every state has one); the plan is there when
+    // its first section is.
+    await screen.findByRole("heading", { level: 2, name: "Look at these first" });
     const headings = screen
       .getAllByRole("heading", { level: 2 })
       .map((heading) => heading.textContent);
@@ -83,9 +85,7 @@ describe("a plan with a provider and a debt", () => {
   it("states the score and the route", async () => {
     renderPlan();
 
-    await screen.findByRole("heading", { level: 1 });
-
-    expect(screen.getByText(/Score \d+ · /)).toBeTruthy();
+    expect(await screen.findByText(/Score \d+ · /)).toBeTruthy();
     expect(screen.getByText("AU → IN")).toBeTruthy();
   });
 
@@ -223,6 +223,31 @@ describe("the checklist", () => {
 
     expect(screen.getByText("0 of 5 done")).toBeTruthy();
     expect(localStorage.getItem(`${CHECKLIST_KEY_PREFIX}alice.${ID}`)).toBeNull();
+  });
+});
+
+describe("the page's heading", () => {
+  it("is there while the plan loads, when it is missing and when the read fails", async () => {
+    server.use(http.get("*/api/v2/coach/plans/:id", () => new Promise<never>(() => undefined)));
+    const loading = renderPlan();
+    expect(screen.getByRole("heading", { level: 1, name: "Your 90-day plan" })).toBeTruthy();
+    expect(screen.getByRole("status")).toBeTruthy();
+    loading.unmount();
+
+    server.use(handlerForMock(NOT_FOUND, "GET /api/v2/coach/plans/0123456789abcdef0123"));
+    const missing = renderPlan("0123456789abcdef0123");
+    await screen.findByRole("alert");
+    expect(screen.getByRole("heading", { level: 1, name: "Your 90-day plan" })).toBeTruthy();
+    missing.unmount();
+
+    server.use(
+      http.get("*/api/v2/coach/plans/:id", () =>
+        HttpResponse.json({ code: "bad_gateway", message: "x" }, { status: 502 })
+      )
+    );
+    renderPlan();
+    await screen.findByRole("alert");
+    expect(screen.getByRole("heading", { level: 1, name: "Your 90-day plan" })).toBeTruthy();
   });
 });
 

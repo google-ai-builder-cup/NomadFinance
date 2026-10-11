@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import RiskBadge from "@/components/common/RiskBadge";
 import { Button } from "@/components/ui/button";
 import PillarIllustration from "@/components/visual/PillarIllustration";
@@ -76,14 +77,20 @@ export default function ContractList() {
   const contracts = useRecentContracts(MAX_SHOWN);
 
   if (contracts.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="contract" icon={ShieldCheck} title={t("contract.history.title")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
   if (contracts.isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("contract.history.loadError")}</p>
-        <Button onClick={() => void contracts.refetch()}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="contract" icon={ShieldCheck} title={t("contract.history.title")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("contract.history.loadError")}</p>
+          <Button onClick={() => void contracts.refetch()}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
 

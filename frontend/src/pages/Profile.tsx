@@ -17,13 +17,21 @@ export default function Profile() {
   const identity = user?.displayName ?? user?.email ?? user?.phoneNumber ?? "";
 
   if (profile.isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <div className="space-y-5">
+        <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{t("profile.title")}</h1>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </div>
+    );
   }
   if (profile.isError || profile.data === null) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("profile.loadError")}</p>
-        <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
+      <div className="space-y-5">
+        <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{t("profile.title")}</h1>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("profile.loadError")}</p>
+          <Button onClick={() => void profile.refetch()}>{t("common.retry")}</Button>
+        </div>
       </div>
     );
   }

@@ -43,7 +43,7 @@ export default function CountryMismatchNotice({
           {t("contract.report.countryMismatch.body", names)}
         </p>
         {failed && (
-          <p role="alert" className="text-sm font-medium text-destructive">
+          <p role="alert" className="text-sm font-medium text-danger-ink">
             {t("contract.report.countryMismatch.failed")}
           </p>
         )}

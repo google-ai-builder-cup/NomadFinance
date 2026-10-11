@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
+import PageStateFrame from "@/components/common/PageStateFrame";
 import EntityReportList from "@/components/radar/EntityReportList";
 import EntityRiskCard from "@/components/radar/EntityRiskCard";
 import { Button } from "@/components/ui/button";
@@ -26,22 +27,28 @@ export default function RadarEntity() {
   );
 
   if (isPending) {
-    return <LoadingSpinner label={t("common.loading")} className="py-16" />;
+    return (
+      <PageStateFrame pillar="radar" icon={Radar} title={t("pillars.radar.name")}>
+        <LoadingSpinner label={t("common.loading")} className="py-16" />
+      </PageStateFrame>
+    );
   }
   if (isError) {
     return (
-      <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">{t("radar.entity.loadError")}</p>
-        <Button onClick={refetch}>{t("common.retry")}</Button>
-      </div>
+      <PageStateFrame pillar="radar" icon={Radar} title={t("pillars.radar.name")}>
+        <div role="alert" className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("radar.entity.loadError")}</p>
+          <Button onClick={refetch}>{t("common.retry")}</Button>
+        </div>
+      </PageStateFrame>
     );
   }
   if (entity === null) {
     return (
-      <div className="space-y-5">
+      <PageStateFrame pillar="radar" icon={Radar} title={t("pillars.radar.name")}>
         {backLink}
         <p className="text-sm text-muted-foreground">{t("radar.entity.notFound")}</p>
-      </div>
+      </PageStateFrame>
     );
   }
 
@@ -67,7 +74,7 @@ export default function RadarEntity() {
             <LoadingSpinner label={t("common.loading")} className="py-8" />
           ) : reports.isError ? (
             <div role="alert" className="flex flex-col items-start gap-2 text-sm">
-              <p className="text-destructive">{t("radar.entity.reportsLoadError")}</p>
+              <p className="text-danger-ink">{t("radar.entity.reportsLoadError")}</p>
               <Button size="sm" variant="outline" onClick={() => void reports.refetch()}>
                 {t("common.retry")}
               </Button>

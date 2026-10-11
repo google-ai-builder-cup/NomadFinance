@@ -181,7 +181,7 @@ export default function UploadDropzone({
       </label>
 
       {rejectionKey && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(rejectionKey)}
         </p>
       )}

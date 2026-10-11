@@ -29,6 +29,13 @@ function BackLink() {
   );
 }
 
+/** The page's own heading while the plan is not there (loading, failed, missing), so every state
+ * starts from the same title the plan itself does. */
+function PlanTitle() {
+  const { t } = useI18n("coach");
+  return <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl">{t("plan.title")}</h1>;
+}
+
 function PlanSkeleton({ label }: { label: string }) {
   return (
     <div role="status" aria-busy="true" className="space-y-3">
@@ -53,6 +60,7 @@ export default function CoachPlanPage() {
   if (query.isPending) {
     return (
       <div className="mx-auto w-full max-w-3xl space-y-3">
+        <PlanTitle />
         <PlanSkeleton label={t("plan.loading")} />
       </div>
     );
@@ -62,23 +70,23 @@ export default function CoachPlanPage() {
     const failure = toFailure(query.error);
     const missing = failure.code === "not_found" || failure.status === 404;
     return (
-      <div
-        role="alert"
-        className="mx-auto w-full max-w-3xl space-y-3 rounded-2xl border bg-card p-4"
-      >
-        <p className="text-sm font-bold">
-          {missing ? t("plan.notFound.title") : t("plan.error.title")}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {missing ? t("plan.notFound.description") : t(coachErrorView(failure).messageKey)}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {!missing && (
-            <Button type="button" className="min-h-11" onClick={() => void query.refetch()}>
-              {t("common.retry")}
-            </Button>
-          )}
-          <BackLink />
+      <div className="mx-auto w-full max-w-3xl space-y-3">
+        <PlanTitle />
+        <div role="alert" className="space-y-3 rounded-2xl border bg-card p-4">
+          <p className="text-sm font-bold">
+            {missing ? t("plan.notFound.title") : t("plan.error.title")}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {missing ? t("plan.notFound.description") : t(coachErrorView(failure).messageKey)}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {!missing && (
+              <Button type="button" className="min-h-11" onClick={() => void query.refetch()}>
+                {t("common.retry")}
+              </Button>
+            )}
+            <BackLink />
+          </div>
         </div>
       </div>
     );

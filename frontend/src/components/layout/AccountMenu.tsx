@@ -59,7 +59,6 @@ export default function AccountMenu() {
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={t("layout.accountMenu")}
         onClick={() => setOpen((v) => !v)}
         className="flex h-11 items-center gap-2 rounded-full border bg-card py-1 pl-1 pr-2 shadow-sm transition-colors hover:bg-accent sm:h-10"
       >
@@ -71,6 +70,8 @@ export default function AccountMenu() {
             {shortName}
           </span>
         )}
+        {/* Part of the name, after the initials a worker sees, so the name holds the visible text. */}
+        <span className="sr-only">{t("layout.accountMenu")}</span>
         <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
       </button>
       {open && (

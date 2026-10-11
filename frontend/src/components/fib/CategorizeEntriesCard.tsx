@@ -47,7 +47,7 @@ export default function CategorizeEntriesCard({ bills }: CategorizeEntriesCardPr
         </p>
       )}
       {categorize.isError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm text-danger-ink">
           {t(requestFailureKey(categorize.error))}
         </p>
       )}

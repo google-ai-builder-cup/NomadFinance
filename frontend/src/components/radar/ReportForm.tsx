@@ -300,7 +300,7 @@ export default function ReportForm({ defaults, pending, errorKey, onSubmit }: Re
       )}
 
       {shownKey && (
-        <p role="alert" className="text-sm font-medium text-destructive">
+        <p role="alert" className="text-sm font-medium text-danger-ink">
           {t(shownKey, { min: MIN_DESCRIPTION_CHARS })}
         </p>
       )}
