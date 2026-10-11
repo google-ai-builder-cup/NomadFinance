@@ -30,6 +30,8 @@ React 18 PWA served via Firebase Hosting.
 
 Checks before every push: `pnpm lint`, `pnpm build`, `pnpm format:check`.
 
+No Firebase project? Run against the local emulators instead with `pnpm dev --mode emulator`. The full step-by-step (emulators, data, API, sign-in) is in the [root README](../README.md#run-it-on-your-machine), which also lists the four placeholder `VITE_FIREBASE_*` values the unit tests need.
+
 Bootstrap details (pinned versions and why, Tailwind/shadcn/ui setup, troubleshooting): [`docs/runbooks/NF-P1-007-frontend-bootstrap.md`](../docs/runbooks/NF-P1-007-frontend-bootstrap.md).
 
 ## Sign-in (Firebase Auth)
@@ -49,13 +51,13 @@ Details and how to test: [`docs/runbooks/NF-P1-022-user-onboarding.md`](../docs/
 
 ## App shell and navigation
 
-Every signed-in page renders inside `AppShell` (header, footer, and a left sidebar on tablet and desktop or a bottom tab bar on phones). `/dashboard` shows the four pillar cards; `/remittance`, `/contract`, `/radar` and `/identity` show a "coming soon" page until their own tasks replace the route element in `src/router.tsx`. The nav items live in one list, `src/components/layout/navItems.ts`, so adding a pillar page means editing that list and the router only.
+Every signed-in page renders inside `AppShell` (header, footer, and a left sidebar on tablet and desktop or a bottom tab bar on phones). `/dashboard` shows a card for each pillar (Financial Coach and Scam Check only when their feature flag is on), and every pillar route in `src/router.tsx` is a real page. The nav items live in one list, `src/components/layout/navItems.ts`, so adding a pillar page means editing that list and the router only.
 
 Full structure, how to test it, and how later tasks plug in: [`docs/runbooks/NF-P1-010-frontend-app-shell.md`](../docs/runbooks/NF-P1-010-frontend-app-shell.md).
 
 ## PWA
 
-`vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time (`pnpm build`, not `pnpm dev` — the service worker only registers against a built app). Every signed-in page shows a dismissible "Install NomadFinance" banner once the browser fires `beforeinstallprompt` (Chrome/Edge/Android only; iOS never fires it). Icons and manifest colors are real branding as of NF-P1-024.
+`vite-plugin-pwa` generates a web manifest and a Workbox service worker at build time (`pnpm build`, not `pnpm dev` — the service worker only registers against a built app). Any page offers the install as a toast once the browser fires `beforeinstallprompt` (Chrome/Edge/Android only; iOS never fires it); closing it means "not now" for two weeks. Icons and manifest colors are real branding as of NF-P1-024.
 
 Full setup, how to verify installability, and how later tasks (real icons, update-available toast) plug in: [`docs/runbooks/NF-P1-012-frontend-pwa.md`](../docs/runbooks/NF-P1-012-frontend-pwa.md).
 
@@ -67,7 +69,7 @@ Full palette (hex values for the pitch deck), rationale, and the generation pipe
 
 ## Deploy
 
-Manual deploy (until GitHub Actions lands in NF-P1-020): from `frontend/`, `pnpm build` then `firebase deploy --only hosting --project nomadfinance-prod`. `.env.local` must hold the real Firebase web config before `pnpm build`, or the deployed app shows a blank page.
+Merging to `main` deploys by itself (the **Frontend deploy** workflow). Manual deploy is the fallback: from `frontend/`, `pnpm build` then `firebase deploy --only hosting --project nomadfinance-prod`. `.env.local` must hold the real Firebase web config before `pnpm build`, or the deployed app shows a blank page.
 
 Live URL: https://nomadfinance-prod.web.app
 

@@ -1,134 +1,129 @@
-%% Dashed outlines = future scope behind feature flags (docs/future-scope/design.md). Not yet deployed.
-flowchart TB
-    User([Migrant Worker - Any Language, Any Device])
+%% NomadFinance system architecture, v2.0.0 (read against the code and the live project on 2026-10-11).
+%% Dashed outlines = shipped, but behind a feature flag (config/feature_flags): off means the route answers 404.
+%% Model tiers are shown by role; the model behind each tier is an environment variable (ADR-002).
+flowchart LR
+    User(["Migrant worker<br/>any language, any phone"])
 
-    subgraph FE[FRONTEND - Firebase Hosting - React PWA]
-        Landing[Landing Page + Language Selector]
-        Auth[Firebase Auth - Google + Phone OTP]
-        Home[Dashboard - 4 Feature Cards + 2 Flag-Gated]
+    subgraph FE["FRONTEND - Firebase Hosting - React 18 PWA"]
+        Web["Sign-in with Firebase Auth, dashboard, installable,<br/>offline cache, 6 languages, light and dark.<br/>FlagGate asks GET /api/v2/flags"]
+        PgCore["Remittance X-Ray, Contract Shield,<br/>Exploitation Radar, Financial Identity"]
+        PgNew["Financial Coach, Scam Check"]
     end
 
-    User --> Landing
-    Landing --> Auth
-    Auth --> Home
+    User --> Web
+    Web --> PgCore
+    Web -. "flag coach, flag scam" .-> PgNew
 
-    Home --> P1[Remittance X-Ray]
-    Home --> P2[Contract Shield]
-    Home --> P3[Exploitation Radar]
-    Home --> P4[Financial Identity]
-    Home -.flag coach.-> P5[Financial Coach]
-    Home -.flag scam.-> P6[Scam Analyzer]
-
-    subgraph BE[BACKEND - Cloud Run - FastAPI]
-        API[REST API Gateway - Firebase Auth Verify]
-        Router{Route to Service}
-        FLG[Feature Flag Check - require_flag, 60 s cache]
-        RED[PII Redaction - before log or store]
+    subgraph BE["BACKEND - Cloud Run nomadfinance-api - FastAPI - 0 to 2 instances"]
+        MW["Middleware: request log, security headers, CORS,<br/>rate limit, body-size cap, token check"]
+        V1["API v1 - /api/v1<br/>remittance, contracts, radar, fib, users"]
+        V2["API v2 - /api/v2<br/>coach, scam, flags"]
+        FLG["require_flag<br/>60 s cache, off = 404"]
+        INT["Internal routes - /api/v1/internal<br/>only the scheduler's signed token"]
+        GC["Gemini client: tiers, retries, token log,<br/>daily budget per feature.<br/>PII redaction for Coach and Scam text"]
     end
 
-    P1 --> API
-    P2 --> API
-    P3 --> API
-    P4 --> API
-    P5 --> API
-    P6 --> API
-    API --> Router
-    Router -.v2 routes.-> FLG
+    PgCore --> MW
+    PgNew --> MW
+    MW --> V1
+    MW --> V2
+    V2 --> FLG
 
-    Router --> RX[Remittance Engine]
-    Router --> CS[Contract Analysis Pipeline]
-    Router --> RD[Radar Aggregation]
-    Router --> FI[Financial Profile Builder]
-    FLG --> CO[Coach Engine - SSE interview + plan]
-    FLG --> SA[Scam Analysis Pipeline]
-    CO --> RED
-    SA --> RED
-
-    subgraph AI[GEMINI AI LAYER]
-        G1[Gemini 1.5 Flash - Vision + Extraction]
-        G2[Gemini 2.5 Flash - Legal Reasoning + Synthesis]
-        G3[Gemini Flash-Lite - Translation + Classification]
-        G4[Embeddings - Vector Search]
+    subgraph SV["SERVICES"]
+        RX["Remittance engine"]
+        CS["Contract pipeline"]
+        RD["Radar:<br/>intake, clustering, alerts"]
+        FI["Financial Identity:<br/>profile, story, PDF"]
+        CO["Coach:<br/>interview, score, plan"]
+        SA["Scam analysis"]
     end
 
-    RX --> G3
-    CS --> G1
-    CS --> G2
-    RD --> G3
-    RD --> G4
-    FI --> G1
-    FI --> G2
-    CO --> G2
-    CO --> G3
-    SA --> G1
-    SA --> G2
-    SA --> G3
-    SA --> G4
+    V1 --> RX
+    V1 --> CS
+    V1 --> RD
+    V1 --> FI
+    FLG --> CO
+    FLG --> SA
 
-    subgraph DB[FIRESTORE - Data Layer]
-        FS1[(users + contracts + transfers)]
-        FS2[(labor_laws - 6 countries)]
-        FS3[(corridors - World Bank)]
-        FS4[(rates_cache + rates_history)]
-        FS5[(radar_reports + radar_entities + report_embeddings)]
-        FS6[(financial_profile)]
-        FS7[(users coach_sessions + coach_plans)]
-        FS8[(users scam_checks)]
-        FS9[(scam_taxonomy + scam_patterns - vector)]
-        FS10[(cost_baselines)]
-        FS11[(config feature_flags)]
+    subgraph AI["GEMINI - one model per tier"]
+        G1["Reasoning<br/>contract comparison, complaint letters,<br/>Identity story, Coach plan, scam explainer"]
+        G2["Extraction<br/>photos and PDFs: contracts, bills,<br/>screenshots, radar reports"]
+        G3["Classification<br/>scam verdict, radar checks, categories,<br/>translation, recommendations, Coach replies"]
+        G4["Embedding<br/>768-number vectors"]
     end
 
-    RX --> FS3
-    RX --> FS4
-    CS --> FS1
-    CS --> FS2
-    RD --> FS5
-    FI --> FS1
-    FI --> FS6
+    SV --> GC
+    GC --> G1
+    GC --> G2
+    GC --> G3
+    GC --> G4
 
-    CO --> FS7
-    CO --> FS10
-    CO --> FS2
-    CO --> FS4
-    CO -.cheapest provider.-> RX
-    CO -.salary prefill.-> FS1
-    CO -.plan goals.-> FS6
-    SA --> FS8
-    SA --> FS9
-    SA --> FS5
-    SA -.one-tap report.-> FS5
-    FLG --> FS11
-
-    CS --> CST[(Cloud Storage - PDFs + Reports)]
-    CO --> CST
-
-    subgraph EXT[EXTERNAL DATA SOURCES]
-        WB[World Bank RPW - Quarterly Excel]
-        ILO[ILO NATLEX - Labor Laws]
-        FRA[Frankfurter API - Live FX]
+    subgraph DB["FIRESTORE - (default) - Native - asia-south1"]
+        D1[("Worker records - users/uid<br/>contracts, transfers, income, bills, savings,<br/>financial_profile, notifications,<br/>coach_sessions, coach_plans, scam_checks")]
+        D4[("Reference data<br/>corridors, rates_cache, rates_history, labor_laws,<br/>complaint_templates, cost_baselines")]
+        D5[("Radar<br/>radar_reports, report_embeddings,<br/>radar_entities, radar_alerts")]
+        D6[("Scam knowledge<br/>scam_taxonomy, scam_patterns - vector,<br/>scam_indicators, scam_stats")]
+        D7[("Operations<br/>config/feature_flags, gemini_usage")]
     end
 
-    CRON[Cloud Scheduler - Every 2 Hours]
-    CRON --> FRA
-    FRA --> FS4
+    RX --> D4
+    RX --> D1
+    CS --> D1
+    CS --> D4
+    RD --> D5
+    FI --> D1
+    CO --> D1
+    CO --> D4
+    SA --> D1
+    SA --> D6
+    SA -. "similar reports, one-tap report" .-> D5
+    FLG --> D7
+    GC --> D7
+    Web -. "own data only, security rules" .-> DB
 
-    CRON2[Cloud Scheduler - Daily Check-In Job]
-    CRON2 --> CO
-    CO --> FCM[Firebase Cloud Messaging]
+    ST[("Cloud Storage<br/>bill photos, radar evidence,<br/>Identity and Coach PDFs")]
+    FI --> ST
+    CO --> ST
+    RD --> ST
+
+    SM["Secret Manager<br/>gemini-api-key, radar-reporter-hash-secret,<br/>currencyfreaks-api-key"] -. "mounted as env vars" .-> BE
+
+    SCH["CLOUD SCHEDULER - 5 jobs<br/>refresh-rates, every 2 hours<br/>radar-aggregation, every 6 hours<br/>scam-stats, daily 01:30 UTC<br/>coach-checkins, daily 02:00 UTC<br/>fib-recompute, Sundays 02:00 UTC"]
+    SCH --> INT
+    INT --> RX
+    INT --> RD
+    INT --> SA
+    INT --> CO
+    INT --> FI
+
+    FCM["Firebase Cloud Messaging<br/>radar alerts, Coach check-ins"]
+    RD --> FCM
+    CO --> FCM
     FCM --> User
 
-    WB -.One-time load.-> FS3
-    ILO -.Manual curation.-> FS2
+    FXP["Live FX rates - failover<br/>Frankfurter, ExchangeRate-API,<br/>CurrencyFreaks, Wise"]
+    RX -. "cron refresh" .-> FXP
+    DS["data-scripts loaders - run by hand<br/>World Bank prices, ILO labor laws,<br/>cost baselines, scam templates, demo data"]
+    DS --> D4
+    DS --> D6
+    DS -. "demo and map data" .-> D5
+
+    LOG["Cloud Logging, log-based metrics,<br/>dashboard, daily-limit alerts"]
+    CI["GitHub Actions - keyless sign-in to Google<br/>deploys backend, frontend,<br/>rules and scheduler jobs"]
+    BE -. "structured logs" .-> LOG
+    CI -.-> BE
+    CI -.-> FE
+    CI -. "firestore.rules, storage.rules" .-> DB
+    CI -.-> SCH
 
     classDef userStyle fill:#4285F4,stroke:#1a73e8,color:#fff
     classDef aiStyle fill:#EA4335,stroke:#c5221f,color:#fff
     classDef dbStyle fill:#34A853,stroke:#188038,color:#fff
     classDef extStyle fill:#FBBC04,stroke:#f9ab00,color:#000
-    classDef planned stroke-dasharray:5 3,stroke-width:2px
+    classDef flagged stroke-dasharray:5 3,stroke-width:2px
 
     class User userStyle
     class G1,G2,G3,G4 aiStyle
-    class FS1,FS2,FS3,FS4,FS5,FS6,CST,FS7,FS8,FS9,FS10,FS11 dbStyle
-    class WB,ILO,FRA extStyle
-    class P5,P6,FLG,RED,CO,SA,FS7,FS8,FS9,FS10,FS11,CRON2,FCM planned
+    class D1,D4,D5,D6,D7,ST dbStyle
+    class FXP,DS extStyle
+    class PgNew,FLG,CO,SA,D6 flagged
