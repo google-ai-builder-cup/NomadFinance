@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from app.config import get_settings
 from app.core.errors import ApiError
 from app.integrations.gemini import (
+    GeminiBudgetExhaustedError,
     GeminiRateLimitError,
     GeminiRequestError,
     GeminiResponseError,
@@ -60,6 +61,10 @@ def _probe_app() -> object:
         async def gemini(kind: str) -> None:
             raise {
                 "busy": GeminiRateLimitError("quota " + SECRET),
+                "daily": GeminiRateLimitError("daily " + SECRET, daily=True),
+                "budget": GeminiBudgetExhaustedError(
+                    "budget " + SECRET, source="budget", retry_after_seconds=4321
+                ),
                 "down": GeminiUnavailableError("503 " + SECRET),
                 "slow": GeminiTimeoutError("timeout " + SECRET),
                 "bad": GeminiResponseError("empty " + SECRET),
@@ -241,3 +246,31 @@ def test_v1_errors_keep_their_old_shape(client: TestClient) -> None:
 
 def test_a_path_that_only_starts_like_v2_is_still_v1_behaviour(client: TestClient) -> None:
     assert client.get("/api/v20/x").json() == {"detail": "Not Found"}
+
+
+@pytest.mark.parametrize("prefix", ["/api/v2/_probe", "/api/v1/_probe"])
+def test_a_spent_daily_quota_says_try_later_with_the_time_it_comes_back(
+    client: TestClient, prefix: str
+) -> None:
+    budget = client.get(f"{prefix}/gemini/budget")
+    daily = client.get(f"{prefix}/gemini/daily")
+
+    for response in (budget, daily):
+        assert response.status_code == 503
+        assert SECRET not in response.text
+        body = response.json()
+        message = body["message"] if prefix.startswith("/api/v2") else body["detail"]
+        assert "today" in message and "minute" not in message
+    # Refused here: the time is the budget's own. Refused by Google: the time to the next reset.
+    assert budget.headers["Retry-After"] == "4321"
+    assert 1 <= int(daily.headers["Retry-After"]) <= 86400
+    if prefix.startswith("/api/v2"):
+        assert budget.json()["code"] == daily.json()["code"] == "ai_busy"
+
+
+def test_a_busy_model_still_says_try_again_in_a_minute(client: TestClient) -> None:
+    response = client.get("/api/v2/_probe/gemini/busy")
+
+    assert response.status_code == 503
+    assert response.headers["Retry-After"] == "30"
+    assert "minute" in response.json()["message"]

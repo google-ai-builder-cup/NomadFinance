@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from typing import Any, cast
 
 import pytest
@@ -364,3 +365,84 @@ async def test_when_every_provider_is_flagged_the_top_ranked_one_is_recommended(
     )
 
     assert result.recommended_firm == "InstaReM"
+
+
+# --- the answer cache (NF-HR-010) --------------------------------------------------------------
+
+
+async def test_the_same_comparison_in_the_same_language_asks_gemini_once() -> None:
+    comparison = _sample_comparison()
+    fake = FakeGemini(_answer())
+    client = cast(GeminiClient, fake)
+
+    first = await generate_recommendation(comparison, None, "hi", client)
+    again = await generate_recommendation(comparison, None, "hi", client)
+
+    assert len(fake.calls) == 1
+    assert again == first
+
+
+async def test_another_language_another_amount_or_a_timing_tip_is_a_new_question() -> None:
+    comparison = _sample_comparison()
+    fake = FakeGemini(_answer())
+    client = cast(GeminiClient, fake)
+
+    await generate_recommendation(comparison, None, "hi", client)
+    await generate_recommendation(comparison, None, "en", client)
+    await generate_recommendation(
+        comparison.model_copy(update={"send_amount": 700.0}), None, "hi", client
+    )
+    await generate_recommendation(comparison, _trend(_weekday_stat()), "hi", client)
+
+    assert len(fake.calls) == 4
+
+
+async def test_a_cached_answer_is_still_checked_against_the_comparison_in_hand() -> None:
+    # The same prompt input can never name a different best provider, but the checks run anyway:
+    # the cache holds what the model said, never the response that was built from it.
+    comparison = _sample_comparison()
+    client = cast(GeminiClient, FakeGemini(_answer()))
+    await generate_recommendation(comparison, None, "en", client)
+
+    result = await generate_recommendation(comparison, None, "en", client)
+
+    assert (result.recommended_rpw_id, result.recommended_firm) == (521250759, "InstaReM")
+
+
+async def test_an_unusable_answer_is_not_kept_so_the_next_try_asks_again() -> None:
+    comparison = _sample_comparison()
+    bad = FakeGemini(_answer(best_provider="Wise"))
+    with pytest.raises(RecommendationIncompleteError):
+        await generate_recommendation(comparison, None, "en", cast(GeminiClient, bad))
+    good = FakeGemini(_answer())
+
+    await generate_recommendation(comparison, None, "en", cast(GeminiClient, good))
+
+    assert len(good.calls) == 1
+
+
+async def test_a_failed_call_is_not_kept_either() -> None:
+    comparison = _sample_comparison()
+    down = FakeGemini(RuntimeError("down"))
+    with pytest.raises(RuntimeError):
+        await generate_recommendation(comparison, None, "en", cast(GeminiClient, down))
+    up = FakeGemini(_answer())
+
+    await generate_recommendation(comparison, None, "en", cast(GeminiClient, up))
+
+    assert len(up.calls) == 1
+
+
+async def test_a_hit_and_a_miss_are_logged(caplog: pytest.LogCaptureFixture) -> None:
+    comparison = _sample_comparison()
+    client = cast(GeminiClient, FakeGemini(_answer()))
+
+    with caplog.at_level(logging.INFO):
+        await generate_recommendation(comparison, None, "en", client)
+        await generate_recommendation(comparison, None, "en", client)
+
+    lookups = [r.getMessage() for r in caplog.records if r.getMessage().startswith("cache_lookup")]
+    assert lookups == [
+        "cache_lookup feature=remittance name=recommend result=miss",
+        "cache_lookup feature=remittance name=recommend result=hit",
+    ]

@@ -22,8 +22,9 @@ from fastapi.testclient import TestClient
 from google.genai import errors as genai_errors
 
 from app.config import get_settings
+from app.core.cache import log_cache_lookup
 from app.core.logging import JsonFormatter
-from app.integrations.gemini import GeminiError, ModelTier
+from app.integrations.gemini import GeminiBudget, GeminiBudgetExhaustedError, GeminiError, ModelTier
 from app.integrations.gemini.embeddings import EMBEDDING_DIMENSION
 from app.integrations.gemini.usage import log_failure
 from app.main import create_app
@@ -167,9 +168,21 @@ async def _every_kind_of_line(collected: _Collect) -> dict[str, dict[str, Any]]:
             outcome=outcome,
         )
 
+    # A refusal before any request (NF-HR-010), and the two answers a cache can give.
+    budget = GeminiBudget(None, {"reasoning": 4})
+    await budget.admit("scam", "reasoning")
+    with pytest.raises(GeminiBudgetExhaustedError):
+        await budget.admit("scam", "reasoning")
+    log_cache_lookup("scam", "check", hit=True)
+    log_cache_lookup("scam", "check", hit=False)
+
     lines = collected.lines
     requests = _by_start(lines, "request_completed")
+    lookups = _by_start(lines, "cache_lookup")
     return {
+        "blocked": _by_start(lines, "gemini_budget_blocked")[0],
+        "cache_hit": next(line for line in lookups if line["cache_lookup"]["result"] == "hit"),
+        "cache_miss": next(line for line in lookups if line["cache_lookup"]["result"] == "miss"),
         "client_error": next(line for line in requests if line["status"] == 401),
         "server_error": next(line for line in requests if line["status"] == 500),
         "call": _by_start(lines, "gemini_call ")[0],
@@ -196,8 +209,10 @@ async def _every_kind_of_line(collected: _Collect) -> dict[str, dict[str, Any]]:
 # --- the metrics -------------------------------------------------------------------------------
 
 
-def test_the_five_metrics_exist() -> None:
+def test_the_seven_metrics_exist() -> None:
     assert set(METRICS) == {
+        "nf_gemini_budget_blocks",
+        "nf_cache_lookups",
         "nf_http_requests",
         "nf_gemini_requests",
         "nf_gemini_failures",
@@ -240,6 +255,10 @@ async def test_each_metric_matches_exactly_the_lines_it_is_for(collected: _Colle
     # Tokens come only from answered chat calls: an embedding has no token counts.
     assert matched("nf_gemini_tokens_in") == {"call"}
     assert matched("nf_gemini_tokens_out") == {"call"}
+    # A refusal made here is not a request to Google, so no request metric counts it (above), and
+    # only its own metric does. Caches: every lookup, hit or miss.
+    assert matched("nf_gemini_budget_blocks") == {"blocked"}
+    assert matched("nf_cache_lookups") == {"cache_hit", "cache_miss"}
 
 
 async def test_every_label_a_metric_extracts_has_a_value(collected: _Collect) -> None:
@@ -266,6 +285,12 @@ async def test_the_labels_carry_the_values_a_dashboard_expects(collected: _Colle
     assert label("nf_gemini_requests", "call", "feature") == "test"
     assert label("nf_gemini_requests", "embedding", "model") == settings.gemini_model_embedding
     assert label("nf_gemini_failures", "failed", "error") == "GeminiUnavailableError"
+    assert label("nf_gemini_budget_blocks", "blocked", "feature") == "scam"
+    assert label("nf_gemini_budget_blocks", "blocked", "tier") == "reasoning"
+    assert label("nf_gemini_budget_blocks", "blocked", "source") == "budget"
+    assert label("nf_cache_lookups", "cache_hit", "feature") == "scam"
+    assert label("nf_cache_lookups", "cache_hit", "result") == "hit"
+    assert label("nf_cache_lookups", "cache_miss", "result") == "miss"
 
 
 async def test_the_token_distributions_read_a_number(collected: _Collect) -> None:
@@ -331,6 +356,9 @@ def test_the_dashboard_has_the_charts_the_tracker_asks_for() -> None:
     assert "Gemini failures per feature" in titles
     assert "Prompt tokens per feature" in titles
     assert "Answer + thinking tokens per feature" in titles
+    # NF-HR-010: the refusals and the cache hit rate, so the guard can be watched.
+    assert "refused by the daily budget" in titles
+    assert "Cache lookups per feature" in titles
 
 
 # --- the quota alerts --------------------------------------------------------------------------

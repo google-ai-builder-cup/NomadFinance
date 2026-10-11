@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import uuid
 from collections.abc import Mapping
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
@@ -13,12 +14,14 @@ from starlette.types import Scope
 
 from app.core.logging import REQUEST_ID_HEADER
 from app.integrations.gemini import (
+    GeminiBudgetExhaustedError,
     GeminiError,
     GeminiRateLimitError,
     GeminiResponseError,
     GeminiTimeoutError,
     GeminiUnavailableError,
 )
+from app.integrations.gemini.budget import seconds_until_reset
 from app.schemas.errors import ErrorDetail, ErrorEnvelope
 
 logger = logging.getLogger(__name__)
@@ -53,6 +56,9 @@ _GEMINI_ERROR_RESPONSES: list[tuple[type[GeminiError], int, str, str]] = [
     ),
 ]
 _RETRY_AFTER_SECONDS = "30"
+# A spent daily quota is still `ai_busy` (the v2 contract has no other code for it, and the
+# client shows its "try later" text for it), but "in a minute" would be wrong.
+_DAILY_LIMIT_MESSAGE = "The AI service has reached its limit for today. Please try again later."
 
 V2_PREFIX = "/api/v2"
 _INTERNAL_MESSAGE = "Something went wrong. Please try again."
@@ -119,7 +125,22 @@ def error_response(
     )
 
 
+def _is_daily_limit(exc: Exception) -> bool:
+    return isinstance(exc, GeminiRateLimitError) and exc.daily
+
+
+def _retry_after(exc: Exception) -> str:
+    """Seconds until the daily quota is back for a spent day; the short wait otherwise."""
+    if isinstance(exc, GeminiBudgetExhaustedError):
+        return str(exc.retry_after_seconds)
+    if _is_daily_limit(exc):
+        return str(seconds_until_reset(datetime.now(UTC)))
+    return _RETRY_AFTER_SECONDS
+
+
 def _response_for(exc: Exception) -> tuple[int, str, str]:
+    if _is_daily_limit(exc):
+        return status.HTTP_503_SERVICE_UNAVAILABLE, "ai_busy", _DAILY_LIMIT_MESSAGE
     for error_type, status_code, code, message in _GEMINI_ERROR_RESPONSES:
         if isinstance(exc, error_type):
             return status_code, code, message
@@ -148,7 +169,7 @@ async def gemini_error_handler(request: Request, exc: Exception) -> JSONResponse
         exc,
     )
     headers = (
-        {"Retry-After": _RETRY_AFTER_SECONDS}
+        {"Retry-After": _retry_after(exc)}
         if status_code == status.HTTP_503_SERVICE_UNAVAILABLE
         else None
     )

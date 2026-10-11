@@ -300,6 +300,9 @@ def test_nothing_of_the_message_is_logged_on_a_hit_or_a_miss(
     for raw in (PHONE, "9123", ACCOUNT, EMAIL, "bit.ly"):
         assert raw not in caplog.text, raw
     assert "scam_cache result=miss" in caplog.text and "scam_cache result=hit" in caplog.text
+    # The same two answers on the line the dashboard's hit-rate chart reads (NF-HR-010).
+    assert "cache_lookup feature=scam name=check result=miss" in caplog.text
+    assert "cache_lookup feature=scam name=check result=hit" in caplog.text
 
 
 # --- history and detail ------------------------------------------------------------------------

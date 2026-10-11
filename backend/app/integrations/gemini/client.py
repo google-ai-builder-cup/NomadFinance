@@ -11,30 +11,28 @@ from google.genai import types
 from pydantic import BaseModel, ValidationError
 from tenacity import (
     AsyncRetrying,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
     wait_random_exponential,
 )
 
 from app.config import Settings, get_settings
+from app.integrations.gemini.budget import GeminiBudget
 from app.integrations.gemini.chat import ChatReply, ChatTurn
 from app.integrations.gemini.conversation import build_config, prepare_chat, start_stream
 from app.integrations.gemini.embeddings import embed_text
 from app.integrations.gemini.errors import (
+    GeminiBudgetExhaustedError,
     GeminiError,
-    GeminiRateLimitError,
     GeminiResponseError,
-    GeminiTimeoutError,
-    GeminiUnavailableError,
+    is_retryable,
 )
 from app.integrations.gemini.model_tiers import ModelTier, model_for
 from app.integrations.gemini.sdk_errors import empty_reason, translate_sdk_errors
 from app.integrations.gemini.streaming import GeminiStream
-from app.integrations.gemini.usage import log_failure, log_retry, log_usage
+from app.integrations.gemini.usage import feature_of, log_failure, log_retry, log_usage
 
 ResponseT = TypeVar("ResponseT", bound=BaseModel)
-
-_RETRYABLE = (GeminiRateLimitError, GeminiUnavailableError, GeminiTimeoutError)
 
 
 class GeminiClient:
@@ -50,6 +48,8 @@ class GeminiClient:
         settings: App settings (API key, per-tier model IDs, timeout, attempts).
         sdk_client: Pre-built google-genai client; tests inject a fake here.
         max_backoff_seconds: Upper bound for the wait between retries.
+        budget: The daily request budget (`GeminiBudget`); every attempt, retries included,
+            goes through it. The default has no limits and remembers only Google's own 429s.
     """
 
     def __init__(
@@ -58,10 +58,12 @@ class GeminiClient:
         sdk_client: genai.Client | None = None,
         *,
         max_backoff_seconds: float = 8.0,
+        budget: GeminiBudget | None = None,
     ) -> None:
         self._settings = settings
         self._sdk = sdk_client or genai.Client(api_key=settings.gemini_api_key.get_secret_value())
         self._max_backoff_seconds = max_backoff_seconds
+        self._budget = budget or GeminiBudget()
 
     async def generate_structured(
         self,
@@ -200,6 +202,7 @@ class GeminiClient:
             self._sdk,
             self._retrying(operation, tier, prepared.model),
             prepared,
+            budget=self._budget,
             operation=operation,
             tier=tier,
             timeout_seconds=timeout_seconds or self._settings.gemini_timeout_seconds,
@@ -219,8 +222,12 @@ class GeminiClient:
         started = time.perf_counter()
         try:
             response: types.GenerateContentResponse = await retrying(
-                self._call, model, contents, config, timeout_seconds
+                self._attempt, operation, tier, model, contents, config, timeout_seconds
             )
+        except GeminiBudgetExhaustedError:
+            # Refused before a request was made, and already logged by the budget: a
+            # `gemini_call_failed` line would count it as a request against the quota.
+            raise
         except GeminiError as exc:
             log_failure(
                 exc,
@@ -245,7 +252,7 @@ class GeminiClient:
         return AsyncRetrying(
             stop=stop_after_attempt(self._settings.gemini_max_attempts),
             wait=wait_random_exponential(multiplier=1, max=self._max_backoff_seconds),
-            retry=retry_if_exception_type(_RETRYABLE),
+            retry=retry_if_exception(is_retryable),
             before_sleep=partial(log_retry, operation=operation, tier=tier, model=model),
             reraise=True,
         )
@@ -261,7 +268,20 @@ class GeminiClient:
             text,
             operation=operation,
             max_backoff_seconds=self._max_backoff_seconds,
+            budget=self._budget,
         )
+
+    async def _attempt(
+        self,
+        operation: str,
+        tier: ModelTier,
+        model: str,
+        contents: types.ContentListUnion | types.ContentListUnionDict,
+        config: types.GenerateContentConfig,
+        timeout_seconds: float | None,
+    ) -> types.GenerateContentResponse:
+        async with self._budget.attempt(feature_of(operation), tier.value):
+            return await self._call(model, contents, config, timeout_seconds)
 
     async def _call(
         self,
@@ -302,5 +322,16 @@ def _parse(
 
 @lru_cache
 def get_gemini_client() -> GeminiClient:
-    """Return the process-wide Gemini client (one SDK connection pool per worker)."""
-    return GeminiClient(get_settings())
+    """Return the process-wide Gemini client (one SDK connection pool per worker).
+
+    With a daily limit configured (`GEMINI_RPD_*`) the budget shares its counts through
+    Firestore, so every instance sees the same day; without one nothing leaves the process.
+    """
+    settings = get_settings()
+    rpd = settings.gemini_rpd
+    # Imported here: the repository imports this package (the budget's types), so a module-level
+    # import would be circular.
+    from app.repositories.gemini_usage_repo import get_gemini_usage_repository
+
+    store = get_gemini_usage_repository() if rpd else None
+    return GeminiClient(settings, budget=GeminiBudget(store, rpd))

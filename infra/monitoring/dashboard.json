@@ -322,6 +322,70 @@
             "scale": "LINEAR"
           }
         }
+      },
+      {
+        "title": "Gemini requests refused by the daily budget, per feature and cause (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_gemini_budget_blocks\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature",
+                      "metric.label.source"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature} / ${metric.label.source}"
+            }
+          ],
+          "yAxis": {
+            "label": "refused requests",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
+      },
+      {
+        "title": "Cache lookups per feature, hits and misses (5 min)",
+        "xyChart": {
+          "dataSets": [
+            {
+              "timeSeriesQuery": {
+                "timeSeriesFilter": {
+                  "filter": "metric.type=\"logging.googleapis.com/user/nf_cache_lookups\"",
+                  "aggregation": {
+                    "alignmentPeriod": "300s",
+                    "perSeriesAligner": "ALIGN_DELTA",
+                    "crossSeriesReducer": "REDUCE_SUM",
+                    "groupByFields": [
+                      "metric.label.feature",
+                      "metric.label.result"
+                    ]
+                  }
+                }
+              },
+              "plotType": "STACKED_BAR",
+              "legendTemplate": "${metric.label.feature} / ${metric.label.result}"
+            }
+          ],
+          "yAxis": {
+            "label": "lookups",
+            "scale": "LINEAR"
+          },
+          "chartOptions": {
+            "mode": "COLOR"
+          }
+        }
       }
     ]
   }

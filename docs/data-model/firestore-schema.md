@@ -55,6 +55,7 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `scam_patterns/{id}` | `<type>-<lang>-<nnn>` | Canonical scam templates with 768-number vectors. *Future Scope* | Scam Analyzer | Data script (NF-SA-006) | [scam](collections/scam.md) |
 | `scam_indicators/{id}` | first 32 hex of the indicator key | How often one phone number, address or account was reported, for "reported N times". *Future Scope* | Scam Analyzer | Backend (NF-SA-013) | [scam](collections/scam.md) |
 | `cost_baselines/{host}` | ISO-2 host country | Monthly cost-of-living figures for the Coach. *Future Scope* | Coach | Data script (NF-FC-003 to -005) | [cost_baselines](collections/cost_baselines.md) |
+| `gemini_usage/{day}` | `YYYY-MM-DD` (US Pacific) | Gemini requests sent today per feature and model tier, and the tiers Google has run dry; the daily budget reads it. *NF-HR-010* | All | Backend | [gemini_usage](collections/gemini_usage.md) |
 | `config/feature_flags` | `feature_flags` | Flags `coach` and `scam`: global value and uid allow-list. *Future Scope* | Both | Operator | [config](collections/config.md) |
 
 ## Differences from the design doc table (section 4.7)
@@ -114,6 +115,7 @@ Input for the security rules task (NF-P1-014). It states intent. Backend access 
 | `users/{uid}/coach_sessions`, `coach_plans` and its `translations`, `scam_checks` (*Future Scope*) | Read; **no client write**, every change goes through the API | None | None |
 | `scam_taxonomy`, `cost_baselines` (*Future Scope*) | Read (reference data) | Read | None |
 | `scam_patterns`, `scam_indicators`, `config` (*Future Scope*) | None | None | None |
+| `gemini_usage` (*NF-HR-010*) | None | None | None |
 
 Future Scope adds one client-writable field: `users/{uid}.signal_sharing` (a map of two booleans, set from the profile page), which the rules accept alongside the other profile fields (`signal_sharing` may hold only the keys `coach` and `scam`, each a boolean; NF-F0-004). The rules for every collection above are in `frontend/firestore.rules` with an allow and a deny test each. A worker cannot delete a scam check or a Coach session from the browser: that stays an API matter (D-109).
 

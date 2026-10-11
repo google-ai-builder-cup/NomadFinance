@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 
+from app.core.cache import TtlCache, log_cache_lookup
 from app.integrations.gemini import GeminiClient, ModelTier
 from app.prompts.loader import load_prompt
 from app.schemas.contract import ReportLanguage
@@ -13,6 +15,16 @@ from app.utils.i18n import language_name
 # Loaded at import so a missing or malformed prompt file stops the app at startup. The
 # pipeline records RECOMMEND_PROMPT.key / .version wherever a recommendation is stored.
 RECOMMEND_PROMPT = load_prompt("remittance", "recommend", 2)
+
+# What the model said for one comparison in one language. The input holds no worker data (an
+# amount, a corridor and the ranked providers), so a repeat from anyone, such as a second visit
+# to the same comparison or a demo run twice, costs no request. The rates behind a comparison
+# move every two hours, so a short life keeps the text in step with the numbers beside it.
+_ANSWERS: TtlCache[RecommendationAnswer] = TtlCache(ttl_seconds=30 * 60, max_entries=256)
+
+
+def clear_recommendation_cache() -> None:
+    _ANSWERS.clear()
 
 
 class RecommendationIncompleteError(Exception):
@@ -139,17 +151,24 @@ async def generate_recommendation(
             than `recommended_provider`.
         GeminiError: Any Gemini failure, left for the API error handlers.
     """
-    answer = await gemini.generate_structured(
+    comparison_json = _comparison_json(comparison, trend)
+    key = hashlib.sha256(f"{target_language}|{comparison_json}".encode()).hexdigest()
+    cached = _ANSWERS.get(key)
+    log_cache_lookup("remittance", "recommend", hit=cached is not None)
+    answer = cached or await gemini.generate_structured(
         operation=RECOMMEND_PROMPT.key,
         tier=ModelTier.CLASSIFICATION,
         contents=RECOMMEND_PROMPT.render_user(
             target_language=language_name(target_language),
-            comparison_json=_comparison_json(comparison, trend),
+            comparison_json=comparison_json,
         ),
         response_model=RecommendationAnswer,
         system_instruction=RECOMMEND_PROMPT.system,
     )
+    # The checks run on a cached answer too, against the comparison in hand; only an answer
+    # that passed them is kept, so a bad one is asked for again next time.
     rpw_id, firm = _check_answer(answer, comparison)
+    _ANSWERS.put(key, answer)
     return RemittanceRecommendation(
         corridor_id=comparison.corridor_id,
         target_language=target_language,

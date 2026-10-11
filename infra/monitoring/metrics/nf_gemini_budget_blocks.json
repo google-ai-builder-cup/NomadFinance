@@ -1,0 +1,31 @@
+{
+  "description": "Gemini requests the backend refused before sending them, because the feature had used its share of the model's day (source budget) or Google had already answered a per-day 429 for the model (source google). Not requests to Google, so they are not in nf_gemini_requests. NF-HR-010.",
+  "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND jsonPayload.message=~\"^gemini_budget_blocked \"",
+  "metricDescriptor": {
+    "metricKind": "DELTA",
+    "valueType": "INT64",
+    "unit": "1",
+    "labels": [
+      {
+        "key": "feature",
+        "valueType": "STRING",
+        "description": "The product area that asked"
+      },
+      {
+        "key": "tier",
+        "valueType": "STRING",
+        "description": "reasoning, extraction, classification or embedding"
+      },
+      {
+        "key": "source",
+        "valueType": "STRING",
+        "description": "budget or google"
+      }
+    ]
+  },
+  "labelExtractors": {
+    "feature": "EXTRACT(jsonPayload.gemini_budget.feature)",
+    "tier": "EXTRACT(jsonPayload.gemini_budget.tier)",
+    "source": "EXTRACT(jsonPayload.gemini_budget.source)"
+  }
+}

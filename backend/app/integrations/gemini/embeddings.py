@@ -12,20 +12,24 @@ from google.genai import errors as genai_errors
 from google.genai import types
 from tenacity import (
     AsyncRetrying,
-    retry_if_exception_type,
+    retry_if_exception,
     stop_after_attempt,
     wait_random_exponential,
 )
 
 from app.config import Settings
+from app.integrations.gemini.budget import EMBEDDING_TIER, GeminiBudget
 from app.integrations.gemini.errors import (
+    GeminiBudgetExhaustedError,
     GeminiError,
     GeminiRateLimitError,
     GeminiRequestError,
     GeminiResponseError,
     GeminiTimeoutError,
     GeminiUnavailableError,
+    is_retryable,
 )
+from app.integrations.gemini.sdk_errors import is_daily_quota
 from app.integrations.gemini.usage import feature_of, log_failure, log_retry
 
 logger = logging.getLogger(__name__)
@@ -33,8 +37,6 @@ logger = logging.getLogger(__name__)
 # Firestore vectors are capped at 2048 numbers and gemini-embedding-001 returns 3072 by
 # default, so every request asks for 768 (docs/data-model/collections/radar.md).
 EMBEDDING_DIMENSION = 768
-
-_RETRYABLE = (GeminiRateLimitError, GeminiUnavailableError, GeminiTimeoutError)
 
 
 async def embed_text(
@@ -44,6 +46,7 @@ async def embed_text(
     *,
     operation: str,
     max_backoff_seconds: float = 8.0,
+    budget: GeminiBudget | None = None,
 ) -> list[float]:
     """Embed `text` as one normalized `EMBEDDING_DIMENSION`-number vector.
 
@@ -58,14 +61,18 @@ async def embed_text(
     retrying = AsyncRetrying(
         stop=stop_after_attempt(settings.gemini_max_attempts),
         wait=wait_random_exponential(multiplier=1, max=max_backoff_seconds),
-        retry=retry_if_exception_type(_RETRYABLE),
+        retry=retry_if_exception(is_retryable),
         # Every attempt counts against the embedding model's daily quota (NF-F0-016).
         before_sleep=partial(log_retry, operation=operation, tier=None, model=model),
         reraise=True,
     )
     started = time.perf_counter()
     try:
-        response: types.EmbedContentResponse = await retrying(_call, sdk, settings, text)
+        response: types.EmbedContentResponse = await retrying(
+            _attempt, sdk, settings, text, budget or GeminiBudget(), feature_of(operation)
+        )
+    except GeminiBudgetExhaustedError:
+        raise  # refused before a request was made; the budget logged it (see client._run)
     except GeminiError as exc:
         log_failure(
             exc,
@@ -105,6 +112,13 @@ async def embed_text(
     return _normalize(values, model)
 
 
+async def _attempt(
+    sdk: genai.Client, settings: Settings, text: str, budget: GeminiBudget, feature: str
+) -> types.EmbedContentResponse:
+    async with budget.attempt(feature, EMBEDDING_TIER):
+        return await _call(sdk, settings, text)
+
+
 async def _call(sdk: genai.Client, settings: Settings, text: str) -> types.EmbedContentResponse:
     model = settings.gemini_model_embedding
     timeout = settings.gemini_timeout_seconds
@@ -122,7 +136,7 @@ async def _call(sdk: genai.Client, settings: Settings, text: str) -> types.Embed
     except genai_errors.ClientError as exc:
         detail = f"{model}: {exc.code} {exc.status} {exc.message}"
         if exc.code == 429:
-            raise GeminiRateLimitError(detail) from exc
+            raise GeminiRateLimitError(detail, daily=is_daily_quota(exc.details)) from exc
         raise GeminiRequestError(detail) from exc
     except genai_errors.ServerError as exc:
         raise GeminiUnavailableError(f"{model}: {exc.code} {exc.status} {exc.message}") from exc

@@ -17,6 +17,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.core.rate_limit import reset_rate_limits  # noqa: E402
 from app.main import create_app  # noqa: E402
+from app.services.remittance.recommender import clear_recommendation_cache  # noqa: E402
 from tests.fixtures.fake_gemini import FakeGemini  # noqa: E402
 
 
@@ -24,6 +25,8 @@ from tests.fixtures.fake_gemini import FakeGemini  # noqa: E402
 def _fresh_rate_limits() -> None:
     # The limiter keeps counts in process memory; without this, tests would share budgets.
     reset_rate_limits()
+    # Likewise the recommendation cache: a test must see its own Gemini calls, not another's.
+    clear_recommendation_cache()
 
 
 @pytest.fixture

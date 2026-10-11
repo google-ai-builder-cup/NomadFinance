@@ -62,3 +62,37 @@ def test_an_empty_emulator_variable_is_not_an_emulator(monkeypatch: pytest.Monke
     monkeypatch.setenv("FIREBASE_AUTH_EMULATOR_HOST", "")
 
     assert Settings(app_env="prod", **_DEPLOYED).app_env == "prod"  # type: ignore[arg-type]
+
+
+def test_no_daily_limit_is_set_by_default_so_the_budget_guard_is_off() -> None:
+    settings = Settings(app_env="local", gemini_api_key="k", _env_file=None)
+
+    assert settings.gemini_rpd == {}
+
+
+def test_the_daily_limits_that_are_set_are_listed_by_tier() -> None:
+    settings = Settings(
+        app_env="local",
+        gemini_api_key="k",
+        gemini_rpd_reasoning=500,
+        gemini_rpd_embedding=1500,
+        _env_file=None,
+    )
+
+    assert settings.gemini_rpd == {"reasoning": 500, "embedding": 1500}
+
+
+def test_the_daily_limits_are_read_from_the_variables_the_deploy_script_sets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("GEMINI_RPD_CLASSIFICATION", "1500")
+
+    settings = Settings(app_env="local", gemini_api_key="k", _env_file=None)
+
+    assert settings.gemini_rpd == {"classification": 1500}
+
+
+@pytest.mark.parametrize("value", [0, -5])
+def test_a_daily_limit_must_be_above_zero(value: int) -> None:
+    with pytest.raises(ValidationError, match="gemini_rpd_reasoning"):
+        Settings(app_env="local", gemini_api_key="k", gemini_rpd_reasoning=value, _env_file=None)
