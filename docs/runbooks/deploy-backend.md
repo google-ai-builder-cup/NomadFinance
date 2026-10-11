@@ -14,7 +14,7 @@ curl -s https://nomadfinance-api-54982290462.asia-south1.run.app/health
 gcloud run revisions list --service nomadfinance-api --region asia-south1
 ```
 
-Expected: `{"status":"ok","version":"0.1.0","environment":"prod"}` and a new revision at 100% traffic.
+Expected: `{"status":"ok","version":"2.0.0","environment":"prod"}` (the version is `app_version` in `backend/app/config.py`) and a new revision at 100% traffic.
 
 ## Fallback: deploy by hand
 
@@ -29,7 +29,7 @@ It is the same script the workflow runs.
 
 ## Roll back
 
-A revision that fails to start never receives traffic, so a bad deploy leaves the old revision serving. To go back to an older working revision:
+A revision that fails to start never receives traffic, so a bad deploy leaves the old revision serving. If the trouble is in the Coach or the Scam Analyzer, **turn its flag off first** (`config/feature_flags`, within about 2 minutes, no deploy); go back to an older revision only when the flag does not cover it. To go back to an older working revision:
 
 ```bash
 gcloud run revisions list --service nomadfinance-api --region asia-south1
@@ -37,6 +37,14 @@ gcloud run services update-traffic nomadfinance-api --region asia-south1 --to-re
 ```
 
 Then revert the bad commit on `main`, or the next backend merge deploys it again.
+
+**Give the traffic back afterwards.** Naming a revision stops the service following the newest one, so every later deploy builds a revision that receives no traffic while the workflow still reports success. Once the fix is deployed:
+
+```bash
+gcloud run services update-traffic nomadfinance-api --region asia-south1 --to-latest
+```
+
+The full release and rollback procedure, with a rehearsal table, is `NF-HR-011-release-v2.0.md`.
 
 ## Logs
 
