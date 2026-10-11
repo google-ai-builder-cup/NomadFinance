@@ -14,6 +14,7 @@ from typing import Any, cast
 
 from fastapi.concurrency import run_in_threadpool
 
+from app.core.cache import log_cache_lookup
 from app.integrations.gemini import (
     GeminiClient,
     GeminiError,
@@ -165,6 +166,7 @@ async def analyze_contract(
         request.job_type,
         language,
     )
+    log_cache_lookup("contract", "analysis", hit=reused is not None)
     if reused is not None:
         if reused.complaint_pending or await letter_missing(
             contracts, uid, contract_id, reused.clause_counts.danger

@@ -90,6 +90,8 @@ The person running it needs `roles/logging.configWriter` and `roles/monitoring.e
 4. Within a few minutes an incident opens in Monitoring → Alerting and each address gets an email.
 5. Put the real `rpd` back and run the script again, which replaces the test policy. **Do not leave the test threshold in place.**
 
+**NF-HR-010 reads this file too.** `quota-limits.json` is also the source of the backend's per-feature daily budget: `infra/monitoring/rpd_env.py` turns each `rpd` into `GEMINI_RPD_<TIER>`, which `backend/scripts/deploy_manual.sh` sets on the Cloud Run service. Filling in the numbers (D-122) therefore also switches the budget guard on at the next deploy. See `docs/runbooks/NF-HR-010-gemini-quota-guard.md`.
+
 ## Decisions
 
 | # | Decision | Why |

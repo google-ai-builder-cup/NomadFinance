@@ -55,7 +55,7 @@ No stack traces, model names, Gemini messages, document paths or other internals
 | 429 | `rate_limited` | Over a rate limit (sends `Retry-After` and `X-RateLimit-*`) |
 | 500 | `internal_error` | Our bug. The cause is in the logs under `request_id` |
 | 502 | `ai_bad_response` | Gemini returned empty, blocked or invalid output |
-| 503 | `ai_busy` | Gemini quota hit (sends `Retry-After: 30`) |
+| 503 | `ai_busy` | Gemini quota hit. A per-minute limit or a busy model sends `Retry-After: 30`. A spent **daily** quota, whether Google's or this service's per-feature budget (NF-HR-010), sends the seconds until it resets (midnight US Pacific) and a message that says "try again later". The code is the same, so a client needs no new case |
 | 503 | `ai_unavailable` | Gemini unavailable (sends `Retry-After: 30`) |
 | 504 | `ai_timeout` | Gemini timed out on every attempt |
 

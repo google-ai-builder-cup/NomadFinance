@@ -104,6 +104,7 @@ describe("collection-group queries", () => {
     "scam_indicators",
     "cost_baselines",
     "config",
+    "gemini_usage",
   ];
 
   beforeEach(async () => {
@@ -130,6 +131,7 @@ describe("collection-group queries", () => {
     await seed("scam_indicators/i1", { value: "private" });
     await seed("cost_baselines/SG", { currency: "SGD" });
     await seed("config/feature_flags", { flags: {} });
+    await seed("gemini_usage/2026-11-12", { calls: {} });
   });
 
   it.each([...userGroups, ...sharedGroups])(

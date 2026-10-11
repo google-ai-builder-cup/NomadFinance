@@ -51,7 +51,7 @@ Section 11 left eight points open. What happened to them (from `docs/deferred-it
 | 1 | UAE and Australia in the baselines | Australia, no UAE anywhere (decided 2026-10-06, D-102). NF-FC-003 to -005 curated all six hosts: SG, AU, KR, MY, JP, HK |
 | 2 | Scam report shape in Radar | Decided by NF-F0-003 (`radar.md`, "Scam reports"; D-101) |
 | 3 | Shared or per-user scam cache | Per user (NF-F0-003, D-101) |
-| 4 | Coach reply model and quota | Still open: NF-HR-010 decides. The reply defaults to the fast tier (NF-FC-009, D-115, D-211) |
+| 4 | Coach reply model and quota | Decided by NF-HR-010: the reply stays on the fast tier, the cheapest there is. The demand is the fast tier's, not the reasoning tier's; the ready lever is `GEMINI_COACH_REPLY_TIER=extraction` (`NF-HR-010-gemini-quota-guard.md`). Per-feature daily budgets are built |
 | 5 | Extraction before or after the first token | Built as designed (before). The first-piece time is not yet measured (D-211) |
 | 6 | Tracker names against repo names | Answered by NF-F0-002 (D-101): conventions in `docs/api/v2-conventions.md`, mocks in `docs/mocks/<feature>/` |
 | 7 | Account deletion | Plan PDFs live under `exports/{uid}/`, which deletion already clears; the rest is under `users/{uid}`, deleted recursively (`coach.md`) |

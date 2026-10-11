@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import cast
 
 import pytest
@@ -201,6 +202,22 @@ async def test_a_current_analysis_is_served_without_gemini(
 
     assert again.cached is True
     assert steps.calls == before
+
+
+async def test_each_analysis_lookup_is_logged_as_a_cache_hit_or_miss(
+    steps: Steps, contracts: FakeContracts, deps: PipelineDeps, caplog: pytest.LogCaptureFixture
+) -> None:
+    contract_id = await _upload(contracts)
+
+    with caplog.at_level(logging.INFO):
+        await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+        await analyze_contract(UID, contract_id, AnalyzeRequest(), deps)
+
+    lookups = [r.getMessage() for r in caplog.records if r.getMessage().startswith("cache_lookup")]
+    assert lookups == [
+        "cache_lookup feature=contract name=analysis result=miss",
+        "cache_lookup feature=contract name=analysis result=hit",
+    ]
 
 
 async def test_only_a_missing_language_is_translated(

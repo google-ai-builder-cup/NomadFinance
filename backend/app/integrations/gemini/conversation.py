@@ -10,16 +10,17 @@ from google.genai import types
 from tenacity import AsyncRetrying
 
 from app.config import Settings
+from app.integrations.gemini.budget import GeminiBudget
 from app.integrations.gemini.chat import (
     ChatTurn,
     build_contents,
     truncate_history,
     with_summary,
 )
-from app.integrations.gemini.errors import GeminiError
+from app.integrations.gemini.errors import GeminiBudgetExhaustedError, GeminiError
 from app.integrations.gemini.model_tiers import ModelTier, model_for
 from app.integrations.gemini.streaming import Chunks, GeminiStream, open_attempt
-from app.integrations.gemini.usage import log_failure
+from app.integrations.gemini.usage import feature_of, log_failure
 
 
 def build_config(
@@ -97,22 +98,25 @@ async def start_stream(
     retrying: AsyncRetrying,
     prepared: PreparedChat,
     *,
+    budget: GeminiBudget,
     operation: str,
     tier: ModelTier,
     timeout_seconds: float,
 ) -> GeminiStream:
     """Open the stream (retried until the first piece arrives) and wrap it; logs a failure."""
     started = time.perf_counter()
+
+    async def attempt() -> tuple[Chunks, types.GenerateContentResponse]:
+        async with budget.attempt(feature_of(operation), tier.value):
+            return await open_attempt(
+                sdk, prepared.model, prepared.contents, prepared.config, timeout_seconds
+            )
+
     try:
-        opened: tuple[Chunks, types.GenerateContentResponse] = await retrying(
-            open_attempt,
-            sdk,
-            prepared.model,
-            prepared.contents,
-            prepared.config,
-            timeout_seconds,
-        )
+        opened: tuple[Chunks, types.GenerateContentResponse] = await retrying(attempt)
         iterator, first = opened
+    except GeminiBudgetExhaustedError:
+        raise  # refused before a request was made; the budget logged it (see client._run)
     except (GeminiError, asyncio.CancelledError) as exc:
         log_failure(
             exc,

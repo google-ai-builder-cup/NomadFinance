@@ -20,6 +20,11 @@ SCHEDULER_SA="${SCHEDULER_SA:-nomadfinance-scheduler@${PROJECT}.iam.gserviceacco
 SERVICE_URL="$(gcloud run services describe "${SERVICE}" --project "${PROJECT}" --region "${REGION}" \
   --format 'value(status.url)')"
 
+# Daily request limits per Gemini model, from the file the quota alerts also read (NF-F0-016).
+# A model with a null limit adds nothing: its budget guard (NF-HR-010) stays off. They travel
+# with every deploy because --set-env-vars below replaces all variables on the service.
+RPD_ENV="$(python3 ../infra/monitoring/rpd_env.py)"
+
 # The FX keys are optional (ADR-006): mount each one only if its secret exists.
 SECRETS="GEMINI_API_KEY=gemini-api-key:latest,RADAR_REPORTER_HASH_SECRET=radar-reporter-hash-secret:latest"
 for mapping in "CURRENCYFREAKS_API_KEY=currencyfreaks-api-key" "WISE_API_TOKEN=wise-api-token"; do
@@ -39,7 +44,7 @@ gcloud run deploy "${SERVICE}" \
   --region "${REGION}" \
   --image "${IMAGE}" \
   --service-account "${RUNTIME_SA}" \
-  --set-env-vars "APP_ENV=prod,CRON_SERVICE_ACCOUNT=${SCHEDULER_SA},CRON_AUDIENCE=${SERVICE_URL}" \
+  --set-env-vars "APP_ENV=prod,CRON_SERVICE_ACCOUNT=${SCHEDULER_SA},CRON_AUDIENCE=${SERVICE_URL}${RPD_ENV}" \
   --set-secrets "${SECRETS}" \
   --allow-unauthenticated \
   --cpu 1 \

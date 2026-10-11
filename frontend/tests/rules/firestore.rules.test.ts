@@ -355,6 +355,8 @@ describe("backend-only and unknown collections", () => {
     "scam_patterns/illegal_recruitment_fee-en-001",
     "scam_indicators/8c83cb97151fd86a6c73ff5fa296244e",
     "config/feature_flags",
+    // Gemini request counts (NF-HR-010): the backend alone reads and writes them
+    "gemini_usage/2026-11-12",
   ])("denies %s to signed-in users", async (path) => {
     await seed(path, { schema_version: 1 });
     await assertFails(getDoc(doc(db(ALICE), path)));
@@ -467,7 +469,7 @@ describe("Future Scope collections: writes and deletes from the browser (NF-F0-0
     await assertFails(getDocs(collection(db(null), "cost_baselines")));
   });
 
-  it.each(["scam_patterns", "scam_indicators", "config"])(
+  it.each(["scam_patterns", "scam_indicators", "config", "gemini_usage"])(
     "denies listing %s to a signed-in user",
     async (name) => {
       await seed(`${name}/x1`, { schema_version: 1 });

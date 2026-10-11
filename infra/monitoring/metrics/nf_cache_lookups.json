@@ -1,0 +1,31 @@
+{
+  "description": "Questions put to a cache that would otherwise have cost a Gemini call: the stored scam checks, Coach plans, contract analyses and remittance recommendations. Hit rate = hits / (hits + misses). NF-HR-010.",
+  "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND jsonPayload.message=~\"^cache_lookup \"",
+  "metricDescriptor": {
+    "metricKind": "DELTA",
+    "valueType": "INT64",
+    "unit": "1",
+    "labels": [
+      {
+        "key": "feature",
+        "valueType": "STRING",
+        "description": "The product area"
+      },
+      {
+        "key": "name",
+        "valueType": "STRING",
+        "description": "Which cache"
+      },
+      {
+        "key": "result",
+        "valueType": "STRING",
+        "description": "hit or miss"
+      }
+    ]
+  },
+  "labelExtractors": {
+    "feature": "EXTRACT(jsonPayload.cache_lookup.feature)",
+    "name": "EXTRACT(jsonPayload.cache_lookup.name)",
+    "result": "EXTRACT(jsonPayload.cache_lookup.result)"
+  }
+}

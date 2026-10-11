@@ -122,9 +122,10 @@ service cloud.firestore {
              'radar_entities', 'radar_alerts', 'scam_taxonomy', 'cost_baselines'];
     }
 
-    // radar_reports, report_embeddings, scam_patterns, scam_indicators and config match nothing
-    // above, so they are denied: the backend serves reports through the API and hides
-    // reporter_hash, scam templates and indicator counts reach a browser only as API answers,
-    // and config holds the feature-flag allow-lists of other people's uids.
+    // radar_reports, report_embeddings, scam_patterns, scam_indicators, config and gemini_usage
+    // match nothing above, so they are denied: the backend serves reports through the API and
+    // hides reporter_hash, scam templates and indicator counts reach a browser only as API
+    // answers, config holds the feature-flag allow-lists of other people's uids, and
+    // gemini_usage holds the day's Gemini request counts (backend only, NF-HR-010).
   }
 }

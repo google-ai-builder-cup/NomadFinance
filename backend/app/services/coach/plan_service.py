@@ -19,6 +19,7 @@ from google.api_core.exceptions import GoogleAPICallError
 from pydantic import ValidationError
 
 from app.config import get_settings
+from app.core.cache import log_cache_lookup
 from app.integrations.gemini.model_tiers import ModelTier, model_for
 from app.repositories.coach_session_repo import CoachPlanRepository
 from app.repositories.corridor_repo import CorridorRepository
@@ -127,6 +128,7 @@ class CoachPlans:
         """
         document = await self._sessions.document(uid, session_id, now)
         if document["status"] == "completed" and document.get("plan_id"):
+            log_cache_lookup("coach", "plan", hit=True)
             return PlanResult(
                 await self.get(uid, document["plan_id"], now, language), created=False
             )
@@ -135,9 +137,11 @@ class CoachPlans:
         profile = self._confirmed_profile(document)
         plan_id = slot_hash(profile)[:20]
         if await run_in_threadpool(self._plans.get, uid, plan_id) is not None:
+            log_cache_lookup("coach", "plan", hit=True)
             await self._finish(uid, session_id, plan_id, now)
             return PlanResult(await self.get(uid, plan_id, now, language), created=False)
 
+        log_cache_lookup("coach", "plan", hit=False)
         await self._lock(uid, session_id, document, plan_id, now)
         try:
             stored = await self._make(uid, session_id, profile, now)

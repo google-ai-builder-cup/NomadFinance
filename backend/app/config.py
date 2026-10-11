@@ -93,6 +93,14 @@ class Settings(BaseSettings):
     # no 300 s Cloud Run request limit to fit under, only the scheduler's own deadline.
     gemini_narrative_timeout_seconds: float = Field(default=90.0, gt=0)
     gemini_max_attempts: int = Field(default=3, ge=1)
+    # Requests per day each model allows this project (NF-HR-010). Only Google AI Studio shows
+    # them (ADR-002), so there is no default: while one is unset the budget guard is off for that
+    # tier. deploy_manual.sh sets them from infra/monitoring/quota-limits.json, the file the
+    # quota alerts read, so the alert and the guard always agree.
+    gemini_rpd_reasoning: int | None = Field(default=None, gt=0)
+    gemini_rpd_extraction: int | None = Field(default=None, gt=0)
+    gemini_rpd_classification: int | None = Field(default=None, gt=0)
+    gemini_rpd_embedding: int | None = Field(default=None, gt=0)
     # How much of a conversation a chat or streamed reply sends (NF-F0-007): the newest turns
     # that fit both limits, never the whole transcript, so one turn stays inside the model's
     # per-minute token quota. The caller summarises what is left out. The token figure is an
@@ -212,6 +220,18 @@ class Settings(BaseSettings):
             except ValueError as exc:
                 raise ValueError(f"{name.upper()}: {exc}") from exc
         return self
+
+    @property
+    def gemini_rpd(self) -> dict[str, int]:
+        """Daily requests per tier (`reasoning`, `extraction`, `classification`, `embedding`),
+        for the tiers whose limit is set."""
+        limits = {
+            "reasoning": self.gemini_rpd_reasoning,
+            "extraction": self.gemini_rpd_extraction,
+            "classification": self.gemini_rpd_classification,
+            "embedding": self.gemini_rpd_embedding,
+        }
+        return {tier: limit for tier, limit in limits.items() if limit is not None}
 
     @property
     def request_max_bytes(self) -> int:

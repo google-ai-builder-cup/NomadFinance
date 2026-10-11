@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from fastapi.concurrency import run_in_threadpool
 
 from app.config import get_settings
+from app.core.cache import log_cache_lookup
 from app.core.rate_limit import consume_limit
 from app.core.redact import redact_text
 from app.integrations.gemini import GeminiClient
@@ -88,10 +89,12 @@ async def _check_message(
     lookup = await store.lookup(uid, key, taxonomy.version, datetime.now(UTC))
     if lookup.hit is not None:
         logger.info("scam_cache result=hit input=%s", input_type)
+        log_cache_lookup("scam", "check", hit=True)
         return await store.serve_hit(uid, lookup.hit, datetime.now(UTC))
     if charge_budget:
         _charge_hourly_budget(uid)
     logger.info("scam_cache result=miss input=%s", input_type)
+    log_cache_lookup("scam", "check", hit=False)
     # Started first so it overlaps the classification and the explainer. It handles its own
     # failures, so awaiting it later cannot raise; if the classification fails it is cancelled.
     similar_search = asyncio.create_task(

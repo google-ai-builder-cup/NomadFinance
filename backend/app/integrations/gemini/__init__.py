@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from app.integrations.gemini.budget import GeminiBudget
 from app.integrations.gemini.chat import ChatReply, ChatTurn, truncate_history
 from app.integrations.gemini.client import GeminiClient, get_gemini_client
 from app.integrations.gemini.errors import (
+    GeminiBudgetExhaustedError,
     GeminiError,
     GeminiRateLimitError,
     GeminiRequestError,
@@ -16,6 +18,8 @@ from app.integrations.gemini.streaming import GeminiStream
 __all__ = [
     "ChatReply",
     "ChatTurn",
+    "GeminiBudget",
+    "GeminiBudgetExhaustedError",
     "GeminiClient",
     "GeminiError",
     "GeminiRateLimitError",

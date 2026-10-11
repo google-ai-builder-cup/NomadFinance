@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import Any
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.dependencies import get_coach_plans
@@ -76,6 +78,23 @@ def test_asking_again_is_200_with_the_same_plan() -> None:
 
     assert again.status_code == 200 and again.json()["id"] == first["id"]
     assert again.json()["plan"] == first["plan"] and len(world.gemini.calls) == 1
+
+
+def test_a_new_plan_is_a_cache_miss_and_asking_again_a_hit(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    world = World()
+    api = world.client()
+
+    with caplog.at_level(logging.INFO):
+        api.post(world.url, json={"language": "en"})
+        api.post(world.url, json={"language": "en"})
+
+    lookups = [r.getMessage() for r in caplog.records if r.getMessage().startswith("cache_lookup")]
+    assert lookups == [
+        "cache_lookup feature=coach name=plan result=miss",
+        "cache_lookup feature=coach name=plan result=hit",
+    ]
 
 
 def test_a_plan_is_read_by_its_id_in_english_and_in_another_language() -> None:
