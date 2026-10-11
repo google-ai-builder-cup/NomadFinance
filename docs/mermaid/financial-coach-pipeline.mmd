@@ -1,4 +1,4 @@
-%% Future scope, behind feature flag "coach" (docs/future-scope/design.md section 4).
+%% Behind the feature flag "coach" (docs/features/financial-coach.md).
 flowchart LR
     U([Worker - Before Departure])
 
@@ -6,10 +6,10 @@ flowchart LR
 
     API -->|Step 1| S1[Verify Auth + require_flag coach]
     S1 -->|Step 2| S2[Load or Create Session - one active per user]
-    S2 -->|Step 3| S3[Redact PII + Guardrails - scope and injection]
-    S3 -->|Step 4| S4[Extract Slot Updates + Confidence - Gemini Flash-Lite]
+    S2 -->|Step 3| S3[Redact PII + Guardrails - fixed rules, then a Classification tier scope check]
+    S3 -->|Step 4| S4[Extract Slot Updates + Confidence - Classification tier]
     S4 -->|Step 5| S5[Apply Slots + Advance Stage - state machine]
-    S5 -->|Step 6| S6[Stream Coach Reply over SSE - Gemini 2.5 Flash chat]
+    S5 -->|Step 6| S6[Stream Coach Reply over SSE - Classification tier by default]
     S6 -->|token events| U
 
     S2 <-.Load and save slots + transcript.-> CS[(Firestore - users coach_sessions)]
@@ -24,12 +24,12 @@ flowchart LR
     LL[(Firestore - labor_laws)] -.Legal fee cap.-> S7
     FX[(Firestore - rates_cache)] -.Live FX.-> S7
 
-    S7 -->|Step 7| S8[Generate 90-Day Plan - Gemini 2.5 Flash structured]
+    S7 -->|Step 7| S8[Generate 90-Day Plan - Reasoning tier, structured]
     BL[(Firestore - cost_baselines)] -.Cost of living.-> S8
     RX[Remittance Engine - cheapest provider] -.Corridor price.-> S8
 
     S8 -->|Step 8| S9[Validate Every Figure - derivable from inputs]
-    S9 -->|Step 9| S10[Translate Narrative - Gemini Flash-Lite, numbers untouched]
+    S9 -->|Step 9| S10[Translate Narrative - Classification tier, numbers untouched]
     S10 -->|Step 10| S11[Render PDF - weasyprint]
 
     S11 --> R[Score + Plan + PDF link]
@@ -40,7 +40,7 @@ flowchart LR
     S11 -.Plan targets as goals.-> FP[(Firestore - financial_profile)]
 
     subgraph CHK[Check-In Reminders - Daily Cron]
-        CRON[Cloud Scheduler] --> CJ[coach check-in endpoint - IAM]
+        CRON[Cloud Scheduler] --> CJ[send-coach-checkins endpoint - IAM]
         CJ -->|Plans at day 30 60 90| DUE[Find Due Plans - once per milestone]
         DUE -->|Push| FCM[Firebase Cloud Messaging]
         DUE -->|Write| NT[(users notifications)]
@@ -51,5 +51,5 @@ flowchart LR
 
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
     classDef data fill:#34A853,stroke:#188038,color:#fff
-    class S4,S6,S8,S10 gemini
+    class S3,S4,S6,S8,S10 gemini
     class CS,CTR,LL,FX,BL,PL,ST,FP,NT data

@@ -47,7 +47,7 @@ Logged from the comparison result (NF-P2-017). It is the entry that links Remitt
 | `send_amount`, `send_currency` | number, string | yes | What left the user's account |
 | `receive_amount`, `receive_currency` | number, string | yes | What arrived |
 | `fee` | number | no | Fee paid, in `send_currency` |
-| `fx_rate_applied` | number | no | Rate the provider used |
+| `fx_rate_applied` | number | no | Rate the provider used. **Reserved: nothing writes it.** The comparison result carries the provider's margin (`fx_margin_pct`) and the mid-market rate, not the rate it applied (NF-HR-013 checked the code) |
 | `mid_market_rate` | number | no | Mid-market rate at the time, from [rates_cache](rates_cache.md). Lets the profile compute what the transfer really cost. |
 | `cost_pct` | number | no | True total cost as a percentage of the amount sent |
 
@@ -63,7 +63,6 @@ Logged from the comparison result (NF-P2-017). It is the entry that links Remitt
   "receive_amount": 25650,
   "receive_currency": "INR",
   "fee": 3.5,
-  "fx_rate_applied": 64.7,
   "mid_market_rate": 64.9,
   "cost_pct": 1.2,
   "source": "remittance_log",

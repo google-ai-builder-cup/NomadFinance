@@ -159,3 +159,4 @@ Sample: `docs/mocks/conventions/deprecation-headers.json`.
 | Date | Change | Task |
 |---|---|---|
 | 2026-10-06 | First version: prefix, error envelope, pagination, SSE, idempotency, versioning | NF-F0-002 |
+| 2026-10-11 | Checked against the code. Every code the backend raises is in the tables of this page or of the two feature contracts; `ai_busy` also covers a spent daily quota (NF-HR-010, already in the table); the 128 KB JSON cap is in `endpoints.md`. No convention changed | NF-HR-013 |

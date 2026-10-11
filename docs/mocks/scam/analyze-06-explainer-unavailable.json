@@ -50,7 +50,7 @@
       {
         "source": "scam_pattern",
         "scam_type": "loan_app_trap",
-        "score": 0.83
+        "score": 0.87
       }
     ],
     "corridor_report_count": 2,

@@ -266,7 +266,7 @@ Counts of the week's checks for one corridor, for dashboards and the Partner API
 
 **Small groups.** A week with one check on one corridor describes one person. The collection is backend-only and holds exact counts. **The Partner API must not return a cell below 5** (D-165).
 
-**Index.** A collection-group query on `created_at` needs `scam_checks.created_at` ascending at collection-group scope (`fieldOverrides` in `frontend/firestore.indexes.json`; create it once in production, D-164).
+**Index.** A collection-group query on `created_at` needs `scam_checks.created_at` ascending at collection-group scope (`fieldOverrides` in `frontend/firestore.indexes.json`). It exists in production, `READY`, together with the collection-scope ascending and descending ones the history screen uses (read on 2026-10-11, `firestore-schema.md`, "What production holds").
 
 **Access:** no client access (no rule matches `scam_stats`); backend only.
 

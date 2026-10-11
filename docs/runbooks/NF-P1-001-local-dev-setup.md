@@ -2,7 +2,7 @@
 
 ## Summary
 
-The backend is a FastAPI app in `backend/` that runs on Python 3.11.9 (the team-pinned version). Configuration is read once at startup by `app/config.py` from environment variables, locally via `backend/.env.local`; if a required variable such as `APP_ENV` is missing, the app refuses to start rather than failing later on a request. `GET /health` is the only endpoint so far and is used as the liveness probe; every other endpoint goes under `/api/v1/` through `app/api/v1/router.py`. Before pushing any backend branch, all four checks below (pytest, ruff, black, mypy) must pass locally, since CI will run the same ones.
+The backend is a FastAPI app in `backend/` that runs on Python 3.11.9 (the team-pinned version). Configuration is read once at startup by `app/config.py` from environment variables, locally via `backend/.env.local`; if a required variable such as `APP_ENV` is missing, the app refuses to start rather than failing later on a request. `GET /health` is the liveness probe; every other route goes under `/api/v1/` (`app/api/v1/router.py`) or `/api/v2/` (`app/api/v2/router.py`, the flag-gated Coach and Scam Analyzer). The full list is `docs/api/endpoints.md` and `docs/api/openapi.json`. Before pushing any backend branch, all four checks below (pytest, ruff, black, mypy) must pass locally, since CI will run the same ones.
 
 ## 1. One-time setup
 
@@ -45,7 +45,7 @@ uvicorn app.main:app --reload --port 8080
 ```
 
 Then open:
-- `http://127.0.0.1:8080/health` → `{"status":"ok","version":"0.1.0","environment":"local"}`
+- `http://127.0.0.1:8080/health` → `{"status":"ok","version":"2.0.0","environment":"local"}` (the version is the `APP_VERSION` setting, default `2.0.0`; an `APP_VERSION=0.1.0` line left in an older `.env.local` shows here instead, so delete it)
 - `http://127.0.0.1:8080/docs` → Swagger UI
 
 Gunicorn does not run on Windows. Production uses gunicorn with uvicorn workers inside Docker; test that path through the container (NF-P1-002).
@@ -58,7 +58,7 @@ With the venv activated, from `backend/`:
 pytest
 ruff check .
 black --check .
-mypy app tests
+mypy app
 ```
 
 | Command | What it checks | Expected output |
@@ -66,7 +66,7 @@ mypy app tests
 | `pytest` | Unit and integration tests in `tests/` | `N passed` |
 | `ruff check .` | Lint rules from `pyproject.toml` | `All checks passed!` |
 | `black --check .` | Formatting, line length 100 | `N files would be left unchanged.` |
-| `mypy app tests` | Type hints (`--strict` for `app/services/`) | `Success: no issues found` |
+| `mypy app` | Type hints (`--strict` for `app/services/`). CI runs exactly this; `tests/` is not type-checked (adding it reports about 150 errors) | `Success: no issues found` |
 
 To fix formatting and auto-fixable lint issues:
 
@@ -76,7 +76,7 @@ ruff check . --fix
 ```
 
 Without activating the venv, prefix each tool with the venv path:
-- PowerShell: `.\.venv\Scripts\python -m pytest`, `.\.venv\Scripts\python -m ruff check .`, `.\.venv\Scripts\python -m black --check .`, `.\.venv\Scripts\python -m mypy app tests`
+- PowerShell: `.\.venv\Scripts\python -m pytest`, `.\.venv\Scripts\python -m ruff check .`, `.\.venv\Scripts\python -m black --check .`, `.\.venv\Scripts\python -m mypy app`
 - bash: `.venv/bin/python -m pytest` (same pattern for the others)
 
 ## 4. Workflow for a new backend task

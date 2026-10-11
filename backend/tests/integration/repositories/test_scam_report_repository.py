@@ -14,6 +14,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 import pytest
+from google.api_core.exceptions import Aborted
 from google.cloud.firestore import Client
 
 from app.repositories import scam_report_repo
@@ -156,7 +157,11 @@ def test_two_taps_at_once_never_report_the_check_twice_or_count_it_twice(
         start.wait()
         try:
             return _commit(client, "c1", report_id, [_update(PHONE)])
-        except ValueError as exc:  # "Failed to commit transaction in 5 attempts"
+        except (ValueError, Aborted) as exc:
+            # Two ways the emulator gives up on a tap that waits for the other one's lock: the
+            # client's "Failed to commit transaction in 5 attempts" (ValueError, when the commit is
+            # refused), and a raw Aborted "Transaction lock timeout" (when the read inside the
+            # transaction is). The client retries only the first, so the second reaches us as it is.
             return exc
 
     with ThreadPoolExecutor(max_workers=2) as pool:

@@ -30,7 +30,9 @@ Requires Python 3.11.9. Run everything from `backend/`.
 4. Start the API: `./scripts/run_local.sh` (bash) or `uvicorn app.main:app --reload --port 8080`
 5. Check `http://127.0.0.1:8080/health` and Swagger at `http://127.0.0.1:8080/docs`
 
-Checks before every push: `pytest`, `ruff check .`, `black --check .`, `mypy app tests`.
+Checks before every push: `pytest`, `ruff check .`, `black --check .`, `mypy app`.
+
+After you add or change a route, or a request or response model, regenerate the API contract file and commit it: `python scripts/export_openapi.py` (writes `docs/api/openapi.json`; `--check` only compares). A deployed API does not serve `/openapi.json`, so that file is the contract in machine form, and `tests/unit/test_api_contract_docs.py` fails when it is out of date or when a route is missing from `docs/api/`.
 Full setup, check commands and troubleshooting: [`docs/runbooks/NF-P1-001-local-dev-setup.md`](../docs/runbooks/NF-P1-001-local-dev-setup.md).
 
 ## Docker
