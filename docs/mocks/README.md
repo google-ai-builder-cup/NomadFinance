@@ -1,6 +1,8 @@
 # Mocks
 
-Sample requests and responses for the API, written before the endpoint exists. Frontend work and MSW handlers use them as the source of truth until the real endpoint lands; the backend must produce the same shape.
+Sample requests and responses for the `/api/v2` API. They were written before the endpoints existed, so the screens could be built first. Every endpoint is built now, so **the backend and `docs/api/openapi.json` are the source of truth and a sample is an example of one answer**. The files stay because the frontend's tests and browser tests replay them through MSW, and the backend's drift tests (below) fail when one stops fitting the real models.
+
+82 files, checked one by one in NF-HR-013: `coach/` 38 JSON and 10 streams, `scam/` 22, `flags/` 4, `conventions/` 6 JSON and 2 streams. Each file with a `request` names a route the app serves (the two `conventions/` files that name `/api/v2/example/items` do it on purpose: they show a convention, not a resource), and every file is read by a drift test or loaded as a handler. Nothing was removed. Five scam samples showed a similarity score (0.83, 0.74) under the server's cutoff of 0.85, which the server would never send; they now show 0.87 and 0.86, and `test_scam_mocks.py` fails if one drops under the cutoff again.
 
 | Folder | Owner task | What it shows |
 |---|---|---|
@@ -39,7 +41,7 @@ The frontend serves them through `frontend/src/mocks/` (`scam.msw.test.ts` is th
 
 Written for NF-FC-002 and checked against the backend's models by `backend/tests/unit/test_coach_mocks.py`: shape, the next question against the question bank, redaction of the transcript, the plan id against the real hash of the answers, the plan's arithmetic, the Hindi plan's numbers against the English one's, and agreement between the sessions, the overview and the streams. Every person, message and number is invented. Three workers appear: **A** from India to Australia (care work, a debt at 3% a month, the middle band; ids `s_03`, `s_04`, `s_07`), **B** from the Philippines to Singapore (a heavy debt, the lowest band, did not say when she leaves; `s_05`) and **C** from Nepal to South Korea (no debt, the highest band, not one of the six corridors; `s_06`).
 
-**The streams are written to the contract byte for byte; they were not captured from a running server**, because none exists yet. They are `.sse` files: the raw body of the response. A test replays one with `sseHandler(requestLine, "coach/<file>")`.
+**The streams are written to the contract byte for byte; they were not captured from a running server**, because there is no staging to capture from (D-121, D-179); the backend's own tests cover the real stream. They are `.sse` files: the raw body of the response. A test replays one with `sseHandler(requestLine, "coach/<file>")`.
 
 The turn route has no default answer: a test always picks a stream. The JSON refusals declared on the same path (`turn-error-*.json`) are what a request gets if it does not.
 

@@ -15,26 +15,26 @@ flowchart LR
 
     API -->|Step 1| S1[Verify Auth - Firebase]
 
-    S1 -->|Bill Path - Step 2a| S2a[Extract Bill Data - Gemini 1.5 Vision]
+    S1 -->|Bill Path - Step 2a| S2a[Extract Bill Data - Extraction tier, vision]
     S2a --> S3[Save to Firestore]
     S1 -->|Other Paths - Step 2b| S2b[Validate Input - Pydantic]
     S2b --> S3
 
-    S3 -->|Step 3| S4[Categorize Transaction - Gemini Flash-Lite]
+    S3 -->|Step 3| S4[Categorize Transaction - Classification tier]
     S4 -->|Step 4| S5[Update Financial Timeline - Firestore]
 
     S5 --> R[Activity Logged]
     R --> U
 
     subgraph SCORE[Financial Score Recompute - Weekly Cron]
-        CS[Cloud Scheduler] --> RC[recompute_profile endpoint]
+        CS[Cloud Scheduler] --> RC[recompute-fib-profiles endpoint]
         RC --> ALL[Fetch All User Activity]
         ALL --> METRICS[Compute Metrics]
-        METRICS --> SYN[Synthesize Financial Narrative - Gemini 2.5 Flash]
+        METRICS --> SYN[Synthesize Financial Narrative - Reasoning tier]
         SYN --> PROF[(financial_profile)]
     end
 
-    %% Future scope (flags coach, scam): plan targets become goals, and opt-in activity signals
+    %% Behind the flags coach and scam: plan targets become goals, and opt-in activity signals
     %% feed the narrative and the unified activity feed.
     COACH[Financial Coach] -.Plan targets as goals.-> PROF
     COACH -.Plan adherence, opt-in.-> METRICS
@@ -50,5 +50,3 @@ flowchart LR
     classDef data fill:#34A853,stroke:#188038,color:#fff
     class S2a,S4,SYN gemini
     class S3,S5,PROF,METRICS data
-    classDef planned stroke-dasharray:5 3,stroke-width:2px
-    class COACH,SCAMA planned

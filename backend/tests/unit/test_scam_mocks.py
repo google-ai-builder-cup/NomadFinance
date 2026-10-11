@@ -29,6 +29,7 @@ from app.schemas.scam import (
     ScamReportResponse,
     ScamVerdict,
 )
+from app.services.scam.retrieval import PATTERN_MIN_SCORE
 
 REPO = Path(__file__).resolve().parents[3]
 MOCKS = REPO / "docs" / "mocks" / "scam"
@@ -157,6 +158,15 @@ def test_the_ids_in_a_check_are_in_the_taxonomy(name: str, check: dict[str, Any]
     if explainer is not None and explainer["kind"] == "scam":
         assert {why["tactic"] for why in explainer["why_it_works"]} <= set(verdict["tactics"])
     assert all(s["scam_type"] is None or s["scam_type"] in TYPES for s in check["similar"])
+
+
+@pytest.mark.parametrize(("name", "check"), _checks(), ids=lambda value: str(value)[:40])
+def test_a_similar_scam_scores_at_least_the_servers_cutoff(
+    name: str, check: dict[str, Any]
+) -> None:
+    # The server drops everything below the cutoff (retrieval.py), so a sample that shows a lower
+    # score describes an answer the server never sends (D-141 until the cutoff is calibrated).
+    assert all(s["score"] >= PATTERN_MIN_SCORE for s in check["similar"])
 
 
 @pytest.mark.parametrize(("name", "check"), _checks(), ids=lambda value: str(value)[:40])

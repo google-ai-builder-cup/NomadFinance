@@ -4,6 +4,8 @@ Base URL: the Cloud Run service URL (local: `http://127.0.0.1:8080`).
 
 All endpoints in this file live under `/api/v1/` except `/health`. New Future Scope endpoints live under `/api/v2/` and follow `docs/api/v2-conventions.md` (error envelope, pagination, streaming, idempotency, deprecation); v1 behaviour is not changed by them. The v2 feature contracts: `docs/api/v2-flags.md` (feature flags), `docs/api/v2-scam.md` (Scam Analyzer) and `docs/api/v2-coach.md` (Financial Coach). Interactive docs are served at `/docs` (Swagger) and the schema at `/openapi.json` **when `APP_ENV=local` only**; a deployed API answers 404 on `/docs`, `/redoc` and `/openapi.json` (NF-P4-004). Run the backend locally to browse them.
 
+**The contract in machine form** is [`openapi.json`](openapi.json), exported from the code (`python scripts/export_openapi.py` from `backend/`). `backend/tests/unit/test_api_contract_docs.py` fails when the file is out of date or when a route is missing here, so this page and the file cannot drift apart unseen. The file leaves out the five Cloud Scheduler routes (`/api/v1/internal/*`), which are hidden on purpose and documented at the end of this page. Three response objects, `CoachSession`, `CoachSessionCreateResponse` and `ScamDetails`, appear in it as bare objects, because a serializer that leaves out empty fields hides their shape from the schema generator (D-308); their fields are in [v2-coach.md](v2-coach.md), [v2-scam.md](v2-scam.md) and the models in `backend/app/schemas/coach_session.py` and `scam.py`.
+
 ## Authentication
 
 Protected endpoints require a Firebase Auth ID token as a bearer token:
@@ -49,6 +51,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
 | POST | `/api/v1/internal/recompute-fib-profiles` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-013 |
+| POST | `/api/v1/internal/aggregate-scam-stats` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-SA-022 |
 | POST | `/api/v1/internal/send-coach-checkins` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-FC-016 |
 | DELETE | `/api/v1/users/me` | Firebase ID token, signed in within the last 5 minutes | 60/min API-wide | NF-P1-023 |
 
@@ -63,6 +66,7 @@ Gemini failures (any endpoint that calls Gemini) map to (`app/core/errors.py`):
 | Status | When | Retry? |
 |---|---|---|
 | 503 + `Retry-After: 30` | Gemini quota hit or Gemini unavailable, after 3 attempts | Yes, after the header's seconds |
+| 503 + `Retry-After: <seconds to the reset>` | A spent **daily** quota, Google's or this service's per-feature budget (NF-HR-010); `detail` says the AI service has reached its limit for today. The reset is midnight US Pacific | Yes, after the header's seconds (it can be hours) |
 | 504 | Gemini timed out on every attempt | Yes |
 | 502 | Gemini answered with empty, blocked or invalid output | Yes, once |
 | 500 | Our request was rejected by Gemini (a bug on our side) | No |
@@ -73,10 +77,10 @@ Gemini failures (any endpoint that calls Gemini) map to (`app/core/errors.py`):
 
 | `APP_ENV` | Allowed origins |
 |---|---|
-| `prod` | `https://nomadfinance-prod.web.app`, `https://nomadfinance-prod.firebaseapp.com` |
+| `prod`, `staging` | `https://nomadfinance-prod.web.app`, `https://nomadfinance-prod.firebaseapp.com` (there is no separate staging site, D-121) |
 | `local` | `http://localhost:5173`, `http://127.0.0.1:5173`, `http://localhost:4173`, `http://127.0.0.1:4173` |
 
-Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `Content-Type`, `X-Request-ID`; no cookies (`allow_credentials` off). Readable by the page: `X-Request-ID`, `Retry-After`, `X-RateLimit-*`. Preflights are cached for 1 hour. Other origins get no CORS headers (preflight `400`). In local development the Vite dev server forwards `/api`, so CORS is not involved there.
+Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `Content-Type`, `X-Request-ID`, `Idempotency-Key` (used by `/api/v2`); no cookies (`allow_credentials` off). Readable by the page: `X-Request-ID`, `Retry-After`, `X-RateLimit-*`, and for `/api/v2` `Idempotency-Replayed`, `Deprecation` and `Sunset`. Preflights are cached for 1 hour. Other origins get no CORS headers (preflight `400`). In local development the Vite dev server forwards `/api`, so CORS is not involved there.
 
 **Rate limits.** Counted per signed-in user (the token's uid, hashed), or per IP for requests without a token (the last `X-Forwarded-For` entry on Cloud Run). Budgets use a moving one-minute window:
 
@@ -84,6 +88,7 @@ Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `
 |---|---|---|
 | API-wide | `RATE_LIMIT_DEFAULT` = `60/minute` | Every path under `/api/` except `/api/v1/internal/*`, shared across endpoints |
 | Gemini | `RATE_LIMIT_AI` = `10/minute` | Endpoints that call Gemini (`Depends(limit_ai_calls)`), in addition to the API-wide budget |
+| Scam checks | `RATE_LIMIT_SCAM_ANALYZE` = `20/hour` | `POST /api/v2/scam/analyze`, per signed-in user, counted only for a check that calls Gemini (a message answered from storage costs none), in addition to the API-wide budget. Moving one-hour window, not one minute |
 
 `/health` and `/api/v1/internal/*` are never limited. Counted responses carry `X-RateLimit-Limit`, `X-RateLimit-Remaining` and `X-RateLimit-Reset` (seconds). Over a budget:
 
@@ -93,7 +98,7 @@ Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `
 
 Counts live in each Cloud Run instance's memory: with up to 2 instances a caller can get up to twice the budget, and counts reset when an instance restarts.
 
-**Request size.** Any request body over `UPLOAD_MAX_BYTES` + 64 KB (10 MB + 64 KB by default) gets `413` `The request is larger than 10 MB.` before the body is read (declared `Content-Length`), or as soon as the limit is passed (no `Content-Length`).
+**Request size.** Any request body over `UPLOAD_MAX_BYTES` + 64 KB (10 MB + 64 KB by default) gets `413` `The request is larger than 10 MB.` before the body is read (declared `Content-Length`), or as soon as the limit is passed (no `Content-Length`). A JSON body sent to an `/api/v2` route has a shorter cap, 128 KB (`The request is larger than 128 KB.`); uploads there (the screenshot of the Scam Analyzer) keep the 10 MB one.
 
 ---
 
@@ -273,7 +278,7 @@ Fetches a host country's curated labor-law rules from Firestore (`labor_laws/{co
 | `law_version` | integer | `labor_laws/{country}/_meta/current.version`; record it on the eventual contract report (`docs/data-model/versioning.md`) |
 | `rules` | array | All 15 curated categories, see below |
 
-A rule has `category` (one of the 15 ids in [labor_laws](../data-model/collections/labor_laws.md)), `coverage` (`regulated` / `partly_regulated` / `not_regulated` / `unclear`), `title`, `summary`, `applicable_variant` (the variant matching `job_type`, falling back to the `all` variant), the full `variants` array (for any category a caller wants a different job type from), `references`, `confidence` and `notes`. A variant has `applies_to`, `requirements`, `limits`, `penalty` and `enforced_by`.
+A rule has `category` (one of the 15 ids in [labor_laws](../data-model/collections/labor_laws.md)), `coverage` (`regulated` / `partly_regulated` / `not_regulated` / `unclear`), `title`, `summary`, `applicable_variant` (the variant matching `job_type`, falling back to the `all` variant), the full `variants` array (for any category a caller wants a different job type from), `references`, `confidence` (`high`, `medium` or `low`) and `notes`. A variant has `applies_to`, `requirements`, `limits`, `penalty` and `enforced_by`. A reference has `law`, `section` and `url`, and when the curation file gives them `year`, `in_force_since` (a date) and `natlex_isn` (the NATLEX record number).
 
 Example:
 
@@ -413,7 +418,7 @@ Translates a finished report into the worker's language: `full_text`, `summary`,
 | `clauses` | array (1 to 200) | The `clauses` from `/contracts/compare`, unchanged; total clause text capped at 200,000 characters |
 | `target_language` | `en` / `hi` / `tl` / `id` / `ne` / `bn` | The report language to translate into |
 
-- **Time:** not yet measured live; classification tier is fast per call, but the output is a whole report (default timeout 60 s, `GEMINI_TRANSLATE_TIMEOUT_SECONDS`).
+- **Time:** median 9.8 s, slowest 5% 21 s (9 production calls, `docs/runbooks/NF-P4-003-performance-profiling.md`): the output is a whole report, so it is output-bound. Default timeout 60 s per attempt (`GEMINI_TRANSLATE_TIMEOUT_SECONDS`).
 - **Response `200`:** `ContractReportTranslation` (`app/schemas/contract_translate.py`)
 
 | Field | Type | Description |
@@ -589,7 +594,7 @@ A failed analysis can be run again with the same call. What was stored is reused
   - `language`, `is_source`, `full_text`, `summary`
   - `clauses` (with `number`, `page`, `block_ids`)
   - `complaint`
-  - `content_hash`, `law_version`, `prompt_versions`, `models`
+  - `content_hash`, `law_version`, `prompt_versions`, `models`, `schema_version` (1)
 - A current stored report is returned at once; otherwise the English report is translated (a few seconds), stored and returned. This is the language switch of NF-P2-012.
 - **How the app uses it (NF-P2-012):** the report language switcher reads a language listed in the analysis' `report_languages` straight from Firestore (`reports/{language}`) and calls this endpoint only for a language that is not stored yet. It sends no body, does not retry a failed call by itself (the backend already tries Gemini three times), and keeps each language it has seen, so switching back makes no request. A `409` means the analysis is not current: the app tells the worker to check the contract again. It does not use the position of a language in `report_languages`, which is sorted alphabetically (D-60).
 - **Errors:** 404 no such contract, 409 not analysed yet (or stale: analyze again), 502 incomplete translation, 503/504.
@@ -1081,12 +1086,13 @@ The individual reports behind one `radar_entities/{slug}` profile, newest first 
 | Field | Type | Description |
 |---|---|---|
 | `report_id` | string | Id of `radar_reports/{report_id}` |
-| `violation_type` | string | One of the 9 violation types |
-| `description` | string | The reporter's own words (`contract_signal` reports: built from the flagged clauses' explanations) |
+| `violation_type` | string | One of the 9 violation types, or `scam_message` for a report that came from a Scam Analyzer check (`source: "scam_check"`) |
+| `description` | string | The reporter's own words (`contract_signal` reports: built from the flagged clauses' explanations; `scam_check` reports: the redacted text of the message as the worker confirmed it, at most 1,000 characters) |
 | `summary` | string or null | One neutral English sentence (NF-P3-001's classification step). Null for `contract_signal`/`seed`, which have no free text to summarize |
 | `language` | string | Language of `description` |
 | `corridor_id`, `host_country` | | At least one is set |
-| `source` | `user` / `contract_signal` / `seed` | Where the report came from |
+| `source` | `user` / `contract_signal` / `seed` / `scam_check` | Where the report came from |
+| `scam` | object, **left out unless `source` is `scam_check`** | What the Scam Analyzer found, as the worker confirmed it when warning others (`RadarScamReport`): `scam_type` (a taxonomy id), `tactics` (taxonomy ids), `risk_level` (`low`, `medium`, `high`), `confidence` (0 to 1), `trigger_phrases`, `details` (what the message asks for: claimed identity, contact channel, payment, amount, deadline; every part optional), `indicators` (only the ones the reporter confirmed: `kind` is `url`, `phone`, `email`, `handle` or `sender`, `value`, `flags` and `imitates`), `message_language` and `input_type` (`text` or `screenshot`). Fields in [radar](../data-model/collections/radar.md), "Scam reports"; how a check becomes a report in [v2-scam](v2-scam.md) |
 | `created_at` | timestamp | |
 
 Never included: `reporter_hash`, `entity_slug`/`entity_type`/`entity_name` (redundant — every report in the list is about the same entity), or `validation` (spam score, category confidence, model — backend-only).
@@ -1312,7 +1318,7 @@ The worker's unified activity feed (NF-HR-001): income, transfers, bills and sav
 | `bill` | `amount`, `currency`, `category`, `paid` |
 | `savings` | `amount`, `currency`, `direction` |
 | `coach_plan` | `corridor_id`, `departure_date` |
-| `coach_checkin` | `milestone` (`d30`, `d60`, `d90`), `remittance`, `savings`, `pay`: the three fixed answers |
+| `coach_checkin` | `milestone` (`d30`, `d60`, `d90`), and the three fixed answers: `remittance` and `savings` (`on_track`, `behind` or `not_yet`), `pay` (`full_on_time`, `late_or_less` or `not_paid`) |
 | `scam_check` | `is_scam`, `risk_level`, `scam_type` (a taxonomy id) |
 
 - **What is never in it:** notes, employer or vendor names, a message, an explainer, or anything a worker typed. Coach events appear while the `coach` flag is on for the worker and scam checks while `scam` is; with both off the feed is the money log alone.
@@ -1373,6 +1379,18 @@ Called only by the Cloud Scheduler job `fib-recompute` (Sundays 02:00 UTC). Hidd
 - **Always 200.** A failure for one user (the narrative call timing out, a Firestore error, an entry that does not match its schema) is caught and logged inside the run with a hashed user id. That user keeps last week's profile and the others still run; a retry would run, and pay for, every other user again.
 - **Run time:** one reasoning-tier call per user, 3 users at a time. Measured 15 to 24 s per call (2026-10-01), so about 100 users fit in Cloud Run's 900 s request timeout.
 - **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured.
+
+---
+
+## `POST /api/v1/internal/aggregate-scam-stats` (internal)
+
+Called only by the Cloud Scheduler job `scam-stats` (daily at 01:30 UTC). Hidden from the OpenAPI docs. Counts the Scam Analyzer's stored checks of the current and the previous ISO week for each corridor and writes the counts to `scam_stats/{corridor}/weeks/{isoWeek}` (NF-SA-022; fields and rules in `docs/data-model/collections/scam.md`). **Counts only**: no message, no link or number, no worker and no check id.
+
+- **Auth:** `Authorization: Bearer <Google-signed OIDC token>` for `CRON_SERVICE_ACCOUNT` with audience `CRON_AUDIENCE`, the same as `/internal/refresh-rates`. Firebase user tokens are rejected.
+- **Request:** body ignored; send `{}` (Google's front end requires a body length on POST).
+- **Response `200`:** `AggregateScamStatsResponse` (`app/schemas/scam_stats.py`): `weeks` (the ISO weeks written, for example `["2026-W44", "2026-W45"]`), `checks_counted`, `documents_written`, `completed_at`.
+- **Idempotent:** every run counts both weeks again and replaces their documents, so a retry or a manual "Run now" never counts a check twice. An older week is left as it was written: stored checks are deleted 90 days after they were made, and a recount would make it shrink.
+- **Errors:** 401 missing/invalid token, 403 other Google identity, 503 internal auth not configured **or** a week could not be read or written (the body is the same `AggregateScamStatsResponse`, listing only the weeks that were written; the other week is still saved). A 503 makes Cloud Scheduler retry, which is safe because of the above.
 
 ---
 

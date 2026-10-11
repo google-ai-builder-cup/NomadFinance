@@ -12,34 +12,33 @@ flowchart LR
     S5 -->|Step 6| S6[Rank by Recipient Receives Most]
     S6 -->|Step 7| S7[Detect Rate Trends - Best Day to Send]
     S7 -->|Step 8| S8[Compute Historical Savings vs Choice]
-    S8 -->|Step 9| S9[Generate Recommendation - Gemini Flash-Lite]
-    S9 -->|Step 10| S10[Translate to User Language - Gemini Flash-Lite]
+    S8 -->|Step 9| S9[Write Recommendation in the User's Language - Classification tier]
 
-    S10 --> R[Comparison Table + Trend Chart + Savings Insight]
+    S9 --> R[Comparison Table + Trend Chart + Savings Insight]
     R --> U
 
     U -.Log Transfer.-> H[(Firestore - users transfers)]
     H -.Feeds.-> FI[Financial Identity Builder]
 
-    %% Future scope (flag coach): the Coach reads the cheapest provider and deep-links back in.
+    %% Behind the flag coach: the Coach reads the cheapest provider and deep-links back in.
     S6 -.Cheapest provider.-> CO[Financial Coach]
     CO -.Deep link with corridor + amount.-> U
 
     subgraph CRON[Background Cron - Every 2 Hours]
         CS[Cloud Scheduler]
-        CS -->|Trigger| RF[refresh_rates endpoint]
+        CS -->|Trigger| RF[refresh-rates endpoint]
         RF -->|Fetch| FR[Frankfurter API]
         FR -->|On failure| ER[ExchangeRate-API]
+        ER -->|On failure| CF[CurrencyFreaks, then Wise if configured]
         FR -->|Write current| RC[(rates_cache)]
         FR -->|Append point| RH[(rates_history)]
         ER -->|Write current| RC
+        CF -->|Write current| RC
     end
 
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
     classDef data fill:#34A853,stroke:#188038,color:#fff
     classDef ext fill:#FBBC04,stroke:#f9ab00,color:#000
-    class S9,S10 gemini
+    class S9 gemini
     class S2,S3,S4,H,RC,RH data
-    class FR,ER ext
-    classDef planned stroke-dasharray:5 3,stroke-width:2px
-    class CO planned
+    class FR,ER,CF ext

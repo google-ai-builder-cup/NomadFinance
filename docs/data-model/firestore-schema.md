@@ -1,6 +1,6 @@
 # Firestore schema
 
-Status: NF-P1-013, written 2026-09-25; extended for Future Scope by NF-F0-003, 2026-10-06 (eight new collections, the rows marked *Future Scope*); rules and index entries for them added by NF-F0-004, 2026-10-06. This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
+Status: NF-P1-013, written 2026-09-25; extended for Future Scope by NF-F0-003, 2026-10-06 (eight new collections, the rows marked *Future Scope*); rules and index entries for them added by NF-F0-004, 2026-10-06; reconciled with the code, the rules, the index file and the production project by NF-HR-013, 2026-10-11 (`scam_stats` and the contract `extraction` document added, the live state of indexes and TTL recorded, the Storage table corrected). This is the working contract for every task that reads or writes Firestore. Field-level detail is in [`collections/`](collections/) and version rules are in [`versioning.md`](versioning.md).
 
 How to read it: each collection group says where its shape comes from.
 
@@ -18,7 +18,9 @@ How to read it: each collection group says where its shape comes from.
 | Project | `nomadfinance-prod` |
 | Database | `(default)`, Firestore **Native** mode |
 | Location | `asia-south1` (Mumbai), same as Cloud Run |
-| State on 2026-09-25 | Empty: no collections, no indexes |
+| Storage bucket | `nomadfinance-prod.firebasestorage.app` (`FIREBASE_STORAGE_BUCKET`), see "Cloud Storage paths" |
+| Protection | Delete protection and point-in-time recovery are both off (read from the project on 2026-10-11) |
+| State | In use. Indexes, single-field settings and TTL policies were read from the project on 2026-10-11: see "Required indexes" and "Time to live" |
 | Local development | Firebase Emulator Suite (`FIRESTORE_EMULATOR_HOST`), see `NF-P1-001-local-dev-setup.md` |
 
 ## Collection map
@@ -30,6 +32,7 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `users/{uid}` | Firebase Auth uid | App profile and preferences | All | Onboarding (NF-P1-022), profile page (NF-P1-023) | [users](collections/users.md) |
 | `users/{uid}/notifications/{id}` | auto | Alerts and reminders for this user | Radar | Backend (NF-P3-004) | [users](collections/users.md) |
 | `users/{uid}/contracts/{contractId}` | auto | One uploaded contract: metadata, score, status | Contract Shield | Backend | [contracts](collections/contracts.md) |
+| `users/{uid}/contracts/{contractId}/extraction/current` | `current` | The text blocks step 1 read from the file, kept so the analysis runs without the file | Contract Shield | Backend (NF-P2-007) | [contracts](collections/contracts.md) |
 | `users/{uid}/contracts/{contractId}/reports/{language}` | language code | Full report in one language, including the cache | Contract Shield | Backend | [contracts](collections/contracts.md) |
 | `complaint_templates/{country}/types/{type}` | violation type | Complaint letter structure and authority per country | Contract Shield | Data script | [contracts](collections/contracts.md) |
 | `users/{uid}/transfers/{id}` | auto | A remittance the user logged | Remittance + FIB | Backend (NF-P2-017) | [fib](collections/fib.md) |
@@ -54,6 +57,7 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `scam_taxonomy/{id}` and `scam_taxonomy/_meta` | slug; `_meta` | Scam types and manipulation tactics; taxonomy version. *Future Scope* | Scam Analyzer | Data script (NF-SA-001) | [scam](collections/scam.md) |
 | `scam_patterns/{id}` | `<type>-<lang>-<nnn>` | Canonical scam templates with 768-number vectors. *Future Scope* | Scam Analyzer | Data script (NF-SA-006) | [scam](collections/scam.md) |
 | `scam_indicators/{id}` | first 32 hex of the indicator key | How often one phone number, address or account was reported, for "reported N times". *Future Scope* | Scam Analyzer | Backend (NF-SA-013) | [scam](collections/scam.md) |
+| `scam_stats/{corridor}` and `.../weeks/{isoWeek}` | corridor id or `none`; ISO week such as `2026-W45` | Weekly counts of the Scam Analyzer's checks per corridor, counts only. *Future Scope* | Scam Analyzer | Cron job `scam-stats` through the backend (NF-SA-022) | [scam](collections/scam.md) |
 | `cost_baselines/{host}` | ISO-2 host country | Monthly cost-of-living figures for the Coach. *Future Scope* | Coach | Data script (NF-FC-003 to -005) | [cost_baselines](collections/cost_baselines.md) |
 | `gemini_usage/{day}` | `YYYY-MM-DD` (US Pacific) | Gemini requests sent today per feature and model tier, and the tiers Google has run dry; the daily budget reads it. *NF-HR-010* | All | Backend | [gemini_usage](collections/gemini_usage.md) |
 | `config/feature_flags` | `feature_flags` | Flags `coach` and `scam`: global value and uid allow-list. *Future Scope* | Both | Operator | [config](collections/config.md) |
@@ -107,6 +111,7 @@ Input for the security rules task (NF-P1-014). It states intent. Backend access 
 | `users/{uid}` | Read; write only the profile fields (not `created_at`, `schema_version`) | None | None |
 | `users/{uid}/notifications` | Read; update only `read` and `read_at` | None | None |
 | `users/{uid}/contracts` and `.../reports` | Read | None | None |
+| `users/{uid}/contracts/{id}/extraction` | None: no rule names it, so even the owner is refused (a rules test checks this); the owner sees the same text in each report | None | None |
 | `users/{uid}/transfers`, `income`, `bills`, `savings` | Read | None | None |
 | `users/{uid}/financial_profile` | Read | None | None |
 | `corridors`, `rates_cache`, `rates_history`, `labor_laws` (all subcollections), `complaint_templates` | Read (reference data) | Read | None |
@@ -114,7 +119,7 @@ Input for the security rules task (NF-P1-014). It states intent. Backend access 
 | `radar_reports`, `report_embeddings` | None (the backend serves reports through the API and hides `reporter_hash`) | None | None |
 | `users/{uid}/coach_sessions`, `coach_plans` and its `translations`, `scam_checks` (*Future Scope*) | Read; **no client write**, every change goes through the API | None | None |
 | `scam_taxonomy`, `cost_baselines` (*Future Scope*) | Read (reference data) | Read | None |
-| `scam_patterns`, `scam_indicators`, `config` (*Future Scope*) | None | None | None |
+| `scam_patterns`, `scam_indicators`, `scam_stats`, `config` (*Future Scope*) | None | None | None |
 | `gemini_usage` (*NF-HR-010*) | None | None | None |
 
 Future Scope adds one client-writable field: `users/{uid}.signal_sharing` (a map of two booleans, set from the profile page), which the rules accept alongside the other profile fields (`signal_sharing` may hold only the keys `coach` and `scam`, each a boolean; NF-F0-004). The rules for every collection above are in `frontend/firestore.rules` with an allow and a deny test each. A worker cannot delete a scam check or a Coach session from the browser: that stays an API matter (D-109).
@@ -138,14 +143,15 @@ Existing copies of these three in a project do no harm.
 
 ### Added by Future Scope (NF-F0-003; written into `frontend/firestore.indexes.json` by NF-F0-004)
 
-Two more indexes are needed, and one setting that is not an index:
+Three more indexes are needed:
 
 | Index | Used by | Why it is not automatic |
 |---|---|---|
 | `scam_patterns`: vector, dimension 768, flat, on `embedding` | The nearest-3 search of NF-SA-010 | Vector fields are never indexed by default |
 | `coach_plans`: single field `departure_date`, ascending, **collection-group scope** | The daily check-in job (NF-FC-016) finds plans reaching day 30, 60 and 90 across all users: a range on `departure_date` on the group `coach_plans` (the day itself and the 3 days before it, so a run that was missed delays a reminder instead of losing it) | Single-field indexes are created for one collection at a time; a query over a collection group needs the group scope on purpose |
+| `scam_checks`: single field `created_at`, **collection-group scope** added (ascending), with the collection-scope ascending and descending ones kept (NF-SA-022) | The weekly stats job counts the checks of two ISO weeks across all workers: a range on `created_at` on the group `scam_checks` | Same reason as `coach_plans`; the history screen's `order by created_at desc` for one worker needs the collection-scope descending one, which an exemption must therefore keep |
 
-Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). Both are entries in `frontend/firestore.indexes.json` (`indexes` for the vector index, `fieldOverrides` for the group-scope field), and `frontend/firebase.json` now points at that file, so `firebase deploy --only firestore:indexes` creates them. No workflow runs that command yet, and the entries have not been deployed to any project (D-33, D-68); the file inside `frontend/` is the one the CLI reads, and `infra/firebase/firestore.indexes.json` is an empty stub.
+Every other query the new collections need is served by automatic indexes, so no later task has to add one by hand: the active session (`status ==` in one user's `coach_sessions`), newest plans and newest checks (`order by created_at desc`, one user), a cached verdict (`cache_key ==` in one user's `scam_checks`), the taxonomy (`kind in [...]`), a flag read (one document), an indicator's count (a read by id) and the most reported indicators (`order by report_count desc`, one field). All three are entries in `frontend/firestore.indexes.json` (`indexes` for the vector index, `fieldOverrides` for the group-scope fields), and `frontend/firebase.json` points at that file, so `firebase deploy --only firestore:indexes` would create them. **No workflow runs that command** (`firestore-rules-deploy.yml` deploys `firestore:rules,storage` only, D-33, D-68), so the file is the record and the project was set up by hand; the file inside `frontend/` is the only one the CLI reads (the empty copy in `infra/firebase/` was removed in NF-HR-013).
 
 The vector index as a `gcloud` command (syntax from `--help` on 2026-10-06; not run):
 
@@ -155,16 +161,42 @@ gcloud firestore indexes composite create --project nomadfinance-prod \
   --field-config=field-path=embedding,vector-config='{"dimension":768,"flat":{}}'
 ```
 
-**The group-scope index on `coach_plans.departure_date` cannot be made with `gcloud`.** `gcloud firestore indexes fields update` accepts only `order` and `array-config` in `--index`, with no way to say "collection group", so an earlier version of this page that showed such a command was wrong (corrected in NF-F0-006). Two ways that do work:
+The vector index of `report_embeddings` as a `gcloud` command (check `gcloud firestore indexes composite create --help` for the current syntax):
+
+```bash
+gcloud firestore indexes composite create --project nomadfinance-prod \
+  --collection-group=report_embeddings --query-scope=COLLECTION \
+  --field-config=field-path=corridor_id,order=ascending \
+  --field-config=field-path=embedding,vector-config='{"dimension":768,"flat":{}}'
+```
+
+**The group-scope indexes (`coach_plans.departure_date`, `scam_checks.created_at`) cannot be made with `gcloud`.** `gcloud firestore indexes fields update` accepts only `order` and `array-config` in `--index`, with no way to say "collection group", so an earlier version of this page that showed such a command was wrong (corrected in NF-F0-006). Two ways that do work:
 
 1. **From the file (preferred):** `firebase deploy --only firestore:indexes --project <project-id>` creates the `fieldOverrides` entry above. The CLI lists any index that exists in the project but not in the file and **offers to delete it: decline** (production has three unused ones, D-69), and never add `--force`.
 2. **In the console:** Firestore, Indexes, Single field, Add exemption: collection ID `coach_plans`, field path `departure_date`, then add an Ascending index with **Collection group** scope as well as the Collection one (an exemption replaces the defaults, so keep both).
 
-In production this exemption was made by hand in the console. The file and production agree, but the deploy path from the file has not been run (D-114).
+In production these exemptions were made by hand in the console (D-114, D-164). The deploy path from the file has never been run.
+
+### What production holds (read with `gcloud` on 2026-10-11, NF-HR-013)
+
+`gcloud firestore indexes composite list`, `gcloud firestore indexes fields list` and `gcloud firestore fields ttls list`, project `nomadfinance-prod`, database `(default)`. Every index is `READY`.
+
+| Kind | Collection | Fields | In the file? | Used? |
+|---|---|---|---|---|
+| Composite | `radar_reports` | `entity_slug` asc, `created_at` desc | yes | yes |
+| Vector | `report_embeddings` | `corridor_id` asc, `embedding` (768, flat) | yes | yes |
+| Vector | `scam_patterns` | `embedding` (768, flat) | yes | yes |
+| Single-field exemption | `coach_plans` | `departure_date` asc, collection and collection-group scope | yes | yes |
+| Single-field exemption | `scam_checks` | `created_at` asc and desc at collection scope, asc at collection-group scope | yes | yes |
+| Composite | `radar_reports` | `corridor_id` asc, `created_at` desc | no | no (D-69) |
+| Composite | `radar_entities` | `corridors` asc, `report_count` desc | no | no (D-69) |
+| Composite | `notifications` | `read` asc, `created_at` desc | no | no (D-69) |
+
+So production has every index the file lists, plus the three unused ones the page above says to leave alone. Deploying the file would offer to delete those three: decline.
 
 ## Time to live
 
-Three collection groups delete their own documents. A TTL policy is a setting on the field, not code and not an index, so it needs a person with project access, once per project (production, and staging when NF-F0-011 creates it).
+Three collection groups delete their own documents. A TTL policy is a setting on the field, not code and not an index, so it needs a person with project access, once per project.
 
 | Collection group | TTL field | Value of the field | Why this long |
 |---|---|---|---|
@@ -185,26 +217,20 @@ gcloud firestore fields ttls update expires_at --project nomadfinance-prod \
 
 Things to know: deletion is not instant, it usually happens within a day of the time in the field and can take longer, so code must not rely on a document being gone at `expires_at` (a read after expiry may still succeed, and the backend should treat `expires_at < now` as absent). A TTL policy applies to the whole collection group, so it covers every user at once. It does not delete subcollections of a document it removes; neither collection has any. If `expires_at` is missing or is not a timestamp, the document never expires, so the backend always writes it.
 
-The vector index is created with `gcloud` (check `gcloud firestore indexes composite create --help` for the current syntax):
-
-```bash
-gcloud firestore indexes composite create --project nomadfinance-prod \
-  --collection-group=report_embeddings --query-scope=COLLECTION \
-  --field-config=field-path=corridor_id,order=ascending \
-  --field-config=field-path=embedding,vector-config='{"dimension":768,"flat":{}}'
-```
+**State in production (read with `gcloud firestore fields ttls list` on 2026-10-11):** the three policies, on `expires_at` of `coach_sessions`, `scam_checks` and `scam_indicators`, are `ACTIVE` (D-103). There is no staging project to repeat them in (D-121). The commands above stay as the record for creating them again in a new project.
 
 ## Cloud Storage paths (not Firestore, referenced by it) [P]
 
-`storage.rules` is a separate shared file owned by NF-P1-014.
+`storage.rules` is a separate shared file owned by NF-P1-014. Bucket: `nomadfinance-prod.firebasestorage.app`. The table lists what the backend writes (`app/integrations/cloud_storage.py`, `app/services/coach/plan_files.py`); NF-HR-013 checked it against the code.
 
 | Path | Holds | Referenced by |
 |---|---|---|
-| `contracts/{uid}/{contractId}/{filename}` | Uploaded contract file | `users/{uid}/contracts/{id}.storage_path` |
-| `bills/{uid}/{billId}/{filename}` | Bill or payslip photo | `users/{uid}/bills/{id}.image_path` |
+| `bills/{uid}/{billId}/bill.{extension}` | Bill or payslip photo, kept when a photo is scanned (NF-P3-011) | `users/{uid}/bills/{id}.image_path` |
 | `radar-evidence/{reportId}/{filename}` | Optional report attachment | `radar_reports/{id}.evidence_paths` |
-| `exports/{uid}/financial-identity-{timestamp}.pdf` | Exported Financial Identity PDF | `financial_profile/current.latest_export` |
+| `exports/{uid}/financial-identity-{yyyymmddThhmmssZ}.pdf` | Exported Financial Identity PDF | `financial_profile/current.latest_export` |
 | `exports/{uid}/coach-plan-{planId}-{language}.pdf` | Coach plan PDF (*Future Scope*), under `exports/` so account deletion already covers it | `coach_plans/{id}.pdf.{language}.storage_path` |
+
+**Not written: `contracts/{uid}/...`.** An earlier version of this page listed an uploaded contract file there. The backend reads the file in memory, keeps only the text blocks (`users/{uid}/contracts/{id}/extraction/current`) and never stores the file, so `contracts/{id}.storage_path` stays empty (see [contracts](collections/contracts.md)). `storage.rules` still lets an owner read a `contracts/` folder and account deletion still clears it; both are harmless and stay as a safeguard if a later task keeps the file.
 
 ## How the pillars share data
 

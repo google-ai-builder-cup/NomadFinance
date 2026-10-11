@@ -1,6 +1,6 @@
 # Future Scope Technical Design Addendum
 
-Task: NF-F0-001. Owner: Aditya. Reviewer: Devam. Status: draft for the walkthrough, 2026-10-06.
+Task: NF-F0-001. Owner: Aditya. Reviewer: Devam. Status: draft for the walkthrough, 2026-10-06. **Built and released as v2.0.** This page is the design as it was proposed; where the build differs, `docs/api/`, `docs/data-model/` and `docs/features/` are the contract and win. Sections 7 and 11 carry the answers as built (NF-HR-013).
 
 This addendum covers the two feature-flagged modules added after the v1.0 prototype: the **Pre-Departure Financial Coach** (design doc 3.1) and the **Real-Time Scam Message Analyzer** (design doc 3.3). It sits beside `docs/design-doc/NomadFinance_Design_Document.md`, does not change the four pillars' behaviour, and is the section other tasks cite (table in section 10).
 
@@ -12,7 +12,7 @@ How to read tags, the same convention as `docs/data-model/firestore-schema.md`:
 | **[P]** | Proposed here because nothing else defines it. The owner of the named task may refine it but tells the team when a name changes. |
 | **[built]** | Already in the repo |
 
-Diagram sources live in `docs/mermaid/` (new: `financial-coach-pipeline.mmd`, `scam-analyzer-pipeline.mmd`; updated: `system-architecture.mmd`, `cross-pillar-data-flow.mmd` and the four pillar files). Dashed outlines in those diagrams mean "future scope, behind a flag, not deployed".
+Diagram sources live in `docs/mermaid/` (new: `financial-coach-pipeline.mmd`, `scam-analyzer-pipeline.mmd`; updated: `system-architecture.mmd`, `cross-pillar-data-flow.mmd` and the four pillar files). Dashed outlines in `system-architecture.mmd` and `cross-pillar-data-flow.mmd` mean "behind a feature flag"; the six pillar diagrams no longer mark the two modules as planned, because they are built.
 
 ## 1. Scope and non-goals
 
@@ -443,9 +443,11 @@ Seven new collections [T: NF-F0-003]. Naming follows design doc section 4.7. Fie
 | `cost_baselines/{host}` | Low, typical and high monthly cost per category in local currency, each with source URL and retrieval date | Data script | Read only | None; refreshed by re-running the loader |
 | `config/feature_flags` | Flags `coach`, `scam`: global value and uid allow-list | Operator | Backend only; the frontend reads it through the API | None |
 
+**As built (NF-HR-013).** The shipped model is [`docs/data-model/firestore-schema.md`](../data-model/firestore-schema.md), and it holds ten Future Scope collections, not seven: the eight of NF-F0-003 (these seven and `scam_indicators`, the count of reports per phone number, address or account) and later `scam_stats` (weekly counts per corridor, NF-SA-022) and `gemini_usage` (the daily Gemini budget, NF-HR-010). Plan translations are a subcollection of `coach_plans`, and plan PDFs live under `exports/{uid}/`. The TTLs are 30 days (`coach_sessions`), 90 days (`scam_checks`) and 365 days (`scam_indicators`), and all three are active in production.
+
 Points that other tasks rely on:
 
-- **Vector index.** `scam_patterns.embedding` needs a vector index of dimension 768, matching `report_embeddings` (already in `frontend/firestore.indexes.json` [built]). The index files are NF-F0-004's, and note the repo currently has two that differ (`frontend/firestore.indexes.json` and `infra/firebase/firestore.indexes.json`); NF-F0-004 should say which one deploys.
+- **Vector index.** `scam_patterns.embedding` needs a vector index of dimension 768, matching `report_embeddings` (already in `frontend/firestore.indexes.json` [built]). The index files are NF-F0-004's, and note the repo currently has two that differ (`frontend/firestore.indexes.json` and `infra/firebase/firestore.indexes.json`); NF-F0-004 should say which one deploys. **As built:** `frontend/firestore.indexes.json`, the only one the Firebase CLI reads; the empty copy in `infra/firebase/` was removed (NF-HR-013).
 - **Cache location.** The hash cache can live on `scam_checks` (per user) or in a shared collection. A per-user cache needs no new collection but makes a second user's identical message cost a Gemini call. See section 11.
 - **`cost_baselines` coverage.** The tracker splits the baselines across NF-FC-003 (Singapore and UAE), -004 (South Korea and Malaysia) and -005 (Japan and Hong Kong). That is six documents. See section 11 on UAE and Australia.
 - **Existing collections that gain fields or values**, to be specified in NF-F0-003 and NF-SA-013 / NF-FC-015 / NF-HR-001:
@@ -522,3 +524,16 @@ Direction matters for two rules. First, flows into Radar are anonymised: no uid,
 6. **Tracker names against repo names.** The tracker refers to `docs/api-contract.md`, `docs/data-model.md`, `backend/core/redact.py` and prompts in `backend/app/<feature>/prompts.py`. The repo has `docs/api/endpoints.md`, `docs/data-model/`, `backend/app/core/` and prompts in `backend/app/prompts/<pillar>/*.yaml`. This addendum uses the tracker's file names for the files those tasks will create and the repo's paths for code; owners of NF-F0-002, -003 and -008 confirm where each lands.
 7. **Account deletion.** Plan PDFs need a path in the deletion list (section 2.5), and the Coach and Scam stores need a documented answer to "what survives account deletion". Anonymised Radar reports survive today by design.
 8. **`/api/v2` layout.** A new `app/api/v2/` folder next to `app/api/v1/` is proposed in section 3; NF-F0-002 confirms.
+
+**Answers as built (NF-HR-013).**
+
+| # | Answer |
+|---|---|
+| 1 | Australia. Decided 2026-10-06: `cost_baselines/AU`, and the baselines are SG, KR, MY, JP, HK and AU: one per host country. |
+| 2 | A scam report is `source: scam_check`, `entity_type: scam_type`, `violation_type: scam_message`, with the details and the worker-confirmed indicators in a `scam` map (`docs/data-model/collections/radar.md`, "Scam reports"). |
+| 3 | Per user: `cache_key` on `scam_checks`, no shared collection (`docs/data-model/firestore-schema.md`, question 5). |
+| 4 | Decided by NF-HR-010, above. |
+| 5 | Before: the server reads the answer first, then writes the reply, so a `slot_update` normally comes before the first `token`. A client treats everything as provisional until `done` (`docs/api/v2-coach.md`, "Order"). The 2 s first-token goal has not been measured on a billed key (D-211). |
+| 6 | The API contract is `docs/api/endpoints.md` and the `v2-*.md` pages, with `docs/api/openapi.json`; the data model is `docs/data-model/`; prompts are `backend/app/prompts/<pillar>/*.yaml`. |
+| 7 | Plan PDFs are under `exports/{uid}/`, which account deletion clears. A worker's `users/{uid}` document and every subcollection (sessions, plans, checks) go with it. `scam_indicators` and `scam_stats` hold counts with no worker id, and anonymised Radar reports survive by design. |
+| 8 | `backend/app/api/v2/`. |

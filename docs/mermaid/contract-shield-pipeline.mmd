@@ -1,34 +1,31 @@
 flowchart LR
     U([Worker])
 
-    U -->|1 - Upload Contract| CS[Cloud Storage]
-    CS -->|2 - File URL| API[Cloud Run API]
+    U -->|1 - Upload contract PDF or photo| API[Cloud Run API]
 
     API -->|Step 1| S1[Verify Auth - Firebase]
-    S1 -->|Step 2| S2[Extract Text - Gemini 1.5 Vision]
-    S2 -->|Step 3| S3[Detect Language + Country + Type - Gemini 1.5 Flash]
-    S3 -->|Step 4| S4[Fetch Labor Laws - Firestore RAG]
-    S4 -->|Step 5| S5[Full Translation to User Language - Gemini Flash-Lite]
-    S5 -->|Step 6| S6[Clause-by-Clause Comparison - Gemini 2.5 Flash]
-    S6 -->|Step 7| S7[Flag Concerning Clauses]
-    S7 -->|Step 8| S8[Compute Contract Health Score]
-    S8 -->|Step 9a| S9a[Generate Complaint Letter if violations - Gemini 2.5 Flash]
-    S8 -->|Step 9b| S9b[Side-by-Side Report]
+    S1 -->|Step 2| S2[Read the File Clause by Clause - Extraction tier, vision]
+    S2 -.Text blocks only, the file is not kept.-> X[(Firestore - contracts extraction)]
+    S2 -->|Step 3| S3[Detect Language + Country + Type - Extraction tier]
+    S3 -->|Step 4| S4[Fetch Labor Laws - Firestore]
+    S4 -->|Step 5| S5[Clause-by-Clause Comparison - Reasoning tier]
+    S5 -->|Step 6| S6[Flag Concerning Clauses]
+    S6 -->|Step 7| S7[Compute Contract Health Score]
+    S7 -->|Step 8, if a term is dangerous| S8[Write Complaint Letter - Reasoning tier]
+    S7 -->|Step 9| S9[Translate Report to the Worker's Language - Classification tier]
+    S8 -->|Step 9| S9
 
-    S9a --> R[Contract Health Report + Complaint Letter]
-    S9b --> R
+    S9 --> R[Side-by-Side Report + Complaint Letter]
     R --> U
 
-    S8 -.Save Analysis.-> L[(Firestore - users contracts)]
-    S7 -.Anonymized Signal.-> RD[Feeds Exploitation Radar]
+    S7 -.Save Analysis.-> L[(Firestore - users contracts)]
+    S6 -.Anonymized Signal.-> RD[Feeds Exploitation Radar]
 
-    %% Future scope (flag coach): the Coach prefills salary and employer, and reads the legal fee cap.
+    %% Behind the flag coach: the Coach prefills salary and employer, and reads the legal fee cap.
     L -.Latest salary + employer, user confirms.-> CO[Financial Coach]
     S4 -.Legal fee cap.-> CO
 
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
     classDef data fill:#34A853,stroke:#188038,color:#fff
-    class S2,S3,S5,S6,S9a gemini
-    class S4,L data
-    classDef planned stroke-dasharray:5 3,stroke-width:2px
-    class CO planned
+    class S2,S3,S5,S8,S9 gemini
+    class S4,L,X data

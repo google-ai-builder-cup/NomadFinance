@@ -1,4 +1,4 @@
-%% Future scope, behind feature flag "scam" (docs/future-scope/design.md section 5).
+%% Behind the feature flag "scam" (docs/features/scam-analyzer.md).
 flowchart LR
     U([Worker])
 
@@ -6,23 +6,23 @@ flowchart LR
 
     API -->|Step 1| S1[Verify Auth + require_flag scam + Rate Limit 20 per hour]
     S1 -->|Text path| S3
-    S1 -->|Image path - Step 2| S2[Resize + Read Message and Sender - Gemini 1.5 Flash Vision]
+    S1 -->|Image path - Step 2| S2[Resize + Read Message and Sender - Extraction tier, vision]
     S2 -->|Image discarded| S3[Redact PII + Normalise + SHA-256 of text and language]
 
     S3 -->|Step 3| S4{Verdict Cached?}
     S4 -->|Hit - zero Gemini calls| R
 
     S4 -->|Miss - Step 4| S5[Extract Indicators - URLs phones lookalike domains, never fetched]
-    S5 -->|Step 5| S6[Classify Message - Gemini Flash-Lite structured ScamVerdict]
+    S5 -->|Step 5| S6[Classify Message - Classification tier, structured ScamVerdict]
     TAX[(Firestore - scam_taxonomy)] -.Grounding.-> S6
 
-    S5 -->|Step 6, parallel| S7[Embed Message - 768-number vector]
+    S5 -->|Step 6, parallel| S7[Embed Message - Embedding model, 768-number vector]
     S7 --> S8[Vector Search - scam_patterns + report_embeddings]
     PAT[(Firestore - scam_patterns)] -.Known templates.-> S8
     RE[(Firestore - report_embeddings)] -.Radar reports.-> S8
 
-    S6 -->|is_scam true - Step 7| S9[Explain Tactics + Safe Next Steps - Gemini 2.5 Flash]
-    S6 -->|is_scam false| S10[Short Reassurance + General Tip]
+    S6 -->|is_scam true - Step 7| S9[Explain Tactics + Safe Next Steps - Reasoning tier]
+    S6 -->|is_scam false| S10[Short Reassurance + General Tip - Classification tier]
 
     S9 --> R[Verdict Card + Explainer + Similar Scams]
     S10 --> R
@@ -36,7 +36,13 @@ flowchart LR
     RP -->|Anonymised, no raw text| RR[(Firestore - radar_reports)]
     RR -.Enters Radar pipeline.-> RAD[Exploitation Radar clustering + alerts]
 
+    subgraph STATS[Weekly Counts - Daily Cron]
+        CRN[Cloud Scheduler scam-stats] --> AGS[aggregate-scam-stats endpoint]
+        AGS -->|Counts only, no text| SST[(Firestore - scam_stats)]
+    end
+    SC -.Checks of the last two weeks.-> AGS
+
     classDef gemini fill:#EA4335,stroke:#c5221f,color:#fff
     classDef data fill:#34A853,stroke:#188038,color:#fff
-    class S2,S6,S7,S9 gemini
-    class TAX,PAT,RE,SC,RR data
+    class S2,S6,S7,S9,S10 gemini
+    class TAX,PAT,RE,SC,RR,SST data
