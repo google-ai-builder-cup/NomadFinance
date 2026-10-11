@@ -1,38 +1,42 @@
-%% Dashed outlines and dotted edges involving P5 or P6 = future scope behind feature flags (docs/future-scope/design.md section 8).
+%% Cross-pillar data flow, v2.0.0 (edges read against backend/app/services and the frontend).
+%% Solid line = a v1.0 flow, always on. Dotted line = a flow that involves a flag-gated v2.0 module.
+%% Dashed outline = the module sits behind its feature flag (docs/future-scope/design.md section 8).
+%% A flow into Exploitation Radar is anonymous: no account id, no raw message.
 flowchart TB
-    U([Migrant Worker])
+    U(["Migrant worker"])
 
-    U --> P1[Remittance X-Ray]
-    U --> P2[Contract Shield]
-    U --> P3[Exploitation Radar]
-    U --> P4[Financial Identity]
-    U -.flag coach.-> P5[Financial Coach]
-    U -.flag scam.-> P6[Scam Analyzer]
+    U --> P1["Remittance X-Ray"]
+    U --> P2["Contract Shield"]
+    U --> P3["Exploitation Radar"]
+    U --> P4["Financial Identity"]
+    U -. "flag coach" .-> P5["Financial Coach"]
+    U -. "flag scam" .-> P6["Scam Check"]
 
-    P1 -.Every transfer logged.-> P4
-    P2 -.Employer flags feed radar.-> P3
-    P3 -.Verified bad actors shown.-> P1
-    P3 -.Verified bad agencies shown.-> P2
-    P2 -.Verified employment adds.-> P4
+    P1 -- "every logged transfer" --> P4
+    P2 -- "danger clauses, anonymous" --> P3
+    P2 -- "stated salary becomes verified income" --> P4
+    P3 -- "flagged transfer operators" --> P1
+    P3 -- "flagged employers and agencies" --> P2
 
-    P1 -.Cheapest provider per corridor.-> P5
-    P5 -.Deep link with corridor + amount.-> P1
-    P2 -.Salary + employer prefill, user confirms.-> P5
-    P2 -.Legal fee cap from labor laws.-> P5
-    P5 -.Plan targets become goals.-> P4
-    P5 -.Plan adherence signal, opt-in.-> P4
+    P1 -. "cheapest provider and quote" .-> P5
+    P5 -. "deep link with route and amount" .-> P1
+    P3 -. "flagged operators passed over in the plan" .-> P5
+    P2 -. "salary and employer - worker confirms" .-> P5
+    P2 -. "legal recruitment-fee cap" .-> P5
+    P4 -. "pay, savings, transfers - worker confirms" .-> P5
+    P5 -. "plan targets become goals" .-> P4
+    P5 -. "plan check-ins - opt-in" .-> P4
 
-    P6 -.One-tap anonymised scam report.-> P3
-    P3 -.Seen N times in your corridor.-> P6
-    P6 -.Scam-check activity signal, opt-in.-> P4
+    P6 -. "one-tap report - anonymous, worker confirms" .-> P3
+    P3 -. "seen N times on your route - counts only" .-> P6
+    P6 -. "scam-check activity - opt-in" .-> P4
 
-    P4 --> OUT([Portable Financial Identity])
-    OUT --> MFI[MFI or Bank in Home Country]
+    P4 --> OUT(["Portable Financial Identity<br/>PDF and activity feed"])
+    OUT --> MFI["Bank or micro-lender<br/>in the home country"]
 
     classDef pillar fill:#4285F4,stroke:#1a73e8,color:#fff
     classDef output fill:#34A853,stroke:#188038,color:#fff
-    classDef planned stroke-dasharray:5 3,stroke-width:2px
-    class P1,P2,P3,P4 pillar
-    class P5,P6 pillar
-    class P5,P6 planned
+    classDef flagged stroke-dasharray:5 3,stroke-width:2px
+    class P1,P2,P3,P4,P5,P6 pillar
+    class P5,P6 flagged
     class OUT output
