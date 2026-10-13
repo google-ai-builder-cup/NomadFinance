@@ -1,0 +1,57 @@
+{
+  "displayName": "API server errors above 5% of requests",
+  "documentation": {
+    "mimeType": "text/markdown",
+    "content": "**More than 5% of the API's requests were server errors (5xx) in the last 15 minutes**, with at least 20 requests in that time (a quiet service does not trip it on one failure).\n\nWhat to do:\n1. Run `python infra/monitoring/watch_report.py --window 1h` (or open the dashboard *NomadFinance: requests, errors and Gemini usage*) and see which feature the 5xx belong to.\n2. If it is one module: switch its flag off (Firestore `config/feature_flags`) and look at the logs with the same `request_id`.\n3. If it is the new revision: roll back to the previous one.\n\nA Gemini `503 ai_busy` answer is a graceful 503 and counts here; if it is the cause, the daily-limit alert and the budget-blocked chart will agree. Runbook: docs/runbooks/NF-HR-017-rollout-watch.md, and the rollback levers in docs/runbooks/NF-HR-011-release-v2.0.md"
+  },
+  "combiner": "AND",
+  "conditions": [
+    {
+      "displayName": "5xx share of requests above 5% in 15 min",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\" AND metric.label.status_class=\"5xx\"",
+        "denominatorFilter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_DELTA",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupByFields": []
+          }
+        ],
+        "denominatorAggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_DELTA",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupByFields": []
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 0.05,
+        "duration": "0s",
+        "trigger": { "count": 1 }
+      }
+    },
+    {
+      "displayName": "At least 20 requests in 15 min",
+      "conditionThreshold": {
+        "filter": "metric.type=\"logging.googleapis.com/user/nf_http_requests\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_DELTA",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupByFields": []
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 20,
+        "duration": "0s",
+        "trigger": { "count": 1 }
+      }
+    }
+  ],
+  "alertStrategy": { "autoClose": "86400s" },
+  "userLabels": { "nf": "service-errors" }
+}

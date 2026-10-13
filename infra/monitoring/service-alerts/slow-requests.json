@@ -1,0 +1,30 @@
+{
+  "displayName": "API 95th percentile latency above 30 s",
+  "documentation": {
+    "mimeType": "text/markdown",
+    "content": "**One request in twenty took longer than 30 seconds** over the last 15 minutes. Routes that wait for Gemini take 2 to 25 s by design (a scam analysis about 14 s, a plan 20 to 40 s), so this is a pathology alarm, not a regression alarm: Gemini timing out (the client gives up at 30 s), a stuck instance, or a cold-start storm.\n\nWhat to do:\n1. Run `python infra/monitoring/watch_report.py --window 1h`: the *Slowest routes* table names the route, and *Gemini calls that gave up* shows whether the model is the cause.\n2. If it is Gemini, check AI Studio's status and the daily-limit chart; the guard answers `503` rather than waiting once a budget is spent.\n3. If it is one route on one revision, roll back to the previous revision.\n\nThe tighter per-route limits (2 s for an ordinary route) are in the watch report, which a person reads. Runbook: docs/runbooks/NF-HR-017-rollout-watch.md"
+  },
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "Request latency p95 above 30 s for 15 min",
+      "conditionThreshold": {
+        "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"nomadfinance-api\" AND metric.type=\"run.googleapis.com/request_latencies\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "900s",
+            "perSeriesAligner": "ALIGN_PERCENTILE_95",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupByFields": []
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 30000,
+        "duration": "0s",
+        "trigger": { "count": 1 }
+      }
+    }
+  ],
+  "alertStrategy": { "autoClose": "86400s" },
+  "userLabels": { "nf": "service-latency" }
+}

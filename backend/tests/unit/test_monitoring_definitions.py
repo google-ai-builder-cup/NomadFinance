@@ -442,3 +442,73 @@ def test_the_alert_watches_the_metric_the_dashboard_shows() -> None:
     assert "model" in METRICS[name]["labelExtractors"]
     # The same window the "rolling 23.5 h" chart on the dashboard plots.
     assert condition["aggregations"][0]["alignmentPeriod"] == "84600s"
+
+
+# --- the alerts of the rollout watch (NF-HR-017) ---------------------------------------------
+
+
+def _service_alert(name: str) -> dict[str, Any]:
+    return _load(f"service-alerts/{name}.json")
+
+
+def test_the_server_error_alert_is_a_share_of_the_requests_metric_with_a_volume_floor() -> None:
+    policy = _service_alert("server-errors")
+    share, volume = (c["conditionThreshold"] for c in policy["conditions"])
+
+    assert policy["combiner"] == "AND", "a share alone fires on one failure of three requests"
+    assert 'metric.label.status_class="5xx"' in share["filter"]
+    assert (
+        share["denominatorFilter"] == 'metric.type="logging.googleapis.com/user/nf_http_requests"'
+    )
+    assert share["comparison"] == "COMPARISON_GT" and share["thresholdValue"] == 0.05
+    assert volume["thresholdValue"] == 20
+    # The same window for the numerator, the denominator and the floor.
+    windows = {
+        share["aggregations"][0]["alignmentPeriod"],
+        share["denominatorAggregations"][0]["alignmentPeriod"],
+        volume["aggregations"][0]["alignmentPeriod"],
+    }
+    assert windows == {"900s"}
+
+
+def test_the_server_error_alert_uses_a_metric_and_a_label_that_exist() -> None:
+    share = _service_alert("server-errors")["conditions"][0]["conditionThreshold"]
+
+    name = re.search(r"user/(\w+)", share["filter"]).group(1)  # type: ignore[union-attr]
+
+    assert name in METRICS
+    assert "status_class" in METRICS[name]["labelExtractors"]
+
+
+def test_the_latency_alert_is_the_95th_percentile_of_cloud_runs_own_metric() -> None:
+    condition = _service_alert("slow-requests")["conditions"][0]["conditionThreshold"]
+
+    assert 'metric.type="run.googleapis.com/request_latencies"' in condition["filter"]
+    assert 'resource.labels.service_name="nomadfinance-api"' in condition["filter"]
+    assert condition["aggregations"][0]["perSeriesAligner"] == "ALIGN_PERCENTILE_95"
+    # Above a route that waits for Gemini by design (a plan takes 20 to 40 s at its slowest).
+    assert condition["thresholdValue"] == 30000
+
+
+def test_each_service_alert_says_what_to_do_and_where_the_runbook_is() -> None:
+    names = set()
+    for file in sorted((MONITORING / "service-alerts").glob("*.json")):
+        policy = json.loads(file.read_text(encoding="utf-8"))
+        names.add(policy["displayName"])
+
+        assert "NF-HR-017-rollout-watch.md" in policy["documentation"]["content"]
+        assert "__" not in json.dumps(policy), "a placeholder was left in the policy"
+        assert policy["alertStrategy"]["autoClose"] == "86400s"
+    assert len(names) == 2
+
+
+def test_the_service_alerts_are_made_even_when_no_model_has_a_limit(tmp_path: Path) -> None:
+    code = _renderer().main(
+        ["render_policies.py", str(tmp_path), "projects/p/notificationChannels/1"]
+    )
+
+    made = sorted(file.name for file in tmp_path.glob("*.json"))
+    assert code == _renderer().SKIPPED_EXIT_CODE  # the models are still skipped, and said so
+    assert "service-server-errors.json" in made and "service-slow-requests.json" in made
+    policy = json.loads((tmp_path / "service-server-errors.json").read_text(encoding="utf-8"))
+    assert policy["notificationChannels"] == ["projects/p/notificationChannels/1"]
