@@ -5,20 +5,22 @@ Each section is built from Conventional Commits by `infra/release/generate_chang
 run it again when new commits land, and never edit between the markers by hand.
 
 <!-- changelog:2.0.0:start -->
-## [2.0.0] - 2026-10-11
+## [2.0.0] - 2026-10-13
 
 Two new modules join the four pillars. Both ship behind feature flags and stay hidden until `config/feature_flags` turns them on, one at a time (Scam Analyzer first, then the Coach). With a flag off, its routes answer `404` and the app looks as it did in v1.0.
 
 - **Scam Analyzer** (`scam`): a worker pastes a message, uploads a screenshot or shares it into the app, and gets a verdict, the tricks used, plain next steps with read-aloud, a history of checks, and a one-tap, anonymous report to Exploitation Radar.
 - **Financial Coach** (`coach`): a short interview in the worker's own language, a preparedness score from 0 to 100, a 13-week plan with a PDF in six languages, and check-ins at day 30, 60 and 90.
 - **Around them:** the `/api/v2` surface (standard error envelope, streaming replies, idempotency keys), PII redaction, log-based metrics, a dashboard and Gemini daily-limit alerts, a per-feature Gemini daily budget that degrades to "try again later", shared Coach and Scam signals for Financial Identity, a first-run tour on the home screen, and a security, performance and accessibility pass over the new screens.
+- **Checked before release:** three regression suites (contracts, Financial Identity and the Coach; Remittance X-Ray, the Scam Analyzer and three browsers; Exploitation Radar, the Remittance → Coach handoff and the installed app) found and fixed 13 bugs, three of them major, among them a sign-out that left the last worker's push alerts arriving on a shared phone.
 
 Rollback is flag off first, then the previous Cloud Run revision and Hosting release: `docs/runbooks/NF-HR-011-release-v2.0.md`.
 
-82 commits in 71 pull requests (#108 to #178) since `6117b4f`, up to `abcf536`.
+90 commits in 78 pull requests (#108 to #185) since `6117b4f`, up to `049d4d3`.
 
 ### Features
 
+- **analytics:** add Coach funnel events and an adoption snapshot ([#182](https://github.com/google-ai-builder-cup/NomadFinance/pull/182), NF-HR-015)
 - **coach:** add interview slots and question bank ([#145](https://github.com/google-ai-builder-cup/NomadFinance/pull/145), NF-FC-001)
 - **coach:** add SG and AU cost baselines and loader ([#147](https://github.com/google-ai-builder-cup/NomadFinance/pull/147), NF-FC-003)
 - **coach:** add KR and MY cost baselines ([#148](https://github.com/google-ai-builder-cup/NomadFinance/pull/148), NF-FC-004)
@@ -85,10 +87,12 @@ Rollback is flag off first, then the previous Cloud Run revision and Hosting rel
 - **api:** add API v2 conventions and error envelope mocks feat(api): answer /api/v2 errors in the standard envelope ([#109](https://github.com/google-ai-builder-cup/NomadFinance/pull/109), NF-F0-002)
 - **api:** add scam analyzer contract, schemas and mocks ([#123](https://github.com/google-ai-builder-cup/NomadFinance/pull/123), NF-SA-002)
 - **api:** add coach contract, schemas and mocks ([#146](https://github.com/google-ai-builder-cup/NomadFinance/pull/146), NF-FC-002)
+- **api:** export OpenAPI and reconcile API and data model docs ([#181](https://github.com/google-ai-builder-cup/NomadFinance/pull/181), NF-HR-013)
 - **coach:** add preparedness scoring rubric ([#150](https://github.com/google-ai-builder-cup/NomadFinance/pull/150), NF-FC-006)
 - **coach:** add Financial Coach feature doc and prompt notes ([#170](https://github.com/google-ai-builder-cup/NomadFinance/pull/170), NF-FC-026)
 - **data-model:** add schema for coach, scam and baseline collections ([#110](https://github.com/google-ai-builder-cup/NomadFinance/pull/110), NF-F0-003)
 - **future-scope:** add coach and scam analyzer design addendum ([#108](https://github.com/google-ai-builder-cup/NomadFinance/pull/108), NF-F0-001)
+- **readme:** rewrite README and redraw v2 architecture diagrams ([#180](https://github.com/google-ai-builder-cup/NomadFinance/pull/180), NF-HR-012)
 - **runbooks:** add NF-F0-001 and NF-FC-006 runbooks (`2a45703`, NF-F0-001, NF-FC-006)
 - **scam:** add feature page, prompt notes and eval baseline ([#142](https://github.com/google-ai-builder-cup/NomadFinance/pull/142), NF-SA-021)
 
@@ -101,9 +105,12 @@ Rollback is flag off first, then the previous Cloud Run revision and Hosting rel
 - **harness:** add emulator fixtures, fake Gemini, MSW and Playwright ([#120](https://github.com/google-ai-builder-cup/NomadFinance/pull/120), NF-F0-014)
 - **perf:** add load harness and v2 performance profiling runbook ([#174](https://github.com/google-ai-builder-cup/NomadFinance/pull/174), NF-HR-007)
 - **regression:** add regression suite A and fix its five bugs ([#175](https://github.com/google-ai-builder-cup/NomadFinance/pull/175), NF-HR-004)
+- **regression:** add regression suite B and fix its five bugs ([#184](https://github.com/google-ai-builder-cup/NomadFinance/pull/184), NF-HR-005)
+- **regression:** add regression suite C and fix its bugs ([#185](https://github.com/google-ai-builder-cup/NomadFinance/pull/185), NF-HR-006)
 - **scam:** add offline eval runner with f1 quality bar ([#135](https://github.com/google-ai-builder-cup/NomadFinance/pull/135), NF-SA-014)
 - **scam:** add browser tests and prompt-injection suite ([#141](https://github.com/google-ai-builder-cup/NomadFinance/pull/141), NF-SA-020)
 - **scam:** add stress set and confidence report, keep classify v2 ([#144](https://github.com/google-ai-builder-cup/NomadFinance/pull/144), NF-SA-023)
+- **scam:** accept a raw Aborted in the two-taps repository test ([#181](https://github.com/google-ai-builder-cup/NomadFinance/pull/181), NF-HR-013)
 - **security:** review v2 routes and fix JSON cap, headers, reply links ([#176](https://github.com/google-ai-builder-cup/NomadFinance/pull/176), NF-HR-008)
 
 ### Chores
@@ -112,4 +119,6 @@ Rollback is flag off first, then the previous Cloud Run revision and Hosting rel
 - **ci:** add coverage gates, emulator tests and a commit-policy check ([#118](https://github.com/google-ai-builder-cup/NomadFinance/pull/118), NF-F0-010)
 - **coach:** add missing files ([#160](https://github.com/google-ai-builder-cup/NomadFinance/pull/160), NF-FC-017)
 - **frontend:** remove a generated test report from version control ([#119](https://github.com/google-ai-builder-cup/NomadFinance/pull/119), NF-F0-012)
+- **release:** add v2.0.0 changelog, version bump and rollback runbook ([#179](https://github.com/google-ai-builder-cup/NomadFinance/pull/179), NF-HR-011)
+- **release:** add rollout watch plan, alerts and review note ([#183](https://github.com/google-ai-builder-cup/NomadFinance/pull/183), NF-HR-017)
 <!-- changelog:2.0.0:end -->

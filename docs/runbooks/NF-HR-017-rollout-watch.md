@@ -19,13 +19,13 @@ The 48 hours begin at **T0 = the moment both flags are on for everyone** (Scam A
 
 | # | Before T0 | How to check | If it is not |
 |---|---|---|---|
-| P1 | The release steps of `NF-HR-011-release-v2.0.md` are done: gate G2 to G5 clear, `v2.0.0` tagged and released | `git for-each-ref refs/tags`; `/health` says `"version":"2.0.0"` | Not a reason to skip the watch, but say so in the note: the watch is then of an untagged build |
+| P1 | The release steps of `NF-HR-011-release-v2.0.md` are done: gate G4 and G5 clear (G2 and G3 were done on 2026-10-13), `v2.0.0` tagged and released | `git for-each-ref refs/tags`; `/health` says `"version":"2.0.0"` | Not a reason to skip the watch, but say so in the note: the watch is then of an untagged build |
 | P2 | **Monitoring exists in the project** (dashboard, metrics, alerts) and has been created with this task's alerts | Cloud Monitoring, Dashboards: *NomadFinance: requests, errors and Gemini usage*. Alerting, Policies: *API server errors above 5% of requests* and *API 95th percentile latency above 30 s* | `ALERT_EMAILS="a@x,b@x,c@x" bash infra/monitoring/setup-monitoring.sh` (D-122), by a project owner. Try `DRY_RUN=1` first |
 | P3 | Every `rpd` in `quota-limits.json` is a number, the backend redeployed by hand (the budget guard is on) | `quota-limits.json` has no `null`, and `gemini_usage/<today>` (Firestore) has `calls.<feature>.<tier>` counts once a request has been made | D-122 and D-286 (`NF-HR-010-gemini-quota-guard.md`). Without it a spent quota shows workers "try again later" with no early warning |
 | P4 | Scam patterns loaded | Firestore `scam_patterns` has about 480 documents | `python -m src.loaders.scam_patterns` from `data-scripts/` (D-135, D-271). Without it "seen before" has nothing to search |
 | P5 | The state of the flags is known and intended, including the tester `allow_uids` on `scam` | Firestore `config/feature_flags` | Decide and write it in the note (G10) |
 | P6 | A starting window is on record | `python infra/monitoring/watch_report.py --window 6h` and paste the table in the log below as line 0 | A watch without a before cannot say what changed |
-| P7 | The previous revision is known, as the rollback target | `gcloud run revisions list --service nomadfinance-api --region asia-south1 --project nomadfinance-prod --limit 5` | Write the revision id in the log header |
+| P7 | The previous revision is known, as the rollback target | `gcloud run revisions list --service nomadfinance-api --region asia-south1 --project nomadfinance-prod --limit 5` | Write the revision id in the log header. Read it **after** the last merge to `main` (NF-HR-005 and -006 deployed new revisions on 2026-10-13), so the rollback target is the one the watch starts from |
 | P8 | Who is watching, and who is the second pair of eyes at night | Names in the log header | Three people, two time zones: agree it before T0 |
 
 ## Schedule

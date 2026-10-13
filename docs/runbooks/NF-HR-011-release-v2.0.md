@@ -2,6 +2,8 @@
 
 Owner Aditya, reviewer Pranjal. Branch `release/v2.0`. Written 2026-10-11.
 
+> **Updated 2026-10-13, after NF-HR-005 (#184) and NF-HR-006 (#185) merged.** G2 and G3 are clear, so the blockers still open are G4 and G5. `CHANGELOG.md` was rebuilt up to `049d4d3` (90 commits, 78 pull requests, #108 to #185); because `main` has moved on since `abcf536`, the tag goes on the commit that carries that changelog, not on `abcf536` or on the release pull request. The two suites' fixes changed production code (the sign-out push-token release, the Radar report guard, the symbol-only business name, and NF-HR-005's amount, advice and log fixes), so the current Cloud Run revision and Hosting release are newer than the ones under "What production looked like": read them again at R0. Three decisions came out of the suites and sit beside G7 to G10 as G11 to G13.
+
 ## Summary
 
 v2.0 is the Scam Analyzer and the Financial Coach, plus the platform work around them (`/api/v2`, flags, redaction, observability, the Gemini budget guard) and the hardening passes of NF-HR-004 to -010. Everything is already merged to `main`: `release/v2.0`, `main` and `origin/main` all point at `abcf536`, and because every merge to `main` deploys to production (NF-F0-011), **the code is already live**. What is left is to put a version on it, write down what it contains, rehearse going back, and turn the modules on in a controlled order.
@@ -16,7 +18,7 @@ v2.0 is the Scam Analyzer and the Financial Coach, plus the platform work around
 | This runbook: gate, release steps, rollback, rehearsal record, staged enable | here |
 | The missing step in the Cloud Run rollback (`--to-latest`) | `docs/runbooks/deploy-backend.md` |
 
-**Not done, because only a person can do it** (git, GitHub and production writes are not mine to run): merging NF-HR-005 and -006, the release PR, the tag and the GitHub Release, the rollback rehearsal, and the staged enable with its two 30-minute watches. Each is a numbered step below with the exact command, and a blank record to fill in.
+**Not done, because only a person can do it** (git, GitHub and production writes are not mine to run): the release PR (done, #179), the tag and the GitHub Release, the rollback rehearsal, and the staged enable with its two 30-minute watches. Each is a numbered step below with the exact command, and a blank record to fill in.
 
 ## What production looked like on 2026-10-11
 
@@ -46,8 +48,8 @@ Nothing below is a decision made by this document: it is the list to walk throug
 | # | Item | State | Owner | Clear it by |
 |---|---|---|---|---|
 | G1 | NF-HR-004 (#175), -007 (#174), -008 (#176, no open High), -009 (#177) merged | Done | | |
-| G2 | **Blocker.** NF-HR-005 merged | Not done: no `fix/regression-suite-b` on origin | Aditya | Merge it |
-| G3 | **Blocker.** NF-HR-006 merged | Not done: no `fix/regression-suite-c` on origin | Pranjal | Merge it |
+| G2 | **Blocker.** NF-HR-005 merged | **Done** (#184, 2026-10-13) | Aditya | |
+| G3 | **Blocker.** NF-HR-006 merged | **Done** (#185, 2026-10-13) | Pranjal | |
 | G4 | **Blocker.** `main` is green: the five required checks (`Backend checks`, `Frontend checks`, `Frontend rules tests`, `Data scripts checks`, `Commit policy`) on the latest `main` commit | Not checked (no `gh` here) | Aditya | GitHub, Actions, branch `main` |
 | G5 | **Blocker.** Read the Cloud Run service (D-276): environment variable names, `min-instances`, latest revision | Refused to me | Devam | Command below |
 | G6 | Signed-in smoke test of production (D-274) | Not done | Devam | The list in D-274 |
@@ -55,8 +57,11 @@ Nothing below is a decision made by this document: it is the list to walk throug
 | G8 | Scam patterns loaded (D-135, D-271) | Not done: 0 documents | Devam or Aditya | `python -m src.loaders.scam_patterns` from `data-scripts/` |
 | G9 | Branch protection on `main` (D-116) | Not checked; four commits reached `main` with no pull request (`27ecde0`, `d27c8d0`, `71e8620`, `2a45703`) | Devam | GitHub, Settings, Branches |
 | G10 | The tester `allow_uids` entry on `scam` is known and intended | Unknown | Pranjal (PP edited it) | Look at the document |
+| G11 | Push, the install offer and the sign-out fix (QA-C-05) checked on a real phone with Firebase Cloud Messaging configured (D-327) | Not done: only emulation and stand-ins were available | Aditya (both phones) | The steps in D-327 |
+| G12 | What "works offline" means for the installed app (D-330): a local copy of the profile, or reword the install offer | Open decision; today a cold open offline shows "We couldn't load your profile" | Pranjal | Decide, then D-330 |
+| G13 | The Radar → Remittance flagged badge in the demo (D-331): the seeded businesses match no price-survey firm | Open decision | Pranjal | Seed one, or report a listed firm twice on the day |
 
-G7 to G10 are not tag blockers, but turn each into a decision before the modules stay on for everyone: with G7 open a spent Gemini quota shows workers "try again later" with no early warning, and with G8 open the Scam Analyzer works but never says "seen before".
+G7 to G13 are not tag blockers, but turn each into a decision before the modules stay on for everyone: with G7 open a spent Gemini quota shows workers "try again later" with no early warning, and with G8 open the Scam Analyzer works but never says "seen before".
 
 For G5, names only, no secret values (secrets show as references):
 
@@ -70,9 +75,9 @@ Expected: `APP_ENV=prod`, `CRON_SERVICE_ACCOUNT`, `CRON_AUDIENCE`, the secret re
 
 Dates: the tracker says 2026-11-16, but the prototype freeze is 2026-10-17 (NF-F0-011). Do these before the demo, not on the day.
 
-**1. Code freeze.** Tell the team: until the tag, `main` takes only the NF-HR-005 and -006 fixes and fixes found by the rehearsal. Every merge deploys.
+**1. Code freeze.** Tell the team: until the tag, `main` takes only the changelog refresh (the pull request that carries the 2026-10-13 update) and fixes found by the rehearsal. Every merge deploys. NF-HR-005 and -006 have merged.
 
-**2. Clear G2 to G5.**
+**2. Clear G4 and G5** (G2 and G3 are done).
 
 **3. Rebuild the changelog** after the last merge, so it lists the fixes that landed late. From the repo root:
 
@@ -227,7 +232,7 @@ Documentation (tracker): Markdown, consistent formatting, committed under `/docs
 
 Tracker "Done when":
 
-- [ ] `v2.0.0` tag on a green `main`: **not done** (G2 to G5, then steps 3 to 5)
+- [ ] `v2.0.0` tag on a green `main`: **not done** (G4 and G5, then steps 3 to 5; G2 and G3 are done)
 - [ ] Rollback rehearsal recorded: **not done** (the table above is empty)
 - [ ] Flags enabled one at a time, Scam Analyzer then Coach, 30-minute watch each: **not done** (E1, E2)
 - [x] `CHANGELOG.md` built from Conventional Commits
@@ -250,7 +255,7 @@ PR title: `chore(release): v2.0.0 changelog, version bump and rollback runbook (
 Logged in `docs/deferred-items.md` as D-291 to D-296.
 
 - The flags were switched on before any release process (D-291).
-- NF-HR-005 and -006 are not merged (D-292).
+- NF-HR-005 and -006 were not merged when this page was written (D-292); they merged on 2026-10-13 and this page was updated.
 - The steps only a person can do: tag, GitHub Release, rehearsal, staged enable (D-293).
 - Four commits reached `main` without a pull request (D-294).
 - `docs/runbooks/incident-response.md` is empty; this page covers rollback only (D-295).
