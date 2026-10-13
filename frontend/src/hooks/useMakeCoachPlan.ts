@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 
+import { trackCoachPlanCreated } from "@/lib/analytics";
 import { createCoachPlan } from "@/services/coachService";
-import type { LanguageCode } from "@/types/enums";
+import type { CorridorId, LanguageCode } from "@/types/enums";
 
 /**
  * Make the 90-day plan. A plan takes 20 to 40 seconds, so the call has a long allowance and the
@@ -13,5 +14,11 @@ export function useMakeCoachPlan(sessionId: string, language: LanguageCode, time
     mutationFn: () => createCoachPlan(sessionId, language, timeoutMs),
     retry: false,
     meta: { inlineError: true },
+    onSuccess: (plan) =>
+      trackCoachPlanCreated({
+        band: plan.score.band,
+        corridorId: plan.corridor_id as CorridorId | undefined,
+        language,
+      }),
   });
 }

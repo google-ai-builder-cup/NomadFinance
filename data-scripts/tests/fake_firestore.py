@@ -83,6 +83,27 @@ class CollectionRef:
         return _CountQuery(len(self.stream()))
 
 
+class CollectionGroupRef:
+    """Every document in a collection of this name, wherever it sits (a collection-group query)."""
+
+    def __init__(self, client: FakeClient, name: str) -> None:
+        self.client = client
+        self.name = name
+        self.selected: list[str] | None = None
+
+    def select(self, fields: list[str]) -> CollectionGroupRef:
+        self.selected = fields
+        return self
+
+    def stream(self) -> list[Snapshot]:
+        found = []
+        for path, data in sorted(self.client.store.items()):
+            parts = path.split("/")
+            if len(parts) % 2 == 0 and parts[-2] == self.name:
+                found.append(Snapshot(DocumentRef(self.client, path), data))
+        return found
+
+
 class Batch:
     def __init__(self, client: FakeClient) -> None:
         self._client = client
@@ -120,6 +141,9 @@ class FakeClient:
 
     def document(self, path: str) -> DocumentRef:
         return DocumentRef(self, path)
+
+    def collection_group(self, name: str) -> CollectionGroupRef:
+        return CollectionGroupRef(self, name)
 
     def batch(self) -> Batch:
         return Batch(self)

@@ -1,5 +1,5 @@
 import { CircleCheck } from "lucide-react";
-import { useId, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import AnswerPanel from "@/components/coach/AnswerPanel";
@@ -19,6 +19,7 @@ import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { useI18n } from "@/hooks/useI18n";
 import { useNewInterviewAsk } from "@/hooks/useNewInterviewAsk";
 import { useUiLanguage } from "@/hooks/useUiLanguage";
+import { trackCoachAnswersConfirmed } from "@/lib/analytics";
 import { removeEntry } from "@/lib/coachOutboxStore";
 import type { CoachSessionStart } from "@/types/coach";
 import { clearDraft } from "@/utils/coachDraft";
@@ -82,6 +83,15 @@ export default function CoachChat({
   // What the Coach already knows, waiting for the worker before the first question.
   const [offer, setOffer] = useState(session.known ?? null);
   const confirmed = state.stage === "plan";
+  // The funnel counts the moment the worker says yes, not a return to an interview whose answers
+  // were confirmed earlier: only a change from "not confirmed" seen on this screen is sent.
+  const wasConfirmed = useRef(session.stage === "plan");
+  useEffect(() => {
+    if (confirmed && !wasConfirmed.current) {
+      wasConfirmed.current = true;
+      trackCoachAnswersConfirmed(language);
+    }
+  }, [confirmed, language]);
   // The answer panel is gone once the answers are confirmed; focus goes to what replaces it.
   const confirmedRef = useFocusOnMount<HTMLElement>(confirmed);
   // The review (a table to read) and the finished screen (a score to read) are pages that grow;

@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { anonymisePath } from "@/lib/analytics";
@@ -232,6 +234,76 @@ describe("analytics", () => {
     });
   });
 
+  describe("the Coach funnel events (NF-HR-015)", () => {
+    async function loaded() {
+      const analytics = await loadModule({ VITE_FIREBASE_MEASUREMENT_ID: "G-TEST" });
+      await settle();
+      return analytics;
+    }
+
+    function sent(name: string): Record<string, unknown>[] {
+      return sdk.logEvent.mock.calls
+        .filter(([, event]) => event === name)
+        .map(([, , params]) => params as Record<string, unknown>);
+    }
+
+    it("sends coach_started with how it began and the language, nothing else of the worker", async () => {
+      const analytics = await loaded();
+
+      analytics.trackCoachStarted("new", "tl");
+      analytics.trackCoachStarted("resumed", "tl");
+      analytics.trackCoachStarted("restart", "en");
+      await settle();
+
+      const events = sent("coach_started");
+      expect(events.map((e) => [e.start_kind, e.ui_language])).toEqual([
+        ["new", "tl"],
+        ["resumed", "tl"],
+        ["restart", "en"],
+      ]);
+    });
+
+    it("sends the confirmation, the plan made and the plan viewed with the band and the route", async () => {
+      const analytics = await loaded();
+
+      analytics.trackCoachAnswersConfirmed("id");
+      analytics.trackCoachPlanCreated({ band: "needs_work", corridorId: "AU-PH", language: "id" });
+      analytics.trackCoachPlanViewed({ band: "needs_work", corridorId: undefined, language: "id" });
+      await settle();
+
+      expect(sent("coach_answers_confirmed")[0]).toMatchObject({ ui_language: "id" });
+      expect(sent("coach_plan_created")[0]).toMatchObject({
+        band: "needs_work",
+        corridor_id: "AU-PH",
+        ui_language: "id",
+      });
+      // A route that is none of the six is "none", as for the scam events.
+      expect(sent("coach_plan_viewed")[0]).toMatchObject({ corridor_id: "none" });
+    });
+
+    it("sends the milestone of an answered check-in", async () => {
+      const analytics = await loaded();
+
+      analytics.trackCoachCheckinAnswered("d60");
+      await settle();
+
+      expect(sent("coach_checkin_answered")[0]).toMatchObject({ milestone: "d60" });
+    });
+
+    it("sends none of them without a measurement ID", async () => {
+      const analytics = await loadModule({ VITE_FIREBASE_MEASUREMENT_ID: "" });
+
+      analytics.trackCoachStarted("new", "en");
+      analytics.trackCoachAnswersConfirmed("en");
+      analytics.trackCoachPlanCreated({ band: "x", corridorId: undefined, language: "en" });
+      analytics.trackCoachPlanViewed({ band: "x", corridorId: undefined, language: "en" });
+      analytics.trackCoachCheckinAnswered("d30");
+      await settle();
+
+      expect(sdk.logEvent).not.toHaveBeenCalled();
+    });
+  });
+
   describe("the address sent with every event", () => {
     const configured = () => loadModule({ VITE_FIREBASE_MEASUREMENT_ID: "G-TEST" });
 
@@ -428,6 +500,19 @@ describe("analytics", () => {
         source: "history",
       });
       analytics.trackScamReported("lottery");
+      analytics.trackCoachStarted("resumed", "hi");
+      analytics.trackCoachAnswersConfirmed("hi");
+      analytics.trackCoachPlanCreated({
+        band: "getting_ready",
+        corridorId: "SG-IN",
+        language: "hi",
+      });
+      analytics.trackCoachPlanViewed({
+        band: "getting_ready",
+        corridorId: undefined,
+        language: "hi",
+      });
+      analytics.trackCoachCheckinAnswered("d30");
       analytics.trackLogin("phone");
       analytics.trackOnboardingCompleted();
       analytics.trackCrash(new RangeError("x"), "/dashboard");
@@ -448,12 +533,88 @@ describe("analytics", () => {
     it("uses no parameter name that Google adds itself or reserves", async () => {
       const sent = await sendOneOfEverything();
 
-      expect(sent.length).toBe(10);
+      expect(sent.length).toBe(15);
       for (const { name, params } of sent) {
         for (const parameter of Object.keys(params)) {
           expect(problemWith(parameter), `${name}: ${parameter}`).toBeNull();
         }
       }
+    });
+
+    it("is what infra/analytics/ga4-definitions.json names: every event, parameter and funnel step", async () => {
+      interface Definitions {
+        events: { name: string; parameters: string[] }[];
+        custom_dimensions: { parameter: string }[];
+        funnels: {
+          steps: { event: string; conditions: { parameter: string }[] }[];
+          breakdowns: string[];
+        }[];
+        audiences: {
+          include: { event: string; conditions: { parameter: string }[] }[];
+          exclude: { event: string; conditions: { parameter: string }[] }[];
+        }[];
+      }
+      const file = path.resolve(process.cwd(), "../infra/analytics/ga4-definitions.json");
+      const definitions = JSON.parse(readFileSync(file, "utf8")) as Definitions;
+      const sentEvents = await sendOneOfEverything();
+      const SENT_BY_US = new Map<string, Set<string>>();
+      for (const { name, params } of sentEvents) {
+        const parameters = Object.keys(params).filter((key) => !SENT_ON_PURPOSE.includes(key));
+        SENT_BY_US.set(name, new Set([...(SENT_BY_US.get(name) ?? []), ...parameters]));
+      }
+      const problems: string[] = [];
+
+      for (const event of definitions.events) {
+        const sent = SENT_BY_US.get(event.name);
+        if (sent === undefined) {
+          problems.push(`event ${event.name} is not sent by the app`);
+          continue;
+        }
+        if ([...sent].sort().join() !== [...event.parameters].sort().join()) {
+          problems.push(
+            `event ${event.name}: sent ${[...sent].join()} but named ${event.parameters.join()}`
+          );
+        }
+      }
+      const defined = new Map(definitions.events.map((e) => [e.name, new Set(e.parameters)]));
+      const everyParameter = new Set([...defined.values()].flatMap((set) => [...set]));
+      for (const funnel of definitions.funnels) {
+        for (const step of funnel.steps) {
+          for (const condition of step.conditions) {
+            if (!defined.get(step.event)?.has(condition.parameter)) {
+              problems.push(`funnel step ${step.event}: no parameter ${condition.parameter}`);
+            }
+          }
+          if (!defined.has(step.event)) {
+            problems.push(`funnel step on an event that is not defined: ${step.event}`);
+          }
+        }
+        for (const breakdown of funnel.breakdowns) {
+          if (!everyParameter.has(breakdown)) {
+            problems.push(`breakdown ${breakdown} is no parameter of any event`);
+          }
+        }
+      }
+      for (const audience of definitions.audiences) {
+        for (const rule of [...audience.include, ...audience.exclude]) {
+          if (!defined.has(rule.event)) {
+            problems.push(`audience on an event that is not defined: ${rule.event}`);
+          }
+        }
+      }
+      const registered = new Set(definitions.custom_dimensions.map((d) => d.parameter));
+      for (const funnel of definitions.funnels) {
+        for (const parameter of [
+          ...funnel.breakdowns,
+          ...funnel.steps.flatMap((step) => step.conditions.map((c) => c.parameter)),
+        ]) {
+          if (!registered.has(parameter)) {
+            problems.push(`${parameter} is used in a funnel but is not a custom dimension`);
+          }
+        }
+      }
+
+      expect(problems).toEqual([]);
     });
 
     it("sends short ids and flags, never free text, apart from the address and a crash", async () => {

@@ -21,6 +21,12 @@ import { CHECKLIST_KEY_PREFIX } from "@/utils/coachStorageKeys";
 vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { uid: "alice" }, loading: false }) }));
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
 
+const track = vi.hoisted(() => ({ viewed: vi.fn() }));
+vi.mock("@/lib/analytics", async (original) => ({
+  ...(await original<typeof import("@/lib/analytics")>()),
+  trackCoachPlanViewed: track.viewed,
+}));
+
 setupMockServer();
 
 beforeAll(async () => {
@@ -223,6 +229,31 @@ describe("the checklist", () => {
 
     expect(screen.getByText("0 of 5 done")).toBeTruthy();
     expect(localStorage.getItem(`${CHECKLIST_KEY_PREFIX}alice.${ID}`)).toBeNull();
+  });
+});
+
+describe("the funnel step for viewing the plan (NF-HR-015)", () => {
+  it("is sent once for the plan, with the band and the route, and nothing of its words", async () => {
+    track.viewed.mockClear();
+    server.use(handlerForMock(ENGLISH));
+
+    renderPlan();
+    await screen.findByRole("heading", { level: 2, name: "Look at these first" });
+
+    expect(track.viewed).toHaveBeenCalledTimes(1);
+    const facts = track.viewed.mock.calls[0][0] as Record<string, unknown>;
+    expect(Object.keys(facts).sort()).toEqual(["band", "corridorId", "language"]);
+    expect(facts.language).toBe("en");
+  });
+
+  it("is not sent while the plan is loading or missing", async () => {
+    track.viewed.mockClear();
+    server.use(handlerForMock(NOT_FOUND, "GET /api/v2/coach/plans/0123456789abcdef0123"));
+
+    renderPlan("0123456789abcdef0123");
+    await screen.findByRole("alert");
+
+    expect(track.viewed).not.toHaveBeenCalled();
   });
 });
 

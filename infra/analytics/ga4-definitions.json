@@ -1,0 +1,133 @@
+{
+  "description": "The funnels, audiences and custom dimensions of the two new features in Google Analytics 4 (NF-HR-015). Funnel explorations and audiences are built by hand in the console (docs/runbooks/NF-HR-015-adoption-analytics.md); this file is the exact definition they are built from. A test (frontend/src/lib/analytics.test.ts) fails if an event or a parameter named here is not one the app sends.",
+  "property": "The Google Analytics property linked to the Firebase project nomadfinance-prod",
+  "events": [
+    {
+      "name": "scam_check_submitted",
+      "feature": "scam",
+      "parameters": ["input_type", "corridor_id", "ui_language"]
+    },
+    {
+      "name": "scam_verdict_viewed",
+      "feature": "scam",
+      "parameters": ["is_scam", "risk_level", "scam_type", "cached", "source"]
+    },
+    { "name": "scam_reported", "feature": "scam", "parameters": ["scam_type"] },
+    { "name": "coach_started", "feature": "coach", "parameters": ["start_kind", "ui_language"] },
+    { "name": "coach_answers_confirmed", "feature": "coach", "parameters": ["ui_language"] },
+    {
+      "name": "coach_plan_created",
+      "feature": "coach",
+      "parameters": ["band", "corridor_id", "ui_language"]
+    },
+    {
+      "name": "coach_plan_viewed",
+      "feature": "coach",
+      "parameters": ["band", "corridor_id", "ui_language"]
+    },
+    { "name": "coach_checkin_answered", "feature": "coach", "parameters": ["milestone"] }
+  ],
+  "custom_dimensions": [
+    { "parameter": "ui_language", "scope": "event", "display_name": "UI language" },
+    { "parameter": "corridor_id", "scope": "event", "display_name": "Corridor" },
+    { "parameter": "input_type", "scope": "event", "display_name": "Scam check input" },
+    { "parameter": "is_scam", "scope": "event", "display_name": "Verdict is a scam" },
+    { "parameter": "risk_level", "scope": "event", "display_name": "Verdict risk level" },
+    { "parameter": "scam_type", "scope": "event", "display_name": "Scam type" },
+    { "parameter": "source", "scope": "event", "display_name": "Verdict source" },
+    { "parameter": "start_kind", "scope": "event", "display_name": "Coach start kind" },
+    { "parameter": "band", "scope": "event", "display_name": "Coach score band" },
+    { "parameter": "milestone", "scope": "event", "display_name": "Check-in milestone" }
+  ],
+  "funnels": [
+    {
+      "name": "Scam Analyzer: check, verdict, warning",
+      "feature": "scam",
+      "open_funnel": false,
+      "steps": [
+        { "name": "Sent a message", "event": "scam_check_submitted", "conditions": [] },
+        {
+          "name": "Saw the verdict",
+          "event": "scam_verdict_viewed",
+          "conditions": [{ "parameter": "source", "equals": "check" }]
+        },
+        { "name": "Warned other workers", "event": "scam_reported", "conditions": [] }
+      ],
+      "breakdowns": ["ui_language", "corridor_id", "input_type"]
+    },
+    {
+      "name": "Scam Analyzer: scam caught, warning",
+      "feature": "scam",
+      "open_funnel": false,
+      "steps": [
+        {
+          "name": "A scam was caught",
+          "event": "scam_verdict_viewed",
+          "conditions": [
+            { "parameter": "is_scam", "equals": "true" },
+            { "parameter": "source", "equals": "check" }
+          ]
+        },
+        { "name": "Warned other workers", "event": "scam_reported", "conditions": [] }
+      ],
+      "breakdowns": ["scam_type", "corridor_id"]
+    },
+    {
+      "name": "Coach: start, answers, plan, plan read",
+      "feature": "coach",
+      "open_funnel": false,
+      "steps": [
+        {
+          "name": "Started an interview",
+          "event": "coach_started",
+          "conditions": [{ "parameter": "start_kind", "equals": "new" }]
+        },
+        { "name": "Confirmed every answer", "event": "coach_answers_confirmed", "conditions": [] },
+        { "name": "Made the plan", "event": "coach_plan_created", "conditions": [] },
+        { "name": "Read the plan", "event": "coach_plan_viewed", "conditions": [] }
+      ],
+      "breakdowns": ["ui_language", "band", "corridor_id"]
+    },
+    {
+      "name": "Coach: plan, check-in",
+      "feature": "coach",
+      "open_funnel": false,
+      "steps": [
+        { "name": "Made the plan", "event": "coach_plan_created", "conditions": [] },
+        { "name": "Answered a check-in", "event": "coach_checkin_answered", "conditions": [] }
+      ],
+      "breakdowns": ["milestone", "band"]
+    }
+  ],
+  "audiences": [
+    {
+      "name": "Coach started, no plan yet",
+      "include": [{ "event": "coach_started", "conditions": [] }],
+      "exclude": [{ "event": "coach_plan_created", "conditions": [] }],
+      "membership_days": 30
+    },
+    {
+      "name": "Coach plan makers",
+      "include": [{ "event": "coach_plan_created", "conditions": [] }],
+      "exclude": [],
+      "membership_days": 90
+    },
+    {
+      "name": "Scam checkers",
+      "include": [{ "event": "scam_check_submitted", "conditions": [] }],
+      "exclude": [],
+      "membership_days": 30
+    },
+    {
+      "name": "Caught a scam",
+      "include": [
+        {
+          "event": "scam_verdict_viewed",
+          "conditions": [{ "parameter": "is_scam", "equals": "true" }]
+        }
+      ],
+      "exclude": [],
+      "membership_days": 30
+    }
+  ]
+}

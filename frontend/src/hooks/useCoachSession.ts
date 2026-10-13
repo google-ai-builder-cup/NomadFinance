@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUiLanguage } from "@/hooks/useUiLanguage";
+import { trackCoachStarted } from "@/lib/analytics";
 import { startCoachSession } from "@/services/coachService";
 
 export const COACH_SESSION_KEY = ["coach", "session"] as const;
@@ -14,7 +15,12 @@ export function useCoachSession() {
   const language = useUiLanguage();
   return useQuery({
     queryKey: COACH_SESSION_KEY,
-    queryFn: () => startCoachSession(language),
+    queryFn: async () => {
+      const session = await startCoachSession(language);
+      // The interview exists now: a new one, or the open one picked up again.
+      trackCoachStarted(session.resumed ? "resumed" : "new", language);
+      return session;
+    },
     staleTime: Infinity,
     gcTime: 0,
     refetchOnWindowFocus: false,
@@ -30,6 +36,9 @@ export function useCoachRestart() {
     mutationFn: () => startCoachSession(language, true),
     retry: false,
     meta: { inlineError: true },
-    onSuccess: (session) => client.setQueryData(COACH_SESSION_KEY, session),
+    onSuccess: (session) => {
+      trackCoachStarted("restart", language);
+      client.setQueryData(COACH_SESSION_KEY, session);
+    },
   });
 }
