@@ -1,4 +1,5 @@
 import { ApiError } from "@/services/apiClient";
+import { toAsciiDigits } from "@/utils/digits";
 import type { HostCountry } from "@/types/enums";
 import { errorMessageKey } from "@/utils/errors";
 
@@ -42,7 +43,7 @@ export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: A
  */
 export function parseAmount(text: string, currency: string): AmountCheck {
   const decimals = currencyDecimals(currency);
-  const raw = text.replace(/[\s']/g, "");
+  const raw = toAsciiDigits(text).replace(/[\s']/g, "");
   if (raw === "") {
     return { ok: false, problem: "empty" };
   }

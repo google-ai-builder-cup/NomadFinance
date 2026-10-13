@@ -7,7 +7,7 @@ import { useRecommendRemittance, useRemittanceTrends } from "@/hooks/useRemittan
 import i18n from "@/lib/i18n";
 import { isLanguageCode } from "@/types/enums";
 import type { RemittanceComparison } from "@/types/remittance";
-import { requestFailureKey } from "@/utils/pipelineProgress";
+import { adviceFailureKey } from "@/utils/corridors";
 
 export interface RecommendationCardProps {
   comparison: RemittanceComparison;
@@ -63,7 +63,7 @@ export default function RecommendationCard({ comparison }: RecommendationCardPro
           <p className="text-sm text-muted-foreground">{t("remittance.advice.intro")}</p>
           {recommend.isError && (
             <p role="alert" className="text-sm text-danger-ink">
-              {t(requestFailureKey(recommend.error))}
+              {t(adviceFailureKey(recommend.error))}
             </p>
           )}
           <Button

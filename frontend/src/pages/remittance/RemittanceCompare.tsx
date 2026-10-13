@@ -61,6 +61,9 @@ export default function RemittanceCompare() {
     }
   }, [link, startComparison]);
   const logTransfer = useLogTransfer();
+  // Two taps in the same instant both reach the handler before the first has re-rendered the
+  // button as disabled; a ref is checked at once, state is not.
+  const logging = useRef(false);
   const [loggedRpwIds, setLoggedRpwIds] = useState<ReadonlySet<number>>(new Set());
   // Tracks which comparison `loggedRpwIds` belongs to, so a new one (new amount or corridor)
   // starts with nothing logged against it, even if some of the same rpw_ids show up again.
@@ -80,12 +83,16 @@ export default function RemittanceCompare() {
 
   function handleLog(provider: ProviderResult) {
     const comparison = compare.data;
-    if (!comparison) {
+    if (!comparison || logging.current || loggedRpwIds.has(provider.rpw_id)) {
       return;
     }
+    logging.current = true;
     logTransfer.mutate(
       { comparison, rpwId: provider.rpw_id },
       {
+        onSettled: () => {
+          logging.current = false;
+        },
         onSuccess: () => {
           setLoggedRpwIds((current) => new Set(current).add(provider.rpw_id));
           toast({ messageKey: "remittance.table.logAction.toastSuccess" });
