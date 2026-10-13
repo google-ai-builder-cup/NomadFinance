@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/useAuth";
+import { trackCoachCheckinAnswered } from "@/lib/analytics";
 import { markNotificationRead } from "@/services/notificationService";
 import { submitCoachCheckin } from "@/services/coachCheckinService";
 import type { CheckinAnswers, CheckinMilestone } from "@/types/coachCheckin";
@@ -15,7 +16,11 @@ export function useSubmitCheckin(planId: string, milestone: CheckinMilestone) {
     mutationFn: (answers: CheckinAnswers) => submitCoachCheckin(planId, milestone, answers),
     retry: false,
     meta: { inlineError: true },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      // Only the first answers count: a second tap or another phone gets the stored ones back.
+      if (!result.already_answered) {
+        trackCoachCheckinAnswered(milestone);
+      }
       if (uid === undefined) {
         return;
       }

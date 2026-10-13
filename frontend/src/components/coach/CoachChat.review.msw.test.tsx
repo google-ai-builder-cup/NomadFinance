@@ -13,6 +13,12 @@ import { setupMockServer } from "@/mocks/server";
 
 vi.mock("@/services/authService", () => ({ getIdToken: async () => "test-token" }));
 
+const track = vi.hoisted(() => ({ confirmed: vi.fn() }));
+vi.mock("@/lib/analytics", async (original) => ({
+  ...(await original<typeof import("@/lib/analytics")>()),
+  trackCoachAnswersConfirmed: track.confirmed,
+}));
+
 setupMockServer();
 
 beforeAll(async () => {
@@ -107,6 +113,33 @@ describe("starting over", () => {
 
     const steps = screen.getByRole("navigation", { name: "Interview progress" });
     expect(within(steps).getByRole("button", { name: "New interview" })).toBeTruthy();
+  });
+});
+
+describe("the funnel step for the confirmation (NF-HR-015)", () => {
+  it("is sent once, when the worker says yes", async () => {
+    track.confirmed.mockClear();
+    replaySession();
+    replayTurns(YES_THEN_PLAN);
+    const user = userEvent.setup();
+    renderChat();
+    expect(track.confirmed).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Yes, that is right" }));
+    await screen.findByRole("img", { name: /57 out of 100/ });
+
+    expect(track.confirmed).toHaveBeenCalledTimes(1);
+    expect(track.confirmed).toHaveBeenCalledWith("en");
+  });
+
+  it("is not sent again for an interview that was confirmed before this screen opened", async () => {
+    track.confirmed.mockClear();
+    replaySession();
+
+    renderChat(sessionFrom("coach/session-04-plan-mid.json", { resumed: true }));
+    await screen.findByRole("img", { name: /57 out of 100/ });
+
+    expect(track.confirmed).not.toHaveBeenCalled();
   });
 });
 

@@ -188,6 +188,54 @@ export function trackScamReported(scamType: string): void {
   track("scam_reported", { scam_type: scamType });
 }
 
+/** How a Coach interview began: a new one, the open one picked up again, or one started over. */
+export type CoachStartKind = "new" | "resumed" | "restart";
+
+/**
+ * The Coach's funnel (NF-HR-015): started, answers confirmed, plan created, plan viewed, and a
+ * check-in answered afterwards. Each event is a step and carries only what a chart would break it
+ * down by: never an answer, an amount, a name or an id. `ui_language` is named as for the scam
+ * events, since Google already owns `language`.
+ */
+export function trackCoachStarted(kind: CoachStartKind, language: LanguageCode): void {
+  track("coach_started", { start_kind: kind, ui_language: language });
+}
+
+/** The worker said yes at the review: every answer is in and confirmed. */
+export function trackCoachAnswersConfirmed(language: LanguageCode): void {
+  track("coach_answers_confirmed", { ui_language: language });
+}
+
+/** What a plan says about the worker, as a short id: the score band and the route. */
+export interface CoachPlanFacts {
+  band: string;
+  corridorId: CorridorId | undefined;
+  language: LanguageCode;
+}
+
+function planParams(facts: CoachPlanFacts): Record<string, string> {
+  return {
+    band: facts.band,
+    corridor_id: facts.corridorId ?? "none",
+    ui_language: facts.language,
+  };
+}
+
+/** The 90-day plan was made (or found again by its answers: the same plan, the same worker). */
+export function trackCoachPlanCreated(facts: CoachPlanFacts): void {
+  track("coach_plan_created", planParams(facts));
+}
+
+/** A plan was put in front of the worker: once for each plan on each opening of its screen. */
+export function trackCoachPlanViewed(facts: CoachPlanFacts): void {
+  track("coach_plan_viewed", planParams(facts));
+}
+
+/** A day 30, 60 or 90 check-in was answered for the first time. */
+export function trackCoachCheckinAnswered(milestone: "d30" | "d60" | "d90"): void {
+  track("coach_checkin_answered", { milestone });
+}
+
 export function trackLogin(method: "google" | "phone"): void {
   track("login", { method });
 }

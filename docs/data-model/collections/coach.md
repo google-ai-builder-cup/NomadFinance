@@ -201,6 +201,20 @@ A translation is a separate document, as Contract Shield's `reports/{language}` 
 
 None beyond the automatic ones, except the collection-group index on `coach_plans.departure_date` in `firestore-schema.md`. The queries are: the active session (`status ==` inside one user's subcollection), the newest plans (`order by created_at desc`, one user), and the check-in job (`departure_date` in a range of 4 days for each of the three milestones, all users).
 
+## Analytics events
+
+Five Firebase Analytics events (NF-HR-015, `frontend/src/lib/analytics.ts`), the steps of the Coach's funnel. Only short ids and flags: never an answer, an amount, a name or an id, and none is sent in emulator mode or without a measurement id. The funnels and audiences built from them are in `infra/analytics/ga4-definitions.json`.
+
+| Event | When | Parameters |
+|---|---|---|
+| `coach_started` | The interview exists: a new one was created, the open one was picked up again, or the worker started over | `start_kind` (`new`, `resumed`, `restart`), `ui_language` |
+| `coach_answers_confirmed` | The worker said yes at the review, on this screen. Not sent again when they come back to an interview confirmed earlier | `ui_language` |
+| `coach_plan_created` | The 90-day plan was made, or found again by its answers (the same plan for the same worker) | `band` (`needs_work`, `getting_ready`, `well_prepared`), `corridor_id` (a corridor id or `none`), `ui_language` |
+| `coach_plan_viewed` | The plan screen showed a plan, once per plan on each opening; not again when it is translated | `band`, `corridor_id`, `ui_language` |
+| `coach_checkin_answered` | A day 30, 60 or 90 check-in was answered for the first time (not when the stored answers come back) | `milestone` (`d30`, `d60`, `d90`) |
+
+`ui_language` and not `language`, for the same reason as in `scam.md`: Google attaches the browser's `language` to every web event.
+
 ## Tasks that use it
 
 NF-FC-001 (slots), NF-FC-006/-011 (score), NF-FC-008 (sessions), NF-FC-009/-010 (turns), NF-FC-012 (plan), NF-FC-013 (guardrails), NF-FC-014 (translation and PDF), NF-FC-015 (contract prefill, goals), NF-FC-016 (check-ins), NF-FC-017 to -023 (screens), NF-HR-001 (Financial Identity signal).

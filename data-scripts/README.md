@@ -261,3 +261,13 @@ The loader validates every selected file first; if any fails, nothing is written
 To add a country, copy `SG.json`, replace every figure, note and source, and run the checker. Keep to these rules (the checker enforces the ones it can): read the page, and do not fill a gap from memory; a figure of 0 needs a note that says why; low, typical and high are a published range or median, and a midpoint or a piece of arithmetic is said so in `notes`; set `retrieved_on` to the day you read the page; give a second page in `other_sources` when the range needs one.
 
 Full steps, the figures and their limits: [`docs/runbooks/NF-FC-003-cost-baselines-sg-au.md`](../docs/runbooks/NF-FC-003-cost-baselines-sg-au.md) and [`docs/runbooks/NF-FC-004-cost-baselines-kr-my.md`](../docs/runbooks/NF-FC-004-cost-baselines-kr-my.md) and [`docs/runbooks/NF-FC-005-cost-baselines-jp-hk.md`](../docs/runbooks/NF-FC-005-cost-baselines-jp-hk.md).
+
+## Adoption snapshot (NF-HR-015)
+The numbers of the pitch (Coach completion rate, scams caught), from what Firestore holds. Read-only, counts only, and the same figures on a second run over the same data:
+
+```bash
+./scripts/adoption_snapshot.sh                      # all that is stored; the three demo workers left out
+./scripts/adoption_snapshot.sh --since 2026-10-01 --json /tmp/snapshot.json
+```
+
+A breakdown cell under 5 is hidden. Detail, definitions and the Google Analytics funnels: [`docs/runbooks/NF-HR-015-adoption-analytics.md`](../docs/runbooks/NF-HR-015-adoption-analytics.md).

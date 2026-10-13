@@ -1,4 +1,5 @@
 import { GraduationCap, Loader2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import Checklist from "@/components/coach/plan/Checklist";
@@ -15,6 +16,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCoachPlan } from "@/hooks/useCoachPlan";
 import { useI18n } from "@/hooks/useI18n";
 import { useUiLanguage } from "@/hooks/useUiLanguage";
+import { trackCoachPlanViewed } from "@/lib/analytics";
+import type { CorridorId } from "@/types/enums";
 import { coachErrorView, toFailure } from "@/utils/coachErrors";
 
 function BackLink() {
@@ -56,6 +59,21 @@ export default function CoachPlanPage() {
   const language = useUiLanguage();
   const { user } = useAuth();
   const query = useCoachPlan(planId, language);
+
+  // One "viewed" for each plan on each opening of this screen: not again when the plan is
+  // translated into another language, which keeps the same plan on screen.
+  const viewed = useRef<string | null>(null);
+  const shown = query.data;
+  useEffect(() => {
+    if (shown !== undefined && viewed.current !== shown.id) {
+      viewed.current = shown.id;
+      trackCoachPlanViewed({
+        band: shown.score.band,
+        corridorId: shown.corridor_id as CorridorId | undefined,
+        language: shown.language,
+      });
+    }
+  }, [shown]);
 
   if (query.isPending) {
     return (
