@@ -1,4 +1,12 @@
-import { arrayUnion, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 import { db } from "@/lib/firestore";
 import type { OnboardingAnswers, ProfileChanges, UserProfile } from "@/types/user";
@@ -54,6 +62,14 @@ export async function updateProfile(uid: string, changes: ProfileChanges): Promi
 export async function saveFcmToken(uid: string, token: string): Promise<void> {
   await updateDoc(profileRef(uid), {
     fcm_tokens: arrayUnion(token),
+    updated_at: serverTimestamp(),
+  });
+}
+
+/** Take one push token off `fcm_tokens`, when this browser stops receiving the worker's pushes. */
+export async function removeFcmToken(uid: string, token: string): Promise<void> {
+  await updateDoc(profileRef(uid), {
+    fcm_tokens: arrayRemove(token),
     updated_at: serverTimestamp(),
   });
 }

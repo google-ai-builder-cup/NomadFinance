@@ -93,3 +93,70 @@ describe("a tap on a notification while the app is open", () => {
     expect(stop).not.toThrow();
   });
 });
+
+describe("releasePushToken", () => {
+  const getToken = vi.fn();
+  const deleteToken = vi.fn();
+
+  async function load(configured = true) {
+    vi.resetModules();
+    vi.stubEnv("VITE_FIREBASE_MESSAGING_SENDER_ID", configured ? "123" : "");
+    vi.stubEnv("VITE_FIREBASE_VAPID_KEY", configured ? "vapid" : "");
+    vi.doMock("@/lib/firebase", () => ({ firebaseApp: {} }));
+    vi.doMock("firebase/messaging", () => ({
+      getMessaging: () => ({}),
+      getToken,
+      deleteToken,
+      isSupported: async () => true,
+      onMessage: vi.fn(),
+    }));
+    return import("@/lib/messaging");
+  }
+
+  function browserWith(options: { permission: NotificationPermission; registered: boolean }) {
+    vi.stubGlobal("Notification", { permission: options.permission });
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: { getRegistration: async () => (options.registered ? {} : undefined) },
+    });
+  }
+
+  afterEach(() => {
+    getToken.mockReset();
+    deleteToken.mockReset();
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    vi.doUnmock("firebase/messaging");
+  });
+
+  it("forgets this browser's token at FCM and returns it", async () => {
+    browserWith({ permission: "granted", registered: true });
+    getToken.mockResolvedValue("token-a");
+    const { releasePushToken } = await load();
+
+    expect(await releasePushToken()).toBe("token-a");
+    expect(deleteToken).toHaveBeenCalledOnce();
+  });
+
+  it("does nothing when push was never configured, allowed or registered here", async () => {
+    browserWith({ permission: "granted", registered: true });
+    expect(await (await load(false)).releasePushToken()).toBeNull();
+
+    browserWith({ permission: "default", registered: true });
+    expect(await (await load()).releasePushToken()).toBeNull();
+
+    // No worker of ours: asking Firebase for a token would register a second one.
+    browserWith({ permission: "granted", registered: false });
+    expect(await (await load()).releasePushToken()).toBeNull();
+
+    expect(getToken).not.toHaveBeenCalled();
+    expect(deleteToken).not.toHaveBeenCalled();
+  });
+
+  it("never throws", async () => {
+    browserWith({ permission: "granted", registered: true });
+    getToken.mockRejectedValue(new Error("push service down"));
+
+    expect(await (await load()).releasePushToken()).toBeNull();
+  });
+});

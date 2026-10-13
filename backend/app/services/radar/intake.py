@@ -182,14 +182,19 @@ def _resolve_entity(
         (entity_type, entity_name, entity_slug).
 
     Raises:
-        EntityUnknownError: Neither the form nor step 2 named a business.
+        EntityUnknownError: Neither the form nor step 2 named a business, or the name has no
+            letters or digits to build a profile address from.
     """
     entity_type = request.entity_type or extracted.entity_type
     entity_name = request.entity_name or extracted.entity_name
     if entity_name is None:
         raise EntityUnknownError("no business named in the form or the report text")
-    slug_source = extracted.entity_name_normalized or entity_name
-    return entity_type, entity_name, slugify(slug_source)
+    # A name of only symbols or emoji has no slug; stored with an empty one the report would be
+    # accepted but never reach a business profile (the profile's document id cannot be empty).
+    slug = slugify(extracted.entity_name_normalized or entity_name) or slugify(entity_name)
+    if not slug:
+        raise EntityUnknownError("the business name has no letters or digits")
+    return entity_type, entity_name, slug
 
 
 def _resolve_location(

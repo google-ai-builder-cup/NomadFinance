@@ -278,6 +278,24 @@ async def test_no_entity_name_anywhere_is_rejected_before_screening() -> None:
     assert radar.created == []
 
 
+@pytest.mark.parametrize("name", ["???", "💸💸💸", "---"])
+async def test_a_name_with_no_letters_or_digits_is_rejected_not_stored(name: str) -> None:
+    radar = FakeRadarRepo()
+    gemini = _gemini(extracted=_extracted(entity_name=None, entity_name_normalized=None))
+
+    with pytest.raises(EntityUnknownError):
+        await submit_report(
+            "uid",
+            _request(entity_name=name),
+            cast(GeminiClient, gemini),
+            cast(RadarRepository, radar),
+            _settings(),
+            NOW,
+        )
+
+    assert radar.created == []
+
+
 async def test_no_location_anywhere_is_rejected_before_screening() -> None:
     radar = FakeRadarRepo()
     gemini = _gemini(extracted=_extracted(corridor_id=None, host_country=None))
