@@ -45,3 +45,11 @@ describe("parseAmount", () => {
     });
   });
 });
+
+describe("parseAmount on another keyboard (QA-B-01, NF-HR-005)", () => {
+  it("reads Hindi, Bengali and Arabic-Indic digits as 0 to 9", () => {
+    expect(parseAmount("\u096b\u0966\u0966", "SGD")).toEqual({ ok: true, amount: 500 });
+    expect(parseAmount("\u09eb\u09e6\u09e6", "SGD")).toEqual({ ok: true, amount: 500 });
+    expect(parseAmount("\u0665\u0660\u0660", "SGD")).toEqual({ ok: true, amount: 500 });
+  });
+});

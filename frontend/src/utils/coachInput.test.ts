@@ -126,3 +126,10 @@ describe("defaultCurrency", () => {
     ).toBe("SGD");
   });
 });
+
+describe("parseAmount on another keyboard (QA-B-01, NF-HR-005)", () => {
+  it("reads Devanagari and Bengali digits as 0 to 9", () => {
+    expect(parseAmount("\u096a\u0968\u0966\u0966")).toBe(4200);
+    expect(parseAmount("\u09ea\u09e8\u09e6\u09e6")).toBe(4200);
+  });
+});

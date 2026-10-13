@@ -1,4 +1,5 @@
 import { ApiError, apiRequest } from "@/services/apiClient";
+import { timeoutSignal } from "@/utils/timeoutSignal";
 import type {
   ScamAnalyzeResponse,
   ScamCheckDetail,
@@ -40,7 +41,7 @@ export function buildAnalyzeInit({ input, language, corridorId }: ScamCheckReque
 
 /** Check one message or screenshot. Pasting, uploading and sharing all end up here. */
 export async function analyzeScam(request: ScamCheckRequest): Promise<ScamAnalyzeResponse> {
-  const signal = AbortSignal.timeout(ANALYZE_TIMEOUT_MS);
+  const signal = timeoutSignal(ANALYZE_TIMEOUT_MS);
   try {
     const response = await apiRequest("/api/v2/scam/analyze", {
       ...buildAnalyzeInit(request),

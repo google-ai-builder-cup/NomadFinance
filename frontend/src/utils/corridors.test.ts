@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { ApiError } from "@/services/apiClient";
 import { CORRIDOR_IDS } from "@/types/enums";
 import {
+  adviceFailureKey,
   CORRIDORS,
   compareFailure,
   defaultCorridor,
@@ -184,5 +185,43 @@ describe("the link into the comparison from a plan", () => {
     ["an amount above the corridor's limit", "corridor=AU-IN&amount=999999999"],
   ])("is nothing for %s, so the screen opens as usual", (_label, query) => {
     expect(link(query)).toBeNull();
+  });
+});
+
+describe("an amount typed on another keyboard (QA-B-01, NF-HR-005)", () => {
+  const sgd = CORRIDORS["SG-IN"];
+
+  it.each([
+    ["Devanagari", "\u096b\u0966\u0966"],
+    ["Bengali", "\u09eb\u09e6\u09e6"],
+    ["Arabic-Indic", "\u0665\u0660\u0660"],
+    ["full-width", "\uff15\uff10\uff10"],
+  ])("reads %s digits", (_name, text) => {
+    expect(parseAmount(text, sgd)).toEqual({ ok: true, amount: 500 });
+  });
+
+  it("reads grouped and decimal amounts in those digits", () => {
+    expect(parseAmount("\u0967,\u0966\u0966\u0966", sgd)).toEqual({ ok: true, amount: 1000 });
+    expect(parseAmount("\u096c\u096a\u096b.\u096b\u0966", sgd)).toEqual({
+      ok: true,
+      amount: 645.5,
+    });
+  });
+
+  it("still refuses what is not a number", () => {
+    expect(parseAmount("\u096b\u0966\u0966 SGD", sgd)).toEqual({ ok: false, problem: "invalid" });
+  });
+});
+
+describe("adviceFailureKey (QA-B-02)", () => {
+  it("does not speak of a contract when the model's answer was unusable", () => {
+    expect(adviceFailureKey(new ApiError(502, "ai_bad_response"))).toBe("errors.server");
+  });
+
+  it("keeps the shared words for a busy or slow model", () => {
+    expect(adviceFailureKey(new ApiError(503, "ai_busy"))).toBe("contract.progress.errors.aiBusy");
+    expect(adviceFailureKey(new ApiError(504, "ai_timeout"))).toBe(
+      "contract.progress.errors.aiSlow"
+    );
   });
 });

@@ -26,10 +26,20 @@ export default defineConfig({
     serviceWorkers: "block",
   },
   // A phone and a desktop, both on Chromium: workers use phones first, so the phone is not a
-  // second thought. Other browsers are a later decision (NF-HR-005 covers Safari and Firefox).
+  // second thought. Firefox and WebKit are opt-in below (NF-HR-005).
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 5"] } },
+    // The other engines (NF-HR-005): off by default, so CI keeps its two projects and its minutes.
+    // `CROSS_BROWSER=1 pnpm exec playwright install firefox webkit` once, then
+    // `CROSS_BROWSER=1 pnpm test:e2e --project=firefox --project=webkit-iphone`. WebKit with an
+    // iPhone profile stands in for Safari on iOS: it is the same engine, not a real phone.
+    ...(process.env.CROSS_BROWSER === "1"
+      ? [
+          { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+          { name: "webkit-iphone", use: { ...devices["iPhone 13"] } },
+        ]
+      : []),
   ],
   webServer: externalUrl
     ? undefined

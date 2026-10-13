@@ -50,7 +50,7 @@ const LEGAL_SUFFIXES = new Set([
  */
 export function matchKey(name: string): string {
   const words = slugify(name).split("-").filter(Boolean);
-  while (words.length > 1 && LEGAL_SUFFIXES.has(words.at(-1) ?? "")) {
+  while (words.length > 1 && LEGAL_SUFFIXES.has(words[words.length - 1] ?? "")) {
     words.pop();
   }
   return words.join("-");

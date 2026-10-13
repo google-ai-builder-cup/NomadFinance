@@ -1,6 +1,8 @@
 import { ApiError } from "@/services/apiClient";
+import { toAsciiDigits } from "@/utils/digits";
 import { CORRIDOR_IDS, type CorridorId, type HomeCountry, type HostCountry } from "@/types/enums";
 import { errorMessageKey } from "@/utils/errors";
+import { requestFailureKey } from "@/utils/pipelineProgress";
 import { formatMoney } from "@/utils/format";
 
 export interface CorridorInfo {
@@ -78,8 +80,9 @@ export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: A
  * thousands separator.
  */
 export function parseAmount(text: string, info: CorridorInfo): AmountCheck {
-  // \s also covers the no-break space some keyboards put in grouped numbers.
-  const raw = text.replace(/[\s']/g, "");
+  // \s also covers the no-break space some keyboards put in grouped numbers; the digits of a
+  // Hindi, Nepali or Bengali keyboard are read as 0 to 9.
+  const raw = toAsciiDigits(text).replace(/[\s']/g, "");
   if (raw === "") {
     return { ok: false, problem: "empty" };
   }
@@ -139,6 +142,19 @@ export function compareFailure(
     };
   }
   return { key: errorMessageKey(error) };
+}
+
+/**
+ * What to tell the worker when the written advice could not be made. The wording of the contract
+ * pipeline's "Something went wrong while checking your contract" is for a contract: a 502 here
+ * (the model's answer was unusable) says the server had a problem instead, and a busy or slow
+ * model keeps the shared words.
+ */
+export function adviceFailureKey(error: unknown): string {
+  if (error instanceof ApiError && error.status === 502) {
+    return "errors.server";
+  }
+  return requestFailureKey(error);
 }
 
 /** A link into Remittance X-Ray (`/remittance?corridor=SG-PH&amount=400`), such as the 90-day plan

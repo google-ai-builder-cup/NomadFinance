@@ -1,4 +1,5 @@
 import { HOST_COUNTRIES, JOB_TYPES, type HostCountry } from "@/types/enums";
+import { toAsciiDigits } from "@/utils/digits";
 import type { CoachSlot, CoachStage } from "@/types/coach";
 
 // The interview's helpers write their answer as text, which the server reads again (v2-coach.md,
@@ -88,7 +89,7 @@ export function answerInputFor(stage: CoachStage, slot: CoachSlot | null): Answe
  * the decimal point. Returns null for anything that is not one plain number.
  */
 export function parseAmount(raw: string): number | null {
-  const text = raw.trim().replace(/[\s']/g, "");
+  const text = toAsciiDigits(raw.trim()).replace(/[\s']/g, "");
   if (!/^\d+(?:[.,]\d+)*$/.test(text)) {
     return null;
   }
