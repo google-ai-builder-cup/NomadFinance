@@ -1,4 +1,5 @@
 import { Flag } from "lucide-react";
+import { useRef } from "react";
 
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import PageHeader from "@/components/common/PageHeader";
@@ -16,6 +17,9 @@ export default function RadarReport() {
   const { t } = useI18n();
   const profile = useUserProfile();
   const submit = useSubmitReport();
+  // Two taps in the same instant both pass `pending`, which only updates after a render, and
+  // each would store the report: the first call holds the form until it ends.
+  const sending = useRef(false);
 
   if (profile.isPending) {
     return <LoadingSpinner label={t("common.loading")} className="py-16" />;
@@ -58,7 +62,20 @@ export default function RadarReport() {
           }}
           pending={submit.isPending}
           errorKey={submit.isError ? reportFailureKey(submit.error) : null}
-          onSubmit={(report, files) => submit.mutate({ report, files })}
+          onSubmit={(report, files) => {
+            if (sending.current) {
+              return;
+            }
+            sending.current = true;
+            submit.mutate(
+              { report, files },
+              {
+                onSettled: () => {
+                  sending.current = false;
+                },
+              }
+            );
+          }}
         />
       </div>
     </div>

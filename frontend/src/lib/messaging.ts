@@ -1,4 +1,11 @@
-import { getMessaging, getToken, isSupported, onMessage, type Messaging } from "firebase/messaging";
+import {
+  deleteToken,
+  getMessaging,
+  getToken,
+  isSupported,
+  onMessage,
+  type Messaging,
+} from "firebase/messaging";
 
 import { firebaseApp } from "@/lib/firebase";
 import { safeAppPath } from "@/utils/appLinks";
@@ -71,6 +78,35 @@ export async function requestPushToken(): Promise<string | null> {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
+    return token || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Stop this browser receiving the signed-in worker's pushes: the token is deleted at FCM and
+ * returned, so the caller can take it off the profile too. Null when push was never set up here.
+ * Phones are shared, and a token left behind keeps the last person's alerts and check-in
+ * reminders arriving for whoever signs in next. Never throws: signing out comes first.
+ */
+export async function releasePushToken(): Promise<string | null> {
+  try {
+    const messaging = await messagingConfig();
+    if (messaging === null || Notification.permission !== "granted") {
+      return null;
+    }
+    // Only the worker this app registered itself: asking Firebase for a token with no worker
+    // would register a second one on the default scope.
+    const registration = await navigator.serviceWorker.getRegistration(SW_SCOPE);
+    if (registration === undefined) {
+      return null;
+    }
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration,
+    });
+    await deleteToken(messaging);
     return token || null;
   } catch {
     return null;

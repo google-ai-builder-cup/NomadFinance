@@ -112,10 +112,38 @@ export async function confirmPhoneCode(
   trackLogin("phone");
 }
 
-export function signOut(): Promise<void> {
+// Signing out never waits longer than this for the push service.
+const PUSH_RELEASE_TIMEOUT_MS = 3000;
+
+/** Best effort: this browser stops getting the worker's pushes, and the token leaves the profile. */
+async function forgetPushToken(uid: string | undefined): Promise<void> {
+  // Not loaded unless the worker turned push on here: its library is a chunk of its own.
+  if (uid === undefined || !("Notification" in window) || Notification.permission !== "granted") {
+    return;
+  }
+  try {
+    const { releasePushToken } = await import("@/lib/messaging");
+    const token = await Promise.race([
+      releasePushToken(),
+      new Promise<null>((resolve) =>
+        window.setTimeout(() => resolve(null), PUSH_RELEASE_TIMEOUT_MS)
+      ),
+    ]);
+    if (token !== null) {
+      const { removeFcmToken } = await import("@/services/userService");
+      await removeFcmToken(uid, token);
+    }
+  } catch {
+    // The token is also dropped by the server when FCM reports it gone.
+  }
+}
+
+export async function signOut(): Promise<void> {
   clearAnalyticsUserProperties();
-  // Drafts and a waiting answer are the last person's words on a phone that may be shared.
+  // Drafts and a waiting answer are the last person's words on a phone that may be shared;
+  // so are their alerts and reminders, which a push token would keep sending here.
   clearCoachLocalData();
+  await forgetPushToken(auth.currentUser?.uid);
   return firebaseSignOut(auth);
 }
 
