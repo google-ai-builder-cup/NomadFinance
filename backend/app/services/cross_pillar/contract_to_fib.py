@@ -30,6 +30,23 @@ CATEGORY = "salary"
 _ENTRY_ID_PREFIX = "contract_"
 
 
+# Weeks in an average month: 52 weeks over 12 months.
+WEEKS_PER_MONTH = 52 / 12
+
+
+def monthly_equivalent(amount: float, period: str | None) -> float | None:
+    """What a stated salary comes to in a month, or None when the contract does not say enough.
+
+    No period is read as monthly (the common case, and what the figure was taken as before);
+    an hourly or daily rate has no monthly figure without the hours or days worked.
+    """
+    if period is None or period == "month":
+        return amount
+    if period == "week":
+        return round(amount * WEEKS_PER_MONTH, 2)
+    return None
+
+
 def build_income_entry(
     facts: ContractFacts, document_kind: DocumentKind
 ) -> dict[str, object] | None:
@@ -37,12 +54,12 @@ def build_income_entry(
 
     Only for an employment contract (a recruitment agreement's fee schedule is not the
     worker's own income) with a usable salary. `amount` is the stated figure exactly as the
-    contract reads it, whatever `salary_period` is — never converted to a monthly equivalent:
-    the PDF export prints this number verbatim as "the salary" (`report_html.py`), so
-    normalizing it here would make the PDF state something the contract does not say. This is
-    a known, accepted imprecision in `income_stability`'s monthly bucketing (NF-P3-013's own
-    module already disclaims that none of its formulas are calibrated against real lending
-    outcomes).
+    contract reads it, whatever `salary_period` is: the PDF export prints it verbatim as "the
+    salary" (`report_html.py`), with the period beside it. What it comes to in a month is
+    `monthly_amount`, which the score reads instead (`profile_metrics._stated_amount`): the
+    same for a monthly salary, scaled for a weekly one, and None for an hourly or daily rate,
+    where the contract does not say how many hours or days, so it is left out of the money
+    metrics rather than added up as a month's pay.
     """
     if document_kind != "employment_contract":
         return None
@@ -57,6 +74,9 @@ def build_income_entry(
         "verified": True,
         "source": SOURCE,
     }
+    if facts.salary_period is not None:
+        entry["salary_period"] = facts.salary_period
+    entry["monthly_amount"] = monthly_equivalent(facts.salary_amount, facts.salary_period)
     if facts.employer_name:
         entry["employer_name"] = facts.employer_name
     return entry

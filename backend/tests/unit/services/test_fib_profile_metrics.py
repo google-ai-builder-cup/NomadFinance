@@ -259,3 +259,49 @@ def test_compute_metrics_returns_the_four_design_doc_metrics() -> None:
     ]
     assert metrics["bill_payment_reliability"]["score"] == 100
     assert metrics["income_stability"]["score"] is None
+
+
+# --- a salary read from a contract ----------------------------------------------------------
+
+
+def _contract(day: str, amount: float, **data: Any) -> Entry:
+    return _e(day, amount=amount, currency="AUD", source="contract", **data)
+
+
+def test_an_hourly_contract_rate_is_not_added_up_as_a_months_pay() -> None:
+    income = [
+        _income("2026-08-25", 3000, "AUD"),
+        _income("2026-09-25", 3000, "AUD"),
+        _contract("2026-10-01", 18, salary_period="hour", monthly_amount=None),
+    ]
+
+    result = income_stability(income, _same, TODAY)
+
+    # 18 an hour is no month's income: it is left out, and counted as left out.
+    assert result["detail"]["mean_monthly_income"] == 3000
+    assert result["detail"]["excluded_entries"] == 1
+
+
+def test_a_weekly_contract_salary_counts_as_a_months_worth() -> None:
+    income = [_contract("2026-09-25", 150, salary_period="week", monthly_amount=650)]
+
+    result = income_stability(income, _same, TODAY)
+
+    assert result["detail"]["mean_monthly_income"] == 650
+
+
+def test_a_contract_entry_logged_before_the_monthly_figure_existed_counts_as_written() -> None:
+    income = [_contract("2026-09-25", 650)]
+
+    result = income_stability(income, _same, TODAY)
+
+    assert result["detail"]["mean_monthly_income"] == 650
+
+
+def test_a_manual_entry_is_never_touched_by_the_contract_rule() -> None:
+    income = [_income("2026-09-25", 650)]
+    income[0].data["monthly_amount"] = None  # not a contract entry: ignored
+
+    result = income_stability(income, _same, TODAY)
+
+    assert result["detail"]["mean_monthly_income"] == 650

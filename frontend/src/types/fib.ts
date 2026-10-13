@@ -195,6 +195,13 @@ export interface FinancialProfile {
   computed_at: Timestamp;
 }
 
+/** Response of `POST /api/v1/fib/profile/refresh`: whether the score was just worked out, was
+ * already recent, or there is nothing logged yet to score. */
+export interface ProfileRefreshResponse {
+  status: "recomputed" | "fresh" | "no_data";
+  computed_at: string | null;
+}
+
 export const MAX_HOLDER_NAME_CHARS = 100;
 
 /** Body of `POST /api/v1/fib/report/export`. */

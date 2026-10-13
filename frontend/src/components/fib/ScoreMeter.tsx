@@ -2,6 +2,7 @@ import { useId } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import RefreshScore from "@/components/fib/RefreshScore";
 import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
@@ -164,6 +165,7 @@ export default function ScoreMeter({ profile }: ScoreMeterProps) {
           >
             <Link to="/identity/log">{t("fib.score.logActivity")}</Link>
           </Button>
+          <RefreshScore />
         </div>
       </section>
     );

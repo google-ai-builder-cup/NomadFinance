@@ -106,9 +106,11 @@ def build_reports(
 
     Returns:
         No danger clauses, or no employer/agency name on the contract: an empty list, and
-        `new_id` is never called. Otherwise one report per distinct mapped violation type,
-        each starting its own cluster: with no clustering pipeline running yet (NF-P3-002),
-        every contract signal starts its own.
+        `new_id` is never called. Otherwise one report per distinct mapped violation type, all
+        sharing one `cluster_id`: one contract is one account of one incident, however many
+        kinds of danger it holds, so it must not by itself reach the two incidents a business
+        needs to be flagged. The first report's own id is that cluster id (`radar.md`); the
+        caller gives the others their own ids.
     """
     danger = [clause for clause in clauses if clause.risk == "danger"]
     if not danger:
@@ -124,6 +126,7 @@ def build_reports(
     for clause in danger:
         grouped.setdefault(VIOLATION_TYPE[clause.category], []).append(clause)
 
+    cluster_id = new_id()
     return [
         RadarReport(
             entity_type=entity_type,
@@ -133,7 +136,7 @@ def build_reports(
             host_country=host_country,
             description=_description(group),
             language="en",
-            cluster_id=new_id(),
+            cluster_id=cluster_id,
             source="contract_signal",
             validation=SIGNAL_VALIDATION,
             created_at=now,
@@ -158,11 +161,15 @@ async def create_radar_signals(
     # called directly here, not through run_in_threadpool.
     now = datetime.now(UTC)
     reports = build_reports(host_country, document_kind, clauses, facts, radar.new_report_id, now)
-    for report in reports:
-        await run_in_threadpool(radar.create_report, report.cluster_id, report)
-        # A contract signal always starts its own cluster (no clustering pipeline runs on
-        # this path), so report_id == cluster_id here, same as a brand-new user report.
-        await update_entity_risk(report, report.cluster_id, radar, now)
+    written: list[str] = []
+    for position, report in enumerate(reports):
+        # The first report is the incident: its id is the cluster's. The rest are more of the
+        # same contract, so they get ids of their own and join that cluster, and the entity's
+        # incident count goes up once for the contract, not once per kind of danger.
+        report_id = report.cluster_id if position == 0 else radar.new_report_id()
+        await run_in_threadpool(radar.create_report, report_id, report)
+        await update_entity_risk(report, report_id, radar, now)
+        written.append(report_id)
     if reports:
         logger.info(
             "radar_signal_created country=%s slug=%s reports=%d",
@@ -170,4 +177,4 @@ async def create_radar_signals(
             reports[0].entity_slug,
             len(reports),
         )
-    return [report.cluster_id for report in reports]
+    return written

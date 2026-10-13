@@ -69,11 +69,28 @@ def _no_data(reason: str) -> MetricResult:
     return {"score": None, "detail": {"reason": reason}}
 
 
+def _stated_amount(entry: Entry) -> float | None:
+    """What the entry counts for as money in a month.
+
+    A salary read from a contract is logged as the contract states it (`amount`, with its
+    `salary_period`), and `monthly_amount` is what it comes to in a month: the same figure for a
+    monthly salary, a weekly one scaled, and nothing for an hourly or daily rate (the contract
+    does not say how many hours or days), which would otherwise be added up as if it were a
+    month's pay. Entries logged before that field existed count as they were written.
+    """
+    if entry.data.get("source") == "contract" and "monthly_amount" in entry.data:
+        monthly = entry.data["monthly_amount"]
+        return float(monthly) if monthly is not None else None
+    return float(entry.data["amount"])
+
+
 def _converted(entries: list[Entry], convert: Convert) -> tuple[list[tuple[Entry, float]], int]:
-    """Each entry with its amount in the reporting currency, and how many had no rate."""
+    """Each entry with its amount in the reporting currency, and how many had no rate (or, for a
+    salary stated by the hour or day, no monthly figure)."""
     kept: list[tuple[Entry, float]] = []
     for entry in entries:
-        amount = convert(float(entry.data["amount"]), str(entry.data.get("currency")))
+        stated = _stated_amount(entry)
+        amount = convert(stated, str(entry.data.get("currency"))) if stated is not None else None
         if amount is not None:
             kept.append((entry, amount))
     return kept, len(entries) - len(kept)

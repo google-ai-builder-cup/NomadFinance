@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
 import pytest
@@ -19,7 +19,7 @@ from app.repositories.rate_repo import RateRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.fib_profile import NarrativeAnswer
 from app.services.fib.narrative import write_narrative
-from app.services.fib.profile_builder import recompute_all, recompute_profile
+from app.services.fib.profile_builder import recompute_all, recompute_profile, refresh_profile
 from app.services.fib.signals import SignalReader
 from tests.unit.services.test_fib_signals import (
     _CHECKS,
@@ -59,9 +59,17 @@ class FakeGemini:
 
 
 class FakeFib:
-    def __init__(self, data: dict[str, dict[str, list[tuple[str, dict[str, Any]]]]]) -> None:
+    def __init__(
+        self,
+        data: dict[str, dict[str, list[tuple[str, dict[str, Any]]]]],
+        stored: dict[str, dict[str, Any]] | None = None,
+    ) -> None:
         self.data = data
         self.saved: dict[str, dict[str, Any]] = {}
+        self.stored = stored or {}
+
+    def get_profile(self, uid: str) -> dict[str, Any] | None:
+        return self.stored.get(uid)
 
     def list_entries(self, uid: str, kind: EntryKind) -> list[tuple[str, dict[str, Any]]]:
         return self.data.get(uid, {}).get(kind, [])
@@ -536,3 +544,55 @@ async def test_two_of_three_check_ins_is_grounded() -> None:
     )
 
     assert written.activity_text == "2 of 3 plan check-ins were answered."
+
+
+# --- one worker, on request ----------------------------------------------------------------
+
+
+def _refresh(fib: FakeFib, users: FakeUsers, gemini: FakeGemini) -> Any:
+    return refresh_profile(
+        "u1",
+        cast(GeminiClient, gemini),
+        cast(FibRepository, fib),
+        cast(UserRepository, users),
+        cast(RateRepository, FakeRates()),
+        NOW,
+    )
+
+
+async def test_a_new_worker_can_have_a_score_without_waiting_for_the_weekly_run() -> None:
+    fib = FakeFib({"u1": _priya()})
+    gemini = FakeGemini()
+
+    result = await _refresh(fib, FakeUsers({"u1": {"home_country": "IN"}}), gemini)
+
+    assert result.status == "recomputed" and result.computed_at == NOW
+    assert "u1" in fib.saved and len(gemini.calls) == 1
+
+
+async def test_a_profile_computed_in_the_last_hour_is_left_alone_and_costs_no_call() -> None:
+    fib = FakeFib({"u1": _priya()}, stored={"u1": {"computed_at": NOW - timedelta(minutes=10)}})
+    gemini = FakeGemini()
+
+    result = await _refresh(fib, FakeUsers({"u1": {"home_country": "IN"}}), gemini)
+
+    assert result.status == "fresh"
+    assert gemini.calls == [] and fib.saved == {}
+
+
+async def test_an_older_profile_is_computed_again() -> None:
+    fib = FakeFib({"u1": _priya()}, stored={"u1": {"computed_at": NOW - timedelta(days=3)}})
+
+    result = await _refresh(fib, FakeUsers({"u1": {"home_country": "IN"}}), FakeGemini())
+
+    assert result.status == "recomputed"
+
+
+async def test_a_worker_with_nothing_logged_is_told_there_is_no_data_yet() -> None:
+    fib = FakeFib({})
+    gemini = FakeGemini()
+
+    result = await _refresh(fib, FakeUsers({"u1": {}}), gemini)
+
+    assert result.status == "no_data" and result.computed_at is None
+    assert gemini.calls == [] and fib.saved == {}

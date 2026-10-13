@@ -1,6 +1,6 @@
 import { ArrowLeftRight } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import EmptyState from "@/components/common/EmptyState";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
@@ -11,6 +11,7 @@ import ComparisonTable from "@/components/remittance/ComparisonTable";
 import CorridorPicker from "@/components/remittance/CorridorPicker";
 import RecommendationCard from "@/components/remittance/RecommendationCard";
 import SavingsCallout from "@/components/remittance/SavingsCallout";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import PillarIllustration from "@/components/visual/PillarIllustration";
 import { useI18n } from "@/hooks/useI18n";
@@ -120,6 +121,11 @@ export default function RemittanceCompare() {
         icon={ArrowLeftRight}
         title={t("remittance.title")}
         description={t("remittance.subtitle")}
+        actions={
+          <Button asChild variant="outline" className="h-11 rounded-xl bg-card font-bold">
+            <Link to="/remittance/history">{t("remittance.history.link")}</Link>
+          </Button>
+        }
       />
 
       <div className="grid items-start gap-5 lg:grid-cols-12">

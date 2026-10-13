@@ -180,6 +180,14 @@ describe("uploadFailureKey", () => {
   });
 
   it.each([
+    [400, "contract.upload.errors.empty"],
+    [413, "contract.upload.errors.tooLarge"],
+    [415, "contract.upload.errors.badType"],
+  ])("names the file's own problem for a %i", (status, key) => {
+    expect(uploadFailureKey(new ApiError(status, "detail"))).toBe(key);
+  });
+
+  it.each([
     [503, "contract.progress.errors.aiBusy"],
     [504, "contract.progress.errors.aiSlow"],
     [429, "errors.tooManyRequests"],

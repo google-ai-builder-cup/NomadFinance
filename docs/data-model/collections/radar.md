@@ -12,7 +12,7 @@ radar_alerts/{corridor}/current/{alertId}  an alert on a corridor
 
 ## `radar_reports/{id}`
 
-A worker's own report (`source: "user"`) is written only after it passes validation (spam and duplicate checks, NF-P3-001); rejected spam is answered with an error and **not stored**. A `contract_signal` report (NF-P2-021) is written directly: the category is already a checked fact from Contract Shield's own comparison step, not free text that needs checking.
+A worker's own report (`source: "user"`) is written only after it passes validation (spam and duplicate checks, NF-P3-001); rejected spam is answered with an error and **not stored**. A `contract_signal` report (NF-P2-021) is written directly (one contract with danger clauses of several kinds writes one report per kind, **all in one cluster**: it is one incident, so a single contract never flags a business by itself): the category is already a checked fact from Contract Shield's own comparison step, not free text that needs checking.
 
 | Field | Type | Required | Description |
 |---|---|---|---|

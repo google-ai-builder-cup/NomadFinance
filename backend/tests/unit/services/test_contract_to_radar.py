@@ -273,10 +273,36 @@ async def test_a_contract_signal_also_updates_the_entitys_risk_profile() -> None
     )
 
     entity = radar.entities["acme-pte-ltd"]
-    # Two distinct violation types on one contract: two separate reports, each its own
-    # incident (no clustering runs on this path), so this alone is already 2 incidents.
+    # Two kinds of danger in one contract are two reports of one incident: one worker's one
+    # contract is not the "two independent incidents" a business needs to be flagged.
+    assert (entity["report_count"], entity["incident_count"]) == (2, 1)
+    assert entity["flagged"] is False
+
+
+async def test_two_contracts_about_one_business_are_two_incidents_and_flag_it() -> None:
+    radar = FakeRadar()
+    clauses = [_clause(1, category="passport_retention")]
+
+    for _ in range(2):
+        await create_radar_signals(
+            "SG", "employment_contract", clauses, _facts(), cast(RadarRepository, radar)
+        )
+
+    entity = radar.entities["acme-pte-ltd"]
     assert (entity["report_count"], entity["incident_count"]) == (2, 2)
     assert entity["flagged"] is True
+
+
+async def test_the_reports_of_one_contract_share_a_cluster_and_each_has_its_own_id() -> None:
+    radar = FakeRadar()
+    clauses = [_clause(1, category="passport_retention"), _clause(2, category="recruitment_fees")]
+
+    ids = await create_radar_signals(
+        "SG", "employment_contract", clauses, _facts(), cast(RadarRepository, radar)
+    )
+
+    assert len(set(ids)) == 2
+    assert {r.cluster_id for r in radar.reports.values()} == {ids[0]}
 
 
 async def test_no_danger_clauses_writes_nothing() -> None:

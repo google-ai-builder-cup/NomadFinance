@@ -1032,6 +1032,51 @@
         }
       }
     },
+    "/api/v1/fib/profile/refresh": {
+      "post": {
+        "tags": [
+          "fib"
+        ],
+        "summary": "Work out your Financial Identity score now",
+        "description": "Compute your profile now instead of waiting for the weekly run.\n\nThe weekly job stays the way every profile is kept up to date; this is for the first one,\nso a new worker does not wait up to a week to see a score. One call writes the metrics and\nthe report text (a reasoning-tier call, usually 20 to 40 seconds). A profile computed in the\nlast hour is returned as it is, so pressing the button again costs nothing.",
+        "operationId": "refresh_financial_profile_api_v1_fib_profile_refresh_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshProfileResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid Firebase ID token"
+          },
+          "422": {
+            "description": "Invalid body"
+          },
+          "429": {
+            "description": "Too many requests. Please wait a minute and try again."
+          },
+          "502": {
+            "description": "Gemini returned an unusable answer"
+          },
+          "503": {
+            "description": "Gemini busy, unavailable or out of quota"
+          },
+          "504": {
+            "description": "Gemini timed out"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/radar/report": {
       "post": {
         "tags": [
@@ -7120,6 +7165,39 @@
         ],
         "title": "RateInfo",
         "description": "The mid-market rate every amount is worked out with."
+      },
+      "RefreshProfileResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "recomputed",
+              "fresh",
+              "no_data"
+            ],
+            "title": "Status",
+            "description": "`recomputed`: the profile was just worked out; `fresh`: it was computed within the last hour, so it was left as it is; `no_data`: nothing logged yet gives a score."
+          },
+          "computed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Computed At",
+            "description": "When the profile now stored was computed; null for `no_data`."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "RefreshProfileResponse",
+        "description": "Response of `POST /api/v1/fib/profile/refresh`: one worker's score, on request."
       },
       "RemittanceCompareRequest": {
         "properties": {

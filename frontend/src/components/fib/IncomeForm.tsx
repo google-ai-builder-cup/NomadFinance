@@ -1,6 +1,7 @@
 import { type FormEvent, useState } from "react";
 
 import { fieldClass, submitClass } from "@/components/fib/styles";
+import AmountReading from "@/components/common/AmountReading";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
 import type { IncomeLogRequest } from "@/types/fib";
@@ -82,6 +83,7 @@ export default function IncomeForm({
             disabled={pending}
             className={fieldClass}
           />
+          <AmountReading text={amountText} currency={currency} />
         </div>
         <div className="space-y-1.5">
           <label htmlFor="income-currency" className="text-sm font-bold">

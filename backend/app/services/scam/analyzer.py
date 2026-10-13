@@ -71,10 +71,11 @@ async def _check_message(
 ) -> ScamAnalyzeResponse:
     """The steps both paths share, from the redacted message to the contract's answer.
 
-    The message is looked up first (`check_store`): a check made before with the same text and
-    language, under the same taxonomy and prompts and with an explainer, is the answer, and no
-    Gemini call is made and no hourly budget spent. Otherwise the budget is spent (unless the
-    caller already did), the message is checked and the check is stored under its hash.
+    The message is looked up first (`check_store`): a check made before with the same text,
+    language and route, under the same taxonomy and prompts and with an explainer, is the
+    answer, and no Gemini call is made and no hourly budget spent. Otherwise the budget is spent
+    (unless the caller already did), the message is checked and the check is stored under its
+    hash.
 
     The indicators were found by fixed rules before the message was masked (`signals`); their
     `seen` is read when the answer is made (NF-SA-013 writes it).
@@ -87,10 +88,15 @@ async def _check_message(
     """
     key = cache_key(redacted_text, language)
     lookup = await store.lookup(uid, key, taxonomy.version, datetime.now(UTC))
-    if lookup.hit is not None:
+    # The stored answer holds what depends on the worker's route (the flags for another country,
+    # how many workers reported on that route, the explainer's wording), so after a change of
+    # route it is made again rather than served with the old route's facts.
+    if lookup.hit is not None and lookup.hit.corridor_id == corridor_id:
         logger.info("scam_cache result=hit input=%s", input_type)
         log_cache_lookup("scam", "check", hit=True)
         return await store.serve_hit(uid, lookup.hit, datetime.now(UTC))
+    if lookup.hit is not None:
+        logger.info("scam_cache result=route_changed input=%s", input_type)
     if charge_budget:
         _charge_hourly_budget(uid)
     logger.info("scam_cache result=miss input=%s", input_type)

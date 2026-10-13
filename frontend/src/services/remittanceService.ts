@@ -1,6 +1,10 @@
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+
+import { db } from "@/lib/firestore";
 import { apiRequest } from "@/services/apiClient";
 import type { CorridorId } from "@/types/enums";
 import type {
+  LoggedTransfer,
   RemittanceCompareRequest,
   RemittanceComparison,
   RemittanceRecommendation,
@@ -86,4 +90,24 @@ export async function recommendRemittance(
     body: JSON.stringify(body),
   });
   return (await response.json()) as RemittanceRecommendation;
+}
+
+/** How many logged transfers the history shows: the newest, so one read stays small. */
+export const TRANSFER_HISTORY_LIMIT = 50;
+
+/**
+ * The worker's logged transfers, newest first, straight from `users/{uid}/transfers`: the owner
+ * may read them (firestore.rules) and only the backend writes them.
+ */
+export async function listLoggedTransfers(uid: string): Promise<LoggedTransfer[]> {
+  const snapshot = await getDocs(
+    query(
+      collection(db, "users", uid, "transfers"),
+      orderBy("entry_date", "desc"),
+      limit(TRANSFER_HISTORY_LIMIT)
+    )
+  );
+  return snapshot.docs.map(
+    (document) => ({ id: document.id, ...document.data() }) as LoggedTransfer
+  );
 }

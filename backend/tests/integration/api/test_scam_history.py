@@ -94,6 +94,31 @@ def test_the_same_message_in_another_language_is_a_new_check(world: Setup) -> No
     assert len(world.repo.mine(UID)) == 2
 
 
+def test_the_same_message_after_a_change_of_route_is_checked_again_for_the_new_route(
+    world: Setup,
+) -> None:
+    with world.client() as api:
+        first = api.post(ANALYZE, json=_body(corridor_id="SG-IN")).json()
+        calls = len(world.gemini.calls)
+        second = api.post(ANALYZE, json=_body(corridor_id="SG-PH")).json()
+
+    assert first["corridor_id"] == "SG-IN"
+    assert second["cached"] is False and second["corridor_id"] == "SG-PH"
+    assert len(world.gemini.calls) > calls
+    # Still one stored check for the message: the newer one replaces it.
+    stored = world.repo.mine(UID)
+    assert len(stored) == 1 and stored[0]["corridor_id"] == "SG-PH"
+
+
+def test_a_repeat_on_the_same_route_is_still_served_from_storage(world: Setup) -> None:
+    with world.client() as api:
+        api.post(ANALYZE, json=_body(corridor_id="SG-IN"))
+        calls = len(world.gemini.calls)
+        again = api.post(ANALYZE, json=_body(corridor_id="SG-IN")).json()
+
+    assert again["cached"] is True and len(world.gemini.calls) == calls
+
+
 def test_another_workers_check_is_never_served_to_this_one(world: Setup) -> None:
     with world.client("worker-a") as api:
         api.post(ANALYZE, json=_body())

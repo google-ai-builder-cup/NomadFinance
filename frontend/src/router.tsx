@@ -80,6 +80,10 @@ export const router = createBrowserRouter([
                         path: "/radar/heatmap",
                         ...page(() => import("@/pages/radar/RadarHeatmap")),
                       },
+                      {
+                        path: "/remittance/history",
+                        ...page(() => import("@/pages/remittance/RemittanceHistory")),
+                      },
                       { path: "/radar/report", ...page(() => import("@/pages/radar/RadarReport")) },
                       {
                         path: "/radar/entity/:slug",

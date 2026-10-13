@@ -12,6 +12,7 @@ import {
   logBill,
   logIncome,
   logSavings,
+  refreshFinancialProfile,
   scanBill,
 } from "@/services/fibService";
 import type { BillEntry, IncomeEntry, SavingsEntry } from "@/types/fib";
@@ -156,5 +157,17 @@ export function useCategorizeEntries() {
     retry: false,
     meta: { inlineError: true },
     onSuccess: () => queryClient.refetchQueries({ queryKey: financialTimelineKey(uid) }),
+  });
+}
+
+/** "Work out my score now": the first score without waiting for the weekly run. */
+export function useRefreshFinancialProfile() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: refreshFinancialProfile,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: financialProfileKey(user?.uid) }),
+    // It is a long, paid call: a repeat is the worker's choice, not an automatic one.
+    retry: false,
   });
 }

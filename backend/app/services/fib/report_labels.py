@@ -29,6 +29,10 @@ LABEL_KEYS: Final = (
     "verified_heading",
     "verified_employer",
     "verified_salary",
+    "period_month",
+    "period_week",
+    "period_day",
+    "period_hour",
     "shared_heading",
     "shared_note",
     "coach_checkins",
@@ -69,6 +73,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Employment verified from a contract",
         "verified_employer": "Employer",
         "verified_salary": "Salary stated in the contract",
+        "period_month": "per month",
+        "period_week": "per week",
+        "period_day": "per day",
+        "period_hour": "per hour",
         "shared_heading": "Activity the worker chose to share",
         "shared_note": (
             "These are counts of what the worker did in NomadFinance. "
@@ -115,6 +123,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "अनुबंध से सत्यापित रोज़गार",
         "verified_employer": "नियोक्ता",
         "verified_salary": "अनुबंध में लिखा वेतन",
+        "period_month": "प्रति माह",
+        "period_week": "प्रति सप्ताह",
+        "period_day": "प्रति दिन",
+        "period_hour": "प्रति घंटा",
         "shared_heading": "कामगार द्वारा साझा की गई गतिविधि",
         "shared_note": (
             "ये NomadFinance में कामगार की गतिविधि की गिनती हैं। "
@@ -161,6 +173,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Trabahong napatunayan mula sa kontrata",
         "verified_employer": "Employer",
         "verified_salary": "Sahod ayon sa kontrata",
+        "period_month": "kada buwan",
+        "period_week": "kada linggo",
+        "period_day": "kada araw",
+        "period_hour": "kada oras",
         "shared_heading": "Aktibidad na piniling ibahagi ng manggagawa",
         "shared_note": (
             "Mga bilang ito ng ginawa ng manggagawa sa NomadFinance. Walang "
@@ -208,6 +224,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "Pekerjaan terverifikasi dari kontrak",
         "verified_employer": "Pemberi kerja",
         "verified_salary": "Gaji yang tertulis di kontrak",
+        "period_month": "per bulan",
+        "period_week": "per minggu",
+        "period_day": "per hari",
+        "period_hour": "per jam",
         "shared_heading": "Aktivitas yang dipilih pekerja untuk dibagikan",
         "shared_note": (
             "Ini adalah jumlah kegiatan pekerja di NomadFinance. "
@@ -254,6 +274,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "सम्झौताबाट प्रमाणित रोजगारी",
         "verified_employer": "रोजगारदाता",
         "verified_salary": "सम्झौतामा उल्लेख गरिएको तलब",
+        "period_month": "प्रति महिना",
+        "period_week": "प्रति हप्ता",
+        "period_day": "प्रति दिन",
+        "period_hour": "प्रति घण्टा",
         "shared_heading": "कामदारले साझा गर्न रोजेको गतिविधि",
         "shared_note": (
             "यी NomadFinance मा कामदारले गरेका कामको गणना हुन्। यसमा "
@@ -300,6 +324,10 @@ LABELS: Final[dict[str, dict[str, str]]] = {
         "verified_heading": "চুক্তি থেকে যাচাই করা কর্মসংস্থান",
         "verified_employer": "নিয়োগকর্তা",
         "verified_salary": "চুক্তিতে উল্লেখ করা বেতন",
+        "period_month": "প্রতি মাস",
+        "period_week": "প্রতি সপ্তাহ",
+        "period_day": "প্রতি দিন",
+        "period_hour": "প্রতি ঘণ্টা",
         "shared_heading": "কর্মী যে কার্যকলাপ শেয়ার করতে বেছে নিয়েছেন",
         "shared_note": (
             "এগুলো NomadFinance-এ কর্মীর কাজের গণনা। এতে "

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-import { signedInWorker } from "./support/emulators";
+import { signedInWorker, type TestUser } from "./support/emulators";
+import { setDocument } from "./support/firestoreRest";
 import { type FakeRemittance, remittanceApi } from "./support/remittanceApi";
 
 // Remittance X-Ray in a real browser (NF-HR-005): compare, the amount field, the advice, logging a
@@ -8,10 +9,11 @@ import { type FakeRemittance, remittanceApi } from "./support/remittanceApi";
 // src/i18n/en.json. The Scam Analyzer's browser tests are in scam-check.spec.ts.
 
 let api: FakeRemittance;
+let worker: TestUser;
 
 test.beforeEach(async ({ page }) => {
   api = await remittanceApi(page);
-  await signedInWorker(page);
+  worker = await signedInWorker(page);
   await page.goto("/remittance");
   await expect(page.getByRole("heading", { level: 1, name: "Send money home" })).toBeVisible();
 });
@@ -130,4 +132,42 @@ test("the results do not scroll the page sideways", async ({ page }) => {
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth
   );
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("an amount that could be read two ways says how it was read before it is sent", async ({
+  page,
+}) => {
+  await amount(page).fill("1.500");
+
+  await expect(page.getByRole("status").filter({ hasText: "We read this as" })).toContainText(
+    "1,500"
+  );
+  await amount(page).fill("1.5");
+  await expect(page.getByRole("status").filter({ hasText: "We read this as" })).toHaveCount(0);
+});
+
+test("the transfers a worker logged are listed, newest first", async ({ page }) => {
+  const entry = (day: string, firm: string, sent: number) => ({
+    entry_date: day,
+    corridor_id: "SG-IN",
+    provider_name: firm,
+    provider_rpw_id: 101,
+    send_amount: sent,
+    send_currency: "SGD",
+    receive_amount: sent * 61,
+    receive_currency: "INR",
+    fee: 4.5,
+    cost_pct: 1.2,
+    source: "remittance_xray",
+  });
+  await setDocument(`users/${worker.uid}/transfers/t1`, entry("2026-09-12", "Remitly", 400));
+  await setDocument(`users/${worker.uid}/transfers/t2`, entry("2026-10-12", "Wise", 500));
+
+  await page.getByRole("link", { name: "My logged transfers" }).click();
+
+  await expect(page.getByRole("heading", { name: "Money you sent" })).toBeVisible();
+  const rows = page.getByRole("listitem").filter({ hasText: "SG → IN" });
+  await expect(rows).toHaveCount(2);
+  await expect(rows.first()).toContainText("Wise");
+  await expect(rows.nth(1)).toContainText("Remitly");
 });

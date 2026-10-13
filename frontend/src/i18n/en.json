@@ -2,7 +2,8 @@
   "common": {
     "loading": "Loading…",
     "retry": "Try again",
-    "or": "or"
+    "or": "or",
+    "amountReading": "We read this as {{amount}}."
   },
   "landing": {
     "brand": "NomadFinance",
@@ -619,7 +620,8 @@
         "tooLarge": "This file is larger than 10 MB. Choose a smaller file.",
         "badType": "Upload a PDF or a photo (PNG, JPEG, WebP or HEIC).",
         "generic": "This file couldn't be used. Try a different one.",
-        "notAContract": "That doesn't look like a contract. Upload a PDF or a clear photo of the whole contract."
+        "notAContract": "That doesn't look like a contract. Upload a PDF or a clear photo of the whole contract.",
+        "empty": "This file is empty. Choose a different file."
       },
       "hostCountry": "Country you work in",
       "hostCountryHint": "We check your contract against this country's labor law.",
@@ -870,6 +872,18 @@
     "empty": {
       "title": "Compare before you send",
       "description": "Choose a corridor and an amount to see what each service really costs, with fees and exchange-rate markup side by side."
+    },
+    "history": {
+      "title": "Money you sent",
+      "subtitle": "The transfers you marked with “I used this”. They also feed your Financial Identity.",
+      "link": "My logged transfers",
+      "compare": "Compare services",
+      "empty": {
+        "title": "No transfers logged yet",
+        "description": "Compare services, then press “I used this” on the one you sent with. It will show up here."
+      },
+      "loadError": "We could not load your transfers. Please try again.",
+      "row": "Sent {{sent}} · received {{received}}"
     }
   },
   "radar": {
@@ -1180,7 +1194,7 @@
         "critical": "Low"
       },
       "noData": "Not enough data yet",
-      "noProfile": "Your Financial Identity score isn't ready yet. Log a few weeks of activity and check back after your next weekly update.",
+      "noProfile": "Your Financial Identity score isn't ready yet. Log some activity and work it out now, or it will be ready after your next weekly update.",
       "logActivity": "Log activity",
       "meterLabel": "{{label}}: {{score}} out of 100",
       "metrics": {
@@ -1188,6 +1202,11 @@
         "savings_rate": "Savings rate",
         "remittance_consistency": "Sending money home",
         "bill_payment_reliability": "Paying bills on time"
+      },
+      "refresh": {
+        "button": "Work out my score now",
+        "working": "Working it out… this can take up to a minute",
+        "noData": "Log some income, bills or savings first, then try again."
       }
     },
     "timeline": {

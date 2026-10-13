@@ -1,16 +1,19 @@
-import { useMutation, useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type UseQueryResult } from "@tanstack/react-query";
 
+import { useAuth } from "@/hooks/useAuth";
 import { trackRemittanceCompared } from "@/lib/analytics";
 import { ApiError } from "@/services/apiClient";
 import {
   compareRemittance,
   getRemittanceSavings,
   getRemittanceTrends,
+  listLoggedTransfers,
   logTransfer,
   recommendRemittance,
 } from "@/services/remittanceService";
 import type { CorridorId } from "@/types/enums";
 import type {
+  LoggedTransfer,
   RemittanceCompareRequest,
   RemittanceComparison,
   RemittanceRecommendRequest,
@@ -73,10 +76,25 @@ export interface LogTransferArgs {
  * same transfer twice, so a failed attempt needs a fresh click, not an automatic one.
  */
 export function useLogTransfer() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ comparison, rpwId }: LogTransferArgs) =>
       logTransfer({ comparison, rpw_id: rpwId }),
+    // The history lists what was just logged the next time it is opened.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["loggedTransfers"] }),
     retry: false,
+  });
+}
+
+/** The worker's logged transfers, newest first (`/remittance/history`). */
+export function useLoggedTransfers(): UseQueryResult<LoggedTransfer[]> {
+  const { user } = useAuth();
+  const uid = user?.uid;
+  return useQuery({
+    queryKey: ["loggedTransfers", uid] as const,
+    queryFn: () => listLoggedTransfers(uid ?? ""),
+    enabled: uid !== undefined,
+    staleTime: 60_000,
   });
 }
 

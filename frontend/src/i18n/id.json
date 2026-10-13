@@ -2,7 +2,8 @@
   "common": {
     "loading": "Memuat…",
     "retry": "Coba lagi",
-    "or": "atau"
+    "or": "atau",
+    "amountReading": "Kami membaca ini sebagai {{amount}}."
   },
   "landing": {
     "brand": "NomadFinance",
@@ -619,7 +620,8 @@
         "tooLarge": "File ini lebih besar dari 10 MB. Pilih file yang lebih kecil.",
         "badType": "Unggah PDF atau foto (PNG, JPEG, WebP, atau HEIC).",
         "generic": "File ini tidak dapat digunakan. Coba file lain.",
-        "notAContract": "Ini tidak tampak seperti kontrak. Unggah PDF atau foto yang jelas dari seluruh kontrak."
+        "notAContract": "Ini tidak tampak seperti kontrak. Unggah PDF atau foto yang jelas dari seluruh kontrak.",
+        "empty": "File ini kosong. Pilih file lain."
       },
       "hostCountry": "Negara tempat Anda bekerja",
       "hostCountryHint": "Kami memeriksa kontrak Anda dengan hukum ketenagakerjaan negara ini.",
@@ -870,6 +872,18 @@
     "empty": {
       "title": "Bandingkan sebelum mengirim",
       "description": "Pilih koridor dan jumlah untuk melihat biaya sebenarnya tiap layanan, dengan biaya dan markup kurs berdampingan."
+    },
+    "history": {
+      "title": "Uang yang Anda kirim",
+      "subtitle": "Transfer yang Anda tandai dengan “Saya menggunakan ini”. Ini juga masuk ke Identitas Finansial Anda.",
+      "link": "Transfer yang saya catat",
+      "compare": "Bandingkan layanan",
+      "empty": {
+        "title": "Belum ada transfer yang dicatat",
+        "description": "Bandingkan layanan, lalu tekan “Saya menggunakan ini” pada layanan yang Anda pakai. Transfernya akan muncul di sini."
+      },
+      "loadError": "Kami tidak dapat memuat transfer Anda. Silakan coba lagi.",
+      "row": "Dikirim {{sent}} · diterima {{received}}"
     }
   },
   "radar": {
@@ -1180,7 +1194,7 @@
         "critical": "Rendah"
       },
       "noData": "Belum cukup data",
-      "noProfile": "Skor Identitas Finansial Anda belum siap. Catat aktivitas selama beberapa minggu dan periksa kembali setelah pembaruan mingguan berikutnya.",
+      "noProfile": "Skor Identitas Finansial Anda belum siap. Catat beberapa aktivitas lalu hitung sekarang, atau skor akan siap setelah pembaruan mingguan berikutnya.",
       "logActivity": "Catat aktivitas",
       "meterLabel": "{{label}}: {{score}} dari 100",
       "metrics": {
@@ -1188,6 +1202,11 @@
         "savings_rate": "Tingkat tabungan",
         "remittance_consistency": "Mengirim uang ke rumah",
         "bill_payment_reliability": "Membayar tagihan tepat waktu"
+      },
+      "refresh": {
+        "button": "Hitung skor saya sekarang",
+        "working": "Sedang dihitung… bisa sampai satu menit",
+        "noData": "Catat dulu penghasilan, tagihan, atau tabungan, lalu coba lagi."
       }
     },
     "timeline": {

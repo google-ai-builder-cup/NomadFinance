@@ -55,6 +55,9 @@ function rejectionMessageKey(rejections: FileRejection[]): string {
   if (code === "file-invalid-type") {
     return "contract.upload.errors.badType";
   }
+  if (code === "file-too-small") {
+    return "contract.upload.errors.empty";
+  }
   return "contract.upload.errors.generic";
 }
 
@@ -93,6 +96,8 @@ export default function UploadDropzone({
     onDrop,
     accept: ACCEPTED_TYPES,
     maxSize: MAX_SIZE_BYTES,
+    // An empty file would only come back from the server as a refusal.
+    minSize: 1,
     multiple: false,
     disabled,
   });

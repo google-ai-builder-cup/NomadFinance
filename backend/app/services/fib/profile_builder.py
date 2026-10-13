@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections import Counter
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 from fastapi.concurrency import run_in_threadpool
@@ -20,7 +20,7 @@ from app.integrations.gemini import GeminiClient, GeminiError
 from app.repositories.fib_repo import EntryKind, FibRepository
 from app.repositories.rate_repo import RateRepository
 from app.repositories.user_repo import UserRepository
-from app.schemas.fib_profile import RecomputeResponse
+from app.schemas.fib_profile import RecomputeResponse, RefreshProfileResponse
 from app.services.coach.plan_goals import GoalsSource
 from app.services.fib.narrative import NARRATIVE_PROMPT, write_narrative
 from app.services.fib.profile_metrics import (
@@ -149,6 +149,8 @@ def _verified_employment(income: list[Entry]) -> list[dict[str, Any]]:
                 "salary_currency": entry.data["currency"],
                 "contract_ref": str(ref),
             }
+            if entry.data.get("salary_period"):
+                by_contract[str(ref)]["salary_period"] = entry.data["salary_period"]
     return list(by_contract.values())
 
 
@@ -271,6 +273,38 @@ async def recompute_profile(
         "fib_profile_recomputed overall_score=%d months=%d", overall, profile["months_of_data"]
     )
     return "recomputed"
+
+
+# A profile computed this recently is not computed again on request: the narrative is a
+# reasoning-tier call, and the answer would not have changed.
+REFRESH_MIN_AGE = timedelta(hours=1)
+
+
+async def refresh_profile(
+    uid: str,
+    gemini: GeminiClient,
+    fib: FibRepository,
+    users: UserRepository,
+    rate_repo: RateRepository,
+    now: datetime,
+    goals_source: GoalsSource | None = None,
+    signals: SignalReader | None = None,
+) -> RefreshProfileResponse:
+    """Work out one worker's profile on request (the first one need not wait for the weekly run).
+
+    Raises:
+        GeminiError: The narrative could not be written; the previous profile is kept.
+    """
+    existing = await run_in_threadpool(fib.get_profile, uid)
+    computed_at = existing.get("computed_at") if existing else None
+    if isinstance(computed_at, datetime) and now - computed_at < REFRESH_MIN_AGE:
+        return RefreshProfileResponse(status="fresh", computed_at=computed_at)
+    outcome = await recompute_profile(
+        uid, gemini, fib, users, rate_repo, now, goals_source, signals
+    )
+    if outcome == "no_data":
+        return RefreshProfileResponse(status="no_data")
+    return RefreshProfileResponse(status="recomputed", computed_at=now)
 
 
 async def recompute_all(

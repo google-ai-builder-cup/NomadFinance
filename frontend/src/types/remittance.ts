@@ -237,3 +237,18 @@ export interface RemittanceRecommendation {
   explanation: string;
   timing_tip: string | null;
 }
+
+/** One transfer the worker logged with "I used this" (`users/{uid}/transfers/{id}`, NF-P2-017):
+ * read straight from Firestore, where only the backend writes. */
+export interface LoggedTransfer {
+  id: string;
+  entry_date: string;
+  corridor_id: CorridorId;
+  provider_name: string;
+  send_amount: number;
+  send_currency: string;
+  receive_amount: number;
+  receive_currency: string;
+  fee: number | null;
+  cost_pct: number | null;
+}

@@ -259,6 +259,8 @@ AI_LIMITED = {
     ("POST", "/api/v1/contracts/{contract_id}/reports/{language}"),
     ("POST", "/api/v1/fib/bill/scan"),
     ("POST", "/api/v1/fib/categorize"),
+    # The report text of a score worked out on request: one reasoning-tier call.
+    ("POST", "/api/v1/fib/profile/refresh"),
     ("POST", "/api/v1/radar/report"),
     ("POST", "/api/v1/remittance/recommend"),
     # Embeds the report text (a Gemini call) before it writes the Radar report (NF-SA-013).

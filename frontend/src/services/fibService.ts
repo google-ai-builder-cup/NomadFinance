@@ -11,6 +11,7 @@ import type {
   ExportReportResponse,
   FibCategorizeResponse,
   FinancialProfile,
+  ProfileRefreshResponse,
   IncomeEntry,
   IncomeLogRequest,
   IncomeLogResponse,
@@ -129,4 +130,14 @@ export async function getLatestReport(): Promise<ExportReportResponse> {
 export async function categorizeEntries(): Promise<FibCategorizeResponse> {
   const response = await apiRequest("/api/v1/fib/categorize", { method: "POST" });
   return (await response.json()) as FibCategorizeResponse;
+}
+
+/**
+ * Work out the score now instead of waiting for the weekly run (`POST /api/v1/fib/profile/refresh`).
+ * One Gemini call for the report text, usually 20 to 40 seconds; a profile computed in the last
+ * hour comes back as it is.
+ */
+export async function refreshFinancialProfile(): Promise<ProfileRefreshResponse> {
+  const response = await apiRequest("/api/v1/fib/profile/refresh", { method: "POST" });
+  return (await response.json()) as ProfileRefreshResponse;
 }

@@ -47,6 +47,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
 | POST | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
 | GET | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
+| POST | `/api/v1/fib/profile/refresh` | Firebase ID token | 10/min per user (AI calls) | Known-bugs batch |
 | GET | `/api/v1/fib/activity` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-HR-001 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
@@ -1298,6 +1299,30 @@ curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/
   "language": "hi",
   "filename": "financial-identity-report.pdf"
 }
+```
+
+---
+
+## `POST /api/v1/fib/profile/refresh`
+
+Works out the caller's Financial Identity profile now, instead of waiting for the weekly run, so a new worker does not wait up to a week to see a score. The weekly job stays how every profile is kept up to date. One reasoning-tier Gemini call writes the report text (usually 20 to 40 seconds). A profile computed in the last hour is returned as it is, with no call.
+
+- **Auth:** `Authorization: Bearer <firebase-id-token>`
+- **Request:** no body.
+- **Response `200`:** `RefreshProfileResponse` (`app/schemas/fib_profile.py`): `status` is `recomputed` (written just now), `fresh` (computed within the last hour, left as it is) or `no_data` (nothing logged in the last 12 months gives a score; nothing written); `computed_at` is when the stored profile was computed, null for `no_data`.
+
+| Status | `detail` | Cause |
+|---|---|---|
+| 401 | see Authentication | No or invalid token |
+| 429 | see Rate limits | Over 10 AI calls a minute |
+| 502 / 503 / 504 | Gemini error text | Unusable answer / busy or out of quota / timed out. The previous profile is kept. |
+
+```bash
+curl -s -X POST -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/api/v1/fib/profile/refresh
+```
+
+```json
+{ "status": "recomputed", "computed_at": "2026-10-13T12:30:15Z" }
 ```
 
 ---

@@ -39,8 +39,35 @@ def test_an_employment_contract_with_a_salary_builds_an_entry() -> None:
         "category_source": "user",
         "verified": True,
         "source": "contract",
+        "salary_period": "month",
+        "monthly_amount": 650.0,
         "employer_name": "Example Household",
     }
+
+
+@pytest.mark.parametrize(
+    ("period", "amount", "monthly"),
+    [("month", 650.0, 650.0), ("week", 150.0, 650.0), ("hour", 18.0, None), ("day", 90.0, None)],
+)
+def test_what_a_salary_comes_to_in_a_month_is_stored_beside_the_stated_figure(
+    period: str, amount: float, monthly: float | None
+) -> None:
+    entry = build_income_entry(
+        _facts(salary_amount=amount, salary_period=period), "employment_contract"
+    )
+
+    assert entry is not None
+    # The figure is as the contract states it (the PDF prints it with its period);
+    # the month's worth is separate, and None where it cannot be known.
+    assert entry["amount"] == amount and entry["salary_period"] == period
+    assert entry["monthly_amount"] == monthly
+
+
+def test_no_period_stated_is_read_as_a_month() -> None:
+    entry = build_income_entry(_facts(salary_period=None), "employment_contract")
+
+    assert entry is not None
+    assert "salary_period" not in entry and entry["monthly_amount"] == 650.0
 
 
 def test_no_employer_name_omits_the_field_rather_than_storing_none() -> None:

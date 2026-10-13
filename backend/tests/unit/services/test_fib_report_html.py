@@ -149,6 +149,23 @@ def test_verified_employment_is_listed_with_its_salary() -> None:
     assert "c1" not in html
 
 
+def test_a_salary_stated_by_the_hour_says_so_in_the_report() -> None:
+    profile = _profile(
+        verified_employment=[
+            {
+                "employer_name": "Example Cafe",
+                "salary_amount": 18,
+                "salary_currency": "AUD",
+                "salary_period": "hour",
+            }
+        ]
+    )
+
+    html = build_report_html(profile, None, NOW)
+
+    assert f"<dd>18 AUD {LABELS['en']['period_hour']}</dd>" in html
+
+
 def test_without_verified_employment_the_section_is_left_out() -> None:
     assert LABELS["en"]["verified_heading"] not in build_report_html(_profile(), None, NOW)
 

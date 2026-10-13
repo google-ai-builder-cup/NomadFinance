@@ -85,6 +85,12 @@ def _indicator_row(name: str, metric: dict[str, Any], labels: dict[str, str]) ->
     )
 
 
+def _per_period(period: Any, labels: dict[str, str]) -> str:
+    """` per month`, ` per hour`...: the period a contract salary is stated for, or nothing."""
+    label = labels.get(f"period_{period}") if isinstance(period, str) else None
+    return f" {escape(label)}" if label else ""
+
+
 def _number(value: Any) -> str:
     """A count or percentage as digits 0-9, without a trailing ".0"."""
     if isinstance(value, float) and value.is_integer():
@@ -180,7 +186,8 @@ def build_report_html(
                     (
                         labels["verified_salary"],
                         f'{escape(str(job.get("salary_amount", "")))} '
-                        f'{escape(str(job.get("salary_currency", "")))}',
+                        f'{escape(str(job.get("salary_currency", "")))}'
+                        f"{_per_period(job.get('salary_period'), labels)}",
                     ),
                 ]
             )

@@ -145,13 +145,23 @@ export function requestFailureKey(error: unknown): string {
 }
 
 /**
- * What to tell the worker when the upload itself was refused. A file the reader finds no document
- * in (a photo of something else) is a 422, and "Something went wrong, try again" would send them
- * round again with the same file.
+ * What to tell the worker when the upload itself was refused. Each of these is about the file, and
+ * "Something went wrong, try again" would send them round again with the same one: an empty file
+ * (400), one over the size limit (413), one that is not a PDF or a photo (415), and a photo the
+ * reader finds no document in (422).
  */
 export function uploadFailureKey(error: unknown): string {
-  if (error instanceof ApiError && error.status === 422) {
-    return "contract.upload.errors.notAContract";
+  if (error instanceof ApiError) {
+    switch (error.status) {
+      case 400:
+        return "contract.upload.errors.empty";
+      case 413:
+        return "contract.upload.errors.tooLarge";
+      case 415:
+        return "contract.upload.errors.badType";
+      case 422:
+        return "contract.upload.errors.notAContract";
+    }
   }
   return requestFailureKey(error);
 }

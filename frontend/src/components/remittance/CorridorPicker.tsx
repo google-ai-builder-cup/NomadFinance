@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
+import AmountReading from "@/components/common/AmountReading";
 import CountryPair from "@/components/common/CountryPair";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/hooks/useI18n";
@@ -167,6 +168,7 @@ export default function CorridorPicker({
         <p id="remittance-amount-hint" className="text-xs text-muted-foreground">
           {t("remittance.form.amountHint", { currency: info.sendCurrency, ...limits })}
         </p>
+        <AmountReading text={amountText} currency={info.sendCurrency} decimals={info.decimals} />
         {problemText && (
           <p
             id="remittance-amount-error"

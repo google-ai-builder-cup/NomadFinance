@@ -19,6 +19,7 @@ from app.integrations.cloud_storage import (
 from app.integrations.gemini import GeminiClient, get_gemini_client
 from app.repositories.coach_session_repo import CoachPlanRepository, get_coach_plan_repository
 from app.repositories.fib_repo import FibRepository, get_fib_repository
+from app.repositories.rate_repo import RateRepository, get_rate_repository
 from app.repositories.scam_check_repo import ScamCheckRepository, get_scam_check_repository
 from app.repositories.user_repo import UserRepository, get_user_repository
 from app.schemas.fib import (
@@ -33,7 +34,9 @@ from app.schemas.fib import (
 )
 from app.schemas.fib_activity import ActivityFeedResponse
 from app.schemas.fib_export import ExportReportRequest, ExportReportResponse
+from app.schemas.fib_profile import RefreshProfileResponse
 from app.schemas.user import AuthenticatedUser
+from app.services.coach.plan_goals import newest_plan_goals
 from app.services.feature_flag_service import FeatureFlagService
 from app.services.fib.activity_feed import build_feed
 from app.services.fib.categorizer import categorize_pending
@@ -45,7 +48,8 @@ from app.services.fib.exporter import (
 )
 from app.services.fib.logger import log_bill, log_income, log_savings
 from app.services.fib.ocr import BillUnreadableError, NotABillError, scan_bill
-from app.services.fib.signals import sharing_of
+from app.services.fib.profile_builder import refresh_profile
+from app.services.fib.signals import SignalReader, sharing_of
 
 router = APIRouter(prefix="/fib", tags=["fib"])
 
@@ -305,4 +309,46 @@ async def activity_feed(
         plans=plans,
         scam_checks=scam_checks,
         flags=flags,
+    )
+
+
+@router.post(
+    "/profile/refresh",
+    response_model=RefreshProfileResponse,
+    dependencies=[Depends(limit_ai_calls)],
+    responses={
+        **_LOG_ERROR_RESPONSES,
+        502: {"description": "Gemini returned an unusable answer"},
+        503: {"description": "Gemini busy, unavailable or out of quota"},
+        504: {"description": "Gemini timed out"},
+    },
+    summary="Work out your Financial Identity score now",
+)
+async def refresh_financial_profile(
+    user: Annotated[AuthenticatedUser, Depends(get_current_user)],
+    fib: Annotated[FibRepository, Depends(get_fib_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    rates: Annotated[RateRepository, Depends(get_rate_repository)],
+    gemini: Annotated[GeminiClient, Depends(get_gemini_client)],
+    plans: Annotated[CoachPlanRepository, Depends(get_coach_plan_repository)],
+    scam_checks: Annotated[ScamCheckRepository, Depends(get_scam_check_repository)],
+    flags: Annotated[FeatureFlagService, Depends(get_feature_flag_service)],
+) -> RefreshProfileResponse:
+    """Compute your profile now instead of waiting for the weekly run.
+
+    The weekly job stays the way every profile is kept up to date; this is for the first one,
+    so a new worker does not wait up to a week to see a score. One call writes the metrics and
+    the report text (a reasoning-tier call, usually 20 to 40 seconds). A profile computed in the
+    last hour is returned as it is, so pressing the button again costs nothing.
+    """
+    now = datetime.now(UTC)
+    return await refresh_profile(
+        user.uid,
+        gemini,
+        fib,
+        users,
+        rates,
+        now,
+        newest_plan_goals(plans),
+        SignalReader(plans, scam_checks, flags),
     )

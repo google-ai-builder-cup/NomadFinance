@@ -2,7 +2,8 @@
   "common": {
     "loading": "Naglo-load…",
     "retry": "Subukan ulit",
-    "or": "o"
+    "or": "o",
+    "amountReading": "Binasa namin ito bilang {{amount}}."
   },
   "landing": {
     "brand": "NomadFinance",
@@ -619,7 +620,8 @@
         "tooLarge": "Mas malaki sa 10 MB ang file na ito. Pumili ng mas maliit na file.",
         "badType": "Mag-upload ng PDF o larawan (PNG, JPEG, WebP o HEIC).",
         "generic": "Hindi magamit ang file na ito. Subukan ang ibang file.",
-        "notAContract": "Hindi ito mukhang kontrata. Mag-upload ng PDF o malinaw na larawan ng buong kontrata."
+        "notAContract": "Hindi ito mukhang kontrata. Mag-upload ng PDF o malinaw na larawan ng buong kontrata.",
+        "empty": "Walang laman ang file na ito. Pumili ng ibang file."
       },
       "hostCountry": "Bansang pinagtatrabahuhan mo",
       "hostCountryHint": "Sinusuri namin ang kontrata mo laban sa batas sa paggawa ng bansang ito.",
@@ -870,6 +872,18 @@
     "empty": {
       "title": "Ihambing bago magpadala",
       "description": "Pumili ng corridor at halaga para makita kung magkano talaga ang bawat serbisyo, na magkatabi ang bayarin at markup sa exchange rate."
+    },
+    "history": {
+      "title": "Perang naipadala mo",
+      "subtitle": "Ang mga padalang minarkahan mo ng “Ito ang ginamit ko”. Napupunta rin ang mga ito sa iyong Financial Identity.",
+      "link": "Mga na-log kong padala",
+      "compare": "Ikumpara ang mga serbisyo",
+      "empty": {
+        "title": "Wala pang na-log na padala",
+        "description": "Ikumpara ang mga serbisyo, pagkatapos pindutin ang “Ito ang ginamit ko” sa pinadalhan mo. Lalabas ito rito."
+      },
+      "loadError": "Hindi namin ma-load ang iyong mga padala. Pakisubukan ulit.",
+      "row": "Naipadala {{sent}} · natanggap {{received}}"
     }
   },
   "radar": {
@@ -1180,7 +1194,7 @@
         "critical": "Mababa"
       },
       "noData": "Wala pang sapat na datos",
-      "noProfile": "Hindi pa handa ang iyong Financial Identity score. Mag-log ng ilang linggo ng aktibidad at bumalik pagkatapos ng susunod na lingguhang update.",
+      "noProfile": "Hindi pa handa ang iyong Financial Identity score. Mag-log ng ilang aktibidad at kuwentahin ito ngayon, o magiging handa ito pagkatapos ng susunod na lingguhang update.",
       "logActivity": "I-log ang aktibidad",
       "meterLabel": "{{label}}: {{score}} sa 100",
       "metrics": {
@@ -1188,6 +1202,11 @@
         "savings_rate": "Rate ng pag-iimpok",
         "remittance_consistency": "Pagpapadala ng pera sa bahay",
         "bill_payment_reliability": "Pagbabayad ng bayarin sa oras"
+      },
+      "refresh": {
+        "button": "Kuwentahin na ang aking score",
+        "working": "Kinukuwenta… maaaring abutin ng hanggang isang minuto",
+        "noData": "Mag-log muna ng kita, bayarin o ipon, pagkatapos subukan ulit."
       }
     },
     "timeline": {
