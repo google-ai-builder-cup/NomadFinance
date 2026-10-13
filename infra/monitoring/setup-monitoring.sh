@@ -78,7 +78,7 @@ else
   done
 fi
 
-echo "== 4. Alert per Gemini model (80% of the daily limit)"
+echo "== 4. Alerts: server errors, slow requests, and one per Gemini model (80% of the daily limit)"
 status=0
 if [ "${#CHANNELS[@]}" -eq 0 ]; then
   echo "   skipped: no notification channel"
