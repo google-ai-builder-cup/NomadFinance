@@ -5,8 +5,8 @@ emergency fund are arithmetic on the worker's answers, the cost baselines and th
 no figure in a plan can be one the model made up. The model only writes the sentences around them
 (`plan_generator.py`), and `plan_validator.py` checks those sentences against these figures.
 
-The rules (shares, the 3-month target, the send weeks) live in this module; changing one means changing
-`PLAN_RULES_VERSION`.
+The rules (shares, the 3-month target, the send weeks) live in this module; changing one means
+changing `PLAN_RULES_VERSION`.
 """
 
 from __future__ import annotations
