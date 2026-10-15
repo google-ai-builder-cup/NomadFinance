@@ -22,7 +22,7 @@ It needed one thing that did not exist: **nothing moved a session from `review` 
 | `frontend/src/hooks/useCoachScore.ts`, `useMakeCoachPlan.ts` | The two calls |
 | `frontend/src/components/coach/score/` (new), `CoachChat.tsx` | `ScoreScreen`, `ScoreGauge` (Recharts), `FactorBars`, `PlanButton`; wired in at stage `plan`, the conversation shrinks to its last lines |
 | `frontend/src/i18n/coach/*.json` | About 75 keys in 6 languages (the factor copy and the screen's phrases) |
-| `docs/api/v2-coach.md`, `docs/deferred-items.md` | The review step; D-215 (4) closed; D-226 |
+| `docs/api/v2-coach.md` | The review step; D-215 (4) closed; D-226 |
 
 No shared file (`package.json`, lockfile, `firebase.json`, workflows) was touched; `recharts` was already a dependency.
 

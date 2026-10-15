@@ -5,7 +5,7 @@ The explainer of a stored check is in the worker's language (`users.preferred_la
 for Priya and Rajesh, Tagalog for Miguel. The messages are rows of the reviewed golden sets
 (`data-scripts/evals/scam_golden_*.jsonl`), so the labels (type, tactics, risk) are not new
 judgements; what is written here is the explanation a worker reads. Written by the team, not by a
-native speaker (docs/deferred-items.md, the NF-HR-003 entry).
+native speaker.
 """
 
 from __future__ import annotations

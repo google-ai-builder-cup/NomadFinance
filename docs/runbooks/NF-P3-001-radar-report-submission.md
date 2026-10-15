@@ -135,5 +135,5 @@ PR title: `feat: exploitation radar report submission endpoint (NF-P3-001)`
 
 ## Noticed, not fixed
 
-- Evidence-photo upload (`radar_reports.evidence_paths`, `radar-evidence/{reportId}/` in `firestore-schema.md`) has no owning task in `.claude/tasks.md`, the design doc, or the data model. `evidence_paths` stays an empty list on every report created by this endpoint until some task claims it.
+- Evidence-photo upload (`radar_reports.evidence_paths`, `radar-evidence/{reportId}/` in `firestore-schema.md`) has no owning task in `.claude/tasks.md`, the original design, or the data model. `evidence_paths` stays an empty list on every report created by this endpoint until some task claims it.
 - Step 4's `summary` (decision 7 above) has no field to live in on `radar_reports`, even though its own prompt says it exists for NF-P3-004's alerts. NF-P3-004 will need to either add that field or regenerate its own summary from the stored report.

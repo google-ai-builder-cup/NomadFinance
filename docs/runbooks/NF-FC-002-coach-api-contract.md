@@ -67,7 +67,6 @@ POST /sessions ──► POST /messages (no text: the coach speaks first)
 | `frontend/src/mocks/coach.msw.test.ts` | New: the mock API serves every route, and replays the streams (28 tests) |
 | `docs/data-model/collections/coach.md` | One optional field, `last_turn`, on the session |
 | `docs/mocks/README.md`, `docs/api/endpoints.md` | The `coach/` section; a pointer to the contract |
-| `docs/deferred-items.md` | D-126 closed for the Coach; D-175 to D-181 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. No Firestore rule changes: the new field is written by the backend only.
 
@@ -152,7 +151,7 @@ Feature-flagged module: [x] flag-off answer is `404 not_found` on every route (s
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-175 (PDF delivery: NF-FC-014's wording), D-176 (the plan's shape needs Pranjal's review; add NF-FC-002 to NF-FC-012's dependencies), D-177 (the two extra routes; check-in routes still unspecified), D-178 (write `last_turn` in NF-FC-008 and -009), D-179 (no PDF mock; the streams are not captured), D-180 (a native speaker should read the Hindi), D-181 (a test that fails on a Windows checkout). Also: the standing instructions' "all endpoints under `/api/v1/`" is out of date for v2, and the tracker still calls the API reference `docs/api-contract.md` (D-04).
+Left for later: D-175 (PDF delivery: NF-FC-014's wording), D-176 (the plan's shape needs Pranjal's review; add NF-FC-002 to NF-FC-012's dependencies), D-177 (the two extra routes; check-in routes still unspecified), D-178 (write `last_turn` in NF-FC-008 and -009), D-179 (no PDF mock; the streams are not captured), D-180 (a native speaker should read the Hindi), D-181 (a test that fails on a Windows checkout). Also: the standing instructions' "all endpoints under `/api/v1/`" is out of date for v2, and the tracker still calls the API reference `docs/api-contract.md` (D-04).
 
 ## Commit
 

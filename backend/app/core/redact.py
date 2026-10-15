@@ -3,7 +3,7 @@ or stored (NF-F0-008).
 
 Covers phone numbers, emails, passport / national-ID numbers for the six corridors' countries
 (SG, PH, IN, ID, MY, JP, AU), bank account / card numbers and URLs. It does not mask personal
-names (deferred-items D-108) or amounts: an amount is the evidence a scam check or the coach
+names or amounts: an amount is the evidence a scam check or the coach
 works from, and it identifies nobody.
 
 Detection is pattern-based, so it favours masking too much over too little: a 9-digit order

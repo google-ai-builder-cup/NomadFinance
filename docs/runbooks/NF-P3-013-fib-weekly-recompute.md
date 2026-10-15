@@ -21,7 +21,7 @@ PDF export (NF-P3-014), contract income writes (NF-P3-024), demo seed data (NF-P
 | `backend/app/api/v1/internal.py` | The endpoint |
 | `backend/app/config.py`, `backend/.env.example` | `GEMINI_NARRATIVE_TIMEOUT_SECONDS` (default 90) |
 | `infra/cloud-scheduler/fib-recompute.yaml` (was empty) | The weekly job |
-| `docs/api/endpoints.md`, `docs/data-model/collections/fib.md`, `docs/deferred-items.md` | Endpoint section; data-model notes; D-08 and D-50 |
+| `docs/api/endpoints.md`, `docs/data-model/collections/fib.md` | Endpoint section; data-model notes; D-08 and D-50 |
 | 5 new test files | Metrics, builder, repository, endpoint, and an opt-in live Gemini test |
 
 No shared files touched. `firestore.rules` already lets the owner read `financial_profile`, and only the backend writes it.
@@ -43,7 +43,7 @@ Money is converted to `reporting_currency`: the home currency, with the latest `
 
 ## Decisions
 
-1. **Formulas and the 20% savings target are this project's own** (the design doc names the four metrics, not how to compute them). Nothing is calibrated against lending outcomes. The constants are `SAVINGS_TARGET_RATE` and `WINDOW_MONTHS` in `profile_metrics.py`.
+1. **Formulas and the 20% savings target are this project's own** (the original design names the four metrics, not how to compute them). Nothing is calibrated against lending outcomes. The constants are `SAVINGS_TARGET_RATE` and `WINDOW_MONTHS` in `profile_metrics.py`.
 2. **The categorizer is not called here.** None of the four metrics uses a category.
 3. **One user's failure is isolated.** If the narrative call fails (or an entry is corrupt), that user keeps last week's profile, is counted under `failed`, and the others still run. The endpoint always returns 200, like `aggregate-radar`: a scheduler retry would re-run, and re-pay for, every other user.
 4. **What the narrative prompt sees:** period, metrics, entry counts, reporting currency and `income_verified_by_contract`. No overall score (the prompt forbids giving one) and no employer names or amounts of verified contracts.

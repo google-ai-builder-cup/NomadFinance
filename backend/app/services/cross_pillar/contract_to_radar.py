@@ -1,4 +1,4 @@
-"""Contract Shield feeds Exploitation Radar (NF-P2-021, design doc's cross-pillar flow #2).
+"""Contract Shield feeds Exploitation Radar (NF-P2-021, cross-pillar flow #2).
 
 When a contract's comparison finds `danger` clauses (the same threshold that triggers the
 complaint letter, `services/contract/letter.py`), the flagged employer or agency is reported

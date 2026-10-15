@@ -64,7 +64,7 @@ screen      ──► opens the interview with a turn that has no text: the firs
 | `mocks/axe.ts`, `mocks/coachTurns.ts` | The raw-key check knows the Coach's key roots (and ignores a file name such as `chat.png`); `replayKnown` |
 | tests (11 files) | 97 new in 6 files, plus the reducer, the service, `ChatLog`, `ChatBubble` and `StepProgress` tests extended |
 
-**Docs:** `docs/api/v2-coach.md` (the route, `known`, the sources), `docs/data-model/collections/coach.md`, `docs/mocks/coach/` (4 samples) and its README, `docs/mermaid/financial-coach-pipeline.mmd`, `docs/ui-kit.md`, `docs/deferred-items.md`, this file.
+**Docs:** `docs/api/v2-coach.md` (the route, `known`, the sources), `docs/data-model/collections/coach.md`, `docs/mocks/coach/` (4 samples) and its README, `docs/mermaid/financial-coach-pipeline.mmd`, this file.
 
 **No shared file was touched** (`package.json`, the lockfile, `firebase.json`, the rules, `tsconfig*`, workflows). Devam ran `pnpm install` so that `axe-core`, already in the lockfile, is in `node_modules`.
 
@@ -190,8 +190,8 @@ git commit -m "feat(coach): review table, new interview button and card of known
 # 3. the accessibility pass: components/common/, components/layout/Header.tsx, mocks/axe.ts, pages/coach/coachScreens.a11y.test.tsx, backend/tests/unit/services/test_coach_helper_sentences.py, test_coach_question_bank.py
 git commit -m "feat(coach): accessibility pass and translation checks" -m "Refs: NF-FC-023"
 
-# 4. docs/runbooks/NF-FC-023-..., docs/deferred-items.md, docs/ui-kit.md
-git commit -m "docs(coach): add NF-FC-023 task doc and update deferred items" -m "Refs: NF-FC-023"
+# 4. docs/runbooks/NF-FC-023-...
+git commit -m "docs(coach): add NF-FC-023 task doc" -m "Refs: NF-FC-023"
 ```
 
 Or as one commit: `feat(coach): coach i18n and accessibility pass, review table, known answers` with `Refs: NF-FC-023`.

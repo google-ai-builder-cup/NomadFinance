@@ -23,7 +23,7 @@ A worker can now let their **Coach plan check-ins** and their **scam checks** ap
 | `backend/app/services/fib/exporter.py`, `report_html.py`, `report_labels.py`, `app/api/v1/fib.py` | The choice read at export; the section and its 12 labels in 6 languages; the latest link withdrawn for a PDF with activity no longer shared |
 | `backend/app/services/fib/activity_feed.py`, `app/schemas/fib_activity.py` (new), `app/api/v1/fib.py` | The feed and its route |
 | `backend/app/repositories/scam_check_repo.py`, `coach_session_repo.py`, `app/api/v1/internal.py` | `activity_since` (field-masked, one range, no index), `activity` (plans without their bodies); the recompute gets a `SignalReader` |
-| `docs/api/endpoints.md`, `docs/data-model/collections/fib.md`, `users.md`, `docs/deferred-items.md` | The contract, the final keys, D-264 to D-267 |
+| `docs/api/endpoints.md`, `docs/data-model/collections/fib.md`, `users.md` | The contract, the final keys, D-264 to D-267 |
 
 No shared file was touched and no index was added.
 

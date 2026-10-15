@@ -8,7 +8,7 @@ Now the backend keeps a **daily budget per feature and model tier**, refuses a r
 
 Around that: the routing is reviewed against the daily limits with a measured, re-runnable projection (`backend/scripts/project_demo_usage.py`); the cache hit rate is measurable (a metric and a dashboard chart) and one uncached call is cached; and the demo-day pre-warm plan is written below.
 
-**What is built and what is not.** The code, the tests and the definitions are done. **The budget is off in production until someone reads each model's real daily limit in Google AI Studio** and puts it in `infra/monitoring/quota-limits.json` (D-122, which also arms the NF-F0-016 alerts). Nothing here invents a limit. The "projected usage under 60% of the daily limit" line is met against the design document's figures, marked ASSUMED, and is confirmed only when the real numbers are in (D-286).
+**What is built and what is not.** The code, the tests and the definitions are done. **The budget is off in production until someone reads each model's real daily limit in Google AI Studio** and puts it in `infra/monitoring/quota-limits.json` (D-122, which also arms the NF-F0-016 alerts). Nothing here invents a limit. The "projected usage under 60% of the daily limit" line is met against the original design's figures, marked ASSUMED, and is confirmed only when the real numbers are in (D-286).
 
 ## Where everything is
 
@@ -102,7 +102,7 @@ Every Gemini request the app can make (the left columns are checked against the 
 ## The demo-day projection
 
 ```bash
-# from backend/ (the figures marked ASSUMED are the design document's: 500 / 1500 / 1500 / 1500)
+# from backend/ (the figures marked ASSUMED are the original design's: 500 / 1500 / 1500 / 1500)
 python scripts/project_demo_usage.py                                 # 30 visitors, default routing
 python scripts/project_demo_usage.py --visitors 20
 python scripts/project_demo_usage.py --coach-reply-tier extraction   # 30 visitors, reply moved
@@ -190,7 +190,7 @@ gcloud run services update nomadfinance-api --project nomadfinance-prod --region
 Tracker line:
 
 - [x] Simulated quota exhaustion degrades gracefully in both features: `test_quota_exhaustion.py` (9 tests: Scam falls back a tier, is a calm 503, still serves a stored check; Coach turn and plan are a calm 503 and work again after the day turns) and `test_quota_exhaustion_firestore.py` (3 tests through the real wiring)
-- [x] Projected demo-day usage under 60% of the daily limit per model: **against the ASSUMED design-document limits**, up to 22 visitors (39 with the reply moved)
+- [x] Projected demo-day usage under 60% of the daily limit per model: **against the ASSUMED original design limits**, up to 22 visitors (39 with the reply moved)
 - [ ] The same against the real limits: needs D-122, then D-286
 
 Firestore Schema Change:
@@ -223,6 +223,5 @@ PR title: `feat(gemini): per-feature daily quota budget, graceful degrade and de
 
 - `backend-deploy.yml` does not run when only `infra/monitoring/quota-limits.json` changes (see the gotcha); a one-line `paths:` addition would fix it. Shared file.
 - Two scam-history tests fail on Windows by timing (D-289).
-- Section 6 of `docs/future-scope/design.md` still lists the Coach reply as `REASONING` (D-290).
 - `deploy_manual.sh` resets `--min-instances` to 0 on every deploy, so the evening-before setting is lost if anything is deployed after it (D-77 is where the decision lives).
 - `backend/` and `/infra/` are code-owner paths: this change needs a teammate's review.

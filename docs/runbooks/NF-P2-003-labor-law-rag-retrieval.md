@@ -22,7 +22,7 @@ There is **no Gemini call** in this step — it is a plain Firestore read, which
 | `backend/tests/integration/repositories/test_labor_law_repository.py` | Repository against the Firestore Emulator (opt-in) |
 | `backend/tests/integration/api/test_contracts_labor_law.py` | Endpoint: shape, auth, validation, 404, OpenAPI |
 | `docs/data-model/collections/labor_laws.md` | Task list line already named NF-P2-003; no field changes needed |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md` | Endpoint section; step 3 in detail |
+| `docs/api/endpoints.md` | Endpoint section; step 3 in detail |
 
 No shared files (`requirements*.txt`, `Dockerfile`, workflows, ...) were touched.
 
@@ -145,7 +145,7 @@ PR title: `feat(contracts): labor-law RAG retrieval by host country and job type
 
 ## Not covered here
 
-- Steps 4 to 6 and the pipeline as a whole (`docs/pipelines/contract-shield.md`, D-53)
+- Steps 4 to 6 and the pipeline as a whole (D-53)
 - What to do when `host_country` is null (D-55) — still open, still the pipeline owner's call
 - Curating or loading the labor-law data itself (NF-P1-017, NF-P1-018) — already built, untouched here
 - Response caching (NF-P2-007)

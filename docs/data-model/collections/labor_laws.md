@@ -151,7 +151,7 @@ Each person curates two countries into `data-scripts/data/source/labor-laws/<CC>
 
 ## The 15 categories [P]
 
-These are the document ids under `rules`. They were chosen from the design doc's own examples ("uncompensated overtime, illegal deductions, termination penalties"), the passport-retention example in ADR-002, the social-security comparison in the design doc (Singapore CPF, Malaysia EPF, Korean NPS) and the typical complaints of migrant workers. **The team should confirm the list before NF-P1-017 curation starts**, because renaming a category later means changing 6 countries of data and every stored report.
+These are the document ids under `rules`. They were chosen from the original design's own examples ("uncompensated overtime, illegal deductions, termination penalties"), the passport-retention example in ADR-002, the social-security comparison in the original design (Singapore CPF, Malaysia EPF, Korean NPS) and the typical complaints of migrant workers. **The team should confirm the list before NF-P1-017 curation starts**, because renaming a category later means changing 6 countries of data and every stored report.
 
 | # | Id | What to record |
 |---|---|---|

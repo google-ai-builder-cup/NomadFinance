@@ -4,7 +4,7 @@
 Figures never come from here: `plan_text` receives the facts the plan was built from and writes
 them into fixed sentences, so a sentence cannot disagree with its figure, and the backend's own
 checks (`check_text`, the translation check) accept the result. Written by the team, not by a
-native speaker (docs/deferred-items.md, D-221 and the entry NF-HR-003 adds).
+native speaker (D-221).
 """
 
 from __future__ import annotations

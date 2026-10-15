@@ -2,9 +2,9 @@
 
 ## Summary
 
-The Firestore data model is now written down: every collection path, its fields and types, an example document, who may read and write it, the indexes it needs, and how its version is handled. Before this task the design doc had one line per collection and all nine files in `docs/data-model/` were empty. Nothing was created in Firestore: this task is documentation only, and the live database (`(default)`, Native, `asia-south1`) is still empty.
+The Firestore data model is now written down: every collection path, its fields and types, an example document, who may read and write it, the indexes it needs, and how its version is handled. Before this task the original design had one line per collection and all nine files in `docs/data-model/` were empty. Nothing was created in Firestore: this task is documentation only, and the live database (`(default)`, Native, `asia-south1`) is still empty.
 
-The design doc's table could not be used as written. Four of its paths have the wrong number of segments for Firestore, one has a variable where a collection name must be, and one collection the tasks need (`savings`) was missing. Those were fixed and are listed in the table below. The real Firestore client library rejects the original paths and accepts the corrected ones (see "Verified results").
+The original design's table could not be used as written. Four of its paths have the wrong number of segments for Firestore, one has a variable where a collection name must be, and one collection the tasks need (`savings`) was missing. Those were fixed and are listed in the table below. The real Firestore client library rejects the original paths and accepts the corrected ones (see "Verified results").
 
 This is the document Devam needs for the security rules (NF-P1-014), Aditya for the corridor loader (NF-P1-016), and everyone for the pillar tasks that read or write these collections.
 
@@ -12,7 +12,7 @@ This is the document Devam needs for the security rules (NF-P1-014), Aditya for 
 
 | File | What it holds |
 |---|---|
-| `docs/data-model/firestore-schema.md` | Start here. Collection map, fixes to the design doc, conventions, access matrix, required indexes, Cloud Storage paths, open questions |
+| `docs/data-model/firestore-schema.md` | Start here. Collection map, fixes to the original design, conventions, access matrix, required indexes, Cloud Storage paths, open questions |
 | `docs/data-model/collections/users.md` | `users/{uid}`, `notifications`, account deletion |
 | `docs/data-model/collections/contracts.md` | Contracts, per-language reports (the cache), complaint templates |
 | `docs/data-model/collections/corridors.md` | RPW provider prices, exactly as the NF-P1-015 parser writes them |
@@ -23,14 +23,14 @@ This is the document Devam needs for the security rules (NF-P1-014), Aditya for 
 | `docs/data-model/versioning.md` | Data, prompt and schema versions, and how to change a schema |
 | `docs/runbooks/NF-P1-013-firestore-schema.md` | This runbook |
 
-The tracker and the design doc say "docs/data-model.md". The repo already had the folder above, so the existing files were filled instead of creating a second structure.
+The tracker and the original design say "docs/data-model.md". The repo already had the folder above, so the existing files were filled instead of creating a second structure.
 
 ## What was decided
 
 | # | Decision | Where |
 |---|---|---|
 | 1 | Fill the existing folder stubs, not a single `data-model.md` | Files table |
-| 2 | Fix the invalid design-doc paths (table below) | `firestore-schema.md` |
+| 2 | Fix the invalid original design paths (table below) | `firestore-schema.md` |
 | 3 | Add `users/{uid}/savings/{id}` | `fib.md` |
 | 4 | Embeddings use `gemini-embedding-001` at 768 dimensions (Firestore allows at most 2048; the model's default is 3072). Vectors are normalized before storing. | `radar.md` |
 | 5 | The 15 labor-law categories (list in `labor_laws.md`) | `labor_laws.md` |
@@ -40,7 +40,7 @@ The tracker and the design doc say "docs/data-model.md". The repo already had th
 
 Path fixes:
 
-| Design doc (4.7) | Problem | Now |
+| Original design | Problem | Now |
 |---|---|---|
 | `users/{uid}/financial_profile` | 3 segments is a collection | `users/{uid}/financial_profile/current` |
 | `labor_laws/{country}/_meta` | Same | `labor_laws/{country}/_meta/current` |
@@ -53,8 +53,8 @@ Path fixes:
 
 Every table says how firm it is:
 
-- **[D]** stated in the design doc, **[T]** needed by a tracker task, **[built]** already in the repo (the corridors shape is the NF-P1-015 parser's output);
-- **[P]** proposed here because nothing else defines it. Most field names beyond the design doc's table are [P]. The task owner may refine them but should tell the team when a name changes.
+- **[D]** stated in the original design, **[T]** needed by a tracker task, **[built]** already in the repo (the corridors shape is the NF-P1-015 parser's output);
+- **[P]** proposed here because nothing else defines it. Most field names beyond the original design's table are [P]. The task owner may refine them but should tell the team when a name changes.
 
 ## All commands, in order
 
@@ -110,7 +110,7 @@ backend\.venv\Scripts\python.exe check_schema_docs.py
 
 Expected: 19 lines starting with `ok`, then `bad paths: 0`.
 
-### 3. See why the design-doc paths had to change
+### 3. See why the original design paths had to change
 
 ```bash
 backend/.venv/bin/python - <<'EOF'
@@ -129,7 +129,7 @@ for p in ["users/x/financial_profile", "labor_laws/SG/_meta", "radar_alerts/SG-I
 EOF
 ```
 
-Expected: the first four (the design doc's paths) are rejected and the last four (the corrected ones) accepted. On PowerShell, save the same lines as a `.py` file and run it with `backend\.venv\Scripts\python.exe`.
+Expected: the first four (the original design's paths) are rejected and the last four (the corrected ones) accepted. On PowerShell, save the same lines as a `.py` file and run it with `backend\.venv\Scripts\python.exe`.
 
 ### 4. Check the corridors example against the real model and data
 
@@ -179,7 +179,7 @@ Expected: `18 passed`. The example provider in `corridors.md` was also compared 
 |---|---|
 | Sample documents in the docs | 19 examples: valid JSON, all paths legal for the Firestore client |
 | Collection map in `firestore-schema.md` | 22 paths, all legal document paths |
-| The four design-doc paths with the wrong number of segments | Rejected by the client; the corrected ones accepted |
+| The four original design paths with the wrong number of segments | Rejected by the client; the corrected ones accepted |
 | Vector field | A 768-number `Vector` is accepted (limit 2048) |
 | Corridors example | Identical to the real `SG-PH` provider and header; the provider passes the `ProviderRecord` model |
 | Largest real document (`JP-PH`) | 25,832 bytes, about 2.5% of the 1 MiB limit |
@@ -238,5 +238,5 @@ Before pushing, run `git status` and confirm nothing else is listed.
 - Index files (`firestore.indexes.json`): the feature tasks that add the queries
 - Loading data: NF-P1-016 (corridors), NF-P1-018 (labor laws), NF-P3-005 and NF-P3-015 (demo data)
 - Pydantic models and TypeScript types for these documents: each pillar task
-- Updating the design doc's table 4.7 (and the `.docx`) to the corrected paths
+- Updating the original design's table 4.7 (and the `.docx`) to the corrected paths
 - The final review of these docs after the pillars are built: NF-P4-020

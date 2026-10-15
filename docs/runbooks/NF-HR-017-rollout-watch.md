@@ -83,7 +83,7 @@ Taken from `NF-HR-011-release-v2.0.md` and kept here so the watcher does not nee
 
 | What you saw | Is it new? | Do | Record |
 |---|---|---|---|
-| An error message that has not appeared in the baseline (P6) | Yes | Find its `request_id`, read the whole request, decide: fix now (small, safe, tested), ticket, or ignore with a reason | A line in the log, and a deferred item (`D-`) for anything not fixed |
+| An error message that has not appeared in the baseline (P6) | Yes | Find its `request_id`, read the whole request, decide: fix now (small, safe, tested), ticket, or ignore with a reason | A line in the log, and a note for anything not fixed |
 | A `gemini_call_failed` with `ai_busy` or `ai_timeout` | Expected at some rate | Count it; act only past the table above | The count per window in the log |
 | An alert | Yes | Acknowledge it, then triage as above | Name, time opened, time acknowledged, cause, what was done |
 | A worker report | Maybe | Reproduce on the live site with a test account; if it is the module, treat as an error | Who, what, whether it reproduced |
@@ -118,7 +118,7 @@ If the watch did **not** pass, say so in the same note; a failed watch with a cl
 | `infra/monitoring/service-alerts/server-errors.json`, `slow-requests.json` (new) | The two alert policies, with what to do in the notification |
 | `infra/monitoring/render_policies.py`, `setup-monitoring.sh` | Make the service alerts with the same channels, even when no model has a limit |
 | `backend/tests/unit/test_watch_report.py` (new), `test_monitoring_definitions.py` | The report on log fixtures and on a real request; the alerts' definitions |
-| `docs/release-notes/v2.0.md` (new), this page, `docs/deferred-items.md` | The note, the plan, D-318 to D-320 |
+| `docs/release-notes/v2.0.md` (new), this page | The note, the plan, D-318 to D-320 |
 
 No shared file was touched (`package.json`, lockfile, `Dockerfile`, workflows, `firebase.json`, rules, `requirements*.txt`), no dependency was added, and nothing in production was read or changed.
 

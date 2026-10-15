@@ -180,7 +180,7 @@ git add frontend infra docs
 git status
 ```
 
-Expect: `frontend/firebase.json`, `firestore.rules`, `storage.rules`, `package.json`, `pnpm-lock.yaml`, `tests/rules/*` (2 new), `infra/README.md`, `infra/firebase/firestore.rules` and `storage.rules` (deleted), this runbook, `docs/deferred-items.md`, `docs/runbooks/NF-P1-005-firebase-admin-integration.md`.
+Expect: `frontend/firebase.json`, `firestore.rules`, `storage.rules`, `package.json`, `pnpm-lock.yaml`, `tests/rules/*` (2 new), `infra/README.md`, `infra/firebase/firestore.rules` and `storage.rules` (deleted), this runbook, `docs/runbooks/NF-P1-005-firebase-admin-integration.md`.
 
 ```bash
 git commit -m "feat(data): add Firestore and Storage security rules with emulator tests" -m "Refs: NF-P1-014"

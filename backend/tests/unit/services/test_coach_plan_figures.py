@@ -1,4 +1,4 @@
-"""The figures of the 90-day plan: the rules of docs/features/coach-plan.md (NF-FC-012)."""
+"""The figures of the 90-day plan: its rules (NF-FC-012)."""
 
 from __future__ import annotations
 

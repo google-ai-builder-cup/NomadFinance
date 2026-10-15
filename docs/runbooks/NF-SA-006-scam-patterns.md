@@ -34,7 +34,6 @@ Each type has 10 scenarios, each written in all six languages in the way a local
 | `data-scripts/tests/test_scam_patterns.py`, `test_scam_patterns_loader.py` (new) | 57 tests, with a fake embedder and a fake Firestore client |
 | `data-scripts/src/config.py`, `data-scripts/.env.example`, `data-scripts/README.md` | Path constant, `GEMINI_API_KEY=` placeholder, a README section |
 | `docs/data-model/collections/scam.md` | `scam_patterns`: added `corridor_id` (optional) and `content_hash`; counts |
-| `docs/deferred-items.md` | D-134 to D-137 |
 | **`data-scripts/requirements.txt` (shared file; NOT edited, see below)** | needs `google-genai==2.25.0` |
 
 ## Do this first: one line in a shared file

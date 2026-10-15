@@ -4,7 +4,7 @@
 
 `POST /api/v1/remittance/compare` takes a corridor (`SG-PH`, `SG-IN`, `AU-IN`, `MY-ID`, `JP-PH`, `AU-PH`) and an amount in the sending currency, and returns every surveyed way to send it, with the true cost of each and what the recipient receives, best first.
 
-It is steps 1 to 6 of the Remittance X-Ray pipeline (`docs/pipelines/remittance-xray.md`, which was an empty stub and now describes the whole pipeline, its later steps and how they attach):
+It is steps 1 to 6 of the Remittance X-Ray pipeline:
 
 1. Verify the caller (existing).
 2. Read `corridors/{corridor_id}`, all providers in one document (NF-P1-016).
@@ -30,10 +30,8 @@ No Gemini call, no new package, no shared file changed.
 | `backend/tests/unit/services/test_remittance_engine.py` (new) | 68 tests on the real World Bank file |
 | `backend/tests/integration/api/test_remittance_compare.py` (new) | 25 endpoint tests |
 | `backend/tests/integration/repositories/test_remittance_repositories.py` (new) | 4 tests on the Firestore emulator |
-| `docs/pipelines/remittance-xray.md` | The whole pipeline: steps, owners, cost model, ranking, how later steps attach |
 | `docs/api/endpoints.md` | The endpoint |
 | `docs/data-model/collections/corridors.md` | Corrected the "do not recompute" note (see decision 1) |
-| `docs/deferred-items.md` | D-63 |
 
 `requirements*.txt`, `pyproject.toml`, `Dockerfile`, `firestore.rules` and the workflows are unchanged.
 
@@ -163,8 +161,7 @@ feat(remittance): comparison engine that ranks every provider for a corridor and
 
 ## For teammates
 
-- **Devam (NF-P2-015 trends, NF-P2-022 savings):** `constants.pair_for_corridor(corridor_id)` gives the pair for `rates_history`. The cost function is `engine._terms()`; reuse it for savings rather than copying it. The pipeline document has the contract.
-- **Pranjal (NF-P2-016 recommendation):** `RemittanceComparison` already holds what `recommend.v1` names. Keep the recommendation a separate call from `/compare`: it is the only step that needs Gemini.
+- **Devam (NF-P2-015 trends, NF-P2-022 savings):** `constants.pair_for_corridor(corridor_id)` gives the pair for `rates_history`. The cost function is `engine._terms()`; reuse it for savings rather than copying it.- **Pranjal (NF-P2-016 recommendation):** `RemittanceComparison` already holds what `recommend.v1` names. Keep the recommendation a separate call from `/compare`: it is the only step that needs Gemini.
 - **Aditya (NF-P2-017 log, NF-P2-019 table):** key a provider by `rpw_id`, not `firm`. Sort the speed column by `speed_order`. Show `survey.attribution`, a note when `estimated` or `rate.stale` is true, and the survey period.
 - **Everyone:** no new packages and no new environment variable. The corridors must be loaded in the Firestore project you test against.
 

@@ -16,7 +16,6 @@ Team task: test the full pipeline (NF-P2-001 to NF-P2-007) with 5 real sample co
 | `backend/tests/integration/api/test_contract_e2e_mocked.py` | Runs `/contracts` → `/contracts/{id}/analyze` for all 5 countries against the real emulator-backed repositories and real curated data; also a cache-reuse check and a loan-agreement edge case. **No Gemini quota used.** |
 | `backend/tests/integration/api/test_contract_e2e_countries.py` | The real-Gemini counterpart for AU, KR, MY, JP (SG is already covered in depth by `test_contract_analysis_live.py`), with per-step timing printed for latency profiling. **Opt-in, not yet run** (see below) |
 | `backend/app/schemas/contract_pipeline.py`, `docs/api/endpoints.md`, `docs/data-model/collections/contracts.md` | Fixed: `report_languages` is alphabetically sorted, not source-language-first (D-60, found by this task) |
-| `docs/deferred-items.md` | D-60 added and closed in the same change |
 
 No shared files, no application code changes beyond the D-60 doc fixes above (the sort itself, in `report_store.py`, was already correct — only undocumented).
 

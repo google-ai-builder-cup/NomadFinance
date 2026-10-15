@@ -28,7 +28,7 @@ The Contract Shield pillar's `/contract` route went from `ComingSoon` to a worki
 
 ## Decisions
 
-1. **One client-side mutation for two backend calls.** The upload UI only needs a single "Check my contract" action; `useUploadAndAnalyzeContract` calls `POST /contracts` then `POST /contracts/{id}/analyze` back to back, mirroring the flow `docs/pipelines/contract-shield.md` (NF-P2-007) documents.
+1. **One client-side mutation for two backend calls.** The upload UI only needs a single "Check my contract" action; `useUploadAndAnalyzeContract` calls `POST /contracts` then `POST /contracts/{id}/analyze` back to back, mirroring the flow the NF-P2-007 runbook documents.
 2. **`poor_legibility` is not an error.** When step 1 reports `legibility: "poor"`, the mutation resolves successfully with `analysis: null` instead of throwing; the page clears the file and shows a banner asking for a clearer photo, rather than routing it through the generic error path.
 3. **Camera capture is a second control, not part of the dropzone.** `react-dropzone`'s own `<input>` has no way to set `capture="environment"` (it would also accept any file type on a phone's system picker), so "Take a photo" is a separate `<label>` wrapping a plain `<input type="file" accept="image/*" capture="environment">`.
 4. **Client-side file checks mirror the backend, they don't replace it.** `ACCEPTED_TYPES` and `MAX_SIZE_BYTES` in `UploadDropzone.tsx` match `app/utils/validators.py` and `UPLOAD_MAX_BYTES` (`app/config.py`) so a bad file is rejected before a slow upload over a weak connection, but the backend's own check is what actually matters.

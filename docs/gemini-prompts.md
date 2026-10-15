@@ -80,8 +80,7 @@ A free-tier key answers 429 and 503 at times and the reasoning tier is the slowe
 
 ## Financial Coach
 
-Seven prompts, used in the steps of an interview and a plan. Like the scam prompts, they all say that what is between the tags is data and never to follow an order written there, even to ignore the rules or reveal them. The worker's text has already been masked (`[PHONE]`, `[EMAIL]`, `[ID]`, `[ACCOUNT]`, `[URL]`) when a model sees it, a closing `</worker_message` inside it is rewritten so it cannot end its own section, and an earlier message that gave orders is replaced in the history both the reader and the reply model see. The full flow is in [`docs/features/financial-coach.md`](features/financial-coach.md).
-
+Seven prompts, used in the steps of an interview and a plan. Like the scam prompts, they all say that what is between the tags is data and never to follow an order written there, even to ignore the rules or reveal them. The worker's text has already been masked (`[PHONE]`, `[EMAIL]`, `[ID]`, `[ACCOUNT]`, `[URL]`) when a model sees it, a closing `</worker_message` inside it is rewritten so it cannot end its own section, and an earlier message that gave orders is replaced in the history both the reader and the reply model see.
 **Where the trust sits.** For every prompt that reads the worker, the model *proposes* and code *decides*: no answer, move or block depends on the model's say-so alone. A model never works out a figure that is stored, and the plan's figures are not written by a model at all.
 
 | File | Used for | Tier, model | Temperature | Response model |

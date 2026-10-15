@@ -4,7 +4,7 @@ Originally assigned to Devam; picked up on your direction.
 
 ## Summary
 
-When Contract Shield's comparison (NF-P2-004) confirms a contract is a genuine employment contract and step 2 (`detector.py`) read a usable stated salary, that salary is now logged as one verified income entry in the Financial Identity Builder: `users/{uid}/income/{entry_id}`, `verified: true`, `source: "contract"`, `contract_ref` pointing back at the contract. This is design doc §5.6's flow #5 ("Verified employment adds" to P4) — the direct sibling of NF-P2-021's flow #2 (P2 → P3, `contract_to_radar.py`), and this task mirrors that one's shape closely.
+When Contract Shield's comparison (NF-P2-004) confirms a contract is a genuine employment contract and step 2 (`detector.py`) read a usable stated salary, that salary is now logged as one verified income entry in the Financial Identity Builder: `users/{uid}/income/{entry_id}`, `verified: true`, `source: "contract"`, `contract_ref` pointing back at the contract. This is the original design's flow #5 ("Verified employment adds" to P4) — the direct sibling of NF-P2-021's flow #2 (P2 → P3, `contract_to_radar.py`), and this task mirrors that one's shape closely.
 
 No Gemini call: `salary_amount`/`salary_currency` are already-checked facts from step 2 (`detector.py::_clean` only ever sets `salary_currency` when it's a valid 3-letter code *and* `salary_amount` is finite and positive), never a fresh model guess here.
 

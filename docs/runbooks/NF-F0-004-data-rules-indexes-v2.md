@@ -34,7 +34,7 @@ The model is the one NF-F0-003 fixed: a worker **reads** their own Coach and sca
 | `frontend/firebase.json` | **Shared file, approved 2026-10-06.** `"indexes": "firestore.indexes.json"` added under `firestore`, so the CLI can deploy the index file (it did not reference it before, D-68) |
 | `frontend/tests/rules/firestore.rules.test.ts` | New paths in the existing lists; `signal_sharing` block; a block for browser writes, deletes and lists on the new collections |
 | `frontend/tests/rules/audit.rules.test.ts` | Collection-group queries on the new groups, signed in or not |
-| `docs/data-model/firestore-schema.md`, `docs/deferred-items.md` | Status of rules and indexes; D-109 and D-68 updated |
+| `docs/data-model/firestore-schema.md` | Status of rules and indexes; D-109 and D-68 updated |
 
 ## Decisions
 

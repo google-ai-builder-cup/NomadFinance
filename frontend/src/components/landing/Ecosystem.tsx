@@ -33,8 +33,8 @@ interface Connector {
   gold?: boolean;
 }
 
-// Each connector starts and ends on a card's edge. The data behind each one is the table in
-// docs/future-scope/design.md section 8 (and the four v1.0 links the diagram always had).
+// Each connector starts and ends on a card's edge. The data behind each one is the Future Scope cross-pillar table
+// (and the four v1.0 links the diagram always had).
 const CONNECTORS: readonly Connector[] = [
   // Contract Shield <-> Exploitation Radar: contract flags in, warnings back.
   { id: "contractToRadar", d: "M382 156V256", stroke: "stroke-primary" },

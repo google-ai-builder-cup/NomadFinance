@@ -5,7 +5,7 @@
 Every surveyed service of a `/remittance/compare` result, in one sortable table under NF-P2-018's summary card.
 
 - **Sortable columns:** Service, Speed, Fee, Total cost, Your family receives. Each column has its own "best first" direction the first click (cheapest fee, fastest speed, most received, alphabetical for the service name); a second click on the same column flips it. Default sort is by amount received, the same order `/compare` already ranks by.
-- **Speed sorts by `speed_order`**, never the text ("Same day", "Next day", …), the pipeline doc's own requirement.
+- **Speed sorts by `speed_order`**, never the text ("Same day", "Next day", …), as the Remittance X-Ray pipeline requires.
 - **Best-service highlight.** The rank-1 row has a green tint and a "Best" badge, whichever column the table is sorted by.
 - **Savings highlight.** Every other comparable row shows "{{amount}} less than the best" under its received amount (`less_than_best` from the comparison), so the cost of not picking the best service is visible at a glance.
 - **Per-row estimate note.** A row whose price was interpolated outside the two surveyed amounts (`estimated`) says so under its fee.
@@ -29,13 +29,13 @@ Every surveyed service of a `/remittance/compare` result, in one sortable table 
 ## Decisions
 
 1. **Sort logic lives in a pure utility, not the component**, and only that utility is unit-tested. No React component in this codebase has its own test file (`@testing-library/react` is not a dependency); adding it for one component would be a new testing pattern for a hackathon-scale project. Sorting is the one piece of real logic here, so it is the one thing extracted and tested, the same split `corridors.ts`/`corridors.test.ts` already uses.
-2. **Non-comparable services always sort last**, whatever column or direction is chosen — `sortProviders` filters them out before sorting the rest, then appends them back in the order `/compare` already gave them. Matches the API's own guarantee (`docs/pipelines/remittance-xray.md`).
+2. **Non-comparable services always sort last**, whatever column or direction is chosen — `sortProviders` filters them out before sorting the rest, then appends them back in the order `/compare` already gave them. Matches the API's own guarantee.
 3. **A tied value keeps a fixed order (by `rpw_id`) regardless of sort direction.** The first implementation let the tie-break flip with `desc`, so clicking a column back and forth reshuffled rows that were never actually reordered; fixed and covered by a test (`breaks a tie by the original rpw_id order, whichever direction is asked for`).
 4. **Each column's first click sorts "best first", not always ascending.** Fee/total cost/speed ascending (lower is better), amount received descending (higher is better), service name ascending (A–Z). A second click on the same column flips it.
 5. **No shadcn `Table` component and no new dependency.** The repo's `components/ui/` only has `Button` and `Skeleton`; a plain semantic `<table>` with Tailwind matches the project's "shadcn/ui copied in, not a package" convention without adding anything to `package.json` (a shared file).
 6. **No dedicated loading skeleton for the table.** It renders only once `compare.data` exists, the same condition the sibling summary card already uses (`RemittanceCompare.tsx`); no remittance-specific processing animation exists as its own task (NF-P2-010 is Contract Shield's), so a new skeleton pattern was not invented for this one component.
 7. **Mobile: horizontal scroll, not a card-per-provider layout.** Five columns of numbers do not compress well into a phone width without losing at-a-glance comparability; `overflow-x-auto` on the table's own wrapper keeps the numbers aligned and is a standard, low-effort responsive pattern for data tables. Verified at 375×812 (see "Verified results").
-8. **The Gemini recommendation card is out of scope.** The design doc mentions it and NF-P2-016's runbook flagged that no task ID owns building it in the UI; the task description here (`.claude/tasks.md`) only asks for "sortable columns, savings highlight, recipient-receives display". Left as a "Noticed, not fixed" item, not silently absorbed into this task.
+8. **The Gemini recommendation card is out of scope.** The original design mentions it and NF-P2-016's runbook flagged that no task ID owns building it in the UI; the task description here (`.claude/tasks.md`) only asks for "sortable columns, savings highlight, recipient-receives display". Left as a "Noticed, not fixed" item, not silently absorbed into this task.
 
 ## Flow
 

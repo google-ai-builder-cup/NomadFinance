@@ -49,7 +49,7 @@ A figure that cannot be checked against the words (the model read a number the w
 | `backend/app/config.py`, `backend/.env.example` | `GEMINI_COACH_EXTRACT_TIER` (default classification) and `GEMINI_COACH_EXTRACT_THINKING_BUDGET` (default 0) |
 | `backend/tests/...` | 128 new tests and the live run (below) |
 | `backend/tests/fixtures/coach_extraction_recordings.json` (new, 52 KB) | What the model returned for all 12 personas, so CI replays the whole extractor with no Gemini |
-| `backend/app/prompts/README.md`, `docs/api/v2-coach.md`, `docs/deferred-items.md` | The prompt row; the status; D-210 closed; D-214 and D-215 added |
+| `backend/app/prompts/README.md`, `docs/api/v2-coach.md` | The prompt row; the status; D-210 closed; D-214 and D-215 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched.
 

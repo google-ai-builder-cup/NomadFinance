@@ -1,4 +1,4 @@
-"""Contract Shield feeds the Financial Identity Builder (NF-P3-024, design doc's cross-pillar
+"""Contract Shield feeds the Financial Identity Builder (NF-P3-024, the cross-pillar
 flow #5: "Verified employment adds" to P4).
 
 When an employment contract's analysis reads a stated salary, it is logged as one verified

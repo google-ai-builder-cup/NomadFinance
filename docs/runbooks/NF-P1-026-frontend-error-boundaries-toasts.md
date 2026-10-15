@@ -48,7 +48,6 @@ All text is in the six languages.
 | `frontend/firebase.json` (shared, approved) | `Cache-Control: no-cache` for `**`, then the existing one-year `immutable` rule for `**/assets/**` |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | New `errors.*`, `toast.*`, `pwa.installOffer`, `pwa.installIos`, `pwa.updateAvailable`, `pwa.refresh`; removed the old banner keys `pwa.installTitle`, `pwa.installDescription`, `pwa.dismiss` |
 | `docs/runbooks/NF-P1-012-frontend-pwa.md` | Note at the top: what NF-P1-026 changed |
-| `docs/deferred-items.md` | D-07, D-23, D-42 Done; D-10 partly; D-33, D-41 extended; new D-44 to D-47 |
 
 ## Flow
 
@@ -272,7 +271,7 @@ git restore backend/.env.example frontend/.env.example
 ```
 
 ```bash
-git add frontend/src frontend/vite.config.ts frontend/firebase.json docs/runbooks docs/deferred-items.md
+git add frontend/src frontend/vite.config.ts frontend/firebase.json docs/runbooks
 git status
 ```
 

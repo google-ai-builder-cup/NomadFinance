@@ -26,7 +26,6 @@ While a contract is checked (30 s to 2 minutes, longer when Gemini is slow), the
 | `frontend/src/pages/contract/ContractUpload.tsx` | Shows the progress card and skeleton while working or after a failure; "Try again"; result from the document when the answer was lost; upload failures say "AI busy" / "AI too slow" instead of "server problem". The old one-line "analyzing" spinner is gone. 306 lines, accepted over the guideline (D-61) |
 | `frontend/src/types/contract.ts` | `PipelineStep` |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `contract.progress.*` (title, steps, states, stall hint, announcement, 8 failure messages); the now unused `contract.upload.analyzing` removed |
-| `docs/pipelines/contract-shield.md`, `docs/deferred-items.md` | How the app shows progress; D-61, D-62 |
 
 ## Decisions
 
@@ -218,7 +217,7 @@ Open **http://localhost:5173** (not `127.0.0.1`), sign in with any phone number 
 Branch: `feature/contract-processing-anim` (already checked out).
 
 ```bash
-git add frontend/src docs/runbooks/NF-P2-010-contract-processing-animation.md docs/pipelines/contract-shield.md docs/deferred-items.md
+git add frontend/src docs/runbooks/NF-P2-010-contract-processing-animation.md
 git status
 ```
 

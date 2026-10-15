@@ -204,7 +204,7 @@ PR title: `feat(backend): contract text extraction endpoint with Gemini vision (
 
 ## Not covered here
 
-- Storing uploads in Cloud Storage (design doc step 1): later Contract Shield task
+- Storing uploads in Cloud Storage (original design step 1): later Contract Shield task
 - Structure-preserving extraction (sections, clauses): NF-P2-001
 - Language, country and contract-type detection: NF-P2-002
 - Rate limiting (slowapi, 60 rpm): NF-P1-027

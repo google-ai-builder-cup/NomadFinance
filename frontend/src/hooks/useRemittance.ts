@@ -71,7 +71,7 @@ export interface LogTransferArgs {
 
 /**
  * Log the service the worker actually used for this comparison (NF-P3-016's "I used this"
- * action), the missing link the design doc calls "auto from Pillar 1" into the Financial
+ * action), the missing link the original design calls "auto from Pillar 1" into the Financial
  * Identity Builder. A mutation, not tied to the comparison query: a retry would store the
  * same transfer twice, so a failed attempt needs a fresh click, not an automatic one.
  */

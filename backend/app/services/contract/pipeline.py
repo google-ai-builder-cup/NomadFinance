@@ -1,8 +1,7 @@
 """Contract Shield analysis (NF-P2-007): steps 2 to 6 on an uploaded contract.
 
 Step 1 runs at upload (upload.py). Stored results are reused while current (report_store).
-The contract document's `status` and `step` show progress to the app while this runs. See
-docs/pipelines/contract-shield.md.
+The contract document's `status` and `step` show progress to the app while this runs.
 """
 
 from __future__ import annotations

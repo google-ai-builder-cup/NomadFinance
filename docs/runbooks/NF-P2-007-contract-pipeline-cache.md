@@ -49,7 +49,7 @@ By team decision, this task gained the missing piece of Contract Shield (D-53): 
 | `backend/tests/fixtures/pipeline_fakes.py` (new) | In-memory repositories and step stand-ins |
 | `frontend/tests/rules/firestore.rules.test.ts` | `extraction/current` is backend-only, even for the owner |
 | `docs/data-model/collections/contracts.md` | `step`, `title`, `legibility`, `host_country`, `job_type`, `models`, `complaint_pending`, error codes, `extraction/current`, `is_source` meaning, clause `number`/`page`/`block_ids`, the cache as built |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md`, `docs/deferred-items.md` | Endpoints; pipeline flow; D-16, D-53, D-55 closed, D-59 new |
+| `docs/api/endpoints.md` | Endpoints; pipeline flow; D-16, D-53, D-55 closed, D-59 new |
 
 ## Decisions
 

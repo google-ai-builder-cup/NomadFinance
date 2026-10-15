@@ -1,10 +1,12 @@
 # NF-FC-006 — Coach preparedness scoring rubric
 
+> The rubric page this task wrote has since been removed from the repository; the rubric itself lives in `backend/app/services/coach/scoring.py`, and the page stays in git history.
+
 ## Summary
 
-The rule that turns a worker's answers into the 0 to 100 preparedness score of the Financial Coach, written down before any code uses it. It is a document, not a program: `docs/features/coach-scoring.md` has the formula, the weights, the bands and a worked example. The scoring engine (NF-FC-011) and the twelve test personas (NF-FC-007) are built from it, and the score screen (NF-FC-020) shows its factors.
+The rule that turns a worker's answers into the 0 to 100 preparedness score of the Financial Coach, written down before any code uses it. It was a document, not a program: the page held the formula, the weights, the bands and a worked example. The scoring engine (NF-FC-011) and the twelve test personas (NF-FC-007) are built from it, and the score screen (NF-FC-020) shows its factors.
 
-The tracker row: *Define the 0 to 100 preparedness score: debt-to-income, months of emergency buffer, remittance-to-income ratio, recruitment fee vs legal cap (from labor_laws), banked / unbanked. Document weights and bands.* Finish line: *`docs/features/coach-scoring.md` with formula, weights, worked example; rubric is deterministic and model-free.*
+The tracker row: *Define the 0 to 100 preparedness score: debt-to-income, months of emergency buffer, remittance-to-income ratio, recruitment fee vs legal cap (from labor_laws), banked / unbanked. Document weights and bands.* Finish line: *a rubric page with formula, weights, worked example; rubric is deterministic and model-free.*
 
 The tracker lists this task for Pranjal; Aditya did it.
 
@@ -38,10 +40,8 @@ Version 1. Each factor turns one measured figure into points out of 100 (a strai
 
 | File | Change |
 |---|---|
-| `docs/features/coach-scoring.md` | New: inputs and currency rule, the five factors with anchor tables, the fee cap by host, total and bands, the floor rule, a worked example, the three contract samples re-scored, what the score does not see, notes for the screen and the tests, how to change the rubric |
 | `docs/api/v2-coach.md` | The `band` row and open point 2 now point to the rubric (the band ids and cut-offs are fixed; the sample totals are still placeholders) |
 | `docs/data-model/collections/coach.md` | The `score` row points to the rubric |
-| `docs/deferred-items.md` | D-199 (check the fee caps), D-200 (align the samples with the rubric), D-201 (second reader); notes on D-170, D-172, D-176 |
 
 No code, no tracker, no shared file.
 
@@ -63,7 +63,7 @@ The three samples of the contract under the rubric: mid **59** (sample says 57),
 
 ## Check it yourself
 
-1. Open `docs/features/coach-scoring.md` and work the example above with a calculator; it should give 59.
+1. Work the example above with a calculator; it should give 59.
 2. The plain copy of the rubric used by the tests reproduces the three worked examples of the page (59, 17, 91) and the twelve personas' stored scores:
 
    ```bash
@@ -85,9 +85,9 @@ The three samples of the contract under the rubric: mid **59** (sample says 57),
 
 ## Definition of Done
 
-Tracker row: *`docs/features/coach-scoring.md` with formula, weights, worked example; rubric is deterministic and model-free.*
+Tracker row: *a rubric page with formula, weights, worked example; rubric is deterministic and model-free.*
 
-- [x] `docs/features/coach-scoring.md` exists with the formula, the weights, the bands and a worked example
+- [x] The rubric page existed with the formula, the weights, the bands and a worked example
 - [x] Deterministic and model-free (stated in the page; no model call is described anywhere in it)
 - [x] Fee cap taken from `labor_laws`, listed per host
 - [ ] Second-reader hand check (D-201; the tracker's reviewer is Devam)
@@ -95,7 +95,7 @@ Tracker row: *`docs/features/coach-scoring.md` with formula, weights, worked exa
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-199 (the fee caps, AU in particular), D-200 (the 17 sample files in `docs/mocks/coach/` and the `CoachScore` description still carry placeholder points and a "provisional" note), D-201 (second reader; the tracker names Pranjal as owner).
+Left for later: D-199 (the fee caps, AU in particular), D-200 (the 17 sample files in `docs/mocks/coach/` and the `CoachScore` description still carry placeholder points and a "provisional" note), D-201 (second reader; the tracker names Pranjal as owner).
 
 ## Commit
 

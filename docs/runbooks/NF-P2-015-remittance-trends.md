@@ -2,7 +2,7 @@
 
 ## Summary
 
-`GET /api/v1/remittance/trends` returns a corridor's mid-market exchange rate over time for the trend chart (NF-P2-020): one value per market day, a summary, and the weekday that is usually best to send on. That's the design doc's "Send on Wednesday, rates are consistently 0.3% better". These are steps 4 and 7 of the Remittance X-Ray pipeline. No Gemini call.
+`GET /api/v1/remittance/trends` returns a corridor's mid-market exchange rate over time for the trend chart (NF-P2-020): one value per market day, a summary, and the weekday that is usually best to send on. That's the original design's "Send on Wednesday, rates are consistently 0.3% better". These are steps 4 and 7 of the Remittance X-Ray pipeline. No Gemini call.
 
 - **One Firestore read per request.** The history lives as a `daily` map on the existing `rates_history/{pair}` header, about 255 entries a year. The cron now adds each day to it, and the header write became a merge. Reading a year of 2-hourly points would have cost about 4,400 reads per request.
 - **History from day one (D-36).** `data-scripts/src/loaders/frankfurter_backfill.py` (was a stub) fills the map with the European Central Bank's daily rates from Frankfurter, which is the cron's own first source. It never overwrites a day already stored.
@@ -26,7 +26,7 @@
 | `data-scripts/tests/test_frankfurter_backfill.py` (new) | 10 tests: pairs from the corridors, missing days only, bad rates refused, the cron's days kept, re-run adds nothing, dry run never opens Firestore, bad arguments |
 | `docs/api/endpoints.md` | The endpoint, with a real example |
 | `docs/data-model/collections/rates_cache.md`, `firestore-schema.md` | The header's `daily` map; the backfill writes the map, not `T00` points |
-| `docs/pipelines/remittance-xray.md`, `data-scripts/README.md`, `docs/deferred-items.md` | Steps 4 and 7 done; backfill usage; D-36 done, D-35 note, D-64, D-65 new |
+| `data-scripts/README.md` | Steps 4 and 7 done; backfill usage; D-36 done, D-35 note, D-64, D-65 new |
 
 ## Decisions
 

@@ -1,12 +1,14 @@
 # NF-FC-012 — Coach 90-day plan generator
 
+> The plan rules page this task wrote has since been removed from the repository; the rules live in `backend/app/services/coach/plan_figures.py`, and the page stays in git history.
+
 ## Summary
 
 After the worker confirms their answers, `POST /api/v2/coach/sessions/{id}/plan` makes the 13-week plan and `GET /api/v2/coach/plans/{id}` reads it. The plan has a monthly budget, a remittance schedule with the cheapest provider from Remittance X-Ray, a debt paydown, an emergency-fund target, warnings, a checklist and the "not professional advice" note.
 
 **Code makes every figure; the model only writes sentences.** The tracker asks for Gemini structured output with a validator that rejects any figure not derivable from the inputs. Here the figures are never the model's: `plan_figures.py` works them out from the answers, the cost baselines and the stored rates, and the model is given them as facts and returns words only (`coach/plan.v1`, reasoning tier). `plan_validator.py` then rejects any number in those words that is not one of the facts, and any figure of the plan that differs from the worked-out ones. A wrong figure cannot reach a worker; a wrong sentence is asked for again once, and a second failure is `502 ai_bad_response` with nothing stored.
 
-The rules (goal shares, the 3-month target, the send weeks, the warnings) are in [`docs/features/coach-plan.md`](../features/coach-plan.md).
+The rules (goal shares, the 3-month target, the send weeks, the warnings) are in `backend/app/services/coach/plan_figures.py`.
 
 | Situation | What happens |
 |---|---|
@@ -34,7 +36,7 @@ The rules (goal shares, the 3-month target, the send weeks, the warnings) are in
 | `coach_scorer.py`, `scoring_inputs.py` | `CoachScorer.load` and `essential_lines` so the score and the plan read the same data |
 | `coach_session_repo.py`, `session_service.py` | `CoachPlanRepository.get/create`; `CoachSessions.write_fields` (the plan lock); `complete` clears the lock |
 | `backend/app/config.py`, `.env.example` | `GEMINI_COACH_PLAN_TIER` (reasoning) and `GEMINI_COACH_PLAN_THINKING_BUDGET` (1024) |
-| `docs/features/coach-plan.md` (new), `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md`, `docs/deferred-items.md`, `backend/app/prompts/README.md` | The rules; the status and the new `503 score_unavailable`; `plan_lock`, `rates_as_of`; D-216/D-217 notes, D-218, D-219; the prompt row |
+| `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md`, `backend/app/prompts/README.md` | The rules; the status and the new `503 score_unavailable`; `plan_lock`, `rates_as_of`; D-216/D-217 notes, D-218, D-219; the prompt row |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. Firestore rules need no change: plans are written by the backend only.
 
@@ -43,7 +45,7 @@ No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rule
 | # | Point | What was done |
 |---|---|---|
 | 1 | Who writes the figures | Code. The model words them (above) |
-| 2 | Goal split | 50% of what is left to the debt, 40% to the emergency fund (70% / 25% for a debt at 24% a year or more; 80% to the fund with no debt); the rest is `left_over`. A product choice, written in `coach-plan.md` for the owner |
+| 2 | Goal split | 50% of what is left to the debt, 40% to the emergency fund (70% / 25% for a debt at 24% a year or more; 80% to the fund with no debt); the rest is `left_over`. A product choice, for the owner to confirm |
 | 3 | Language | English only until NF-FC-014 (D-218); `language` is accepted |
 | 4 | Score unavailable | New `503 score_unavailable`, because a plan carries its score |
 | 5 | Home country | From `users/{uid}.home_country`, since it is not an interview slot; with the destination it gives the corridor |

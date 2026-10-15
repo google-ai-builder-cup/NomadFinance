@@ -6,7 +6,7 @@ How to read it: each collection group says where its shape comes from.
 
 | Tag | Meaning |
 |---|---|
-| **[D]** | Stated in the design doc (section 4.7 and the pillar pipelines) |
+| **[D]** | Stated in the original design |
 | **[T]** | Needed by a tracker task description |
 | **[P]** | Proposed here because nothing else defines it. Owners of the named task may refine it, but should tell the team when they change a field name. |
 | **[built]** | Already exists in the repo (code or committed data) |
@@ -62,11 +62,11 @@ Every path below is a valid Firestore path: collections sit at odd positions and
 | `gemini_usage/{day}` | `YYYY-MM-DD` (US Pacific) | Gemini requests sent today per feature and model tier, and the tiers Google has run dry; the daily budget reads it. *NF-HR-010* | All | Backend | [gemini_usage](collections/gemini_usage.md) |
 | `config/feature_flags` | `feature_flags` | Flags `coach` and `scam`: global value and uid allow-list. *Future Scope* | Both | Operator | [config](collections/config.md) |
 
-## Differences from the design doc table (section 4.7)
+## Differences from the original design table
 
-The design doc lists some paths that Firestore cannot hold and misses one collection. These are the changes, all marked [P]:
+The original design lists some paths that Firestore cannot hold and misses one collection. These are the changes, all marked [P]:
 
-| Design doc | Problem | Used here |
+| Original design | Problem | Used here |
 |---|---|---|
 | `users/{uid}/financial_profile` | Three segments make a collection, not a document | `users/{uid}/financial_profile/current` |
 | `labor_laws/{country}/_meta` | Same | `labor_laws/{country}/_meta/current` |
@@ -75,7 +75,7 @@ The design doc lists some paths that Firestore cannot hold and misses one collec
 | `rates_history/{pair}/points` | Same as the first row | `rates_history/{pair}/points/{pointId}` |
 | (missing) | NF-P3-010 needs `POST /fib/savings` | `users/{uid}/savings/{id}` |
 
-Future Scope paths are not in design doc 4.7 (it lists the 17 collections of v1.0). They follow its naming: plural snake_case collections, `users/{uid}/...` for anything one worker owns, natural keys for reference data. `config/feature_flags` and `scam_taxonomy/_meta` are single documents named by a fixed id, like `financial_profile/current`.
+Future Scope paths are not in the original design (it lists the 17 collections of v1.0). They follow its naming: plural snake_case collections, `users/{uid}/...` for anything one worker owns, natural keys for reference data. `config/feature_flags` and `scam_taxonomy/_meta` are single documents named by a fixed id, like `financial_profile/current`.
 
 Each parent document (`labor_laws/{country}`, `rates_history/{pair}`, `radar_alerts/{corridor}`, `complaint_templates/{country}`) is created as a real small document. Firestore lets a subcollection exist under a missing parent, but a missing parent does not show up when listing the parent collection.
 

@@ -1,7 +1,6 @@
 import type { CoachScore, ScoreFactorId } from "@/types/coach";
 
-// The words of the score screen are chosen by factor and level, not written per score
-// (docs/features/coach-scoring.md, "For the screen and for the tests").
+// The words of the score screen are chosen by factor and level, not written per score.
 export type ScoreLevel = "strong" | "fair" | "weak";
 
 /** Strong from 70 points, fair from 40, weak below: the same cut-offs as the bands. */

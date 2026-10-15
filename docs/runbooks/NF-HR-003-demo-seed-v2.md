@@ -39,7 +39,7 @@ Priya's and Miguel's plans come from the Coach personas p03 and p10 (`tests/fixt
 | `data-scripts/src/validators/demo_coach.py`, `demo_scam.py`; `src/loaders/demo_coach.py`, `demo_scam.py`, `demo_preflight.py` (new); `src/utils.py`, `src/config.py` | Checkers and loaders |
 | `data-scripts/scripts/seed_demo.sh`, `README.md` | The order, and the documentation |
 | `data-scripts/tests/test_demo_coach.py`, `test_demo_scam.py`, `test_demo_preflight.py`, `fake_firestore.py` (new) | 73 tests |
-| `docs/data-model/collections/coach.md`, `scam.md`, `docs/deferred-items.md` | The `demo_seed` marker; D-270 to D-272 |
+| `docs/data-model/collections/coach.md`, `scam.md` | The `demo_seed` marker; D-270 to D-272 |
 
 No shared file (`package.json`, `Dockerfile`, workflows, rules, `firebase.json`) was touched and no dependency was added.
 

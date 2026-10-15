@@ -1,6 +1,6 @@
 # fib (Financial Identity Builder)
 
-Shape sources: the paths for transfers, income, bills and the profile are **[D]**; `savings` is added here because NF-P3-010 needs it. The activity types and the profile metrics come from the design doc (Financial Identity pillar and pipeline) and NF-P2-017, NF-P3-010 to NF-P3-015, NF-P3-024 **[T]**. Field names and enums are **[P]**.
+Shape sources: the paths for transfers, income, bills and the profile are **[D]**; `savings` is added here because NF-P3-010 needs it. The activity types and the profile metrics come from the original design (Financial Identity pillar and pipeline) and NF-P2-017, NF-P3-010 to NF-P3-015, NF-P3-024 **[T]**. Field names and enums are **[P]**.
 
 ```
 users/{uid}/transfers/{id}               money sent home (also written by Remittance X-Ray)
@@ -179,7 +179,7 @@ The result of the weekly recompute (NF-P3-013). There is exactly one document pe
 | `period_start`, `period_end` | string (date) | yes | The range the metrics cover: the earliest entry in the window to the day of the recompute. The window is the current month and the 11 before it. |
 | `months_of_data` | number | yes | |
 | `entry_counts` | map | yes | Entries used: `{ "income": n, "transfers": n, "bills": n, "savings": n }` |
-| `metrics` | map | yes | The four design-doc metrics, each `{ "score": 0 to 100 or null, "detail": {...} }`: `income_stability`, `savings_rate`, `remittance_consistency`, `bill_payment_reliability`. `score` is `null` (with `detail.reason`) when there is no data for it, never 0. Formulas and `detail` fields: `docs/runbooks/NF-P3-013-fib-weekly-recompute.md`. |
+| `metrics` | map | yes | The four original design metrics, each `{ "score": 0 to 100 or null, "detail": {...} }`: `income_stability`, `savings_rate`, `remittance_consistency`, `bill_payment_reliability`. `score` is `null` (with `detail.reason`) when there is no data for it, never 0. Formulas and `detail` fields: `docs/runbooks/NF-P3-013-fib-weekly-recompute.md`. |
 | `overall_score` | number | yes | 0 to 100. The plain average of the metrics whose `score` is not `null`. |
 | `narrative` | map | yes | `{ "language": "en", "text": "...", "model": "...", "activity_text": "..." }`: the report text from the reasoning tier. `activity_text` (NF-HR-001) is present only when the worker shares Coach or scam activity: a short paragraph in the same language that states the signals, kept only if every number in it is one of theirs. It is a separate field so that it can be left out of a report without rewriting `text`. |
 | `verified_employment` | array of map | no | From analysed contracts: `{ "employer_name", "salary_amount", "salary_currency", "salary_period"?, "contract_ref" }` |

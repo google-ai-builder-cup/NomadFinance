@@ -1,6 +1,6 @@
 # users
 
-Shape sources: `users/{uid}` and `notifications` are **[D]** (design doc 4.7). The profile fields come from the NF-P1-022 task description **[T]**. The exact enums, `notification_prefs` and `fcm_tokens` are **[P]**.
+Shape sources: `users/{uid}` and `notifications` are **[D]** (original design). The profile fields come from the NF-P1-022 task description **[T]**. The exact enums, `notification_prefs` and `fcm_tokens` are **[P]**.
 
 ## `users/{uid}`
 

@@ -32,9 +32,7 @@ Live runs show about **2.6 s per PDF page** when Gemini is healthy: a 15-page co
 | `backend/tests/unit/integrations/test_gemini_client.py` | Per-call timeout overrides the default |
 | `backend/tests/unit/test_prompt_loader.py` | Expects `contract/extract.v2` |
 | `docs/api/endpoints.md` | Extract section: fields, blocks, timing, real example |
-| `docs/pipelines/contract-shield.md` | Was empty: step table with owners, flow, step 1 in detail |
 | `docs/data-model/collections/contracts.md`, `docs/runbooks/NF-P1-006-document-extract.md` | Pointers to the new names |
-| `docs/deferred-items.md` | D-48 owner corrected (Pranjal); new D-53 (pipeline owner), D-54 (Gemini hangs) |
 | `backend/app/prompts/README.md`, `backend/.env.example` | Prompt table lists `extract.v2`; optional `GEMINI_EXTRACTION_TIMEOUT_SECONDS` |
 
 ## Decisions
@@ -182,7 +180,6 @@ PR title: `feat(contracts): structured contract extraction with blocks, legibili
 - **Pranjal (NF-P2-002, detection):**
   - Take the contract as `text` from `extract_contract()` (the second value it returns). That's the `${contract_text}` of `contract/detect.v1`.
   - D-48 (daily wages) is yours.
-  - Add your step to `docs/pipelines/contract-shield.md`.
 - **Aditya (NF-P2-009, upload UI):**
   - Call `POST /api/v1/contracts/extract` with a `multipart/form-data` field `file`.
   - Show a "please retake the photo" message when `legibility` is `poor`, and a note when it's `partial`.
@@ -194,7 +191,7 @@ PR title: `feat(contracts): structured contract extraction with blocks, legibili
 
 ## Not covered here
 
-- Steps 2 to 6: NF-P2-002 to NF-P2-006 (`docs/pipelines/contract-shield.md`)
+- Steps 2 to 6: NF-P2-002 to NF-P2-006
 - Pipeline orchestration, storage, full-analysis endpoint: D-53
 - Upload UI and "retake photo" message: NF-P2-009; progress display: NF-P2-010
 - Local PDF text extraction without Gemini: D-54 (option)

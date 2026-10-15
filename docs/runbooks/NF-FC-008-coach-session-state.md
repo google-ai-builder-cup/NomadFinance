@@ -37,7 +37,6 @@ No Gemini call, no streaming, no score (the engine is NF-FC-011: `score` is `nul
 | `backend/tests/...` | 116 new tests (below), a fake storage and an app wired to it |
 | `docs/data-model/collections/coach.md` | Two fields: `declined_slots`, `question_bank_version` |
 | `docs/api/v2-coach.md` | Implementation status; `409 request_in_progress` on start; open point 8 resolved |
-| `docs/deferred-items.md` | D-171 closed; D-103, D-178 noted; D-206 to D-208 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched: the rules and indexes of NF-F0-004 already cover `coach_sessions` and `coach_plans`.
 
@@ -122,7 +121,7 @@ Tracker row: *Session survives a server restart mid-interview; illegal stage tra
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-206 (check "one active session" on staging), D-207 (what NF-FC-009, -010, -012 call and how errors map), D-208 (the score is not stored on the session). Also outside this task: D-181, the line-ending test, still fails on this Windows checkout.
+Left for later: D-206 (check "one active session" on staging), D-207 (what NF-FC-009, -010, -012 call and how errors map), D-208 (the score is not stored on the session). Also outside this task: D-181, the line-ending test, still fails on this Windows checkout.
 
 ## Commit
 

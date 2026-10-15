@@ -28,7 +28,6 @@ The first four are enforced by CI and by branch protection; tick the rest yourse
 - [ ] Commit messages follow `<type>(<scope>): <summary>` with `Refs: NF-XXX-XXX` as the only trailer (Commit policy)
 - [ ] Tests added or updated for what changed
 - [ ] Docs updated where behaviour changed; task runbook at `docs/runbooks/<TASK-ID>-<slug>.md`
-- [ ] `docs/deferred-items.md` updated (what was found and left out, what this closes)
 - [ ] A shared file changed (`package.json`, lock file, `pyproject.toml`, requirements, Dockerfile, `firebase.json`, rules, `tsconfig*.json`, `.gitignore`, `.github/workflows/*`)? The diff was shown and approved first
 - [ ] No secrets committed, no AI attribution in code, docs or commits
 - [ ] User-facing text goes through i18n keys (all six languages)

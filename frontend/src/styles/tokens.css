@@ -1,6 +1,6 @@
 /* NomadFinance design tokens. Primary stays "Nomad Teal" #0B5D71 (NF-P1-024); the surfaces are
    the light "Mist" palette. Colour tokens are HSL triplets consumed as hsl(var(--x)); shadows,
-   gradients and motion are full values. See docs/design-system.md for how each group is used.
+   gradients and motion are full values.
    Every pair of text and surface below was checked against WCAG 2.2 AA (4.5:1). */
 :root {
   /* Surfaces and ink */

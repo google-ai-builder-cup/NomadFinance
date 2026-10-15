@@ -47,7 +47,6 @@ These mentions were written before the decision. They are now historical, and no
 | `docs/data-model/collections/config.md` ("Staging and production each have their own copy") | One copy only, in production |
 | `docs/runbooks/NF-F0-005-backend-feature-flags.md`, `NF-F0-004-data-rules-indexes-v2.md`, `NF-F0-003-data-schema-v2.md`, `NF-F0-006-frontend-flags-routes.md` | Everything that says "staging" or "NF-F0-011" is production only |
 | `docs/data-model/firestore-schema.md` ("production, and staging when NF-F0-011 creates it") | TTL policies are set once, in production (D-103) |
-| `docs/deferred-items.md` D-103, D-114 | Production only; see D-121 |
 | `backend/app/config.py` allows `APP_ENV=staging` | Valid but unused. Nothing sets it |
 | `docs/runbooks/NF-P1-018-labor-law-load.md` ("`labor_laws_staging`") | An unrelated scratch collection name, not an environment |
 | `docs/api/endpoints.md` (`environment`: `local`, `staging` or `prod`) | The `/health` field accepts the value, and only `local` and `prod` occur |

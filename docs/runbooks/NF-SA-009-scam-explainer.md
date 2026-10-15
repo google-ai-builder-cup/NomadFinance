@@ -55,7 +55,7 @@ A scam with **no detected tactic** is explained through its type's usual tactics
 | `backend/tests/fixtures/scam_explain.py` (new) | Rebuilds each model answer from the analyze mocks' `explainer` |
 | `backend/tests/integration/api/test_scam_analyze.py`, `test_scam_analyze_screenshot.py`, `tests/unit/test_prompt_loader.py` | Now use the explainer recordings; the answer equals the mock's `explainer` for all four cases |
 | `backend/tests/integration/api/test_scam_explain_live.py` (new) | Opt-in live test with the timing and the English reading grade |
-| `backend/app/prompts/README.md`, `docs/api/v2-scam.md`, `docs/future-scope/design.md`, `docs/deferred-items.md` | Table rows, the contract's "state" and open point 1, the design's benign rule, D-138 to D-140 |
+| `backend/app/prompts/README.md`, `docs/api/v2-scam.md` | Table rows, the contract's "state" and open point 1, the design's benign rule, D-138 to D-140 |
 
 No shared files, no new dependencies, no workflow change. The contract (`v2-scam.md`) and the response models did not change: the explainer shapes were already there from NF-SA-002.
 

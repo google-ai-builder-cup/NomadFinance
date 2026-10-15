@@ -23,7 +23,7 @@ No backend change, no new package, no shared file changed.
 | `frontend/src/utils/reportLanguage.ts` (new) | `reportFailureKey()`: which message a failed report load shows |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `contract.report.language`, `languageHint`, `switching`, `switchOutOfDate` |
 | `frontend/src/hooks/useContract.test.ts`, `frontend/src/utils/reportLanguage.test.ts` (new) | 11 tests |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md` | How the app uses the reports endpoint; a section on switching the language |
+| `docs/api/endpoints.md` | How the app uses the reports endpoint; a section on switching the language |
 
 `package.json`, `pnpm-lock.yaml`, the workflows, `firebase.json` and the rules files are unchanged.
 
@@ -177,7 +177,7 @@ Refs: NF-P2-012
 - The previous language of the same contract stays on screen, dimmed, with a "Translating your report…" note while a new one loads. Another contract's report is never used as a stand-in.
 - Failure messages by status; a `409` (analysis out of date) asks the worker to check the contract again, without a Try again button.
 - 4 new i18n keys in all six languages; `lang` on the report block for screen readers.
-- Docs: `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md`, runbook `docs/runbooks/NF-P2-012-report-language-switch.md`.
+- Docs: `docs/api/endpoints.md`, runbook `docs/runbooks/NF-P2-012-report-language-switch.md`.
 
 ## CI / CD
 

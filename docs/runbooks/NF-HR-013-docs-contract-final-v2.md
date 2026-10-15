@@ -19,11 +19,9 @@ The tracker names `docs/api-contract.md` and `docs/data-model.md`. The real file
 | [`docs/mocks/README.md`](../mocks/README.md) and five scam samples | The mocks are fixtures, not a promise of an API to come; five similarity scores below the server's cutoff corrected; `test_scam_mocks.py` guards it |
 | [`docs/mermaid/*-pipeline.mmd`](../mermaid/) (six) | Gemini models named by tier; "Future scope" notes and the dashed "planned" style removed; contract diagram without the Cloud Storage upload and with the real step order; one recommendation step in the remittance diagram; the `scam-stats` job in the scam diagram (D-303) |
 | [`docs/README.md`](../README.md), [`infra/README.md`](../../infra/README.md), [`backend/README.md`](../../backend/README.md), [`NF-P1-001`](NF-P1-001-local-dev-setup.md) | Stale statements fixed (D-304) |
-| [`docs/future-scope/design.md`](../future-scope/design.md) | A status line and "as built" notes in sections 7 and 11 (D-101); the proposal text is kept |
 | `backend/.env.example` | The line `APP_VERSION=0.1.0` removed (D-298) |
 | `backend/tests/integration/repositories/test_scam_report_repository.py` | **Outside this task's scope, done because CI failed on it.** `test_two_taps_at_once_...` now accepts a raw `Aborted` ("Transaction lock timeout") as well as the client's `ValueError`, as its own docstring already allowed. Test only; the repository is unchanged (D-314) |
-| Deleted | `infra/cloud-run/backend-service.yaml`, `infra/cloud-run/env.yaml`, `infra/cloud-scheduler/labor-law-check.yaml`, `infra/firebase/firestore.indexes.json`, `docs/architecture/overview.md`, `docs/architecture/stack-decisions.md`, `docs/pipelines/financial-identity.md`: all 0 bytes (D-302) |
-| [`docs/deferred-items.md`](../deferred-items.md) | Closed: D-65, D-101, D-298, D-302, D-303, D-304. Updated: D-33, D-141, D-263, D-281. Added: D-308 to D-314 |
+| Deleted | `infra/cloud-run/backend-service.yaml`, `infra/cloud-run/env.yaml`, `infra/cloud-scheduler/labor-law-check.yaml`, `infra/firebase/firestore.indexes.json`, `docs/architecture/overview.md`, `docs/architecture/stack-decisions.md` and the Financial Identity pipeline page: all 0 bytes (D-302) |
 
 ## Flow: where each fact comes from
 
@@ -109,8 +107,7 @@ gcloud run services describe nomadfinance-api --region asia-south1 --project nom
 | 6 | The three bare-object schemas were documented, not fixed | The fix is a change to response models and their serializers (a behaviour risk): D-308. Two quick schema-only attempts did not work and were dropped |
 | 7 | D-298 (one line of `.env.example`) was fixed here | It is the cause of a wrong version in `/health` and in the export |
 | 8 | The seven empty placeholder files were deleted, not filled | Empty files read as missing work; the real content is elsewhere and the READMEs now say where |
-| 9 | `docs/future-scope/design.md` got notes, its proposal text kept | It is the record of what was proposed; the contract is in `docs/api/` and `docs/data-model/` |
-| 10 | `firestore.rules`, `storage.rules`, `firebase.json`, workflows and `pyproject.toml` were not touched | Shared files: they change only after the diff is shown and agreed. Findings about them are D-313 and D-33 |
+| 9 | `firestore.rules`, `storage.rules`, `firebase.json`, workflows and `pyproject.toml` were not touched | Shared files: they change only after the diff is shown and agreed. Findings about them are D-313 and D-33 |
 
 ## Checks run (2026-10-11)
 
@@ -157,7 +154,7 @@ Invoke-RestMethod -Method Post -Uri "https://firestore.googleapis.com/v1/project
 
 ## Noticed, not fixed
 
-D-308 to D-314 in [`docs/deferred-items.md`](../deferred-items.md): **D-314** (a lock timeout on the report transaction's read reaches the route as a server error; the test that tripped over it now accepts it), **D-308** (three response objects are bare `object` in the OpenAPI file), **D-309** (list the live root collections), **D-310** (Firestore delete protection and point-in-time recovery are off), **D-311** (three places where the model is looser than the behaviour), **D-312** (tracker rows NF-P4-017 and NF-P4-020 are the same work), **D-313** (two shared rules files to tidy).
+D-308 to D-314: **D-314** (a lock timeout on the report transaction's read reaches the route as a server error; the test that tripped over it now accepts it), **D-308** (three response objects are bare `object` in the OpenAPI file), **D-309** (list the live root collections), **D-310** (Firestore delete protection and point-in-time recovery are off), **D-311** (three places where the model is looser than the behaviour), **D-312** (tracker rows NF-P4-017 and NF-P4-020 are the same work), **D-313** (two shared rules files to tidy).
 
 ## Commit
 

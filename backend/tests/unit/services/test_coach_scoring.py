@@ -1,4 +1,4 @@
-"""The preparedness score: every rule of the rubric (docs/features/coach-scoring.md, v1)."""
+"""The preparedness score: every rule of the rubric (v1)."""
 
 from __future__ import annotations
 

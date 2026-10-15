@@ -5,7 +5,7 @@
 When a report's `complaint` is not null (NF-P2-006 wrote a letter because a clause broke the law), the report card now shows it: a preview, a reminder to fill in the bracketed blanks, and two actions — download as PDF and copy to clipboard.
 
 - **`ComplaintPreview`** (was a stub): renders after the clause list in `ReportCard.tsx`, only when `report.complaint !== null`. Naturally absent when there is no violation, and while `complaint_pending` is true (the letter failed for a passing reason and hasn't been written yet — `ReportCard`'s existing pending note still covers that case).
-- **Preview vs. what gets sent.** The preview shows `worker_copy` (or `letter_text` when that's null, i.e. the letter is already in the worker's language) — the pipeline owner's own handoff note in `docs/pipelines/contract-shield.md` was explicit about this split. Download and Copy always act on `letter_text`, the version actually addressed to the authority, whichever language that reads in. When the two differ, a small note under the preview says so and names the letter's language (`languageName()`, a new `Intl.DisplayNames` helper mirroring `countryName()`).
+- **Preview vs. what gets sent.** The preview shows `worker_copy` (or `letter_text` when that's null, i.e. the letter is already in the worker's language) — the pipeline owner's own handoff note was explicit about this split. Download and Copy always act on `letter_text`, the version actually addressed to the authority, whichever language that reads in. When the two differ, a small note under the preview says so and names the letter's language (`languageName()`, a new `Intl.DisplayNames` helper mirroring `countryName()`).
 - **No PDF library, no backend change.** "Download as PDF" opens a blank window, writes the letter as plain text with a light print stylesheet, and calls `window.print()` — the worker picks "Save as PDF" in the browser's own dialog. Chosen over adding a client-side PDF dependency (bundle size, D-45) or a new backend endpoint (out of scope for a 3h frontend task); confirmed with you before building it.
 - **Copy to clipboard** uses `navigator.clipboard.writeText`, with a toast on success or failure (asks the worker to copy it by hand if the browser refuses).
 - **Where to send it:** every `channels` entry (web/email/phone/post, with an icon and its `note` if any) plus `authority_url`, each linked (`mailto:`, `tel:`, or the URL itself) except `post`, which has no link.
@@ -93,4 +93,4 @@ pnpm build
 ## Not covered here
 
 - Editing the letter's bracketed blanks in-app.
-- A backend-generated, branded PDF (would need a new endpoint; flagged above for whoever picks that up later, no deferred-items entry added since nothing here is broken, just a possible future upgrade).
+- A backend-generated, branded PDF (would need a new endpoint; flagged above for whoever picks that up later, no follow-up entry added since nothing here is broken, just a possible future upgrade).

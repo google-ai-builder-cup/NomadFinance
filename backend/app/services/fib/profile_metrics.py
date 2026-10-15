@@ -4,8 +4,8 @@ Pure functions over already-loaded entries, so every formula is testable without
 Gemini. Each metric is `{"score": 0..100 or None, "detail": {...}}`; a metric with no data has
 `score: None` and a `reason`, never 0, so a missing log does not read as bad behaviour.
 
-The formulas and constants below are this project's own choice (the design doc names the four
-metrics but not how to compute them); none is calibrated against real lending outcomes.
+The formulas and constants below are this project's own choice (the four metrics are named
+in the original plan, not how to compute them); none is calibrated against real lending outcomes.
 """
 
 from __future__ import annotations

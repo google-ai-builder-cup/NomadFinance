@@ -42,9 +42,8 @@ A money slot is `{ "amount", "currency", "period" }` (D-106). A stored slot is a
 | `backend/tests/unit/services/test_coach_question_bank_edits.py` | New: 23 slips in the file that must be refused |
 | `backend/tests/fixtures/coach_bank.py` | New: helpers shared by those three files |
 | `docs/data-model/collections/coach.md` | New "The slots" section; the example no longer says the names are illustrative |
-| `docs/deferred-items.md` | D-106 closed; D-164 corrected; D-168 to D-174 added |
 | `frontend/src/lib/analytics.ts`, `analytics.test.ts` | The analytics fixes (last section) |
-| `docs/data-model/collections/scam.md`, `docs/features/scam-analyzer.md`, `docs/runbooks/NF-SA-022-scam-stats-events.md` | Same fixes, in the docs |
+| `docs/data-model/collections/scam.md`, `docs/runbooks/NF-SA-022-scam-stats-events.md` | Same fixes, in the docs |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. The bank ships in the image with the rest of `app/`.
 
@@ -166,7 +165,7 @@ DebugView on the first production check found two problems that unit tests, whic
 
 | # | Problem | Fix | Status |
 |---|---|---|---|
-| 1 | `language` never reached Analytics: Google already adds its own `language` to every web event | Renamed to `ui_language` in `analytics.ts`, its test, `scam.md`, the NF-SA-022 runbook, `scam-analyzer.md` and D-164 | Done |
+| 1 | `language` never reached Analytics: Google already adds its own `language` to every web event | Renamed to `ui_language` in `analytics.ts`, its test, `scam.md`, the NF-SA-022 runbook and D-164 | Done |
 | 2 | The id of a stored check reached Analytics in `page_location` | **Stripped** (the owner did not choose; stripping is the safer option, and "coarse values only" was untrue otherwise). One function, `anonymisePath`, turns `/scam-check/history/{id}` into `/scam-check/history/:id` | Done |
 | 2b | Found while fixing #2: the same leak for `/contract/{id}` and `/radar/entity/{slug}`; `page_path` and the crash report used the raw path; and a message shared into the installed app opens `/scam-check?text=...`, so it was in the address of the first events | Every event now sends its own `page_location`: origin and path, no query, no fragment, no id. Same for `page_path`, a same-origin `page_referrer`, the crash report, and the first address Google uses for the events it sends itself | Done |
 | 3 | Unit tests could not catch #1 | A test lists the names Google adds itself or reserves (from Google's two documentation pages) and fails if an event uses one. Shown to fail with `language` put back | Done |
@@ -185,7 +184,7 @@ DebugView on the first production check found two problems that unit tests, whic
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-168 (live checks and test data), D-169 (`pnpm install`), D-170 (NPR and BDT have no FX pair), D-171 (the session must tell "not sure" from "not asked", and record the bank version), D-172 (the rubric may need a repayment slot), D-173 (the pay scale is not sourced), D-174 (limits of the cleaned address).
+Left for later: D-168 (live checks and test data), D-169 (`pnpm install`), D-170 (NPR and BDT have no FX pair), D-171 (the session must tell "not sure" from "not asked", and record the bank version), D-172 (the rubric may need a repayment slot), D-173 (the pay scale is not sourced), D-174 (limits of the cleaned address).
 
 ## Commit
 
@@ -197,7 +196,7 @@ git commit -m "feat(coach): add interview slots and question bank" -m "Refs: NF-
 ```
 
 ```bash
-git add frontend docs/data-model/collections/scam.md docs/features/scam-analyzer.md docs/runbooks/NF-SA-022-scam-stats-events.md docs/deferred-items.md
+git add frontend docs/data-model/collections/scam.md docs/runbooks/NF-SA-022-scam-stats-events.md
 git commit -m "fix(scam): send ui_language and strip ids from the analytics address" -m "Refs: NF-SA-022"
 ```
 

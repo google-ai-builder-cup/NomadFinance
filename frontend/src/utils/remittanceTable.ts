@@ -45,7 +45,7 @@ function sortValue(provider: ProviderResult, column: SortColumn): number | strin
 /**
  * Comparable providers sorted by the chosen column, first first; providers that cannot be
  * compared (paid in another currency) always come last, in the order `/compare` already gave
- * them — the same guarantee the API makes (docs/pipelines/remittance-xray.md).
+ * them — the same guarantee the API makes.
  */
 export function sortProviders(providers: ProviderResult[], sort: SortState): ProviderResult[] {
   const comparable = providers.filter((provider) => provider.comparable);

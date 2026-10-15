@@ -252,13 +252,13 @@ PR title: `chore(release): v2.0.0 changelog, version bump and rollback runbook (
 
 ## Noticed, not fixed
 
-Logged in `docs/deferred-items.md` as D-291 to D-296.
+Logged as D-291 to D-296.
 
 - The flags were switched on before any release process (D-291).
 - NF-HR-005 and -006 were not merged when this page was written (D-292); they merged on 2026-10-13 and this page was updated.
 - The steps only a person can do: tag, GitHub Release, rehearsal, staged enable (D-293).
 - Four commits reached `main` without a pull request (D-294).
-- `docs/runbooks/incident-response.md` is empty; this page covers rollback only (D-295).
+- There is no incident-response runbook; this page covers rollback only (D-295).
 - The history has two merged subjects that read badly in the changelog (PR #109 joins two subjects, PR #113 lists a second one after a comma) and one typo (`deffered updated`). History is published, so they stay (D-296).
 - `data-scripts/pyproject.toml` still says `0.1.0`; nothing deploys it, so it was left.
 - `infra/README.md` says six cron jobs, but `labor-law-check.yaml` is an empty file, so five exist.

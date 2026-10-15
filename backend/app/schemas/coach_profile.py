@@ -65,7 +65,7 @@ MONTHS_PER_YEAR = 12
 
 
 class Money(BaseModel):
-    """An amount in one currency, with the period it covers (`docs/deferred-items.md`, D-106)."""
+    """An amount in one currency, with the period it covers."""
 
     model_config = ConfigDict(extra="forbid")
 

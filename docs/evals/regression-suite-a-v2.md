@@ -148,7 +148,7 @@ Scripted cases C-01…C-13 ran at 360, desktop, 412 and 768 in English and at 36
 
 ## Bugs
 
-Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong legal or money answer is shown with no sign), **P1** major (a feature's main path gives a wrong result or fails for a real group of workers), **P2** minor. Filed in this file and in `docs/deferred-items.md`; no GitHub issues were created.
+Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong legal or money answer is shown with no sign), **P1** major (a feature's main path gives a wrong result or fails for a real group of workers), **P2** minor. Filed in this file; no GitHub issues were created.
 
 | ID | Sev | Where | What | Repro | Status |
 |---|---|---|---|---|---|

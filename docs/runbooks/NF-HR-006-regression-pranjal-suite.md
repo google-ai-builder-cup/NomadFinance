@@ -44,7 +44,7 @@ Exploitation Radar, the Remittance → Coach handoff and the installed app (inst
 | `frontend/src/pages/radar/RadarReport.tsx`, `RadarReport.send.test.tsx` (new) | One report per tap |
 | `backend/app/services/radar/intake.py`, `tests/unit/services/test_radar_intake.py` | A name with no letters or digits is refused |
 | `frontend/e2e/radar.spec.ts`, `e2e/pwa.spec.ts`, `e2e/support/radarApi.ts` (new) | Browser tests |
-| `docs/evals/regression-suite-c-v2.md` (new), this file (new), `docs/deferred-items.md` | Docs, D-327 to D-332 |
+| `docs/evals/regression-suite-c-v2.md` (new), this file (new) | Docs, D-327 to D-332 |
 
 No shared file was touched, no dependency was added, and no rule, index or workflow changed.
 
@@ -96,7 +96,7 @@ Needs the local stack (emulators, the API, the frontend) as in NF-HR-004's runbo
 
 - [x] **A test fails when the behaviour is broken**: each new test was run against its broken code once and failed (see the break check above)
 - [x] **Passes in CI**: the same chains CI runs were run locally (above); not yet seen on GitHub
-- [x] Bugs found are filed with severity and repro steps (P0 none; the P1, a P2 and a P3 fixed; three P2 in `docs/deferred-items.md`)
+- [x] Bugs found are filed with severity and repro steps (P0 none; the P1, a P2 and a P3 fixed; three P2 logged for later)
 - [x] Report committed under `docs/evals` (`regression-suite-c-v2.md`)
 - [x] Cross-browser: Chromium, Firefox and WebKit run on Radar, the handoff and the installed app (limits in the sheet)
 - [ ] Tracker finish line "all P0 / P1 bugs found are filed with repro steps": met in the files; the P1 is closed only when this branch is merged

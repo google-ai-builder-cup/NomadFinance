@@ -2,7 +2,7 @@
 
 ## Summary
 
-`POST /api/v1/remittance/log` stores a transfer the worker actually sent, under `users/{uid}/transfers/{id}` — the entry that links Remittance X-Ray to Financial Identity (design doc §5.6, `docs/pipelines/remittance-xray.md`, `docs/data-model/collections/fib.md`). No Gemini call; the "Log a transfer" step in the pipeline table.
+`POST /api/v1/remittance/log` stores a transfer the worker actually sent, under `users/{uid}/transfers/{id}` — the entry that links Remittance X-Ray to Financial Identity (original design, `docs/data-model/collections/fib.md`). No Gemini call; the "Log a transfer" step in the pipeline table.
 
 **Every stored amount comes from the comparison's own chosen provider, never typed freely by the client.** The body is the unmodified response of `POST /remittance/compare` as `comparison`, plus the `rpw_id` of the service the worker actually used. `provider_name`, `send_amount`, `receive_amount`, `fee`, `cost_pct` and `mid_market_rate` are all read from that provider's row and `comparison`'s own fields — the same reasoning NF-P2-016's `/recommend` uses to never trust a provider name Gemini wrote over the comparison's own top-ranked one. A `rpw_id` that is not a comparable, ranked provider of `comparison` (pays out in another currency, or was never on the ranked list, so has no `recipient_receives`) is a `422`.
 
@@ -18,7 +18,7 @@ No new package, no shared file changed. `frontend/firestore.rules` already allow
 | `backend/app/api/v1/remittance.py` | `POST /api/v1/remittance/log` |
 | `backend/tests/unit/services/test_remittance_logger.py` (new) | 7 tests |
 | `backend/tests/integration/api/test_remittance_log.py` (new) | 9 tests |
-| `docs/api/endpoints.md`, `docs/pipelines/remittance-xray.md` | Endpoint; step marked built |
+| `docs/api/endpoints.md` | Endpoint; step marked built |
 
 `requirements*.txt`, `pyproject.toml`, `Dockerfile`, the workflows, `firestore.rules` and `frontend/` are unchanged.
 

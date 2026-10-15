@@ -84,7 +84,7 @@ export interface ScoreFactor {
   weight: number;
 }
 
-/** The preparedness score of `docs/features/coach-scoring.md`. `band` is an open id: a band the
+/** The preparedness score. `band` is an open id: a band the
  * screen does not know is shown with a neutral label. */
 export interface CoachScore {
   total: number;

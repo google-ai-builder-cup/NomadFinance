@@ -40,7 +40,6 @@ Not in this task: the history and "Warn other workers" (NF-SA-018), the axe pass
 | `frontend/src/i18n/scam/{en,hi,tl,id,ne,bn}.json`                                                                      | 6 new keys each under `result`: `stepLabel`, `whyTitle`, `benignTitle`, `readAloud`, `stopReading`, `readAloudFailed` |
 | `frontend/src/mocks/fakeSpeech.ts` (new)                                                                               | A fake speech engine for the tests (jsdom has none)                                                                   |
 | Tests: `speech.test.ts` (8), `explainerSpeech.test.ts` (4), `useSpeech.test.ts` (10), `ExplainerSection.test.tsx` (16) | See below                                                                                                             |
-| `docs/deferred-items.md`                                                                                               | D-156 (real Android check), D-157 (native read of the new strings)                                                    |
 
 No shared files (`package.json`, the lockfile and the workflows are untouched), no new dependency.
 

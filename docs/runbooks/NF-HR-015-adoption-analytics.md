@@ -105,7 +105,7 @@ The three demo workers of NF-HR-003, seeded into the emulator, give the table be
 | `frontend/src/hooks/coachAnalytics.test.tsx` (new), `CoachChat.review.msw.test.tsx`, `CoachPlanPage.msw.test.tsx` | When each is sent, and when it is not |
 | `infra/analytics/ga4-definitions.json` (new), `infra/README.md` | The definitions |
 | `data-scripts/src/metrics/adoption_snapshot.py` (new), `scripts/adoption_snapshot.sh` (new), `tests/test_adoption_snapshot.py` (new), `tests/fake_firestore.py` | The snapshot |
-| `docs/data-model/collections/coach.md`, `data-scripts/README.md`, `docs/deferred-items.md` | Docs |
+| `docs/data-model/collections/coach.md`, `data-scripts/README.md` | Docs |
 
 No shared file (`package.json`, lockfile, `tsconfig*`, workflows, `firebase.json`, rules, indexes) was touched, no dependency was added, and no index is needed: the snapshot reads unfiltered collection groups.
 
@@ -137,7 +137,7 @@ No shared file (`package.json`, lockfile, `tsconfig*`, workflows, `firebase.json
 - [x] Events fire with coarse parameters only, and are tested
 - [x] The definitions of the funnels, audiences and dimensions are exact and kept honest by a test
 - [x] The snapshot is read-only, counts only, and the same on a second run (test, and the emulator)
-- [x] Data model, runbook and deferred items updated; no shared file touched
+- [x] Data model and runbook updated; no shared file touched
 - [ ] Custom dimensions registered, the four funnels and four audiences built, and the funnels seen in the console (the steps above; D-315)
 - [ ] The Coach events seen in DebugView (D-315)
 - [ ] Snapshot run once against production before the demo (D-316)

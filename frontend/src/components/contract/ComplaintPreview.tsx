@@ -38,8 +38,8 @@ function channelHref(channel: ComplaintChannel): string | null {
 /**
  * The complaint letter NF-P2-006 wrote, when a clause broke the law (NF-P2-013). Preview shows
  * `worker_copy` (or `letter_text` when that is null, i.e. already the worker's language);
- * download and copy always use `letter_text`, the one actually addressed to the authority
- * (docs/pipelines/contract-shield.md, "For the report UI"). The preview is laid out on a sheet
+ * download and copy always use `letter_text`, the one actually addressed to the authority.
+ * The preview is laid out on a sheet
  * with a letterhead, like the printed page it becomes.
  */
 export default function ComplaintPreview({ complaint }: ComplaintPreviewProps) {

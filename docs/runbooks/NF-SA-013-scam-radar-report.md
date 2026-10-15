@@ -52,7 +52,7 @@ A repeat tap that arrives after the first finished is the normal case and is ans
 | `backend/app/api/v2/scam_checks.py`, `backend/app/dependencies.py` | The route and its dependency |
 | `backend/app/services/scam/indicator_seen.py`, `history.py` | The document id uses the key's normal form (a sender is lowercase); a small id helper |
 | `backend/tests/unit/services/test_scam_report.py` (38), `tests/unit/repositories/test_scam_report_merge.py` (11), `tests/integration/api/test_scam_report.py` (24), `tests/integration/repositories/test_scam_report_repository.py` (11, on the emulator), `tests/unit/test_radar_user_types.py` (4), additions to `test_radar_entity_reports.py`, `test_auth_matrix.py`; fixtures `tests/fixtures/scam_report.py`, `scam_app.py` | The tests |
-| `docs/api/v2-scam.md`, `docs/data-model/collections/radar.md`, `docs/deferred-items.md` | State, rate limit, host-country rule, D-124, D-145 and D-104 closed on the backend side, D-148 and D-149 |
+| `docs/api/v2-scam.md`, `docs/data-model/collections/radar.md` | State, rate limit, host-country rule, D-124, D-145 and D-104 closed on the backend side, D-148 and D-149 |
 
 No shared files, no new dependency, no workflow change. The contract's request and response models did not change.
 

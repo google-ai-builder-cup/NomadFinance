@@ -3,7 +3,7 @@
 This is the rules' way of letting an ordinary answer through with no model call. It is a cheap
 shape test, not a judgement: a message that does not look like an answer costs one classifier
 call, never a refusal. Languages: English, Hindi, Tagalog, Indonesian, Nepali and Bengali, written
-by the team and not read by native speakers yet (deferred item D-223).
+by the team and not read by native speakers yet.
 """
 
 from __future__ import annotations

@@ -4,7 +4,7 @@
 
 Twelve invented workers, two for each of the six corridors, for testing and demonstrating the Financial Coach.
 
-1. **The personas**, in `backend/tests/fixtures/coach_personas.json`. Each has the messages the worker types in order, the slots a correct reading must end with, and the score the rubric (`docs/features/coach-scoring.md`, version 1) gives those answers.
+1. **The personas**, in `backend/tests/fixtures/coach_personas.json`. Each has the messages the worker types in order, the slots a correct reading must end with, and the score the rubric (version 1) gives those answers.
 2. **A loader and models**, `backend/tests/fixtures/coach_personas.py`, that refuse a file that has drifted from the shape its readers rely on. The expected slots are a `CoachProfile`.
 3. **A plain copy of the rubric**, `backend/tests/fixtures/coach_rubric_reference.py`, used to re-work every stored score. It is not the engine (NF-FC-011).
 4. **29 tests**, `backend/tests/unit/test_coach_personas.py`.
@@ -42,7 +42,7 @@ Per persona: `script` (the messages: `say`, `language`, `fills` = the slots a co
 
 ## Two scores by hand
 
-Re-work these from `docs/features/coach-scoring.md`; they come out as the file says.
+Re-work these from the rubric in `backend/app/services/coach/scoring.py`; they come out as the file says.
 
 **Maricel** (Singapore, domestic worker; salary SGD 650; essentials SGD 0 + 0 + 100 + 12 = 112).
 
@@ -91,8 +91,6 @@ Changing a stored total makes two tests fail, which was checked.
 | `backend/tests/fixtures/coach_personas.py` | New: models and `load_personas()` |
 | `backend/tests/fixtures/coach_rubric_reference.py` | New: a plain copy of the rubric for checking |
 | `backend/tests/unit/test_coach_personas.py` | New: 29 tests |
-| `docs/features/coach-scoring.md` | One sentence: where the personas are |
-| `docs/deferred-items.md` | D-202 to D-205 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. No application code changed.
 
@@ -155,7 +153,7 @@ Tracker row: *Fixtures validate against CoachProfile; expected scores hand-compu
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-202 (native-speaker read), D-203 (fixed leaving dates), D-204 (second reader), D-205 (no KR, HK, ne or bn persona). Also outside this task: D-181, the CRLF-sensitive test, still fails on this Windows checkout.
+Left for later: D-202 (native-speaker read), D-203 (fixed leaving dates), D-204 (second reader), D-205 (no KR, HK, ne or bn persona). Also outside this task: D-181, the CRLF-sensitive test, still fails on this Windows checkout.
 
 ## Commit
 

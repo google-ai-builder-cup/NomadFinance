@@ -33,7 +33,7 @@ Reading never fails open: nothing here can turn a module on that the document do
 | `backend/tests/unit/services/test_feature_flag_service.py` (new) | 23 service tests |
 | `backend/tests/integration/api/test_feature_flags.py` (new) | 9 route and guard tests |
 | `backend/tests/integration/api/test_cors_rate_limit.py` | 1 test for the v2 CORS headers |
-| `docs/api/v2-flags.md` (new), `docs/data-model/collections/config.md`, `docs/deferred-items.md` | Contract, read rules, D-98 closed |
+| `docs/api/v2-flags.md` (new), `docs/data-model/collections/config.md` | Contract, read rules, D-98 closed |
 
 No new package, environment variable or shared file.
 

@@ -49,7 +49,7 @@ POST /messages ─► 401 / flag 404 / 10-a-minute limit ─► key check (400) 
 | `backend/app/core/errors.py` | `error_parts`: status, code and message of a Gemini failure, for the `error` event |
 | `backend/app/dependencies.py`, `backend/app/api/v2/router.py` | `get_coach_turns`; the route is included |
 | `backend/tests/...` | 67 new tests and a stub Gemini, plus two registries updated (below) |
-| `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md`, `docs/deferred-items.md` | Status, `last_turn` fields, D-210 to D-213 |
+| `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md` | Status, `last_turn` fields, D-210 to D-213 |
 
 Two existing registries had to learn the new route and prompts: `AI_LIMITED` in `tests/integration/api/test_auth_matrix.py` (the route carries the Gemini budget) and `EXPECTED_PROMPTS` in `tests/unit/test_prompt_loader.py`. No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched.
 
@@ -135,7 +135,7 @@ Tracker row: *First token < 2 s p95 on staging; stream format matches contract; 
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-210 (wire in slot extraction), D-211 (first piece not measured), D-212 (the summary lags one turn), D-213 (read the live replies in each language). Also outside this task: D-181 still fails on this Windows checkout.
+Left for later: D-210 (wire in slot extraction), D-211 (first piece not measured), D-212 (the summary lags one turn), D-213 (read the live replies in each language). Also outside this task: D-181 still fails on this Windows checkout.
 
 ## Commit
 

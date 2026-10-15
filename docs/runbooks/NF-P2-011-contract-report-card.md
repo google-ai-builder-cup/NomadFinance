@@ -7,7 +7,7 @@ The upload page's small result card (score, badge, three counts) is now the full
 - **`ReportCard`** (new): the score header (moved out of `ContractUpload.tsx`, D-61), the plain-language summary, the pending-complaint note, then a "Clause by clause" section.
 - **`ClauseRow`** (new): one clause — a colored flag dot (sr-only text carries the same words as the header badge: "Looks safe" / "Some concerns" / "Serious concerns"), its category, a `Clause {{number}} · page {{page}}` reference, then **what the contract says** next to **what the law says** (`law_reference`, or "Not tied to a specific law section" when there is none, plus the explanation and, if any, a recommendation).
 - **Side by side on `md:` and up** (a shared column legend above the list), **stacked with inline labels on a phone** — each `ClauseRow` carries its own `md:hidden` labels so a stacked clause is still legible on its own.
-- **The full report is read straight from Firestore**, not a new API call: `POST .../analyze` already writes `reports/{language}` before it answers (`docs/pipelines/contract-shield.md`), and `firestore.rules` already lets the owner read `contracts/{id}/reports/{language}` directly (same pattern `watchContractProgress` uses for the progress document). No backend change, no new AI-rate-limited call.
+- **The full report is read straight from Firestore**, not a new API call: `POST .../analyze` already writes `reports/{language}` before it answers, and `firestore.rules` already lets the owner read `contracts/{id}/reports/{language}` directly (same pattern `watchContractProgress` uses for the progress document). No backend change, no new AI-rate-limited call.
 - **Loading and error states** for that read: `ReportSkeleton` (adjusted to hint at the two-column shape) while pending, an inline retry on a Firestore error, and a distinct "not ready yet" message for the one edge case where `analysis` says `completed` but the report document isn't there yet (race, should not happen given the pipeline's write order).
 - The result and progress views widened from `max-w-lg` to `max-w-3xl` (still inside the app shell's `max-w-4xl`) so the side-by-side columns have room; the upload form itself stays `max-w-lg`.
 - All texts in the 6 languages, including the 15 labor-law categories (`contract.category.*`) and the new `contract.report.*` strings. No backend change, no new package, no shared file changed.
@@ -25,7 +25,6 @@ The upload page's small result card (score, badge, three counts) is now the full
 | `frontend/src/components/contract/ReportSkeleton.tsx` | The three placeholder rows now hint at the two-column shape instead of a single line |
 | `frontend/src/pages/contract/ContractUpload.tsx` | Inline result card replaced by `<ReportCard>`; `result` (and the fields it needs) moved above the `profile` early returns so `useContractReport` can be called unconditionally (Rules of Hooks); result/progress views widened to `max-w-3xl`. 293 lines (was 306; D-61's guideline is satisfied as a side effect, though the log already marked it won't-fix) |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `contract.result.reportLoadError`, `contract.result.reportMissing`; `contract.report.*` (heading, column labels, no-law-reference fallback, recommendation label, clause reference templates); `contract.category.*` (the 15 curated categories + other) |
-| `docs/pipelines/contract-shield.md` | New "How the app shows the report" section; "Not covered here" note updated |
 
 ## Decisions
 
@@ -109,7 +108,7 @@ pnpm dev --mode emulator
 Branch: `feature/contract-report-card` (already checked out).
 
 ```bash
-git add frontend/src docs/runbooks/NF-P2-011-contract-report-card.md docs/pipelines/contract-shield.md
+git add frontend/src docs/runbooks/NF-P2-011-contract-report-card.md
 git status
 ```
 

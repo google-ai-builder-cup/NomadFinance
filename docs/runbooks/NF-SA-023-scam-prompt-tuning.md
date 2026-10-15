@@ -19,7 +19,7 @@ The tracker asks to use the eval report to fix the weakest classes and languages
 | `data-scripts/evals/run_scam_eval.py` | `--rows PATH` scores one file instead of the three golden sets, and the bar then applies to the languages that file has. The report is named after the file |
 | `data-scripts/src/scam_eval/metrics.py`, `report.py` | A **Confidence** section in every report: how sure the classifier said it was for right scams, right benign messages and wrong answers, and how many answers fall below 0.7 (the point at which the screen tells the worker it is not fully sure). `gate(..., only_present=True)` and a `source` line in the report |
 | `data-scripts/tests/` | 13 new tests: the confidence figures, the gate on a two-language set, the report's new section and source, scoring one file, a file that does not parse, and the shape of the stress set |
-| `docs/evals/scam-golden-set.md`, `docs/gemini-prompts.md`, `docs/features/scam-analyzer.md` | The stress set; "when to change the classifier prompt, and when not"; the new result |
+| `docs/evals/scam-golden-set.md`, `docs/gemini-prompts.md` | The stress set; "when to change the classifier prompt, and when not"; the new result |
 | `docs/evals/scam-eval-2026-10-07.md`, `docs/evals/scam-eval-scam_stress_en_hi-2026-10-07.md` | The two reports |
 
 No backend, prompt, frontend, workflow or other shared file changed.
@@ -87,9 +87,9 @@ Asked for after the work above, on the same branch: show Scam Check on the landi
 | Dashboard | A card for each of the two that is **on for the worker** (`ModuleWidget`), after the four. A worker the flag is off for sees no card, the same rule as the sidebar and the tab bar, so a card never links to a page that would send them back |
 | Colours and pictures | Two new pillar colours (orange for Scam Check, purple for Financial Coach, light and dark theme) in `tokens.css`, `tailwind.config.ts` and `utils/pillars.ts`, and two illustrations (`ModulePillarArt.tsx`). The shared parts of the illustrations moved out of `PillarIllustration.tsx` into `pillarArtTokens.ts` and `PillarArtParts.tsx` |
 | Lists | `MODULE_ITEMS` now carries the pillar name and description; `ALL_PILLAR_ITEMS` (six, for the landing page) and `visiblePillarItems(flags)` are new. `PILLAR_ITEMS`, `NAV_ITEMS` and `pillarForPath` still mean the four, so page headers and analytics are unchanged |
-| Strings | 20 new keys in all 6 languages; the Coach copy was written from the design document (D-167) |
+| Strings | 20 new keys in all 6 languages; the Coach copy was written from the original design (D-167) |
 | README | "Six interconnected pillars", with Scam Check and Financial Coach as items 5 and 6 |
-| Not changed | The Ecosystem diagram (it shows how the first four pillars feed each other), `docs/design-doc/` (the source document says four) and the "four Gemini tiers" line (a different four) |
+| Not changed | The Ecosystem diagram (it shows how the first four pillars feed each other), the original design (which says four) and the "four Gemini tiers" line (a different four) |
 
 Checks: `tsc`, ESLint, Prettier and `check-i18n` clean; **816 frontend tests pass** (10 new: the six pillars and their flags, the landing page's six cards, the dashboard's cards by flag); `pnpm build` passes; the Playwright smoke test passes; the landing page was checked in the browser at desktop width. **Not verified:** the signed-in dashboard cards in a browser (they need a sign-in and the flag), dark mode, and a phone width.
 
