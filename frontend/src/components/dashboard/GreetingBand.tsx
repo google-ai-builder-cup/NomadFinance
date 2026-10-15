@@ -40,10 +40,12 @@ export default function GreetingBand() {
         aria-hidden="true"
         className="dotted pointer-events-none absolute inset-0 [mask-image:linear-gradient(100deg,transparent_30%,#000)]"
       />
-      <div className="relative grid grid-cols-[minmax(0,1fr)] items-center gap-3 p-3.5 sm:gap-6 sm:p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
-        <div className="flex min-w-0 flex-col gap-2.5 sm:gap-4">
+      <div className="relative grid grid-cols-[minmax(0,1fr)] items-center gap-3 p-3 sm:gap-6 sm:p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        <div className="flex min-w-0 flex-col gap-2 sm:gap-4">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-[13px] font-semibold text-muted-foreground">{today}</span>
+            <span className="text-[13px] font-semibold leading-4 text-muted-foreground sm:leading-5">
+              {today}
+            </span>
             {/* Not on a phone: the language picker in the header already says it, and the badge
                 wraps to a line of its own beside a long date (the 360 px limit, NF-HR-009). */}
             {preferred && (
@@ -54,7 +56,7 @@ export default function GreetingBand() {
             )}
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-balance text-[clamp(1.5rem,3.4vw,2.625rem)] font-extrabold leading-tight tracking-tight">
+            <h1 className="text-balance text-[1.375rem] font-extrabold leading-[1.15] tracking-tight sm:text-[clamp(1.5rem,3.4vw,2.625rem)] sm:leading-tight">
               {firstName
                 ? t("dashboard.greeting", { name: firstName })
                 : t("dashboard.greetingGeneric")}
@@ -65,7 +67,7 @@ export default function GreetingBand() {
           </div>
           {/* On a phone the actions are one row that scrolls sideways inside the card (the page itself
               does not), so six buttons do not stack to a third of the screen. */}
-          <div className="-mx-3.5 flex gap-2 overflow-x-auto px-3.5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden">
+          <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:gap-2.5 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-1 [&::-webkit-scrollbar]:hidden">
             <Button
               asChild
               className="h-11 shrink-0 whitespace-nowrap rounded-xl px-4 font-bold sm:h-12 sm:px-5"

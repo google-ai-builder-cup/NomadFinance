@@ -18,13 +18,19 @@ class PublicStatsRepository:
     def __init__(self, client: Client | None = None) -> None:
         self._client = client or get_firestore_client()
 
+    # The SDK's aggregation methods (`count`, `sum`, `get`) are untyped and mypy reads `get` as
+    # an unbound call, so the query goes in as `Any` and the answer comes out as an int.
     @staticmethod
-    def _value(result: Any) -> int:
+    def _count(query: Any) -> int:
         # An aggregation answers `[[AggregationResult]]`: one row, one number.
-        return int(result[0][0].value or 0)
+        return int(query.count().get()[0][0].value or 0)
+
+    @staticmethod
+    def _sum(query: Any, field: str) -> int:
+        return int(query.sum(field).get()[0][0].value or 0)
 
     def workers(self) -> int:
-        return self._value(self._client.collection("users").count().get())
+        return self._count(self._client.collection("users"))
 
     def contracts_checked(self) -> int:
         # An equality filter on a collection group needs a collection-group index on `status`.
@@ -33,17 +39,16 @@ class PublicStatsRepository:
         query = self._client.collection_group("contracts").where(
             filter=FieldFilter("status", "==", "completed")
         )
-        return self._value(query.count().get())
+        return self._count(query)
 
     def radar_reports(self) -> int:
         reports = self._client.collection("radar_reports")
-        total = self._value(reports.count().get())
-        hidden = self._value(reports.where(filter=FieldFilter("hidden", "==", True)).count().get())
-        return max(total - hidden, 0)
+        hidden = reports.where(filter=FieldFilter("hidden", "==", True))
+        return max(self._count(reports) - self._count(hidden), 0)
 
     def alerts_generated(self) -> int:
         # `radar_alerts/{corridor}/current/{alertId}`: expired alerts stay, so this is all-time.
-        return self._value(self._client.collection_group("current").count().get())
+        return self._count(self._client.collection_group("current"))
 
     def scam_checks(self) -> tuple[int, int]:
         """`(checks, scams)` summed over every `scam_stats/{corridor}/weeks/{week}` document.
@@ -52,12 +57,10 @@ class PublicStatsRepository:
         the running total the job has recorded.
         """
         weeks = self._client.collection_group("weeks")
-        checks = self._value(weeks.sum("checks").get())
-        scams = self._value(weeks.sum("scams").get())
-        return checks, scams
+        return self._sum(weeks, "checks"), self._sum(weeks, "scams")
 
     def coach_plans(self) -> int:
-        return self._value(self._client.collection_group("coach_plans").count().get())
+        return self._count(self._client.collection_group("coach_plans"))
 
 
 @lru_cache
