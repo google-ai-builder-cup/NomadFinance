@@ -3,12 +3,13 @@ import Reveal from "@/components/visual/Reveal";
 import { useI18n } from "@/hooks/useI18n";
 
 const GOALS = [
+  { key: "g1", number: 1, tile: "bg-sdg-1" },
   { key: "g8", number: 8, tile: "bg-sdg-8" },
   { key: "g10", number: 10, tile: "bg-sdg-10" },
   { key: "g16", number: 16, tile: "bg-sdg-16" },
 ] as const;
 
-/** The three UN goals the product supports. Official colours appear only on the small number
+/** The four UN goals the product supports. Official colours appear only on the small number
  * tile; the claim is alignment with a goal, never a measured result. */
 export default function ImpactSection() {
   const { t } = useI18n();
@@ -20,7 +21,7 @@ export default function ImpactSection() {
           kicker={t("landing.impact.kicker")}
           title={t("landing.impact.heading")}
         />
-        <ul className="grid gap-5 md:grid-cols-3">
+        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {GOALS.map(({ key, number, tile }, i) => (
             <li key={key}>
               <Reveal delay={i * 80} className="h-full">

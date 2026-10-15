@@ -104,7 +104,11 @@ export default function CorridorPicker({
                     : "hover:border-remit/50 hover:bg-accent"
                 )}
               >
-                <CountryPair host={corridor.host} home={corridor.home} />
+                {/* The route is written beside it, so on the narrowest phones the flags give way to
+                    the currencies, which were cut to "SG…" in the space left. */}
+                <span className="max-[359px]:hidden">
+                  <CountryPair host={corridor.host} home={corridor.home} />
+                </span>
                 <span className="min-w-0">
                   <span className="flex items-center gap-1 text-sm font-bold">
                     {corridor.host}

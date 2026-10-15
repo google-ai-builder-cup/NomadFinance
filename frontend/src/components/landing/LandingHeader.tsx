@@ -43,7 +43,8 @@ export default function LandingHeader() {
           className="flex shrink-0 items-center gap-2.5 rounded-lg text-lg font-extrabold tracking-tight"
         >
           <BrandMark size={34} />
-          {t("landing.brand")}
+          {/* The mark alone below 340 px: with the wordmark the three buttons no longer fit. */}
+          <span className="max-[339px]:sr-only">{t("landing.brand")}</span>
         </a>
         <nav aria-label={t("landing.header.sections")} className="ml-4 hidden gap-1 xl:flex">
           {SECTIONS.map(({ id, key }) => (

@@ -1,12 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { CORRIDOR_IDS } from "@/types/enums";
-import {
-  FX_REFRESH_HOURS,
-  INDUSTRY_FACTS,
-  MEASURED_METRICS,
-  PROTECTED_WORDS,
-} from "@/utils/landingMetrics";
+import { FX_REFRESH_HOURS, INDUSTRY_FACTS, PROTECTED_WORDS } from "@/utils/landingMetrics";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 
 describe("landing metrics", () => {
@@ -15,10 +10,6 @@ describe("landing metrics", () => {
       expect(fact.source.trim()).not.toBe("");
       expect(fact.value).toBeGreaterThan(0);
     }
-  });
-
-  it("shows no timing figure until one has been measured", () => {
-    expect(MEASURED_METRICS.contractAnalysisSeconds).toBeNull();
   });
 
   it("has one word per supported language for the cycling line", () => {

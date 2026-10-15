@@ -23,6 +23,7 @@ must say so explicitly in their own doc section below.
 | Method | Path | Auth | Rate limit | Owner task |
 |---|---|---|---|---|
 | GET | `/health` | Public | None | NF-P1-001 |
+| GET | `/api/v1/public/stats` | Public | 60/min API-wide, by IP (no Gemini call) | NF-HR-014 |
 | POST | `/api/v1/contracts/extract` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P1-006 |
 | POST | `/api/v1/contracts/detect` | Firebase ID token | 60/min API-wide + 10/min Gemini budget | NF-P2-002 |
 | GET | `/api/v1/contracts/labor-law/{host_country}` | Firebase ID token | 60/min API-wide only (no Gemini call) | NF-P2-003 |
@@ -100,6 +101,17 @@ Allowed: methods `GET POST PUT PATCH DELETE`, request headers `Authorization`, `
 Counts live in each Cloud Run instance's memory: with up to 2 instances a caller can get up to twice the budget, and counts reset when an instance restarts.
 
 **Request size.** Any request body over `UPLOAD_MAX_BYTES` + 64 KB (10 MB + 64 KB by default) gets `413` `The request is larger than 10 MB.` before the body is read (declared `Content-Length`), or as soon as the limit is passed (no `Content-Length`). A JSON body sent to an `/api/v2` route has a shorter cap, 128 KB (`The request is larger than 128 KB.`); uploads there (the screenshot of the Scam Analyzer) keep the 10 MB one.
+
+---
+
+## `GET /api/v1/public/stats`
+
+Platform-wide totals for the landing page's "Live on NomadFinance" strip. A visitor is not signed in, and the Firestore rules close every collection behind it to a browser, so the backend counts with the Admin SDK and returns numbers only.
+
+- **Auth:** public, no token. Only the API-wide rate limit applies, counted by IP.
+- **Cache:** each instance recomputes at most every 5 minutes, and the response carries `Cache-Control: public, max-age=300`.
+- **Response `200`:** `PublicStatsResponse` (`app/schemas/public_stats.py`): `workers`, `contracts_checked`, `radar_reports`, `alerts_generated`, `scam_messages_checked`, `scams_flagged`, `coach_plans`, `generated_at`. A total that could not be read is `null`, never `0`, so the page leaves it out.
+- **Where each number comes from:** Firestore aggregation queries, which read no document. `workers` counts `users`; `contracts_checked` counts contracts with `status == "completed"` across all workers (a collection-group query: it needs a collection-group index on `contracts.status`, and the figure is `null` until it exists); `radar_reports` counts `radar_reports` minus the ones marked `hidden`, so it includes seeded demo reports exactly as the in-app Radar does; `alerts_generated` counts `radar_alerts/*/current/*`, expired ones included; `scam_messages_checked` and `scams_flagged` sum `checks` and `scams` over `scam_stats/*/weeks/*`, because the checks themselves are deleted after 90 days; `coach_plans` counts `coach_plans` across all workers.
 
 ---
 

@@ -24,23 +24,25 @@
       }
     },
     "story": {
-      "heading": "Kilalanin si Priya",
-      "body": "Umalis si Priya sa India para magtrabaho bilang domestic worker sa Singapore. Binigyan siya ng ahensya ng kontrata sa Ingles — isang wikang natututuhan pa lang niya — at pinili na rin nila kung aling serbisyo ang gagamitin niya sa pagpapadala ng pera. Wala siyang paraan para malaman kung patas ang dalawa. Binabasa ng NomadFinance ang kontrata niya sa Hindi, sinusuri ito laban sa batas paggawa ng Singapore, at ipinapakita kung magkano talaga ang sinisingil ng bawat provider para magpadala ng pera sa kanyang pamilya — para sa kanya ang desisyon, hindi sa ahensya niya.",
+      "heading": "Ang unang taon ni Priya sa Singapore",
+      "body": "Dalawampu't anim na taong gulang si Priya nang magtrabaho siya bilang domestic worker sa Singapore. Nasa Ingles ang kontrata, at pinirmahan niya ito tulad ng pagpirma ng taong takot mawalan ng trabaho. Bawat buwan, nagpapadala siya ng pera sa nanay niya sa Kanpur sa counter na inirekomenda ng ahensya, at hindi niya maintindihan kung bakit mas kaunti ang dumarating kaysa inaasahan niya. Isang gabi, may mensaheng galing sa numerong hindi niya kilala na humihingi ng maliit na bayad para i-release ang bonus niya. Walang makapagsabi sa kanya kung tama ba ang alinman dito. Para sa ganoong taon ginawa ang NomadFinance. Binabasa nito ang kontrata niya sa wikang Hindi, ipinapakita kung magkano talaga ang nababawas sa bawat padala, sinusuri ang kakaibang mensahe, at nag-iingat ng talaan ng kita niya na tatanggapin ng bangko.",
       "kicker": "Kuwento ng isang manggagawa",
       "avatar": "Larawan ni Priya, isang domestic worker sa Singapore",
       "before": {
         "badge": "Dati",
-        "title": "Pagkalito",
-        "b1": "Kontrata sa wikang inaaral pa lang niya",
-        "b2": "Serbisyo sa padala na pinili ng ahensya niya, may nakatagong bayarin",
-        "b3": "Walang paraan para malaman kung patas ang alinman"
+        "title": "Hula-hula",
+        "b1": "Kontrata sa Ingles na pinirmahan niya nang hindi sigurado sa nakasulat",
+        "b2": "Counter ng padala na pinili ng ahensya, at rate na hindi niya matanong",
+        "b3": "Mensaheng humihingi ng bayad para i-release ang bonus, at walang matanungan",
+        "b4": "Taon-taong nagpapadala ng pera sa pamilya, pero walang maipakita sa bangko"
       },
       "after": {
         "badge": "Kasama ang NomadFinance",
-        "title": "Linaw",
-        "a1": "Ang kontrata niya, binasa sa Hindi at sinuri sa batas sa paggawa ng Singapore",
-        "a2": "Ang pinakamahusay na provider, at kung magkano talaga ang singil ng bawat isa",
-        "a3": "Siya ang pipili, hindi ang ahensya niya"
+        "title": "May alam na",
+        "a1": "Ang kontrata niya, binasa sa Hindi at bawat probisyon ay sinuri sa batas sa paggawa ng Singapore",
+        "a2": "Lahat ng provider nang magkakatabi, kasama ang totoong gastos ng pagpapadala sa Kanpur",
+        "a3": "Ang kahina-hinalang mensahe, ipinaliwanag sa simpleng salita, at babala na naibahagi sa ibang manggagawa sa pamamagitan ng Radar",
+        "a4": "Ang kita, bayarin at ipon niya, ginawang iskor at ulat na mababasa ng bangko, at 90-araw na plano mula sa Coach"
       }
     },
     "pillars": {
@@ -129,6 +131,20 @@
         "today": "Ngayon"
       }
     },
+    "live": {
+      "kicker": "Live sa NomadFinance",
+      "heading": "Totoong numero mula sa platform",
+      "lead": "Mga kabuuang binilang mismo mula sa NomadFinance at ina-update tuwing ilang minuto. Bilang lang ang mga ito: walang makikilalang manggagawa rito.",
+      "items": {
+        "contracts": "kontratang sinuri laban sa batas sa paggawa",
+        "scamChecked": "kahina-hinalang mensaheng sinuri",
+        "scamsFlagged": "mensaheng na-flag bilang scam",
+        "reports": "ulat na ibinahagi sa Radar",
+        "alerts": "alerto sa corridor na inilabas",
+        "plans": "90-araw na planong nagawa",
+        "workers": "manggagawang gumagamit ng NomadFinance"
+      }
+    },
     "performance": {
       "kicker": "Paano gumaganap ang NomadFinance",
       "heading": "Isang platform. Anim na corridor. Apat na antas ng Gemini na nagtutulungan.",
@@ -189,12 +205,6 @@
           "name": "Batayan sa batas-paggawa ng ILO",
           "body": "Sinusuri ang mga kontrata laban sa lokal na patakaran"
         }
-      },
-      "time": {
-        "pending": "Hinihintay pa ang sukat",
-        "unit": "seg",
-        "title": "Karaniwang oras ng pagsusuri ng kontrata",
-        "note": "Ipapakita lang namin ito kapag nasukat na."
       },
       "privacy": {
         "title": "Pribado ayon sa disenyo",
@@ -260,8 +270,12 @@
     },
     "impact": {
       "kicker": "Epekto at mga SDG",
-      "heading": "Ginawa para suportahan ang tatlong layunin ng UN",
+      "heading": "Ginawa para suportahan ang apat na layunin ng UN",
       "goal": "SDG {{number}}:",
+      "g1": {
+        "title": "Wakasan ang kahirapan, target 1.4",
+        "body": "Talaan ng kita, bayarin at ipon na maipapakita ng manggagawa sa bangko, para hindi magsimula sa wala ang paggamit ng mga serbisyong pinansyal."
+      },
       "g8": {
         "title": "Disenteng trabaho at paglago ng ekonomiya",
         "body": "Sinusuri ang mga kontrata laban sa batas sa paggawa, kaya mas madaling makilala ang ligtas na trabaho."
@@ -272,7 +286,7 @@
       },
       "g16": {
         "title": "Kapayapaan, katarungan at matatag na institusyon",
-        "body": "Ang mga ulat mula sa komunidad at liham ng reklamo ay nagbibigay sa manggagawa ng daan para marinig."
+        "body": "Ang pagsusuri ng scam, mga ulat ng komunidad at liham ng reklamo ay tumutulong sa manggagawa na makaiwas sa panloloko at nagbibigay ng daan para marinig."
       }
     },
     "footer": {
@@ -781,6 +795,7 @@
       "errors": {
         "empty": "Ilagay ang halagang gusto mong ipadala.",
         "invalid": "Ilagay ang halaga bilang numero, halimbawa 500.",
+        "decimalComma": "Gumamit ng tuldok para sa decimal, tulad ng 645.50. Ang kuwit ay panghiwalay lang ng libo, tulad ng 6,450.",
         "decimals": "Hanggang {{places}} decimal place lang ang puwede.",
         "wholeNumber": "Maglagay ng buong halaga ng {{currency}}, walang decimal.",
         "tooSmall": "Maglagay ng hindi bababa sa {{min}}.",
@@ -1118,6 +1133,7 @@
         "amount": {
           "empty": "Ilagay ang halaga.",
           "invalid": "Ilagay ang tamang halaga.",
+          "decimalComma": "Gumamit ng tuldok para sa decimal, tulad ng 645.50. Ang kuwit ay panghiwalay lang ng libo, tulad ng 6,450.",
           "decimals": "Masyadong marami ang decimal para sa pera na ito.",
           "tooLarge": "Masyadong malaki ang halagang ito. Suriin ito at subukang muli."
         }

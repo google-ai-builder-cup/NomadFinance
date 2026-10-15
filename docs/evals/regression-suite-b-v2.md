@@ -37,7 +37,7 @@ Task NF-HR-005, run 2026-10-13 on `fix/regression-suite-b`. This is the test she
 | R-02 | 500 on the default corridor: a ranked comparison, best first | P | P | P | P | P | P | Auto |
 | R-03 | Every corridor compares at its survey amount (shortcut button) | P | P | P | P | P | P | All six |
 | R-04a | `1,000` | P | P | P | P | P | P | Read as 1000 |
-| R-04b | `645,50` (European decimal) | P | P | P | P | P | P | |
+| R-04b | `645,50` (European decimal) | P | P | P | P | P | P | Superseded: a comma is no longer read as a decimal; `645,50` is refused with a "use a dot" message. |
 | R-04c | `1 000` (space-grouped) | P | P | P | P | P | P | |
 | R-04d | `५००` (Devanagari digits) | P | P | P | P | P | P | **QA-B-01**. The old parser refused it |
 | R-04e | `৫০০` (Bengali digits) | P | P | P | P | P | P | QA-B-01 |

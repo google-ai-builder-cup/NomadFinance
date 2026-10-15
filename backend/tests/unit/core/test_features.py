@@ -62,6 +62,7 @@ def test_a_new_route_is_not_silently_filed_under_platform() -> None:
         "/health",
         "/api/v2/flags",
         "/api/v1/users/me",
+        "/api/v1/public/stats",
     }
     app = create_app()
     platform = {path for path in _paths(app.routes) if feature_for_path(path) == PLATFORM}

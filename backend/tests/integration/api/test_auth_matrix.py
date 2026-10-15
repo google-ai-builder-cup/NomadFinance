@@ -241,7 +241,7 @@ ROUTES = _all_routes()
 
 # The only endpoints without a user token, and why. A new route must either use
 # `get_current_user` or be added here on purpose.
-PUBLIC = {("GET", "/health")}
+PUBLIC = {("GET", "/health"), ("GET", "/api/v1/public/stats")}
 INTERNAL_PREFIX = "/api/v1/internal/"
 INTERNAL = [(m, p) for m, p, _ in ROUTES if p.startswith(INTERNAL_PREFIX)]
 USER_ROUTES = [(m, p) for m, p, r in ROUTES if "get_current_user" in _dependency_names(r)]

@@ -102,6 +102,7 @@ export default {
         scam: pillar("scam"),
         coach: pillar("coach"),
         sdg: {
+          1: "hsl(var(--sdg-1))",
           8: "hsl(var(--sdg-8))",
           10: "hsl(var(--sdg-10))",
           16: "hsl(var(--sdg-16))",

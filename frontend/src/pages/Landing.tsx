@@ -9,6 +9,7 @@ import ImpactSection from "@/components/landing/ImpactSection";
 import LandingFooter from "@/components/landing/LandingFooter";
 import LandingHeader from "@/components/landing/LandingHeader";
 import LandingHero from "@/components/landing/LandingHero";
+import LiveStats from "@/components/landing/LiveStats";
 import PerformanceBento from "@/components/landing/PerformanceBento";
 import PillarsSection from "@/components/landing/PillarsSection";
 import PriyaStory from "@/components/landing/PriyaStory";
@@ -53,6 +54,7 @@ export default function Landing() {
         )}
         <LandingHero />
         <ProblemBand />
+        <LiveStats />
         <PerformanceBento />
         <PillarsSection />
         <HowItWorks />
