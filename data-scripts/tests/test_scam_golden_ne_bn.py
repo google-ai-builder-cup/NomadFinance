@@ -15,7 +15,7 @@ GOLDEN = EVALS_DIR / "scam_golden_ne_bn.jsonl"
 DEVANAGARI = re.compile("[\u0900-\u0963\u0966-\u097f]")
 BENGALI = re.compile("[\u0980-\u09ff]")
 
-# The six host countries (docs/design-doc: SG, KR, MY, JP, HK, AU) as the messages spell them.
+# The six host countries (SG, KR, MY, JP, HK, AU) as the messages spell them.
 HOST_NAMES = {
     "SG": ("सिंगापुर", "সিঙ্গাপুর", "Singapore"),
     "KR": ("कोरिया", "কোরিয়া", "Korea"),

@@ -6,7 +6,7 @@ a phone number. The referral names no organisation and holds no number on purpos
 has no sourced contact data, and a wrong number is worse than none); a test holds it to that.
 
 Short sentences of everyday words, for a worker who reads the language as a second one. Written by
-the team, not read by native speakers yet (deferred item D-223).
+the team, not read by native speakers yet.
 """
 
 from __future__ import annotations

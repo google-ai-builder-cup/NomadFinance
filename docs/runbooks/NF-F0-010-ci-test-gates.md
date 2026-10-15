@@ -152,14 +152,14 @@ Open a small throwaway pull request (a one-word fix in a doc). Confirm that the 
 | `.gitignore` (**shared**) | `coverage/`, `coverage.json` |
 | `backend/tests/integration/api/test_cors_rate_limit.py` | One test now clears the emulator variables: a deployed environment refuses to start with them (NF-P4-004), so it failed whenever the emulator was running |
 | `.github/CODEOWNERS`, `.github/pull_request_template.md` | See below |
-| `docs/CONTRIBUTING.md`, `docs/deferred-items.md` | A "Checks a pull request must pass" section; D-46 closed, D-116 to D-120 |
+| `docs/CONTRIBUTING.md` | A "Checks a pull request must pass" section; D-46 closed, D-116 to D-120 |
 
 Only pushes and pull requests that change a folder used to start its CI. The `paths` filter is gone for **pull requests** (three workflows), because a required check that does not run leaves a docs-only pull request "waiting for status" for ever. Pushes to `main` keep their filters. The repository is public, so the extra minutes cost nothing.
 
 ## CODEOWNERS and the pull request template
 
 - **CODEOWNERS.** All three of us own everything; GitHub never asks the author to review, so the other two are requested. "Require review from Code Owners" turns that into a rule. Sensitive paths (workflows, `core/`, config, dependencies, the Dockerfile, the rules and index files, `firebase.json`, infra, the commit policy) are listed separately, with the same owners, so the rule is visible and one line changes if ownership splits. **It cannot name "the right reviewer"**: the tracker rotates the reviewer per task and work is not divided by code area. The template asks for the tracker's reviewer by name instead.
-- **Template.** Task, owner and reviewer; what and why; testing steps; screenshots; rollout and rollback (flag and how to undo it); a checklist (which items CI enforces and which are by hand, shared-file approval, deferred items, runbook); and the tracker's Definition of Done for each kind of task as collapsible lists to keep the one that applies.
+- **Template.** Task, owner and reviewer; what and why; testing steps; screenshots; rollout and rollback (flag and how to undo it); a checklist (which items CI enforces and which are by hand, shared-file approval, runbook); and the tracker's Definition of Done for each kind of task as collapsible lists to keep the one that applies.
 
 ## Verified (2026-10-06)
 
@@ -191,7 +191,7 @@ Ticked items are done; the rest are for the owner, in this order.
 - [ ] **A teammate reviews** (the tracker names Pranjal); CODEOWNERS requests the others automatically
 - [ ] **Merge** with a normal merge commit
 - [ ] **Set branch protection** (steps above, repository admin), then **check it works** with a throwaway pull request
-- [ ] **Record it:** mark D-116 and D-117 Done with the date in `docs/deferred-items.md`, and tick the two open boxes in the Definition of Done below
+- [ ] **Record it:** mark D-116 and D-117 Done with the date in and tick the two open boxes in the Definition of Done below
 
 ## If a check is red on a pull request
 

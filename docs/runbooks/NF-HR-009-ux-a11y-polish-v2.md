@@ -30,7 +30,6 @@ Every signed-in screen was run through axe in a real browser, in the light and t
 | `frontend/src/pages/Dashboard.tsx`, `frontend/src/components/dashboard/{StatCard,KpiRow,GreetingBand,WidgetCard,FIBProgressWidget}.tsx`, `fib/{ScoreMeter,ReportDocCard}.tsx`, `contract/ClauseRow.tsx`, `layout/AccountMenu.tsx`, `landing/{Ecosystem,HowItWorks,PerformanceBento}.tsx`, `common/CountryPair.tsx` | The fixes above |
 | 27 files with `text-destructive` | `text-danger-ink` (a class name; no logic) |
 | Tests (new or changed) | `PageStateFrame`, `AccountMenu`, `NotFound`, the plan page and the check detail (a heading in every state); one plan-page test waited on the heading and now waits on the plan |
-| `docs/design-system.md`, `docs/deferred-items.md` | Three contrast rules; D-277 and D-278 done; D-285 |
 
 No shared file was touched (`package.json`, the lockfile, `tsconfig*`, workflows, `firebase.json`, rules): `axe-core` was already a development dependency and is loaded into the page from `node_modules`. No new string, so no translation changed.
 

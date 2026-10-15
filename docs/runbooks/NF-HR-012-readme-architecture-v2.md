@@ -10,7 +10,6 @@ The root `README.md` is rewritten so a stranger can understand the project, run 
 | [`docs/mermaid/system-architecture.mmd`](../mermaid/system-architecture.mmd) | Redrawn. v2.0.0 is no longer "not yet deployed". All 5 Scheduler jobs (it showed 2), the Gemini tiers by role, the full set of Firestore stores, Cloud Storage, Secret Manager, FCM, the per-feature Gemini budget, observability and delivery. Left to right, 3,356 × 3,493 units (the old one was 6,937 × 1,756) |
 | [`docs/mermaid/cross-pillar-data-flow.mmd`](../mermaid/cross-pillar-data-flow.mmd) | Redrawn. Solid lines are v1.0 flows, dotted lines involve a flag-gated module. Two flows added that the code has and the old diagram lacked: Financial Identity to Coach ("known answers", the worker confirms) and Exploitation Radar to Coach (flagged operators passed over in the plan). Consent is written on each edge |
 | [`backend/README.md`](../../backend/README.md), [`frontend/README.md`](../../frontend/README.md), [`infra/README.md`](../../infra/README.md) | Small corrections to statements that are no longer true (listed below) |
-| [`docs/deferred-items.md`](../deferred-items.md) | D-47 closed; D-297 to D-307 added |
 
 No code, workflow, rule or other shared file was touched.
 
@@ -19,7 +18,7 @@ No code, workflow, rule or other shared file was touched.
 ```text
 code (config.py, services, rules)  ─┐
 live project (read-only commands)  ─┼─►  README.md  ─►  links to  ─►  docs/mermaid/*.mmd
-accepted ADRs and eval reports     ─┘        │                         docs/features, docs/api, docs/runbooks
+accepted ADRs and eval reports     ─┘        │                         docs/api, docs/runbooks
                                              └─►  Quick start  ─►  verified in a fresh clone of main
 ```
 
@@ -62,7 +61,7 @@ Run the project the way the README says: the Quick start in [`README.md`](../../
 
 | # | Decision | Why |
 |---|---|---|
-| 1 | Models are named by tier (reasoning, extraction, classification, embedding), with the default model ids in one README table | The team's standing instructions and the design doc say 2.5 / 1.5 Flash; the code and the accepted ADR-002 say 3.5 / 3.1. ADR-002 already tells readers to read the tier names as the roles. A model swap is an environment variable, so a diagram that hard-codes a version goes stale |
+| 1 | Models are named by tier (reasoning, extraction, classification, embedding), with the default model ids in one README table | The team's standing instructions and the original design say 2.5 / 1.5 Flash; the code and the accepted ADR-002 say 3.5 / 3.1. ADR-002 already tells readers to read the tier names as the roles. A model swap is an environment variable, so a diagram that hard-codes a version goes stale |
 | 2 | The architecture diagram groups: one node for the five jobs, one per group of Firestore stores, the frontend pages in two nodes | The first version (one node per job, store and page) was 6,000 units wide and unreadable on GitHub; the grouped one is about half the width and square |
 | 3 | The cross-pillar diagram has no sub-boxes, and solid versus dotted means "v1.0 versus flag-gated" | Sub-boxes made edges loop round them; the dashed outline already marks the two flagged modules |
 | 4 | The README does not state whether the flags are on in production | `config/feature_flags` is an operator's switch and D-291 records that it was already on before the release rehearsal. The README explains the mechanism and leaves the state to the console |
@@ -117,7 +116,7 @@ And the tracker's two lines for this task:
 
 ## Noticed, not fixed
 
-D-297 to D-307 in [`docs/deferred-items.md`](../deferred-items.md). The ones that matter most: **D-300** (the loaders write to production if the emulator variables are missing), **D-301** (live Firestore has 3 composite indexes the repo file lacks), **D-297** (frontend tests need an env file), **D-299** (flags and rates have no local loader).
+D-297 to D-307. The ones that matter most: **D-300** (the loaders write to production if the emulator variables are missing), **D-301** (live Firestore has 3 composite indexes the repo file lacks), **D-297** (frontend tests need an env file), **D-299** (flags and rates have no local loader).
 
 ## Commit
 

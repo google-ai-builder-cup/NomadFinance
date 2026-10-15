@@ -22,8 +22,8 @@ from app.schemas.radar import RadarEntity, RadarReport, RadarRiskLevel
 logger = logging.getLogger(__name__)
 
 # incident_count below this: not enough signal for a rating or a public flag. A single
-# report, however serious, is one account, not yet a confirmed pattern (design doc: this
-# pillar is "pattern detection", not first-complaint-wins).
+# report, however serious, is one account, not yet a confirmed pattern (this pillar is
+# "pattern detection", not first-complaint-wins).
 MIN_INCIDENTS_TO_RATE = 2
 MIN_INCIDENTS_TO_FLAG = 2
 MIN_INCIDENTS_FOR_HIGH_RISK = 5

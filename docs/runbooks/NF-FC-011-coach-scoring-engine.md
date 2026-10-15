@@ -2,7 +2,7 @@
 
 ## Summary
 
-The Financial Coach now works out the preparedness score. At `review` and `plan` the session carries `score` (total 0–100, band, five factors), worked out by the rubric of `docs/features/coach-scoring.md` (version 1) from the worker's answers, the host country's living costs, the legal recruitment-fee cap and the stored exchange rates. No model is involved: it is arithmetic, the same answers always give the same score.
+The Financial Coach now works out the preparedness score. At `review` and `plan` the session carries `score` (total 0–100, band, five factors), worked out by the rubric (version 1) from the worker's answers, the host country's living costs, the legal recruitment-fee cap and the stored exchange rates. No model is involved: it is arithmetic, the same answers always give the same score.
 
 | What is missing | What the worker sees |
 |---|---|
@@ -25,7 +25,7 @@ The rubric never guesses a missing figure, so the score is unavailable rather th
 | `backend/app/services/coach/session_document.py`, `session_service.py` | The scorer hook is now `async`; the service awaits it before building the session view (`to_session` no longer calls it) |
 | `backend/app/dependencies.py` | `get_coach_sessions` passes the real scorer |
 | `backend/tests/...` | 114 new tests (below); one existing test changed from a sync to an async scorer |
-| `docs/features/coach-scoring.md`, `docs/api/v2-coach.md`, `docs/deferred-items.md` | The fee-cap key table; status; D-207 and D-170 notes; D-216, D-217 |
+| `docs/api/v2-coach.md` | The fee-cap key table; status; D-207 and D-170 notes; D-216, D-217 |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched.
 

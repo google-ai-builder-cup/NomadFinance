@@ -26,7 +26,6 @@ What each fix is, in one line:
 | File | Change |
 |---|---|
 | `docs/evals/regression-suite-a-v2.md` (new) | The test sheet and the bug log |
-| `docs/deferred-items.md` | D-274 to D-281, "Last updated" |
 | `docs/api/endpoints.md` | The amount limit in the log endpoints' errors |
 | `frontend/e2e/contract-shield.spec.ts` (new) | 11 browser tests: upload to report, language switch, unclear photo, busy AI service and Try again, refused files, history, another worker's number, no signal, the country notice (upload and history), no document |
 | `frontend/e2e/identity.spec.ts` (new) | 19 browser tests: empty and filled dashboard, income validation, savings, a bill and sorting, bill photo, export |
@@ -52,7 +51,7 @@ No shared file (`package.json`, lockfile, `Dockerfile`, workflows, rules, `fireb
 | 4 | Fix or file | Your choice: fix the P1 and the tiny P2; file the rest. The country fix is a notice with a button, frontend only, not an automatic switch (the worker's choice stays theirs) |
 | 5 | The amount limit | 1,000,000 per entry, 100,000,000 for yen and won (no minor unit), the same in the form and the API. A product number: change `MAX_AMOUNT` in `frontend/src/utils/fibForm.ts` and `backend/app/schemas/fib.py` together |
 | 6 | The browser tests' backends | They write the Firestore documents themselves rather than reuse `docs/mocks/` (which only has the v2 routes); they are not drift-tested against the backend (D-280) |
-| 7 | Bugs "filed" | In the sheet and `docs/deferred-items.md`; no GitHub issues were opened |
+| 7 | Bugs "filed" | In the sheet; no GitHub issues were opened |
 
 ## Checks (2026-10-10)
 
@@ -95,7 +94,7 @@ By hand (the country notice): sign in as a worker whose profile country is Singa
 
 - [x] **A test fails when the behaviour is broken**: each new test was run against its broken code once and failed (the notice, the upload message, the amount limit, the reload, the PDF rows, the verified-income link, the API limit); the restored code passes. See `docs/evals/regression-suite-a-v2.md`
 - [x] **Passes in CI**: the same chains CI runs were run locally (above); not yet seen on GitHub
-- [x] Bugs found are filed with severity and repro steps (P0 none; P1 and four P2 fixed; the rest in `docs/deferred-items.md`)
+- [x] Bugs found are filed with severity and repro steps (P0 none; P1 and four P2 fixed; the rest logged for later)
 - [x] Report committed under `docs/evals` (`regression-suite-a-v2.md`)
 - [ ] Tracker finish line "all P0 / P1 bugs found are filed with repro steps": met in the files; the P1 is closed only when this branch is merged
 - [ ] A signed-in run on production (D-274)

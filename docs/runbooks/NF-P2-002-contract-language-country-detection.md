@@ -29,8 +29,7 @@ It is one small call: the extraction tier (`gemini-3.5-flash-lite`), temperature
 | `backend/tests/unit/test_prompt_loader.py` | Expects `contract/detect.v2` |
 | `backend/app/prompts/README.md`, `docs/runbooks/NF-P1-029-backend-prompt-library.md` | Point at `detect.v2` |
 | `docs/data-model/collections/contracts.md` | `detected` is now `language`, `host_country`, `document_kind`, `job_type`; `salary_period` gains `day`; `extracted` is set by step 2 |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md` | Endpoint section; step 2 in detail |
-| `docs/deferred-items.md` | D-48 done; new D-55 (null country or language), D-56 (day or hour rates in Financial Identity) |
+| `docs/api/endpoints.md` | Endpoint section; step 2 in detail |
 
 No shared files (`requirements*.txt`, `Dockerfile`, workflows, ...) were touched.
 
@@ -193,7 +192,7 @@ PR title: `feat(contracts): contract language, host country and kind detection w
 
 ## Not covered here
 
-- Steps 3 to 6 and the pipeline as a whole (`docs/pipelines/contract-shield.md`, D-53)
+- Steps 3 to 6 and the pipeline as a whole (D-53)
 - What to do when the country or language is null (D-55)
 - Showing or converting day and hour rates (D-56)
 - Frontend confirm-your-details form: NF-P2-009

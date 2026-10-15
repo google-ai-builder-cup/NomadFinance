@@ -62,7 +62,7 @@ Sixteen are decided by the rules with no model call, four need the check. Case 2
 | `backend/app/services/coach/plan_generator.py`, `plan_translator.py` | The plan's note is the fixed wording per language; the model's translation of it is replaced before the checks (closes half of D-221) |
 | `backend/app/dependencies.py`, `app/api/v2/coach_turns.py`, `app/config.py`, `.env.example` | The guard is wired into `get_coach_turns`; `ReplayTurn` imported from `turn_types`; `GEMINI_COACH_GUARD_TIER` (classification) and `GEMINI_COACH_GUARD_THINKING_BUDGET` (0) |
 | `backend/tests/...` | 148 new tests (below), the 20 cases, the stand-in classifier and the live test |
-| `backend/app/prompts/README.md`, `docs/api/v2-coach.md`, `docs/features/coach-plan.md`, `docs/deferred-items.md` | The prompt row; "A blocked turn" and open point 6; the note and the limits; D-213, D-219, D-221 annotated, D-223 to D-229 added |
+| `backend/app/prompts/README.md`, `docs/api/v2-coach.md` | The prompt row; "A blocked turn" and open point 6; the note and the limits; D-213, D-219, D-221 annotated, D-223 to D-229 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows, `firebase.json`, `tsconfig*`, `.gitignore`) was touched. No new dependency.
 
@@ -164,7 +164,7 @@ Backend endpoint and Gemini step, from the tracker.
 
 ## Noticed, not fixed
 
-All logged in `docs/deferred-items.md`: D-223 (native reading), D-224 (named organisations and numbers), D-225 (a redirect does not repeat the question; the `turn-07` mock still shows a model-written one), D-226 (limits), D-227 (the live run), D-228 (older stored translations), D-229 (the score screen's note). Also unchanged and known: D-181 fails on a Windows checkout.
+Left for later: D-223 (native reading), D-224 (named organisations and numbers), D-225 (a redirect does not repeat the question; the `turn-07` mock still shows a model-written one), D-226 (limits), D-227 (the live run), D-228 (older stored translations), D-229 (the score screen's note). Also unchanged and known: D-181 fails on a Windows checkout.
 
 ## Commit
 

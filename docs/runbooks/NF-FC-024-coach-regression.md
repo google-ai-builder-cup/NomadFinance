@@ -119,7 +119,6 @@ It is not a required check and is not scheduled: "nightly" in the tracker is a b
 | `backend/tests/unit/test_coach_regression_report.py` (new) | 9 tests: the report, the token table, the command and its exit codes |
 | `backend/tests/integration/api/test_coach_regression_routes.py` (new) | 3 tests against the real routes, Gemini replaced |
 | `.github/workflows/coach-regression.yml` (new, **shared path, approved before it was written**) | The manual job |
-| `docs/deferred-items.md` | D-203 closed; D-258 to D-260 added |
 
 No change to `requirements*.txt` (`httpx` and `pydantic` are already pinned), `pyproject.toml`, any other workflow, or application code.
 

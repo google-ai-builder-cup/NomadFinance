@@ -9,7 +9,6 @@ built to work in their own language on the phone already in their pocket.
 
 [**Open the live app**](https://nomadfinance-prod.web.app) ·
 [Architecture](./docs/mermaid/system-architecture.mmd) ·
-[Design document](./docs/design-doc/NomadFinance_Design_Document.md) ·
 [Changelog](./CHANGELOG.md)
 
 [![Backend CI](https://github.com/google-ai-builder-cup/NomadFinance/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/google-ai-builder-cup/NomadFinance/actions/workflows/backend-ci.yml)
@@ -47,7 +46,7 @@ Built for the **Google Cloud AI Builder Cup 2026, BFSI track (JAPAC)**
 
 ## Why NomadFinance exists
 
-About **280 million people** live and work outside the country they were born in. Together they send roughly **$650 billion** home every year, and about **$41 billion** of that disappears into fees ([design document, section 1.2](./docs/design-doc/NomadFinance_Design_Document.md)). Fees are only the visible loss. A worker who has just arrived somewhere new usually meets every one of these problems alone:
+About **280 million people** live and work outside the country they were born in. Together they send roughly **$650 billion** home every year, and about **$41 billion** of that disappears into fees. Fees are only the visible loss. A worker who has just arrived somewhere new usually meets every one of these problems alone:
 
 | What goes wrong | What NomadFinance does about it |
 |---|---|
@@ -151,7 +150,7 @@ Paste a message, upload a screenshot or share one in from another app. The worke
 
 The same message checked twice is answered instantly from the saved check with no AI call. Each worker gets 20 new checks an hour, and the last 90 days of checks are kept.
 
-*App:* `/scam-check` · *API:* `/api/v2/scam/*` · [Feature doc](./docs/features/scam-analyzer.md) · [API contract](./docs/api/v2-scam.md)
+*App:* `/scam-check` · *API:* `/api/v2/scam/*` · [API contract](./docs/api/v2-scam.md)
 
 ### 6. Financial Coach: *am I ready to leave?* (v2.0, flag `coach`)
 
@@ -164,7 +163,7 @@ A friendly interview, one question at a time, in short plain sentences. The work
 - Works with a weak signal: answers typed offline wait on the phone and are sent once when the signal returns.
 - Stays in its lane: it will not recommend a loan, an investment or an app, and it responds with care to a worker in distress.
 
-*App:* `/coach` · *API:* `/api/v2/coach/*` · [Feature doc](./docs/features/financial-coach.md) · [Scoring rubric](./docs/features/coach-scoring.md) · [Plan rules](./docs/features/coach-plan.md) · [API contract](./docs/api/v2-coach.md)
+*App:* `/coach` · *API:* `/api/v2/coach/*` · [API contract](./docs/api/v2-coach.md)
 
 ---
 
@@ -181,7 +180,7 @@ People act on what this app tells them, so the design leans hard on safety. Each
 | **New features ship dark** | The two v2.0 modules sit behind flags in Firestore (`config/feature_flags`). With a flag off, their routes answer a plain `404`, their code is never downloaded, and the app behaves exactly as v1.0 did. Rollback is "flag off", with no deploy. |
 | **Cost and quota safe** | A per-feature daily Gemini budget degrades to a calm "try again later" instead of failing, repeat questions come from a cache, and every endpoint has a rate limit. Alerts fire before the free-tier quota runs out. |
 | **Built for real phones** | An installable PWA, tested at 360 px wide, in light and dark mode and on a slow network, with voice input, read-aloud and an offline answer queue. The interface is in six languages, and the screens were run through the axe accessibility checker and walked with a keyboard. |
-| **Honest about limits** | Plans carry a "not professional financial advice" note, and the labor-law data says it is a curated draft. Known gaps are written down, not hidden: see [`docs/deferred-items.md`](./docs/deferred-items.md). |
+| **Honest about limits** | Plans carry a "not professional financial advice" note, and the labor-law data says it is a curated draft. Known limits are stated in this README and in the task runbooks, not hidden. |
 
 ---
 
@@ -629,7 +628,7 @@ export VITE_FIREBASE_PROJECT_ID=nomadfinance-prod VITE_FIREBASE_APP_ID=ci-placeh
 ```
 
 > [!NOTE]
-> **Known on Windows only:** up to three backend tests can fail on a Windows machine without anything being wrong: two scam-history tests that depend on the clock ticking faster than Windows' does, one test that blocks the network and trips over Windows' event loop, and, now and then under the full emulator run, a Coach "two sessions at once" test that passes when run alone. They are logged as D-248, D-279, D-289 and D-305 in [`docs/deferred-items.md`](./docs/deferred-items.md), and Linux CI is green. One browser accessibility test can also fail once in a full run on a busy machine (D-307). Also on Windows, `firebase emulators:exec` can leave the Firestore emulator's Java process running (D-34); see "Stuck?" above.
+> **Known on Windows only:** up to three backend tests can fail on a Windows machine without anything being wrong: two scam-history tests that depend on the clock ticking faster than Windows' does, one test that blocks the network and trips over Windows' event loop, and, now and then under the full emulator run, a Coach "two sessions at once" test that passes when run alone. They are known, and Linux CI is green. One browser accessibility test can also fail once in a full run on a busy machine. Also on Windows, `firebase emulators:exec` can leave the Firestore emulator's Java process running; see "Stuck?" above.
 
 **Browser tests** (Playwright, on a phone and a desktop profile) sign in through the emulators and answer API calls from the saved mocks, so they need no backend and no Gemini key. Build the app in emulator mode first, then run the tests inside the emulators:
 
@@ -680,7 +679,7 @@ Merging to `main` deploys. Nobody holds a cloud key: GitHub Actions signs in to 
 | **Scam eval**, **Coach regression** | by hand only | The real-Gemini checks above |
 
 > [!NOTE]
-> **Firestore indexes are not deployed by any workflow.** They were created by hand, and `frontend/firestore.indexes.json` lists fewer indexes than production has. Do not deploy that file as it is. See D-33, D-68, D-114 and D-164 in [`docs/deferred-items.md`](./docs/deferred-items.md). Cloud Run settings live in `backend/scripts/deploy_manual.sh`, and the YAML files in `infra/cloud-run/` are empty placeholders.
+> **Firestore indexes are not deployed by any workflow.** They were created by hand, and `frontend/firestore.indexes.json` lists fewer indexes than production has. Do not deploy that file as it is. Cloud Run settings live in `backend/scripts/deploy_manual.sh`, and the YAML files in `infra/cloud-run/` are empty placeholders.
 
 **Feature flags.** `config/feature_flags` in Firestore holds one entry per module (`coach`, `scam`) with `enabled` and an `allow_uids` list for named testers. Edit it in the Firebase console and the API picks it up within a minute. No deploy needed. Format: [`docs/data-model/collections/config.md`](./docs/data-model/collections/config.md).
 
@@ -722,19 +721,14 @@ Also at the root: `CHANGELOG.md`, `.pre-commit-config.yaml` and `commitlint.conf
 
 | You want to know | Read |
 |---|---|
-| The whole idea, pillar by pillar | [Design document](./docs/design-doc/NomadFinance_Design_Document.md) |
-| How the Coach and Scam Check were designed | [Future-scope design](./docs/future-scope/design.md) |
-| Exactly what a feature does | [`docs/features/`](./docs/features) |
-| How the pipelines work | [`docs/pipelines/`](./docs/pipelines) and [`docs/mermaid/`](./docs/mermaid) |
+| How the pipelines work | [`docs/mermaid/`](./docs/mermaid) |
 | The API | [v1 endpoints](./docs/api/endpoints.md) · [v2 conventions](./docs/api/v2-conventions.md) · [flags](./docs/api/v2-flags.md) · [OpenAPI export](./docs/api/openapi.json) |
 | The database | [`docs/data-model/`](./docs/data-model/firestore-schema.md) |
 | Why a choice was made | [`docs/decisions/`](./docs/decisions) (ADRs: Firestore, multi-model Gemini, no mock data, PWA, scope, FX failover) |
 | How a task was done and how to repeat it | [`docs/runbooks/`](./docs/runbooks), one page per task id |
 | How well the AI parts perform | [`docs/evals/`](./docs/evals) and [Gemini prompt notes](./docs/gemini-prompts.md) |
 | Security | [`docs/SECURITY.md`](./docs/SECURITY.md) · [v2 security review](./docs/security-review-v2.md) |
-| What is still open | [`docs/deferred-items.md`](./docs/deferred-items.md) |
 | Per-folder detail | [backend](./backend/README.md) · [frontend](./frontend/README.md) · [data-scripts](./data-scripts/README.md) · [infra](./infra/README.md) |
-| The design system | [`docs/design-system.md`](./docs/design-system.md) and [`docs/ui-kit.md`](./docs/ui-kit.md) |
 
 ---
 

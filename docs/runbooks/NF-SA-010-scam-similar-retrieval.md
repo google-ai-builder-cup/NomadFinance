@@ -44,7 +44,7 @@ The search is a task started before the classification and awaited after the exp
 | `backend/tests/integration/api/test_scam_analyze.py`, `test_scam_analyze_screenshot.py` | The answer equals the mocks' `similar` and `corridor_report_count`; the search gets the redacted text, the corridor and the taxonomy types; no ids in the answer; a failed classification does not wait for the search; the screenshot path searches too |
 | `data-scripts/src/loaders/scam_patterns_calibrate.py` (new), `tests/test_scam_patterns_calibrate.py` (new) | The command that chooses the cutoff from the golden sets (7 tests) |
 | `data-scripts/src/embedding.py`, `tests/test_embedding_resilience.py` (new), and the three loaders that embed | A daily or very long quota stops the run at once with a clear message instead of retrying for twelve minutes; `CachedEmbedder` keeps finished embeddings in a temp file (`nomadfinance-embedding-cache.json`, or `EMBEDDING_CACHE_FILE`) so a run that dies resumes (12 tests). Added after the first calibration run hit the free tier's limit |
-| `docs/api/v2-scam.md`, `docs/data-model/collections/scam.md`, `docs/deferred-items.md` | The state row and the two field definitions; D-137 updated, D-141 to D-143 |
+| `docs/api/v2-scam.md`, `docs/data-model/collections/scam.md` | The state row and the two field definitions; D-137 updated, D-141 to D-143 |
 
 No shared files, no new dependency, no workflow change. The contract's response models did not change.
 

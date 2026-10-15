@@ -127,7 +127,7 @@ Not walked through the screens: a plan made *by the live interview* writing `goa
 
 ## Bugs
 
-Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong money or legal answer is shown with no sign), **P1** major (a feature's main path fails for a real group of workers, or one worker's data reaches another), **P2** minor, **P3** cosmetic or rare. Filed in this file and in `docs/deferred-items.md`; no GitHub issues were created.
+Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong money or legal answer is shown with no sign), **P1** major (a feature's main path fails for a real group of workers, or one worker's data reaches another), **P2** minor, **P3** cosmetic or rare. Filed in this file; no GitHub issues were created.
 
 | ID | Sev | Where | What | Repro | Status |
 |---|---|---|---|---|---|

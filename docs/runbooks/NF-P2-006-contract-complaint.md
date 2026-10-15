@@ -31,7 +31,7 @@ The task has two halves: the curated data and its loader (`data-scripts`), and t
 | `backend/tests/integration/api/test_contracts_complaint.py` | Endpoint: shape, 404, 422, 502, Gemini errors, auth, OpenAPI |
 | `backend/tests/integration/api/test_contracts_complaint_live.py` | Opt-in live test, 5 calls (`RUN_LIVE_GEMINI=1`) |
 | `backend/tests/unit/test_prompt_loader.py` | Expected prompt list: `contract/complaint.v2` |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md`, `docs/data-model/collections/contracts.md`, `backend/app/prompts/README.md` | Endpoint, step 6, the `complaint` map, the prompt table |
+| `docs/api/endpoints.md`, `docs/data-model/collections/contracts.md`, `backend/app/prompts/README.md` | Endpoint, step 6, the `complaint` map, the prompt table |
 
 No shared files (`requirements*.txt`, `Dockerfile`, `firestore.rules`, workflows, ...) were touched. `firestore.rules` already lets signed-in users read `complaint_templates/**`.
 

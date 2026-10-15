@@ -5,7 +5,7 @@ asks the coach to choose a financial product. Languages: English, Hindi, Tagalog
 and Bengali, in their own script and in Latin letters where workers write that way. A message no
 cue fires on is not thereby safe: the guard sends it on to the classifier (`guard.py`).
 
-The non-English lists were written by the team, not by native speakers (deferred item D-223). A
+The non-English lists were written by the team, not by native speakers. A
 missed cue costs one classifier call. A cue that fires too often costs a worker a polite
 redirect, so the cues stay narrow, and `tests/unit/services/test_coach_guard_rules.py` holds them
 to the 140 scripted persona messages. Patterns run on text folded by `guard_rules.views` (NFKC,

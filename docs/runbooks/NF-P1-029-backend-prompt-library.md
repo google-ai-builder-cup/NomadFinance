@@ -44,13 +44,12 @@ The pipeline code that calls these prompts belongs to each step's task; this tas
 | `backend/app/utils/i18n.py` | `LANGUAGE_NAMES`, `language_name(code)`: "ne" → "Nepali" for templates (the file was an empty stub) |
 | `backend/tests/unit/test_prompt_loader.py` | 51 tests: library complete, every file loads, injection guard, rendering, strictness, language names |
 | `docs/data-model/collections/fib.md` | Example `prompt_versions` key fixed: `fib.synthesize_narrative` (the key comes from the file name) |
-| `docs/deferred-items.md` | D-08 updated with live timings; new D-48 to D-51 |
 
 ## Decisions (agreed before building)
 
 1. **`${name}` templates** (`string.Template`) with a declared `variables` list. Worker text goes in tagged blocks.
 2. **Output field names follow `docs/data-model/`.** Examples: clause `risk: safe | caution | danger`; the 15 labor-law categories; the 9 radar `violation_type`s; the FIB categories.
-3. **Remittance: one call.** `recommend` writes directly in the worker's language, replacing the design doc's separate translate step (step 10). That's one Gemini call fewer per comparison.
+3. **Remittance: one call.** `recommend` writes directly in the worker's language, replacing the original design's separate translate step (step 10). That's one Gemini call fewer per comparison.
 4. **`contract/detect` also extracts** employer, agency and salary into the `extracted` map, for NF-P3-023 and NF-P3-024.
 5. **`contract/compare` writes in English**, and `translate` makes the other languages. The health score is computed in code from the clause risks, not by the model.
 6. **Radar `validate` covers spam, abuse and personal data.** Duplicates are found by embeddings (NF-P3-002).
@@ -212,7 +211,7 @@ Not verified: `extract_bill` on a real bill photo (no such fixture yet; NF-P3-01
 Branch: `feature/backend-prompt-library` (already checked out). From the repo root:
 
 ```bash
-git add backend/app/prompts backend/app/utils/i18n.py backend/tests/unit/test_prompt_loader.py docs/runbooks/NF-P1-029-backend-prompt-library.md docs/deferred-items.md docs/data-model/collections/fib.md
+git add backend/app/prompts backend/app/utils/i18n.py backend/tests/unit/test_prompt_loader.py docs/runbooks/NF-P1-029-backend-prompt-library.md docs/data-model/collections/fib.md
 git status
 ```
 

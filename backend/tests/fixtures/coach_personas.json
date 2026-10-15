@@ -1,7 +1,7 @@
 {
   "version": 1,
   "rubric_version": 1,
-  "description": "Twelve synthetic workers, two per corridor, for the Financial Coach (NF-FC-007). Every name and number is invented. Scripts are what the worker types, in order; expected_slots is what the interview must end with (CoachProfile); expected_score is the rubric of docs/features/coach-scoring.md worked out with the fixed rates below, so it never depends on the live rate.",
+  "description": "Twelve synthetic workers, two per corridor, for the Financial Coach (NF-FC-007). Every name and number is invented. Scripts are what the worker types, in order; expected_slots is what the interview must end with (CoachProfile); expected_score is the scoring rubric worked out with the fixed rates below, so it never depends on the live rate.",
   "rates_note": "Fixed illustrative rates, units of the home currency per one unit of the host currency. Not market rates.",
   "rates": {
     "SGD_PHP": 42.0,

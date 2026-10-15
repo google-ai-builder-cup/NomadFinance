@@ -8,7 +8,7 @@
 
 Remittance X-Ray needs a live mid-market rate for six pairs (`SGD_PHP`, `SGD_INR`, `AUD_INR`, `MYR_IDR`, `JPY_PHP`, `AUD_PHP`). A cron stores them in `rates_cache` and `rates_history` (see `docs/data-model/collections/rates_cache.md`). Free FX APIs go down, change terms, or rate-limit, and one provider failing must not leave the comparison without a rate.
 
-The design doc (section 4.5 and the Remittance cron diagram) names Frankfurter with ExchangeRate-API as fallback. The root README lists four providers. The team chose all four on 2026-09-25.
+The original design names Frankfurter with ExchangeRate-API as fallback. The root README lists four providers. The team chose all four on 2026-09-25.
 
 ## Decision
 

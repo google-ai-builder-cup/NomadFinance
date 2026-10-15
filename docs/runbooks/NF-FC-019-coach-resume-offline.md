@@ -80,7 +80,7 @@ sequenceDiagram
 | `src/mocks/fakeIndexedDb.ts` (new, tests only) | A small IndexedDB stand-in that runs one transaction at a time, as a browser does |
 | `src/i18n/coach/{en,hi,tl,id,ne,bn}.json` | 10 keys each: `resume.*` (7) and `offline.*` (3) |
 | `vite.config.ts` | One line: `"coach-outbox-sw.js"` added to `globIgnores` (below) |
-| `docs/api/v2-coach.md`, `docs/deferred-items.md` | A status line and a client rule; D-112 revisited, D-240 to D-243 |
+| `docs/api/v2-coach.md` | A status line and a client rule; D-112 revisited, D-240 to D-243 |
 | Tests (9 new files, 3 extended; 123 new tests) | Below |
 
 Not touched: `package.json`, the lock file, `tsconfig*`, the router, `firebase.json`, the rules, workflows, and everything in `backend/`.
@@ -213,7 +213,7 @@ Switch the `coach` flag off first (`config/feature_flags`, `flags.coach.enabled`
 
 ## Limits and follow-ups
 
-D-112 revisited (the Coach chunk stays in the precache). New in `docs/deferred-items.md`: **D-240** native reading of the new wording, **D-241** opening the chat with no signal at all, **D-242** the limits above, **D-243** three D numbers used twice.
+D-112 revisited (the Coach chunk stays in the precache). New: **D-240** native reading of the new wording, **D-241** opening the chat with no signal at all, **D-242** the limits above, **D-243** three D numbers used twice.
 
 ## Commit and PR
 
@@ -290,5 +290,5 @@ Turn the coach flag off first. No data or backend change, so reverting is safe.
 - The Coach chunk grew from 28.7 KB to 43.9 KB (9.7 to 14.75 KB gzip); the main chunk is unchanged.
 - The worker sends with a token saved with the answer (wiped on delivery, restart and sign-out).
 - Wording in hi, tl, id, ne and bn was written by the team and needs a native reader (D-240).
-- Deferred items: D-112 revisited; new D-240 to D-243 (D-243: three D numbers are used twice).
+- D-112 revisited; new D-240 to D-243 (D-243: three D numbers are used twice).
 ```

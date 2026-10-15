@@ -1,4 +1,4 @@
-"""A slow, plain copy of the scoring rubric (`docs/features/coach-scoring.md`, version 1).
+"""A slow, plain copy of the scoring rubric (version 1).
 
 It exists to check the persona fixtures (NF-FC-007): the expected scores stored there are
 re-worked here from the answers, and this file is itself checked against the three worked

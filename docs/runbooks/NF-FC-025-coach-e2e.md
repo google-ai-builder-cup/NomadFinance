@@ -64,7 +64,6 @@ To keep the emulators up between runs (faster): `firebase emulators:start --only
 | `frontend/e2e/support/coachApi.ts` (new) | The stand-in for the Coach's routes; `coachText()` reads a string of `src/i18n/coach/<language>.json`, so a test in Hindi does not hard-code the words |
 | `frontend/e2e/support/coachSteps.ts` (new) | The worker's side: the eleven steps (what each helper must send, how to give it), `answer()`, `expectAsked()`, `panel()`, `conversation()` |
 | `frontend/e2e/coach-{journey,resume,language,offline,known}.spec.ts` (new) | The 13 tests |
-| `docs/deferred-items.md` | D-261, D-262 |
 
 ## Decisions that were not in the task text
 

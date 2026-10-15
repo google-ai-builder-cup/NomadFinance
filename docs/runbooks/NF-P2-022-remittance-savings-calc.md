@@ -4,32 +4,32 @@ Owner in the tracker is Devam; built by Aditya (backend rotation swap).
 
 ## Summary
 
-`GET /api/v1/remittance/savings` answers the design doc's "you would have saved $X" hero moment: what sending `amount` with the best comparable service, instead of the worst, would have been worth over real history. Step 8 of the Remittance X-Ray pipeline (`docs/pipelines/remittance-xray.md`), no Gemini call. Nothing is stored.
+`GET /api/v1/remittance/savings` answers the original design's "you would have saved $X" hero moment: what sending `amount` with the best comparable service, instead of the worst, would have been worth over real history. Step 8 of the Remittance X-Ray pipeline, no Gemini call. Nothing is stored.
 
-**What "savings" means here, and why.** The tracker (`.claude/tasks.md`) describes this as "vs mid-market"; the design doc (§2.1: *"If you'd used [best option] for the last 12 months, you'd have saved $X"*) and the pipeline doc's own step 8 (*"Historical savings against the worker's choice"*) describe a different comparison — best service against another one, not against the zero-cost mid-market rate. The two are genuinely different numbers (best-vs-mid-market is always a loss, since nothing beats a zero-cost benchmark; best-vs-worst is a real, positive, demo-friendly figure), so this was a stop-and-ask per the standing instructions rather than a judgment call. Resolved with the user: **best vs worst comparable service**, matching the design doc.
+**What "savings" means here, and why.** The tracker (`.claude/tasks.md`) describes this as "vs mid-market"; the original design (*"If you'd used [best option] for the last 12 months, you'd have saved $X"*) and the pipeline's own step 8 (*"Historical savings against the worker's choice"*) describe a different comparison — best service against another one, not against the zero-cost mid-market rate. The two are genuinely different numbers (best-vs-mid-market is always a loss, since nothing beats a zero-cost benchmark; best-vs-worst is a real, positive, demo-friendly figure), so this was a stop-and-ask per the standing instructions rather than a judgment call. Resolved with the user: **best vs worst comparable service**, matching the original design.
 
 ## Files
 
 | File | Change |
 |---|---|
 | `backend/app/schemas/remittance_savings.py` (new) | `MonthlySavings`, `RemittanceSavings` |
-| `backend/app/services/remittance/savings.py` (new — the pipeline doc listed this step "not yet named") | `get_savings()`, `target_months()`, `monthly_averages()` |
+| `backend/app/services/remittance/savings.py` (new) | `get_savings()`, `target_months()`, `monthly_averages()` |
 | `backend/app/api/v1/remittance.py` | `GET /api/v1/remittance/savings` |
 | `backend/tests/unit/services/test_remittance_savings.py` (new) | 12 tests |
 | `backend/tests/integration/api/test_remittance_savings.py` (new) | 9 tests |
-| `docs/api/endpoints.md`, `docs/pipelines/remittance-xray.md` | Endpoint; step 8 marked built |
+| `docs/api/endpoints.md` | Endpoint; step 8 marked built |
 
 `requirements*.txt`, `pyproject.toml`, `Dockerfile`, the workflows and `firestore.rules` are unchanged.
 
 ## Decisions
 
 1. **Best vs worst, not best vs mid-market.** See "What savings means here" above. `total_savings = total_best_receives - total_worst_receives`, always ≥ 0.
-2. **No live-rate read.** `calculate_comparison` needs a rate only to compute `recipient_receives`; a fixed `amount`'s total-cost percentage per service does not depend on which rate is used, so the ranking (which service is best/worst) and their `total_cost_pct` are identical whatever rate goes in. Passing `cached_rate=None` uses the survey's own median rate and skips a Firestore read `/compare` and `/trends` each still need for their own purposes. Reuses `calculate_comparison` (and, inside it, `engine._terms`) exactly as the pipeline doc asks, rather than recomputing costs a second way.
+2. **No live-rate read.** `calculate_comparison` needs a rate only to compute `recipient_receives`; a fixed `amount`'s total-cost percentage per service does not depend on which rate is used, so the ranking (which service is best/worst) and their `total_cost_pct` are identical whatever rate goes in. Passing `cached_rate=None` uses the survey's own median rate and skips a Firestore read `/compare` and `/trends` each still need for their own purposes. Reuses `calculate_comparison` (and, inside it, `engine._terms`) exactly as the pipeline specifies, rather than recomputing costs a second way.
 3. **Each full calendar month is priced at its own average rate**, not a single day. `trends.daily_rates()` (already built by NF-P2-015) is read as-is, not copied; `monthly_averages()` buckets it by `(year, month)` and takes `statistics.fmean`, the same aggregation `trends.summarize()` uses for its own `average`.
 4. **The current, in-progress month is never included.** `target_months()` always starts from the month before `now`'s. A partial month (a handful of days averaged against full months elsewhere) would silently under- or over-state that one month for no good reason. Documented, the same as every other place this codebase declines to fake a precision it does not have (`stale`, `estimated`, `best_day_reason`).
 5. **`months_used` can be less than `months_requested`**, reported rather than padded or silently truncated — the same transparency pattern as `RemittanceTrends.weeks_analysed`. `404` only when it would be zero (no month in range has any history), reusing `trends.HistoryNotFoundError` rather than a second exception class for the same condition.
 6. **Rounding happens once, at the end of each month's raw math**, and the totals are summed from the *unrounded* per-month figures, not from the rounded display values — the same reasoning as `engine._rounded()` (round after the sums are done, not before), so a 12-month total is never off by a few cents from rounding twice.
-7. **`months` bounded 1 to 12** (`MIN_MONTHS`/`MAX_MONTHS` in `savings.py`), enforced by the query parameter itself (`Query(ge=1, le=12)`), a plain 422 before any Firestore read. 12 matches the design doc's own "last 12 months" example and is also about as far back as the backfilled history reasonably reaches.
+7. **`months` bounded 1 to 12** (`MIN_MONTHS`/`MAX_MONTHS` in `savings.py`), enforced by the query parameter itself (`Query(ge=1, le=12)`), a plain 422 before any Firestore read. 12 matches the original design's own "last 12 months" example and is also about as far back as the backfilled history reasonably reaches.
 8. **`survey` is echoed from the comparison** so the World Bank attribution can be shown wherever `total_savings` is, the same requirement `/compare` and `/trends` already carry.
 
 ## Flow

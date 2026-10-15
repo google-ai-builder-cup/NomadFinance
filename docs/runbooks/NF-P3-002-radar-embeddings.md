@@ -4,7 +4,7 @@
 
 Steps 5 and 6 of the Exploitation Radar pipeline (`docs/mermaid/exploitation-radar-pipeline.mmd`), added to `POST /api/v1/radar/report` (NF-P3-001). After a report passes screening and classification, its description is embedded (`gemini-embedding-001`, 768 numbers, normalized). Firestore vector search then looks for a near-duplicate report on the same corridor. A match joins that report's `cluster_id`; otherwise the report starts its own cluster. The vector is written to `report_embeddings/{id}` after the report is saved.
 
-Not in this task: `radar_entities` aggregation and rating (NF-P3-003), the alert cron (NF-P3-004), seed data (NF-P3-005), creating the vector index (deferred item D-33; the command is below), contract-signal reports (no free text, they keep their own cluster and get no embedding).
+Not in this task: `radar_entities` aggregation and rating (NF-P3-003), the alert cron (NF-P3-004), seed data (NF-P3-005), creating the vector index (D-33; the command is below), contract-signal reports (no free text, they keep their own cluster and get no embedding).
 
 ## Files
 
@@ -20,13 +20,13 @@ Not in this task: `radar_entities` aggregation and rating (NF-P3-003), the alert
 | `backend/tests/unit/integrations/test_gemini_embeddings.py` (new) | 8 tests on the embedding call |
 | `backend/tests/unit/services/test_radar_intake.py` | 9 new clustering tests; the fake Gemini and fake repository gained the new methods |
 | `backend/tests/integration/api/test_radar_report.py` | The fake Gemini and fake repository gained the new methods |
-| `docs/api/endpoints.md`, `docs/pipelines/exploitation-radar.md` | Steps 5 and 6 documented |
+| `docs/api/endpoints.md` | Steps 5 and 6 documented |
 
 No shared files (`requirements.txt`, `firestore.rules`, `firebase.json`, ...) were touched, and no new dependency was added.
 
 ## Decisions
 
-1. **Model `gemini-embedding-001` at 768 numbers, not `text-embedding-004`.** The tracker and design doc still name the old model, which Google shut down on 2026-01-14. ADR-002, `radar.md` and deferred item D-04 already settled this. 768 because Firestore caps vectors at 2048 numbers and the model returns 3072 by default.
+1. **Model `gemini-embedding-001` at 768 numbers, not `text-embedding-004`.** The tracker and original design still name the old model, which Google shut down on 2026-01-14. ADR-002, `radar.md` and D-04 already settled this. 768 because Firestore caps vectors at 2048 numbers and the model returns 3072 by default.
 2. **Vectors are normalized before storing.** Shortened embeddings are not unit length, and `radar.md` requires normalizing.
 3. **Match rule: cosine similarity of at least 0.85 and the same `entity_slug`.** Firestore returns the 5 nearest on the corridor; the first one that is the same business and close enough wins. The 0.85 is a first guess, not calibrated. Re-tune `MAX_MATCH_DISTANCE` in `clustering.py` (a cosine *distance*, so 0.15) once NF-P3-005 gives real near-duplicates and unrelated reports to compare.
 4. **An embedding or search failure never loses the report.** If Gemini fails after its retries, or Firestore rejects the search (for example the index is missing), a warning or error is logged and the report is stored as its own cluster. On a Gemini failure no embedding is written, so that report can never be matched later.
@@ -73,7 +73,7 @@ gcloud firestore indexes composite list --project nomadfinance-prod
 
 Two things to know:
 - Do this in the project you will test against. A dev project needs its own index; the one in `nomadfinance-prod` does not carry over.
-- If your account lacks permission, the deploy account needs `roles/datastore.indexAdmin`. That and the decision on where `firestore.indexes.json` lives are part of deferred item D-33; tick D-33 off in `docs/deferred-items.md` once the index exists.
+- If your account lacks permission, the deploy account needs `roles/datastore.indexAdmin`. That and the decision on where `firestore.indexes.json` lives are part of D-33.
 
 ### 3. Test with the real backend
 
@@ -180,7 +180,7 @@ Run from `backend/` with the project venv:
 - [x] Retry logic via tenacity, 30 s timeout
 - [x] Token usage logged: partly. Embedding responses carry no token counts, so input size and latency are logged instead
 - [x] Structured output via Pydantic schema, prompt stored in code: not applicable (embedding call, no prompt)
-- [x] Docs updated (`docs/api/endpoints.md`, `docs/pipelines/exploitation-radar.md`, this runbook)
+- [x] Docs updated (`docs/api/endpoints.md`, this runbook)
 - [ ] Tested with 3+ diverse inputs against the real model: not done, needs the index and a live run (steps 2 and 3)
 - [ ] Firestore Emulator tests: not done, the emulator does not run vector search; unit tests use fakes
 - [x] Security rules: no change needed, `report_embeddings` is already backend-only
@@ -199,7 +199,7 @@ PR title: `feat: radar embeddings and similarity clustering (NF-P3-002)`
 
 ## Noticed, not fixed
 
-- The tracker row for NF-P3-002 still says `text-embedding-004` (already D-04), and the design doc and `exploitation-radar-pipeline.mmd` name it too.
+- The tracker row for NF-P3-002 still says `text-embedding-004` (already D-04), and the original design and `exploitation-radar-pipeline.mmd` name it too.
 - A host-country-only report is never clustered (decision 5). If employer reports are common in the demo, a second vector index without the corridor filter would fix it.
 - The cluster is only as good as the first match: a report joins the nearest single neighbour's cluster, so two clusters that later turn out to be the same incident are never merged.
-- `docs/deferred-items.md` D-33 (indexes) is now the one blocker for real clustering; it still needs an owner.
+- D-33 (indexes) is now the one blocker for real clustering; it still needs an owner.

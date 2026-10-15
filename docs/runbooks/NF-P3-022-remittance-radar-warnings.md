@@ -2,7 +2,7 @@
 
 ## Summary
 
-A provider in the Remittance X-Ray comparison that Exploitation Radar has flagged now carries a red "Community flagged" badge, linking to its radar profile. This is the Radar → Remittance arrow of the cross-pillar flow (design doc §5.6). Frontend only: no backend, rules, seed or dependency change.
+A provider in the Remittance X-Ray comparison that Exploitation Radar has flagged now carries a red "Community flagged" badge, linking to its radar profile. This is the Radar → Remittance arrow of the cross-pillar flow (original design). Frontend only: no backend, rules, seed or dependency change.
 
 Not in this task: the same badge on Contract Shield's report card (NF-P3-023), and any change to the radar seed data (see "Demo caveat").
 

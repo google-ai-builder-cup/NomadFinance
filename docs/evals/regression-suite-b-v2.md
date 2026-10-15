@@ -132,7 +132,7 @@ The first screen is the cost of the app's code on 50 KB/s; the later steps wait 
 
 ## Bugs
 
-Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong money or legal answer is shown with no sign), **P1** major (a feature's main path fails for a real group of workers), **P2** minor. Filed in this file and in `docs/deferred-items.md`; no GitHub issues were created.
+Severity: **P0** blocker (a main path is broken, data is lost or exposed, a wrong money or legal answer is shown with no sign), **P1** major (a feature's main path fails for a real group of workers), **P2** minor. Filed in this file; no GitHub issues were created.
 
 | ID | Sev | Where | What | Repro | Status |
 |---|---|---|---|---|---|

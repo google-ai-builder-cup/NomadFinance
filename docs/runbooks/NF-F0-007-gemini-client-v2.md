@@ -89,7 +89,6 @@ A call that ends without an answer logs `gemini_call_failed` at warning level wi
 | `backend/app/config.py`, `.env.example` | `GEMINI_CHAT_HISTORY_TURNS`, `GEMINI_CHAT_HISTORY_TOKENS` |
 | `backend/tests/unit/integrations/` (4 new files) | A fake SDK and 49 tests |
 | `backend/tests/integration/test_gemini_chat_live.py` (new) | Opt-in real-Gemini check, 6 calls |
-| `docs/deferred-items.md` | D-78 and D-86 updated; D-115 |
 
 No shared file and no new package.
 

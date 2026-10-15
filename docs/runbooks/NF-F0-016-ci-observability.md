@@ -56,7 +56,7 @@ One policy per model, *"Gemini daily limit 80%: <model>"*, from `infra/monitorin
 - It is **this service's** requests, counted from its logs, retries included. The AI Studio key lives in Google's own project (`infra/iam/service-accounts.md`), so Google's usage figure is not available in `nomadfinance-prod`'s monitoring.
 - It leaves out other users of the same key (live-Gemini tests, scripts, a teammate's laptop).
 - A rolling 23.5 hours is not Google's day, which ends at midnight Pacific. It over-counts just after a reset, so it errs towards alerting early. Treat the alert as a prompt to open AI Studio's Rate limits page, which is the real figure.
-- The limits are **not in the repository**: ADR-002 says they are "only shown in AI Studio", and the numbers in the design doc are for models that no longer exist.
+- The limits are **not in the repository**: ADR-002 says they are "only shown in AI Studio", and the numbers in the original design are for models that no longer exist.
 
 ## One-time setup (D-122)
 

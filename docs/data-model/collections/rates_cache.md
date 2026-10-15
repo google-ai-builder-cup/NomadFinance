@@ -112,7 +112,7 @@ If storage ever matters, a TTL policy on a `delete_after` field can prune old ho
 
 ### Notes
 
-- **Cron interval.** The design doc and diagrams say every 2 hours; NF-P1-019 says hourly. The point id works for either. The schedule itself is set in Cloud Scheduler, not here.
+- **Cron interval.** The original design and diagrams say every 2 hours; NF-P1-019 says hourly. The point id works for either. The schedule itself is set in Cloud Scheduler, not here.
 - **Backfill.** `data-scripts/src/loaders/frankfurter_backfill.py` fills the header's `daily` map with the ECB's daily rates (default the last 365 days), so the trend chart has a history on day one. See the header above.
 - **Rate for the recipient-receives calculation.** Use the corridor's RPW `fx_rate` and `interbank_rate` from [corridors](corridors.md) for the provider comparison; `rates_cache` is the current mid-market reference and the base for savings and trend features.
 

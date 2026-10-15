@@ -11,7 +11,7 @@ from app.utils.i18n import LANGUAGE_NAMES, language_name
 
 PROMPTS_DIR = Path(loader.__file__).resolve().parent
 
-# Every pipeline step with a Gemini call (design doc section 5, ADR-002). A new step or
+# Every pipeline step with a Gemini call (ADR-002). A new step or
 # version adds a line here.
 EXPECTED_PROMPTS = {
     "contract/extract.v2",

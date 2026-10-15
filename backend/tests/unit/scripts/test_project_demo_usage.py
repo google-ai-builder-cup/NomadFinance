@@ -59,7 +59,7 @@ def test_the_coach_reply_can_be_moved_to_another_model() -> None:
     assert moved[("coach", "classification")] < default[("coach", "classification")]
 
 
-def test_limits_come_from_the_flag_then_the_file_then_the_design_document(
+def test_limits_come_from_the_flag_then_the_file_then_the_assumed_defaults(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     limits = {

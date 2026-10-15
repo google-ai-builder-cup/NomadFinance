@@ -91,7 +91,7 @@ sequenceDiagram
 | `src/i18n/coach/{en,hi,tl,id,ne,bn}.json` | 78 strings each (the 4 of the placeholder are gone) |
 | `src/mocks/coachTurns.ts` | Test-only: replays the recorded streams and records what the screen sent |
 | `docs/mocks/coach/turn-07-redirect.sse` | Now the server's fixed words, word for word (D-225); `src/mocks/coach.msw.test.ts` pins them |
-| `docs/api/v2-coach.md`, `docs/deferred-items.md` | Status lines and the log |
+| `docs/api/v2-coach.md` | Status lines and the log |
 | Tests (12 files, 149 new tests) | Below |
 
 Not touched: `package.json`, the lock file, `tsconfig*`, `vite.config.ts`, the router, `CoachRoute.tsx`, `apiClient.ts`, workflows, and everything in `backend/`. No new dependency (the stream parser is 60 lines).
@@ -307,5 +307,4 @@ Turn the `coach` flag off first. No data or backend change, so reverting is safe
 - The chat sends the session's language, not the app's, until NF-FC-018 (D-237).
 - Wording in hi, tl, id, ne and bn was written by the team and needs a native reader (D-236);
   a change to a sentence a helper sends must be re-checked against extraction_cues.py.
-- Deferred items updated: D-99, D-112, D-118, D-225; new D-236 to D-239.
 ```

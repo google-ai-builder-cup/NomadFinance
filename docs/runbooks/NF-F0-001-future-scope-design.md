@@ -1,15 +1,15 @@
 # NF-F0-001 — Future Scope technical design addendum
 
+> The design addendum this task wrote has since been removed from the repository; it stays in git history.
+
 ## Summary
 
 The design that every Future Scope task builds from: the flag-gated **Pre-Departure Financial Coach** and **Real-Time Scam Message Analyzer**, added beside the four v1.0 pillars without changing them. It is a document and diagrams only: no code, no data, no configuration.
 
 | Deliverable | Where |
 |---|---|
-| The addendum (11 sections, 8 Mermaid diagrams) | `docs/future-scope/design.md` |
 | New pipeline diagrams | `docs/mermaid/financial-coach-pipeline.mmd`, `docs/mermaid/scam-analyzer-pipeline.mmd` |
 | Updated diagrams | `docs/mermaid/system-architecture.mmd`, `cross-pillar-data-flow.mmd`, and the four pillar files (`remittance-xray`, `contract-shield`, `exploitation-radar`, `financial-identity`) |
-| Index entry | `docs/README.md` ("future-scope/") |
 
 It was merged on 2026-10-06 (PR #108, `docs/NF-F0-001-future-scope-design`, commit `2059ff5`). Owner: Aditya. Reviewer: Devam.
 
@@ -44,7 +44,7 @@ The tracker row asks for: component and sequence diagrams (Mermaid) for both mod
 
 ## Where each open question went
 
-Section 11 left eight points open. What happened to them (from `docs/deferred-items.md` and the later tasks):
+Section 11 left eight points open. What happened to them (from the later tasks):
 
 | # | Question | Answer, and where |
 |---|---|---|
@@ -72,7 +72,7 @@ Section 11 left eight points open. What happened to them (from `docs/deferred-it
 | Diagram files | The four named in the table exist: `system-architecture` (134 lines), `cross-pillar-data-flow` (38), `financial-coach-pipeline` (49), `scam-analyzer-pipeline` (42) |
 | Tags | Every claim carries [T], [P] or [built] (49, 23, 3) |
 
-**Not checked here:** that the Mermaid diagrams render. Open `docs/future-scope/design.md` on GitHub (it renders Mermaid) or paste a block into the Mermaid live editor; a syntax error shows at once.
+**Not checked here:** that the Mermaid diagrams render. Paste a block into the Mermaid live editor; a syntax error shows at once.
 
 ## Definition of Done
 

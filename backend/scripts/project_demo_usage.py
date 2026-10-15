@@ -11,7 +11,7 @@ fake and fails if a table row here stops matching the code. A scenario says how 
 day holds. The result is requests per model, as a share of the model's requests per day.
 
 The daily limits come from `--rpd`, else from `infra/monitoring/quota-limits.json` once someone has
-read them in Google AI Studio (D-122), else from the design document (section 4.2: 500 for the
+read them in Google AI Studio (D-122), else from the original design's figures (500 for the
 reasoning tier, 1,500 for each of the others), which names models that no longer exist: those rows
 are marked ASSUMED, and a run that used any of them proves nothing about the real project.
 
@@ -149,7 +149,7 @@ def project(scenario: Scenario) -> dict[tuple[str, str], float]:
 
 
 def read_rpd(overrides: dict[str, int]) -> tuple[dict[str, int], set[str]]:
-    """The daily limit per tier, and the tiers whose figure is only the design document's."""
+    """The daily limit per tier, and the tiers whose figure is only the original design's."""
     limits = json.loads(LIMITS_FILE.read_text(encoding="utf-8"))
     from_file = {
         entry["tier"].lower(): entry["rpd"]
@@ -188,7 +188,7 @@ def report(scenario: Scenario, rpd: dict[str, int], assumed: set[str], target: f
         used, limit = per_tier[tier], rpd[tier]
         over = used > target * limit
         failed |= over
-        note = "ASSUMED limit (design doc)" if tier in assumed else "limit read for this project"
+        note = "ASSUMED limit (original plan)" if tier in assumed else "limit read for this project"
         print(
             f"{tier:<15}{used:>9.0f}{limit:>13}{used / limit:>8.0%}   "
             f"{'OVER the target' if over else 'ok'}; {note}"

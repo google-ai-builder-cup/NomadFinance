@@ -235,7 +235,7 @@ There is no secret scan in CI, and actions are pinned by version tag. A secret s
 | `backend/tests/integration/api/test_docs_exposure.py` (new) | 10 tests |
 | `backend/tests/unit/test_config.py`, `tests/unit/services/test_radar_notify.py` | 8 and 3 new tests |
 | `frontend/tests/rules/audit.rules.test.ts` (new) | 34 rules cases |
-| `docs/SECURITY.md`, `docs/api/endpoints.md`, `backend/.env.example`, `docs/deferred-items.md` | Documentation |
+| `docs/SECURITY.md`, `docs/api/endpoints.md`, `backend/.env.example` | Documentation |
 
 No shared file (`package.json`, lock files, `firebase.json`, the rules files, Dockerfile, `tsconfig*`, workflows) was edited. Proposed diffs for them are above.
 

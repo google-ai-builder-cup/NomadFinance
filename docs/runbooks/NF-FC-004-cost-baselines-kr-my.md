@@ -49,7 +49,6 @@ Read on **2026-10-09**. As in NF-FC-003, a figure is a published price or range,
 | `data-scripts/data/source/cost-baselines/KR.json`, `MY.json` | New: the curated figures |
 | `data-scripts/tests/test_cost_baselines_kr_my.py` | New: committed files, the sums behind the housing and deduction figures, loader round trip (9 tests) |
 | `data-scripts/README.md`, `docs/data-model/collections/cost_baselines.md` | One sentence each: the two files exist, and what the default worker is |
-| `docs/deferred-items.md` | D-173, D-183 and D-185 updated; D-189 to D-194 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. No checker, loader or backend/frontend file changed.
 
@@ -166,7 +165,7 @@ Documentation: [x] Markdown, [x] under `docs/`, [x] no attribution lines, [ ] te
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-189 (current Korean housing rule), D-190 (spot-check), D-191 (Malaysian weak sources and missing first-month costs), D-192 (Korean weak sources), D-193 (pension, SOCSO phases and income tax), D-194 (Malaysian levy). Also, outside this task: `google.genai` is missing from the data-scripts virtual environment, so three embedding tests fail there.
+Left for later: D-189 (current Korean housing rule), D-190 (spot-check), D-191 (Malaysian weak sources and missing first-month costs), D-192 (Korean weak sources), D-193 (pension, SOCSO phases and income tax), D-194 (Malaysian levy). Also, outside this task: `google.genai` is missing from the data-scripts virtual environment, so three embedding tests fail there.
 
 ## Commit
 

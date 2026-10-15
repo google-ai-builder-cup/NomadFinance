@@ -52,7 +52,7 @@ Fix for the quota itself: wait for the reset (midnight Pacific, 07:00 UTC) or en
 | `frontend/src/services/*`, `hooks/*`, `types/*` | Reads and calls for the above |
 | `frontend/src/i18n/{6 languages}.json` | 39 strings |
 | `frontend/firestore.indexes.json` | The two composite indexes the code needs |
-| `docs/...` | `firestore-schema.md` (indexes), `radar.md`, `contracts.md`, `fib.md`, `endpoints.md`, `contract-shield.md`, `remittance-xray.md`, NF-P3-004 and NF-P2-007 runbooks (superseded decisions), `deferred-items.md` (D-67 to D-71) |
+| `docs/...` | `firestore-schema.md` (indexes), `radar.md`, `contracts.md`, `fib.md`, `endpoints.md`, NF-P3-004 and NF-P2-007 runbooks (superseded decisions) |
 
 ## Decisions
 

@@ -28,7 +28,7 @@ It uses the answer machinery that already existed, with no new route and no fron
 | `backend/app/repositories/contract_repo.py` | `recent(uid, limit)` |
 | `backend/app/services/coach/plan_goals.py` (new) | `goals_for(plan)` and `newest_plan_goals` |
 | `plan_service.py`, `fib_repo.py`, `profile_builder.py`, `api/v1/internal.py`, `dependencies.py` | Goals written when a plan is made; `FibRepository.set_goals`; `goals` carried over; the recompute's fallback |
-| `docs/...` | `coach.md` (`prefill` fields), `fib.md` (goals), `v2-coach.md` (open point 5), `deferred-items.md` (D-223) |
+| `docs/...` | `coach.md` (`prefill` fields), `fib.md` (goals), `v2-coach.md` (open point 5) |
 
 No shared file was touched. The reply prompt was not changed (`coach/reply.v1`), so no prompt version moved and the recorded extraction fixture still replays: the contract question is the existing `ask_next` slot, and the figure in it is in `<slots>`.
 

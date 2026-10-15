@@ -1,6 +1,6 @@
 # scam
 
-Scam Analyzer (Future Scope, NF-F0-003). Shape sources: paths and purpose are **[T]** (tracker NF-SA-001, -006, -007, -012, -013) and `docs/future-scope/design.md` sections 5 and 7. Field names, enums, ids and TTLs are **[P]**. Taxonomy contents (NF-SA-001) and the verdict model (NF-SA-007) may refine them, and should tell the team when they change a field name here.
+Scam Analyzer (Future Scope, NF-F0-003). Shape sources: paths and purpose are **[T]** (tracker NF-SA-001, -006, -007, -012, -013) and the original Future Scope design. Field names, enums, ids and TTLs are **[P]**. Taxonomy contents (NF-SA-001) and the verdict model (NF-SA-007) may refine them, and should tell the team when they change a field name here.
 
 ```
 users/{uid}/scam_checks/{checkId}     one analysed message (backend writes, owner reads)

@@ -1,4 +1,4 @@
-"""The preparedness score: the rubric of `docs/features/coach-scoring.md`, version 1 (NF-FC-011).
+"""The preparedness score: the rubric, version 1 (NF-FC-011).
 
 Pure arithmetic on numbers already in one currency. No model, no clock, no I/O: the same inputs
 always give the same score. What goes in (the amounts in the host currency, the essential costs,

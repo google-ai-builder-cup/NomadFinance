@@ -55,7 +55,6 @@ Two things the Latin-letter rows are for: workers often type Nepali and Bengali 
 | `data-scripts/tests/test_scam_golden_ne_bn.py` (new) | 11 tests: the committed set passes, the planned mix per language, tactics, 17 native and 3 Latin rows each, each native row in its own script, corridors, all six hosts named, no four in a row of one class, the command |
 | `data-scripts/evals/scam_golden_en_hi.jsonl` | `reviewed_by` set to `PP` on 7 rows (below). Nothing else changed |
 | `data-scripts/README.md`, `docs/evals/scam-golden-set.md` | A paragraph; the `script` and `corridor_id` rows |
-| `docs/deferred-items.md` | D-132 (native-speaker read), D-133 (Aditya's spot-check), D-128 and D-102 updated |
 
 No change to the checker, the schema or any shared file. The file name is exactly `scam_golden_ne_bn.jsonl`, as Devam asked.
 

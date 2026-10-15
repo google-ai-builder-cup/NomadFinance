@@ -94,7 +94,7 @@ Then in Firestore open `scam_stats`: 7 documents (`SG-PH` to `AU-PH` and `none`)
 - [ ] Events seen in DebugView (manual, above). First pass done; it found the two problems fixed in NF-FC-001. Closes when steps 6 and 7 are seen after the deploy
 - [x] Job idempotent (test) and counts only (tests)
 - [x] Behind Cloud Scheduler authentication
-- [x] Data model, runbook and deferred items updated
+- [x] Data model and runbook updated
 - [ ] Index created in production, custom dimensions registered (`ui_language`, not `language`), job run once (D-164)
 - [ ] Reviewed by a teammate (Aditya)
 

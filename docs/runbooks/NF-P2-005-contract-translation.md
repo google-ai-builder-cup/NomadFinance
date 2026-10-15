@@ -19,7 +19,7 @@ Classification tier (`gemini-3.1-flash-lite`, prompt `contract/translate.v1`, al
 | `backend/app/config.py` | `gemini_translate_timeout_seconds` (default 60 s) |
 | `backend/tests/unit/services/test_contract_translator.py` | Merge logic, injection guard, incomplete-answer error, prompt/tier |
 | `backend/tests/integration/api/test_contracts_translate.py` | Endpoint: shape, auth, validation, Gemini/incomplete-answer error mapping, OpenAPI |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md` | Endpoint section; step 5 in detail |
+| `docs/api/endpoints.md` | Endpoint section; step 5 in detail |
 
 No shared files (`requirements*.txt`, `Dockerfile`, workflows, ...) were touched. `backend/app/prompts/contract/translate.v1.yaml` already existed (built with NF-P1-029) and was not changed.
 
@@ -158,7 +158,7 @@ PR title: `feat(contracts): translate the contract report into a worker's langua
 
 ## Not covered here
 
-- Storing `reports/{lang}` or the pipeline as a whole (`docs/pipelines/contract-shield.md`, D-53)
+- Storing `reports/{lang}` or the pipeline as a whole (D-53)
 - The complaint letter (NF-P2-006) and whether/how it gets translated
 - A live-Gemini opt-in test (`RUN_LIVE_GEMINI=1`), unlike steps 1, 2 and 4 — can be added alongside NF-P2-008's E2E testing if the team wants translation quality checked against the real model before the demo
 - The report language switcher UI (NF-P2-012)

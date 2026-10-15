@@ -4,7 +4,7 @@ Fixed here, not written by a model: the text has one moving part (the day), so a
 cost money and add a way to fail for nothing. `{days}` is 30, 60 or 90, always in digits 0 to 9.
 
 Short sentences of everyday words, for a worker who reads the language as a second one. Written
-by the team, not read by native speakers yet (deferred item D-230). Keyed by plain strings because
+by the team, not read by native speakers yet. Keyed by plain strings because
 the language comes from a stored profile; a test holds the keys to the six app languages.
 """
 

@@ -240,7 +240,7 @@ Bugs found during real-Firebase testing, fixed in this task:
 | Stuck on "Sending…" | A reCAPTCHA challenge (image grid) is waiting to be solved. Solve it; if the browser window is hidden, bring it to the front. |
 | "Too many attempts…" | Firebase rate limit on SMS / codes. Wait, or use the emulator. |
 | `pnpm: command not found` / `error: CommandNotFound` | Step 0. `CommandNotFound` after installing pnpm = NVM for Windows shim first on PATH; use `pnpm.cmd` or the alias in step 0. |
-| `pnpm format:check` fails on files you didn't touch (Windows) | `core.autocrlf=true` checks files out with CRLF, and Prettier wants LF. The repo copies are LF. Tracked as deferred item D-21; to check your own files: `pnpm exec prettier --check src`. |
+| `pnpm format:check` fails on files you didn't touch (Windows) | `core.autocrlf=true` checks files out with CRLF, and Prettier wants LF. The repo copies are LF. Tracked as D-21; to check your own files: `pnpm exec prettier --check src`. |
 | "Running in emulator mode" banner in production | `VITE_USE_FIREBASE_EMULATOR=true` leaked into the build env. It must be `false` (or unset) in `.env.local`. |
 
 ## Commit and PR for this task
@@ -252,7 +252,7 @@ git add frontend docs
 git status
 ```
 
-`git status` should list only the files in the table above, this runbook, `docs/deferred-items.md` and the NF-P1-006 runbook update. Never `frontend/.env.local`. `frontend/.env.emulator` is meant to be committed (demo values only).
+`git status` should list only the files in the table above, this runbook and the NF-P1-006 runbook update. Never `frontend/.env.local`. `frontend/.env.emulator` is meant to be committed (demo values only).
 
 ```bash
 git commit -m "feat(frontend): add Firebase Auth with Google and phone sign-in" -m "Refs: NF-P1-009"

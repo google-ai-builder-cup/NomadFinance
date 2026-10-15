@@ -58,7 +58,6 @@ The page for each figure is in the file (`source`, and `other_sources` where a r
 | `data-scripts/tests/test_cost_baselines_loader.py` | New: first load, re-run, changed figure, source-only change, hash, collections (17 tests) |
 | `data-scripts/README.md` | New section "Cost baselines" |
 | `docs/data-model/collections/cost_baselines.md` | Real example, `other_sources`, what the checker refuses, how a figure is read, the hash rule |
-| `docs/deferred-items.md` | D-102 and D-173 updated; D-182 to D-188 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. No backend or frontend file changed.
 
@@ -206,7 +205,7 @@ Documentation: [x] Markdown, [x] under `docs/`, [x] no attribution lines, [ ] te
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-182 (newer dormitory rent), D-183 (load into production), D-184 (spot-check), D-185 (KR, MY, JP, HK use the same checker), D-186 (read `by_job_type` and the worker's share), D-187 (no `utilities` line), D-188 (limits of the figures). D-102 and D-173 have a new note.
+Left for later: D-182 (newer dormitory rent), D-183 (load into production), D-184 (spot-check), D-185 (KR, MY, JP, HK use the same checker), D-186 (read `by_job_type` and the worker's share), D-187 (no `utilities` line), D-188 (limits of the figures). D-102 and D-173 have a new note.
 
 ## Commit
 
@@ -214,7 +213,7 @@ Branch: `feature/NF-FC-003-data-baselines-sg-au`. The tracker's branch name ends
 
 ```bash
 git switch -c feature/NF-FC-003-data-baselines-sg-au
-git add data-scripts/README.md data-scripts/src/config.py data-scripts/src/loaders/cost_baselines.py data-scripts/src/validators/cost_baselines.py data-scripts/tests/test_cost_baselines.py data-scripts/tests/test_cost_baselines_loader.py data-scripts/data/source/cost-baselines docs/data-model/collections/cost_baselines.md docs/deferred-items.md docs/runbooks/NF-FC-003-cost-baselines-sg-au.md
+git add data-scripts/README.md data-scripts/src/config.py data-scripts/src/loaders/cost_baselines.py data-scripts/src/validators/cost_baselines.py data-scripts/tests/test_cost_baselines.py data-scripts/tests/test_cost_baselines_loader.py data-scripts/data/source/cost-baselines docs/data-model/collections/cost_baselines.md docs/runbooks/NF-FC-003-cost-baselines-sg-au.md
 git commit -m "feat(coach): add SG and AU cost baselines and loader" -m "Refs: NF-FC-003"
 ```
 

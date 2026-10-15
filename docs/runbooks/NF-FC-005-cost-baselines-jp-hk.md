@@ -51,7 +51,6 @@ Read on **2026-10-09**. As before, a figure is a published price or range, **not
 | `data-scripts/data/source/cost-baselines/JP.json`, `HK.json` | New: the curated figures |
 | `data-scripts/tests/test_cost_baselines_jp_hk.py` | New: committed files, all six hosts, the sums behind the deduction, commission and transport figures, loader round trip (11 tests) |
 | `data-scripts/README.md`, `docs/data-model/collections/cost_baselines.md` | The two files exist; the default worker of each |
-| `docs/deferred-items.md` | D-173, D-183, D-185 updated; D-195 to D-198 added |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows) was touched. No checker, loader, backend or frontend file changed.
 
@@ -168,7 +167,7 @@ Documentation: [x] Markdown, [x] under `docs/`, [x] no attribution lines, [ ] te
 
 ## Noticed, not fixed
 
-All are in `docs/deferred-items.md`: D-195 (Japanese weak sources and unread fares), D-196 (Hong Kong covers only the live-in helper), D-197 (Japanese deductions vary), D-198 (spot-check and tracker owner). Also outside this task: `google.genai` is missing from the data-scripts virtual environment, so three embedding tests fail there.
+Left for later: D-195 (Japanese weak sources and unread fares), D-196 (Hong Kong covers only the live-in helper), D-197 (Japanese deductions vary), D-198 (spot-check and tracker owner). Also outside this task: `google.genai` is missing from the data-scripts virtual environment, so three embedding tests fail there.
 
 ## Commit
 

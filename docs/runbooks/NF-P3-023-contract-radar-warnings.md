@@ -2,7 +2,7 @@
 
 ## Summary
 
-When the employer or recruitment agency a contract names has been flagged by Exploitation Radar, the Contract Health Report now shows a red "Community flagged — N reports" warning under the risk badge, linking to the business's radar profile. This is the Radar → Contract Shield arrow of the cross-pillar flow (design doc §5.6). Frontend only: no backend, rules, seed or dependency change.
+When the employer or recruitment agency a contract names has been flagged by Exploitation Radar, the Contract Health Report now shows a red "Community flagged — N reports" warning under the risk badge, linking to the business's radar profile. This is the Radar → Contract Shield arrow of the cross-pillar flow (original design). Frontend only: no backend, rules, seed or dependency change.
 
 Not in this task: the other direction (Contract Shield's own danger clauses becoming radar reports, NF-P2-021), the same warning in Remittance X-Ray (NF-P3-022), and any change to the radar seed.
 

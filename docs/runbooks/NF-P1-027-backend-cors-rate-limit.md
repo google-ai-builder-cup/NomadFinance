@@ -44,7 +44,6 @@ Steps 2 (the variable) and 3 are in "Turn on account deletion in production" bel
 | `backend/tests/conftest.py` | Resets the limiter before every test |
 | `docs/api/endpoints.md` | CORS, rate limits and request size section; 413/429 rows |
 | `docs/runbooks/NF-P1-023-user-profile-page.md` | Status of its "Turn it on in production" steps; one wording fix in step 1 |
-| `docs/deferred-items.md` | D-05 done, D-44 code done, D-47 partly; new D-52 |
 
 ## Decisions
 
@@ -245,7 +244,7 @@ The Docker image was built by `backend-ci.yml` and `backend-deploy.yml` (Docker 
 Branch: `feature/backend-cors-rate-limit` (already checked out). From the repo root:
 
 ```bash
-git add backend/app backend/requirements.txt backend/.env.example backend/tests .github/workflows/frontend-deploy.yml docs/api/endpoints.md docs/runbooks/NF-P1-027-backend-cors-rate-limit.md docs/runbooks/NF-P1-023-user-profile-page.md docs/deferred-items.md
+git add backend/app backend/requirements.txt backend/.env.example backend/tests .github/workflows/frontend-deploy.yml docs/api/endpoints.md docs/runbooks/NF-P1-027-backend-cors-rate-limit.md docs/runbooks/NF-P1-023-user-profile-page.md
 git status
 ```
 

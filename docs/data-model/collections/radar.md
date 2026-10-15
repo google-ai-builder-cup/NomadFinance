@@ -1,6 +1,6 @@
 # radar
 
-Shape sources: the four paths are **[D]** (`current` needs a document id, see `firestore-schema.md`). The report pipeline and cron are in the design doc's Exploitation Radar diagram and NF-P3-001 to NF-P3-009 **[T]**. Field names, enums and the anonymity rules are **[P]**. The embedding model and size follow ADR-002 and the Firestore vector limit **[built decision]**.
+Shape sources: the four paths are **[D]** (`current` needs a document id, see `firestore-schema.md`). The report pipeline and cron are in the original design's Exploitation Radar diagram and NF-P3-001 to NF-P3-009 **[T]**. Field names, enums and the anonymity rules are **[P]**. The embedding model and size follow ADR-002 and the Firestore vector limit **[built decision]**.
 
 ```
 radar_reports/{id}                         one community report (backend only)
@@ -144,7 +144,7 @@ The vector of a report's description, used to find similar reports (Firestore ve
 | `entity_slug` | string | yes | Copy from the report |
 | `created_at` | timestamp | yes | |
 
-**Why 768 and `gemini-embedding-001`.** The design doc names `text-embedding-004`, which Google shut down on 2026-01-14. ADR-002 chose `gemini-embedding-001`. That model returns 3072 numbers by default, but Firestore allows at most 2048 per vector, so the request must ask for a smaller size (768 is one of Google's recommended sizes). Vectors shortened this way are not unit length, so **normalize each vector before storing it**. Use the same model and size for every vector: a search only compares vectors of one size.
+**Why 768 and `gemini-embedding-001`.** The original design names `text-embedding-004`, which Google shut down on 2026-01-14. ADR-002 chose `gemini-embedding-001`. That model returns 3072 numbers by default, but Firestore allows at most 2048 per vector, so the request must ask for a smaller size (768 is one of Google's recommended sizes). Vectors shortened this way are not unit length, so **normalize each vector before storing it**. Use the same model and size for every vector: a search only compares vectors of one size.
 
 The vector is written with the SDK's `Vector` type, not as a plain array. The index for it is in the table in `firestore-schema.md`.
 

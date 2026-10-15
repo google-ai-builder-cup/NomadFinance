@@ -10,7 +10,7 @@
 - **Currency indicator.**
   - Under the dropdown: "You send Australian Dollar (AUD). Your family receives Philippine Peso (PHP)."
   - The amount field shows the sending currency inside it.
-- **Amount checks in the browser, translated.** The limits the backend enforces (e.g. A$50 to A$5,000), whole yen only, at most 2 decimals. It reads "1,000" (a comma before exactly three digits is thousands), "645.50", "645,50" (a comma before one or two digits is a decimal) and "4 250". A dot is always the decimal point, so "5.400" is 5.4; for the yen every separator is thousands. Changed 2026-10-15, see `known-bugs-amount-separators.md`.
+- **Amount checks in the browser, translated.** The limits the backend enforces (e.g. A$50 to A$5,000), whole yen only, at most 2 decimals. It reads "1,000" (a comma before exactly three digits is thousands), "645.50", "645,50" (a comma before one or two digits is a decimal) and "4 250". A dot is always the decimal point, so "5.400" is 5.4; for the yen every separator is thousands. Changed 2026-10-15.
 - **Shortcuts** for the two amounts the World Bank surveyed (e.g. A$200 and A$500), where every price is exact rather than estimated.
 - **Result.** `POST /api/v1/remittance/compare` (NF-P2-014), then a summary card:
   - the best service and what the family receives
@@ -40,7 +40,7 @@
 | `frontend/src/utils/format.ts` | `currencyName()`, `formatMoney()` |
 | `frontend/src/lib/analytics.ts`, `analytics.test.ts` | `trackRemittanceCompared()` |
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `remittance.*` (27 strings) |
-| `docs/pipelines/remittance-xray.md`, `docs/runbooks/NF-P1-025-firebase-analytics.md`, `NF-P1-015-worldbank-rpw-parse.md`, `docs/deferred-items.md` | Page and form; the new event; the survey refresh now includes the frontend table; D-46 updated, D-66 new |
+| `docs/runbooks/NF-P1-025-firebase-analytics.md`, `NF-P1-015-worldbank-rpw-parse.md` | Page and form; the new event; the survey refresh now includes the frontend table; D-46 updated, D-66 new |
 
 ## Decisions
 

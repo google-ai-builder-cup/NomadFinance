@@ -24,7 +24,7 @@ The v2 surface (Scam Analyzer, Financial Coach, Financial Identity signals) was 
 | `backend/tests/unit/services/test_coach_guard.py`, `tests/integration/api/test_coach_turns_guard.py` | 8 unit cases (5 blocked, 3 ordinary replies) and 3 streams for the link check |
 | `backend/tests/fixtures/security_redteam.py`, `tests/integration/test_security_redteam_live.py` (new) | 12 Coach attacks and controls, 7 analyzer cases and 1 screenshot, run against the real models; skipped unless `RUN_LIVE_GEMINI=1` |
 | `frontend/package.json`, `frontend/pnpm-lock.yaml` | One `pnpm.overrides` entry, `source-map-js >=1.2.2`; the lockfile moved that one package from 1.2.1 to 1.2.2 |
-| `docs/security-review-v2.md` (new), `docs/SECURITY.md`, `docs/api/v2-conventions.md`, `docs/deferred-items.md` | The review; two rows in the controls table; the 413 row; D-282 to D-284 |
+| `docs/security-review-v2.md` (new), `docs/SECURITY.md`, `docs/api/v2-conventions.md` | The review; two rows in the controls table; the 413 row; D-282 to D-284 |
 
 Not touched: `.github/workflows/*`, `.gitleaks.toml` (not created), `firebase.json`, `firestore.rules`, `storage.rules`, `backend/Dockerfile`, `requirements*.txt`. No dependency was added.
 

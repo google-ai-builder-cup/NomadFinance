@@ -39,7 +39,7 @@ flowchart TD
 | `backend/app/core/features.py` | The job counts as the `coach` feature in logs and metrics |
 | `infra/cloud-scheduler/coach-checkins.yaml` (new) | The Scheduler job; `scheduler-deploy.yml` creates it when the file is merged |
 | `backend/tests/...` | `unit/services/test_coach_checkins.py` (60), `integration/api/test_internal_send_coach_checkins.py` (9), `integration/repositories/test_coach_checkins.py` (7, emulator), `fixtures/coach_checkins.py`, one row in `unit/core/test_features.py` |
-| `docs/api/endpoints.md`, `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md`, `docs/data-model/firestore-schema.md`, `infra/README.md`, `docs/deferred-items.md` | The endpoint section; open point 4; `checkins` (written by the job, absent at plan creation) and the range query; the job list; D-230 to D-235 |
+| `docs/api/endpoints.md`, `docs/api/v2-coach.md`, `docs/data-model/collections/coach.md`, `docs/data-model/firestore-schema.md`, `infra/README.md` | The endpoint section; open point 4; `checkins` (written by the job, absent at plan creation) and the range query; the job list; D-230 to D-235 |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows, `firebase.json`, `tsconfig*`, `.gitignore`) was touched, and no new dependency. The index on `coach_plans.departure_date` (collection-group scope) already exists in `frontend/firestore.indexes.json` (NF-F0-006, D-114).
 

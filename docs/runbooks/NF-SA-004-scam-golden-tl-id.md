@@ -50,7 +50,6 @@ One thing to know when adding Indonesian rows: an amount of 8 or more digits wit
 | `data-scripts/tests/test_scam_golden.py` | The spot-check command test now names its file (it assumed a single file in `evals/`) |
 | `data-scripts/README.md` | A paragraph under the golden-set section |
 | `docs/evals/scam-golden-set.md` | `script` row: Tagalog and Indonesian are `native` |
-| `docs/deferred-items.md` | D-130 (native-speaker read) and D-131 (spot-check) |
 
 No change to the checker, the schema or any shared file.
 

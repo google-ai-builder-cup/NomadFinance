@@ -24,7 +24,7 @@ A worker can read their 90-day plan, and download it as a PDF, in any of the six
 | `backend/app/api/v2/coach_plans.py`, `dependencies.py` | `language` on both routes, the `.pdf` route (registered before `/plans/{id}`), the translation budget |
 | `backend/app/repositories/coach_session_repo.py`, `app/integrations/cloud_storage.py` | Translation get/create/list, `set_pdf`; `ExportStore.read` |
 | `backend/app/config.py`, `.env.example` | `GEMINI_COACH_TRANSLATE_TIER` (classification) and `GEMINI_COACH_TRANSLATE_THINKING_BUDGET` (0) |
-| `docs/features/coach-plan.md`, `docs/api/v2-coach.md`, `docs/deferred-items.md`, `backend/app/prompts/README.md` | The translation and PDF rules; status and open point 7; D-218 closed, D-221, D-222; the prompt row |
+| `docs/api/v2-coach.md`, `backend/app/prompts/README.md` | The translation and PDF rules; status and open point 7; D-218 closed, D-221, D-222; the prompt row |
 
 No shared file was touched: `weasyprint==70.0` is already in `requirements.txt` and the Dockerfile already installs Pango and `fonts-noto-core` (Latin, Devanagari, Bengali) for the Financial Identity PDF.
 

@@ -33,7 +33,6 @@ Nothing is a real message. Every link is on `.example`, every address is on `.ex
 | `data-scripts/src/config.py` | `EVALS_DIR` |
 | `data-scripts/README.md` | A section with the commands |
 | `docs/evals/scam-golden-set.md` (new) | The rubric all three sets follow |
-| `docs/deferred-items.md` | D-127 to D-129 |
 
 No shared file, no new package, no workflow change.
 

@@ -1,6 +1,6 @@
 # contracts
 
-Shape sources: the contract path is **[D]**. The pipeline steps that decide the fields are in the design doc (Contract Shield pipeline) and NF-P2-001 to NF-P2-007 **[T]**. The split into a light contract document and one report per language, and the cache rule, are **[P]** and follow NF-P2-007 and NF-P2-012.
+Shape sources: the contract path is **[D]**. The pipeline steps that decide the fields are in the original design (Contract Shield pipeline) and NF-P2-001 to NF-P2-007 **[T]**. The split into a light contract document and one report per language, and the cache rule, are **[P]** and follow NF-P2-007 and NF-P2-012.
 
 ## Why two levels
 
@@ -32,7 +32,7 @@ The uploaded file itself is **not kept** (NF-P2-007): step 1 reads it during the
 | `extracted` | map | after step 2 | `employer_name`, `agency_name`, `salary_amount`, `salary_currency`, `salary_period` (`month`, `week`, `day`, `hour`). Any key may be absent (NF-P2-002). Feeds Radar (NF-P2-021) and Financial Identity (NF-P3-024). |
 | `host_country`, `job_type` | string | after step 2 | What the analysis used after the fallbacks: the worker's choice, else `detected`, else the profile (NF-P2-007, D-55) |
 | `health_score` | number | when completed | 0 to 100, where 100 is safest (`risk_scorer.py`, NF-P2-004) |
-| `risk_level` | string | when completed | `safe`, `caution`, `danger` (the design doc's Safe / Caution / Danger) |
+| `risk_level` | string | when completed | `safe`, `caution`, `danger` (the original design's Safe / Caution / Danger) |
 | `clause_counts` | map | when completed | `{ "safe": 9, "caution": 3, "danger": 1 }` |
 | `report_languages` | array of string | when completed | Languages that already have a `reports/{lang}` document, alphabetically sorted (not source-language-first; found by NF-P2-008 while testing a worker whose language sorts before "en") |
 | `law_version` | number | when completed | `labor_laws/{country}/_meta/current.version` used for the analysis |

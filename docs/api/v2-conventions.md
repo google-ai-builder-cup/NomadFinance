@@ -1,6 +1,6 @@
 # API v2 conventions
 
-Rules every endpoint under `/api/v2` follows. Feature contracts (coach, scam, partner) cite this file and do not repeat it. Task: NF-F0-002. Design context: `docs/future-scope/design.md`, section 2.2.
+Rules every endpoint under `/api/v2` follows. Feature contracts (coach, scam, partner) cite this file and do not repeat it. Task: NF-F0-002. Design context: section 2.2.
 
 **Frozen after NF-F0-002 merges.** Changing a rule here later needs a PR that updates this file, the mocks in `docs/mocks/conventions/` and the handlers in `backend/app/core/errors.py` together, with both other teammates as reviewers.
 

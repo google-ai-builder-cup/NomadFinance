@@ -262,8 +262,6 @@ Before pushing, confirm nothing else is staged or left behind:
 git status
 ```
 
-Only `docs/design-doc/` should remain untracked.
-
 ## Troubleshooting
 
 | Symptom | Fix |

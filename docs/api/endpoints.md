@@ -48,7 +48,7 @@ must say so explicitly in their own doc section below.
 | POST | `/api/v1/fib/categorize` | Firebase ID token | 10/min per user (AI calls) | NF-P3-012 |
 | POST | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
 | GET | `/api/v1/fib/report/export` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-P3-014 |
-| POST | `/api/v1/fib/profile/refresh` | Firebase ID token | 10/min per user (AI calls) | Known-bugs batch |
+| POST | `/api/v1/fib/profile/refresh` | Firebase ID token | 10/min per user (AI calls) | Bug fix |
 | GET | `/api/v1/fib/activity` | Firebase ID token | 60/min API-wide (no Gemini call) | NF-HR-001 |
 | POST | `/api/v1/internal/refresh-rates` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P1-019 |
 | POST | `/api/v1/internal/aggregate-radar` | Cloud Scheduler OIDC token only (not in `/docs`) | Exempt (NF-P1-027) | NF-P3-004 |
@@ -616,7 +616,7 @@ A failed analysis can be run again with the same call. What was stored is reused
 
 ## `POST /api/v1/remittance/compare`
 
-Compares every surveyed way to send money along one corridor, for the amount the worker chooses: what each service costs, and how much the recipient receives, best first. Steps 1 to 6 of the Remittance X-Ray pipeline (NF-P2-014, `docs/pipelines/remittance-xray.md`). No Gemini call, so only the API-wide budget applies. Nothing is stored.
+Compares every surveyed way to send money along one corridor, for the amount the worker chooses: what each service costs, and how much the recipient receives, best first. Steps 1 to 6 of the Remittance X-Ray pipeline (NF-P2-014). No Gemini call, so only the API-wide budget applies. Nothing is stored.
 
 The prices are the World Bank's Remittance Prices Worldwide survey of early 2025, not a live price list. The mid-market exchange rate is the cron's latest (`rates_cache`). The response carries the survey period and the attribution text the World Bank requires wherever the prices are shown.
 
@@ -714,7 +714,7 @@ curl -s -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
 
 ## `GET /api/v1/remittance/trends`
 
-A corridor's mid-market exchange rate over time, one value per market day, for the trend chart, plus the weekday that is usually best to send on. Steps 4 and 7 of the Remittance X-Ray pipeline (NF-P2-015, `docs/pipelines/remittance-xray.md`). One Firestore read (`rates_history/{pair}`, its `daily` map), no Gemini call. Nothing is stored.
+A corridor's mid-market exchange rate over time, one value per market day, for the trend chart, plus the weekday that is usually best to send on. Steps 4 and 7 of the Remittance X-Ray pipeline (NF-P2-015). One Firestore read (`rates_history/{pair}`, its `daily` map), no Gemini call. Nothing is stored.
 
 The rates are the European Central Bank's reference rates (via Frankfurter): backfilled for past days (`data-scripts/src/loaders/frankfurter_backfill.py`) and kept up by the rate cron. The ECB publishes on working days only, so there are no weekend points. `providers` lists every source used in the period; show "Rates by Exchange Rate API" when it contains `exchangerate_api` (D-35).
 
@@ -795,7 +795,7 @@ curl -s -H "Authorization: Bearer $TOKEN"   "http://127.0.0.1:8080/api/v1/remitt
 
 ## `GET /api/v1/remittance/savings`
 
-The "you would have saved $X" figure: what sending `amount` with the best comparable service, instead of the worst, would have been worth over real history. Step 8 of the Remittance X-Ray pipeline (NF-P2-022, `docs/pipelines/remittance-xray.md`). No Gemini call, so only the API-wide budget applies. Nothing is stored.
+The "you would have saved $X" figure: what sending `amount` with the best comparable service, instead of the worst, would have been worth over real history. Step 8 of the Remittance X-Ray pipeline (NF-P2-022). No Gemini call, so only the API-wide budget applies. Nothing is stored.
 
 The best and worst service, and their total cost as a percentage of `amount`, are exactly what `/compare` would rank for the same `corridor_id` and `amount` — the survey's fees are one quarter, not a history, so the same two services are used for every month. Only the mid-market rate changes month to month, from `rates_history` (the same data `/trends` reads); each of the last `months` **full** calendar months is priced at that month's own average rate. Today's own, still-incomplete month is never included.
 
@@ -864,7 +864,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 ## `POST /api/v1/remittance/recommend`
 
-Writes a short, personal recommendation from a finished comparison: one headline and two to four sentences, in the worker's own language. Step 9 of the Remittance X-Ray pipeline (NF-P2-016, `docs/pipelines/remittance-xray.md`), classification tier (`gemini-3.1-flash-lite`, prompt `remittance/recommend.v1`) — the only remittance step that calls Gemini, on a separate quota bucket from Contract Shield's reasoning tier (ADR-002, D-58). Nothing is stored.
+Writes a short, personal recommendation from a finished comparison: one headline and two to four sentences, in the worker's own language. Step 9 of the Remittance X-Ray pipeline (NF-P2-016), classification tier (`gemini-3.1-flash-lite`, prompt `remittance/recommend.v1`) — the only remittance step that calls Gemini, on a separate quota bucket from Contract Shield's reasoning tier (ADR-002, D-58). Nothing is stored.
 
 **The recommended provider is never a name Gemini chose.** `recommended_rpw_id` and `recommended_firm` are the comparison's highest-ranked comparable provider that is not `flagged` (the top-ranked one when every provider is flagged), set by code (`recommender.recommended_provider`, prompt `recommend.v2`); the prompt's own answer is only checked against them, and a mismatch is a `502`.
 
@@ -926,7 +926,7 @@ The headline reads "Send with InstaReM: your family will get 2907.3 PHP more."
 
 ## `POST /api/v1/remittance/log`
 
-Stores a transfer the worker actually sent, under `users/{uid}/transfers/{id}` — the entry that links Remittance X-Ray to Financial Identity (NF-P2-017, `docs/pipelines/remittance-xray.md`, `docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide budget applies.
+Stores a transfer the worker actually sent, under `users/{uid}/transfers/{id}` — the entry that links Remittance X-Ray to Financial Identity (NF-P2-017, `docs/data-model/collections/fib.md`). No Gemini call, so only the API-wide budget applies.
 
 **Every stored amount is read from the comparison's own chosen provider, never typed freely by the client.** `comparison` is the unmodified response of `POST /remittance/compare`; `rpw_id` names which of its providers the worker actually used. `provider_name`, `send_amount`, `receive_amount`, `fee`, `cost_pct` and `mid_market_rate` are all copied from that provider's row and `comparison`'s own fields — the same reasoning `/remittance/recommend` uses to never trust a provider name Gemini wrote over the comparison's own top-ranked one (D-58-adjacent, not an ADR). A `rpw_id` that does not match a comparable, ranked provider (for example one that pays out in another currency, or was never on the ranked list) is a `422`, since there is no `recipient_receives` to log for it.
 

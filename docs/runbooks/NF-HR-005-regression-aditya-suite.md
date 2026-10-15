@@ -49,7 +49,7 @@ Remittance X-Ray and the Scam Analyzer were regression-tested in three browser e
 | `frontend/src/utils/flaggedParties.ts` | No `.at` |
 | `frontend/e2e/remittance.spec.ts`, `e2e/support/remittanceApi.ts` (new) | Eight browser tests for Remittance X-Ray |
 | `frontend/playwright.config.ts` | The `firefox` and `webkit-iphone` projects, opt-in |
-| `docs/evals/regression-suite-b-v2.md` (new), this file (new), `docs/deferred-items.md` | Docs, D-321 to D-326 |
+| `docs/evals/regression-suite-b-v2.md` (new), this file (new) | Docs, D-321 to D-326 |
 
 No shared file other than `frontend/playwright.config.ts` was touched. **That file is not in the shared list of `CLAUDE.md`** (`tsconfig*.json`, `package.json`, workflows and the others are); the change is additive and off unless `CROSS_BROWSER=1`. No dependency was added: Playwright's Firefox and WebKit are downloaded with `playwright install`, not through `package.json`.
 
@@ -105,7 +105,7 @@ Needs the local stack: the Firebase emulators, the API on 8080 and the frontend.
 
 - [x] **A test fails when the behaviour is broken**: each new test was run against its broken code once and failed (see the break check above). QA-B-05 is the exception, with a reason
 - [x] **Passes in CI**: the same chains CI runs were run locally (above); not yet seen on GitHub
-- [x] Bugs found are filed with severity and repro steps (P0 none; P1 and four P2 fixed; limits and open items in `docs/deferred-items.md`)
+- [x] Bugs found are filed with severity and repro steps (P0 none; P1 and four P2 fixed; limits and open items logged for later)
 - [x] Report committed under `docs/evals` (`regression-suite-b-v2.md`)
 - [x] Cross-browser: Chromium, Firefox and WebKit run on Remittance and the Scam Analyzer
 - [ ] Tracker finish line "all P0 / P1 bugs found are filed with repro steps": met in the files; the P1 is closed only when this branch is merged

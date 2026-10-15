@@ -304,7 +304,7 @@ async def test_gemini_failures_are_left_for_the_api_error_handlers() -> None:
         )
 
 
-# --- Radar flags (design doc cross-pillar flow: Radar -> Remittance) -----------------------
+# --- Radar flags (cross-pillar flow: Radar -> Remittance) -----------------------
 
 
 def _flagged_comparison(*flagged: str) -> RemittanceComparison:

@@ -2,7 +2,7 @@
 
 ## Summary
 
-`backend/app/core/redact.py` masks personal identifiers in text a worker submitted, so the Scam Analyzer (NF-SA-*), the Coach (NF-FC-*), logs and analytics can handle a message without keeping the identifiers in it. The tracker names the file `backend/core/redact.py`; in this repo it is `backend/app/core/redact.py` (design doc §11.6).
+`backend/app/core/redact.py` masks personal identifiers in text a worker submitted, so the Scam Analyzer (NF-SA-*), the Coach (NF-FC-*), logs and analytics can handle a message without keeping the identifiers in it. The tracker names the file `backend/core/redact.py`; in this repo it is `backend/app/core/redact.py`.
 
 ```python
 from app.core.redact import redact, redact_text

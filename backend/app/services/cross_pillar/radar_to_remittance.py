@@ -1,4 +1,4 @@
-"""Exploitation Radar feeds Remittance X-Ray (design doc cross-pillar flow: "Radar flags
+"""Exploitation Radar feeds Remittance X-Ray (cross-pillar flow: "Radar flags
 providers in the comparison").
 
 A money transfer operator that workers keep reporting is marked on every comparison that

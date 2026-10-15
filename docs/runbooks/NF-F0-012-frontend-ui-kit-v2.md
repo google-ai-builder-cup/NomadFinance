@@ -1,8 +1,10 @@
 # NF-F0-012 — Shared UI kit additions
 
+> The component usage guide this task wrote has since been removed from the repository; it stays in git history.
+
 ## Summary
 
-Seven reusable components now exist for the Coach and Scam Analyzer screens, each with tests and a usage example in [`docs/ui-kit.md`](../ui-kit.md). They live in `frontend/src/components/common/`, take all their text as props (no language files touched), use only colour tokens, and mirror correctly in right-to-left.
+Seven reusable components now exist for the Coach and Scam Analyzer screens, each with tests. They live in `frontend/src/components/common/`, take all their text as props (no language files touched), use only colour tokens, and mirror correctly in right-to-left.
 
 | Component | State | What it is |
 |---|---|---|
@@ -24,8 +26,6 @@ No screen uses the new components yet. Merging this changes nothing a user sees.
 | `frontend/src/components/common/EmptyState.tsx` | `headingLevel` prop (default 2, so nothing changes for current callers) |
 | `frontend/src/components/common/*.test.tsx` (7 files) | 51 tests with `utils/risk.test.ts` |
 | `frontend/src/utils/risk.ts`, `risk.test.ts` | `riskLevelForSeverity`: low, medium, high to safe, caution, danger |
-| `docs/ui-kit.md` (new) | Props, rules and a usage example per component |
-| `docs/design-system.md` | One row in the Components table pointing at `ui-kit.md` |
 | `frontend/package.json`, `frontend/pnpm-lock.yaml` | **Shared files, diff approved 2026-10-06.** Four dev dependencies, see below |
 
 ## Test tooling added
@@ -93,7 +93,7 @@ Expected: `Test Files 44 passed`, `Tests 354 passed`.
 pnpm exec vitest run src/components/common src/utils/risk.test.ts
 ```
 
-To look at the components, add a throwaway page (a root `.html` file and a `.tsx` that renders each component with some sample props), start `pnpm dev`, open it at 360 px wide, then add `?dark=1`-style switches for the dark class and `dir="rtl"` on `<html>`. Delete it again. The first usage examples to copy are in `docs/ui-kit.md`.
+To look at the components, add a throwaway page (a root `.html` file and a `.tsx` that renders each component with some sample props), start `pnpm dev`, open it at 360 px wide, then add `?dark=1`-style switches for the dark class and `dir="rtl"` on `<html>`. Delete it again.
 
 ## Definition of Done (Frontend Feature)
 

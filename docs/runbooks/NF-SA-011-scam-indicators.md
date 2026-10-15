@@ -45,7 +45,7 @@ raw text ─ redact_values ─→ [URL] [EMAIL] [PHONE] values ─┐
 | `backend/app/services/scam/classifier.py`, `analyzer.py` | The classifier takes the signals; the analyzer extracts before masking and merges the screenshot's sender |
 | `backend/tests/unit/services/test_scam_indicators.py`, `test_scam_amounts.py` (new), `tests/unit/core/test_redact.py` | 40 indicator fixtures, the no-network proofs, the curated lists, amounts, `redact_values` |
 | `backend/tests/integration/api/test_scam_analyze.py`, `..._screenshot.py`, `..._live.py`, `test_scam_explain_live.py`, `tests/unit/services/test_scam_classifier.py`, `tests/unit/test_prompt_loader.py` | Updated for the new signature and version; four endpoint tests; two live ones |
-| `docs/api/v2-scam.md`, `docs/data-model/collections/scam.md`, `backend/app/prompts/README.md`, `docs/deferred-items.md` | Contract, data model, prompt table, D-144 to D-146 |
+| `docs/api/v2-scam.md`, `docs/data-model/collections/scam.md`, `backend/app/prompts/README.md` | Contract, data model, prompt table, D-144 to D-146 |
 
 No shared files, no new dependency, no workflow change. The response models did not change.
 

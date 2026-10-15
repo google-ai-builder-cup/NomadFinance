@@ -24,7 +24,6 @@ New dependencies: `python-slugify==9.1.2` and its own required dependency `text-
 | `backend/tests/unit/services/test_contract_pipeline.py` | 3 new tests; both existing `PipelineDeps(...)` call sites updated for the new field |
 | `backend/tests/integration/api/test_contract_analysis.py` | Same `PipelineDeps(...)` update |
 | `backend/tests/integration/repositories/test_radar_repo.py` (new) | 4 tests, against the Firestore emulator |
-| `docs/pipelines/exploitation-radar.md` (was empty) | Only this task's slice; everything else left as "not started," not speculated |
 | `docs/data-model/collections/radar.md` | Two small corrections: `validation` and the "written only after validation" line both now say what a `contract_signal` report actually does |
 
 No API endpoint added: this is an internal step of the existing `analyze` pipeline, not a new route. `docs/api/endpoints.md` is unchanged.
@@ -132,14 +131,14 @@ Cross-pillar / backend step:
 - [x] Specific errors kept specific everywhere except the one deliberate, documented boundary (decision 6)
 - [x] Anonymized: no `reporter_hash`, no worker fact, never a clause's raw text
 - [x] Tested with diverse inputs: multiple violation types on one contract, a contract naming only an agency, a contract naming no one, a contract with only `caution` clauses, a long description that needs truncating, a name with punctuation
-- [x] `docs/pipelines/exploitation-radar.md` and `docs/data-model/collections/radar.md` updated
+- [x] `docs/data-model/collections/radar.md` updated
 - [ ] Manual check against a real contract through the full pipeline (step 3 above): yours
 
 Data ingestion into Firestore:
 
 - [x] Validates before writing (Pydantic `RadarReport`, `RadarValidation`)
 - [x] Safe to run again (each analyze that still finds danger clauses writes new reports; nothing is overwritten or duplicated by id, since each report gets its own fresh id)
-- [x] Documented (this file, and the pipeline doc)
+- [x] Documented (this file)
 
 ## Commit and PR
 

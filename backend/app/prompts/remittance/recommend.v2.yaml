@@ -1,5 +1,5 @@
 description: >
-  v2: providers carry `flagged` (Exploitation Radar reports, design doc cross-pillar flow);
+  v2: providers carry `flagged` (Exploitation Radar reports, cross-pillar flow);
   the recommended provider is the highest-ranked one that is not flagged.
   Remittance X-Ray recommendation (NF-P2-016), classification tier. Turns the comparison
   result of POST /api/v1/remittance/compare (NF-P2-014: providers ranked by what the

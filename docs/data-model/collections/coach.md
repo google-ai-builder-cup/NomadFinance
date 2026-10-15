@@ -1,6 +1,6 @@
 # coach
 
-Financial Coach (Future Scope, NF-F0-003). Shape sources: the paths and what each holds are **[T]** (tracker NF-FC-008, NF-FC-012, NF-FC-014, NF-FC-016) and design addendum `docs/future-scope/design.md` sections 4 and 7. Field names, enums, TTLs and ids are **[P]**: owners of NF-FC-006 (score) and NF-FC-011/-012 (plan) fill in what is marked "defined by", and should tell the team when they change a field name here. The slots are fixed by NF-FC-001 (next section).
+Financial Coach (Future Scope, NF-F0-003). Shape sources: the paths and what each holds are **[T]** (tracker NF-FC-008, NF-FC-012, NF-FC-014, NF-FC-016) and the original Future Scope design. Field names, enums, TTLs and ids are **[P]**: owners of NF-FC-006 (score) and NF-FC-011/-012 (plan) fill in what is marked "defined by", and should tell the team when they change a field name here. The slots are fixed by NF-FC-001 (next section).
 
 ```
 users/{uid}/coach_sessions/{sessionId}                  one interview (backend writes, owner reads)
@@ -110,10 +110,10 @@ The score and the 90-day plan, written in English once (design 4.4). **The id is
 | `corridor_id` | string | no | For example `AU-IN`; absent when the route is not one of the six. The plan then has no provider quote. |
 | `departure_date` | string (date) | no | `YYYY-MM-DD`, copied from the slots. **Queried across all users by the check-in job** (NF-FC-016), which needs the collection-group index listed in `firestore-schema.md`. Absent: no check-ins. |
 | `reporting_currency` | string | yes | Currency of the plan's totals |
-| `score` | map | yes | `{ "total": 0 to 100, "band": string, "factors": [ { "id", "value", "score", "weight" } ], "rubric_version": number }`. Factor ids: `debt_to_income`, `emergency_buffer`, `remittance_ratio`, `recruitment_fee_vs_cap`, `banked_status`. Weights, band names and cut-offs are defined in [`docs/features/coach-scoring.md`](../../features/coach-scoring.md) (NF-FC-006). Computed in Python, no model. |
+| `score` | map | yes | `{ "total": 0 to 100, "band": string, "factors": [ { "id", "value", "score", "weight" } ], "rubric_version": number }`. Factor ids: `debt_to_income`, `emergency_buffer`, `remittance_ratio`, `recruitment_fee_vs_cap`, `banked_status`. Weights, band names and cut-offs are defined in `backend/app/services/coach/scoring.py` (NF-FC-006). Computed in Python, no model. |
 | `plan` | map | yes | The 13-week plan in English: budget, remittance schedule, debt paydown, emergency-fund target, warnings, and the "not professional financial advice" note. Structure defined by NF-FC-011/-012 (`CoachPlan`). Every money figure is `{ "amount", "currency" }`. |
 | `rates_as_of` | timestamp | yes | The oldest exchange rate or provider quote the plan used; the time of the plan when it used none (NF-FC-012) |
-| `plan_rules_version`, `rubric_version` | number | yes | The versions of the plan rules (`docs/features/coach-plan.md`) and of the score rubric the plan was made with |
+| `plan_rules_version`, `rubric_version` | number | yes | The versions of the plan rules and of the score rubric the plan was made with |
 | `grounding` | map | yes | What the figures were derived from, so the validator and a reviewer can check them: `{ "baselines": { "host_country", "version" }, "labor_law": { "country", "version" }, "fx": [ { "pair", "rate", "fetched_at", "provider" } ], "provider_quote": { "slug", "name", "fetched_at" } }` |
 | `language_generated` | string | yes | `en` |
 | `pdf` | map | no | Language to `{ "storage_path", "created_at" }`, for example `{ "en": {...}, "hi": {...} }`. Path: `exports/{uid}/coach-plan-{planId}-{language}.pdf`. Links are signed on request and never stored. |

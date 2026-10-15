@@ -40,7 +40,7 @@ The reminder job (NF-FC-016) is not changed.
 | `i18n/<lang>.json` and `i18n/coach/<lang>.json` (12) | The card and the toast (shared strings), the sheet (the Coach's) |
 | tests (14 files) | Listed under Results |
 
-**Docs:** `docs/api/v2-coach.md` (the route, the error code, open point 4 resolved), `docs/data-model/collections/coach.md` (the answers), `docs/mocks/README.md`, `docs/mermaid/financial-coach-pipeline.mmd`, `docs/runbooks/NF-FC-016-coach-checkin-reminders.md` (one line), `docs/deferred-items.md`, and this file.
+**Docs:** `docs/api/v2-coach.md` (the route, the error code, open point 4 resolved), `docs/data-model/collections/coach.md` (the answers), `docs/mocks/README.md`, `docs/mermaid/financial-coach-pipeline.mmd`, `docs/runbooks/NF-FC-016-coach-checkin-reminders.md` (one line), and this file.
 
 **No shared file was touched** (`package.json`, lockfile, `firebase.json`, rules, `tsconfig*`, workflows).
 
@@ -169,7 +169,7 @@ git commit -m "feat(coach): add check-in answers route for day 30, 60 and 90" -m
 # 2. frontend/public/firebase-messaging-sw.js, src/lib/messaging*.ts, src/hooks/useNotifications.ts, src/hooks/usePushSync.test.tsx, src/types/notification.ts, src/utils/appLinks*.ts, src/lib/firebaseMessagingSw.test.ts
 git commit -m "feat(push): open Coach check-in links from push notifications" -m "Refs: NF-FC-022"
 
-# 3. everything else under frontend/, docs/runbooks/NF-FC-022-..., docs/deferred-items.md
+# 3. everything else under frontend/, docs/runbooks/NF-FC-022-...
 git commit -m "feat(coach): add dashboard card and check-in sheet" -m "Refs: NF-FC-022"
 ```
 

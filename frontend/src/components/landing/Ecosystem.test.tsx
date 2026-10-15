@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // The ecosystem diagram on the landing page: all six pillars and the bank, and every exchange of
-// data between them that docs/future-scope/design.md section 8 lists (plus the four v1.0 links).
+// data between them (the Future Scope links, plus the four v1.0 links).
 // A test cannot see the picture, so it checks what makes it right: each connector starts on one
 // card and ends on the other, no two cards touch, and every label has its words.
 import { cleanup, render, screen, within } from "@testing-library/react";

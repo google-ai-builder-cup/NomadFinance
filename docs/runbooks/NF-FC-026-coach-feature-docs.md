@@ -1,19 +1,18 @@
 # NF-FC-026 — Coach feature docs and prompt notes
 
+> The feature pages this task wrote have since been removed from the repository; they stay in git history.
+
 ## Summary
 
 The Financial Coach now has the same two pages the Scam Analyzer has, and a row in the README table.
 
 | Page | What it holds |
 |---|---|
-| [`docs/features/financial-coach.md`](../features/financial-coach.md) (new) | What a worker sees; how a turn works (sequence diagram, with the steps, prompts and models in a table); the **state machine** (diagram, the stage table and its rules); what the Coach already knows from the profile, Contract Shield and Financial Identity; the **score** (five factors, bands, floor rule, summarised from `coach-scoring.md`); the **plan** (sequence diagram: figures in code, sentences by Gemini, the validator, translation, the PDF); the **guardrails**; check-ins; what is stored and for how long; the errors the screen handles; evaluation; **known limits**; turning it on; running the tests; where things are |
 | [`docs/gemini-prompts.md`](../gemini-prompts.md), section "Financial Coach" (filled in) | The seven prompts: tier, model, temperature, response model, variables, what each must never do, what the code does with the answer, version history; how prompt versions meet stored sessions and plans; and the steps to run after changing a Coach prompt, the question bank, the rubric or the model |
 | [`README.md`](../../README.md) | A **Financial Coach** row in the "Pillars 5 and 6: feature docs" table: the feature doc, the prompt notes and the API contract |
 | [`backend/app/prompts/README.md`](../../backend/app/prompts/README.md) | The three Coach prompts the table did not list: `coach/reply.v2`, `coach/review.v1`, `coach/summarise.v1` (agreed in the plan) |
 
-The score and plan rules are **linked, not copied**: `coach-scoring.md` and `coach-plan.md` stay the one place for the numbers.
-
-Not in this task: any code or behaviour change, the Scam Analyzer docs (NF-SA-021), rewriting `coach-scoring.md` or `coach-plan.md`.
+Not in this task: any code or behaviour change, the Scam Analyzer docs (NF-SA-021).
 
 ## What it was written from
 
@@ -23,12 +22,10 @@ Every statement was taken from the code or a runbook, not from the design intent
 
 | File | Change |
 |---|---|
-| `docs/features/financial-coach.md` | New |
 | `docs/gemini-prompts.md` | The Coach section added; the two feature rows in its table link to their sections |
 | `README.md` | One row |
 | `backend/app/prompts/README.md` | Three rows |
 | `docs/runbooks/NF-FC-026-coach-feature-docs.md` | New (this page) |
-| `docs/deferred-items.md` | D-263; "Last updated" |
 
 No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rules, workflows, `tsconfig*`) and no code was touched.
 
@@ -37,7 +34,7 @@ No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rule
 | # | Point | What was done |
 |---|---|---|
 | 1 | Link, not copy, the rubric and the plan rules | The two pages are long and carry the numbers; copying them would give two places to keep true. The feature doc keeps the shape (factors, weights, bands, caps) a reader needs to follow the flow |
-| 2 | The page mirrors `scam-analyzer.md` | Same order and tone, so a reader who knows one finds the other |
+| 2 | The page mirrors the Scam Analyzer page | Same order and tone, so a reader who knows one finds the other |
 | 3 | Prompt behaviour in `gemini-prompts.md`, not in the feature doc | As that page says: the files cannot explain behaviour, and the feature doc is about the flow |
 | 4 | Results are quoted with their date and run | The evaluation table says which numbers are from live runs and which have not been made (the first regression run, the guard's live check, the plan's re-run) |
 | 5 | The pipeline diagram is not redrawn | `docs/mermaid/financial-coach-pipeline.mmd` is the design's; the feature doc says where it differs (D-263) |
@@ -70,7 +67,7 @@ No shared file (requirements, `pyproject.toml`, `package.json`, Dockerfile, rule
 
 ## Noticed, not fixed
 
-All in `docs/deferred-items.md` D-263: the design pipeline diagram still names Gemini 2.5 Flash for the reply; `docs/api/v2-coach.md` "Implementation status" ends with "The rest is specified only", which is no longer true; the evaluation table will go stale as the open live runs happen.
+Left for later (D-263): the design pipeline diagram still names Gemini 2.5 Flash for the reply; `docs/api/v2-coach.md` "Implementation status" ends with "The rest is specified only", which is no longer true; the evaluation table will go stale as the open live runs happen.
 
 ## Commit
 

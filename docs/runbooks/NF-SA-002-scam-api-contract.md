@@ -38,7 +38,6 @@ The contract is `docs/api/v2-scam.md`. The executable form is `backend/app/schem
 | `frontend/src/mocks/scam.msw.test.ts` (new) | Proves the mock API serves every route, by default and swapped (15 tests) |
 | `docs/mocks/README.md`, `docs/api/endpoints.md` | The `scam/` section; a pointer to the v2 contracts |
 | `docs/data-model/collections/scam.md`, `radar.md` | Samples corrected: they showed `[AMOUNT]`, a token the redaction utility does not produce (it leaves amounts as written) |
-| `docs/deferred-items.md` | D-105 closed; D-124 to D-126 added; D-115 now also names NF-SA-009 |
 
 No shared file, no new package, no change to any endpoint.
 

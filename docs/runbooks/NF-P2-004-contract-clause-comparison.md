@@ -41,7 +41,7 @@ The reasoning model was often overloaded (503), and the day's free-tier quota ra
 | `backend/tests/integration/api/test_contracts_compare.py` | 13 endpoint tests |
 | `backend/tests/integration/api/test_contracts_compare_live.py` | Real Gemini, rules from the curated files (no Firestore): SG sample, MY-ID photo, fair SG contract |
 | `backend/tests/fixtures/contracts/*.blocks.json` | Blocks of the two samples (from step 1, live) and a hand-written fair SG contract |
-| `docs/api/endpoints.md`, `docs/pipelines/contract-shield.md`, `docs/deferred-items.md` | Endpoint, step 4, D-08/D-09 updated, D-57, D-58 new |
+| `docs/api/endpoints.md` | Endpoint, step 4, D-08/D-09 updated, D-57, D-58 new |
 
 ## Decisions
 

@@ -68,7 +68,7 @@ Fixes 6 and 7 are small and don't change anything where the extra space is 0, bu
 | `frontend/src/components/layout/Header.tsx`, `Sidebar.tsx`, `components/contract/ReportCard.tsx` | Top safe-area padding; sticky offsets clear it |
 | 8 full-height pages and components (`AppShell`, `Landing`, `SignIn`, `Onboarding`, `NotFound`, `RequireOnboarding`, `ErrorFallback`, `LoadingSpinner`) | `min-h-dvh` |
 | `frontend/src/lib/queryClient.ts`, `queryClient.test.ts` (Slow-3G follow-up) | Requests run while offline instead of waiting silently; 2 tests |
-| `docs/deferred-items.md`, this runbook | D-72 (real-device pass), D-73 to D-76 |
+| this runbook | D-72 (real-device pass), D-73 to D-76 |
 
 No new package, no shared file changed.
 
@@ -108,7 +108,7 @@ This downloads a few hundred MB into the user cache. The harness is not in the r
 
 ## Real-device checklist (needs a person with the phones)
 
-Tracked as D-72 in `docs/deferred-items.md`.
+Tracked as D-72.
 
 **iPhone, Safari** (and then the same from the home screen: Share → Add to Home Screen):
 - [ ] Landing, sign-in, dashboard: no sideways scroll, nothing cut off at the bottom

@@ -73,7 +73,7 @@ If a message gets no answer (Gemini failed after the client's three tries) the r
 | `data-scripts/src/config.py` | `EVAL_REPORT_DIR` (`docs/evals/`) |
 | `data-scripts/tests/test_scam_eval_{metrics,runner,report,cli,backend}.py` (new) | 55 tests |
 | `.github/workflows/scam-eval.yml` (new, **shared path, approved before it was written**) | The manual job |
-| `data-scripts/README.md`, `docs/evals/scam-golden-set.md`, `docs/deferred-items.md` | A README section, how to score the set, D-150 to D-152 and the status of D-129 |
+| `data-scripts/README.md`, `docs/evals/scam-golden-set.md` | A README section, how to score the set, D-150 to D-152 and the status of D-129 |
 
 No change to `requirements*.txt`, `pyproject.toml`, `data-ci.yml` or any other shared file, and no change to the backend.
 

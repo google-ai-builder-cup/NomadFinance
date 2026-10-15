@@ -8,7 +8,7 @@
 
 Every pillar calls Gemini, but the calls differ a lot in how hard they are and how often they run: a few legal-reasoning calls per contract, one vision extraction per document, and many cheap classification, validation and translation calls. Using one model for everything either overpays for the cheap calls or underpowers the reasoning.
 
-The design doc planned Gemini 2.5 Flash (reasoning), 1.5 Flash (extraction) and 2.0 Flash-Lite (classification). On 2026-09-24 Google's model list showed:
+The original design planned Gemini 2.5 Flash (reasoning), 1.5 Flash (extraction) and 2.0 Flash-Lite (classification). On 2026-09-24 Google's model list showed:
 
 | Planned model | Status on 2026-09-24 |
 |---|---|
@@ -50,6 +50,6 @@ All code picks a model through `ModelTier` (`app/integrations/gemini/model_tiers
 ## Consequences
 
 - Retirements like the ones above cost one env var change and a redeploy, not a code change.
-- The design doc and the Definition of Done in the task tracker still name 2.5 / 1.5 / 2.0 models. Read their tier names as `REASONING` / `EXTRACTION` / `CLASSIFICATION`, and this ADR as the source for the model IDs.
+- The original design and the Definition of Done in the task tracker still name 2.5 / 1.5 / 2.0 models. Read their tier names as `REASONING` / `EXTRACTION` / `CLASSIFICATION`, and this ADR as the source for the model IDs.
 - Embeddings (NF-P3-002) should use `gemini-embedding-001`, not `text-embedding-004`.
 - **Data use on the free tier.** Google's pricing page says free-tier content is "used to improve our products". Contracts and bills contain workers' personal data. Free tier is acceptable for the prototype with demo data. Real user data needs a billing-enabled (paid tier) key.

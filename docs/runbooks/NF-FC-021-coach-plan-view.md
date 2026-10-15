@@ -32,7 +32,7 @@ A worker who has made their plan can now **open it**: a page with the plan's sum
 | `frontend/src/lib/analytics.ts` | `/coach/plan/:planId` is anonymised in Google Analytics (the plan id is a hash of the worker's answers) |
 | `frontend/src/i18n/coach/*.json` | `plan.*`, `home.plan.*`, `score.plan.view` in 6 languages |
 | `frontend/src/mocks/coachTurns.ts` | `replayOverview` for tests |
-| `docs/api/v2-coach.md`, `docs/deferred-items.md` | Status note; D-244 |
+| `docs/api/v2-coach.md` | Status note; D-244 |
 
 No shared file (`package.json`, lockfile, `firebase.json`, workflows) and no backend file was touched.
 

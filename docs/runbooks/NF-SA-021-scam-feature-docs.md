@@ -1,12 +1,13 @@
 # NF-SA-021 — Scam Analyzer feature docs and prompt notes
 
+> The feature page this task wrote has since been removed from the repository; it stays in git history.
+
 ## Summary
 
 The Scam Analyzer (NF-SA-001 to NF-SA-020) now has its own documentation: one page for the feature and one for how its prompts behave and what to run after changing one. Documentation only: no code, prompt, test or workflow changed.
 
 | File | What it holds |
 |---|---|
-| [`docs/features/scam-analyzer.md`](../features/scam-analyzer.md) (new) | What a worker sees; the analyze flow as built (a sequence diagram); the steps with their tiers, models and time boxes; every limit; what is stored and what never is; the safety properties; the report to Radar; the errors the screen handles; the evaluation results; known limits; how to turn it on; how to run the tests; where each part lives |
 | [`docs/gemini-prompts.md`](../gemini-prompts.md) (new) | The rules every prompt follows; for the four scam prompts: purpose, tier and model, temperature, variables, response model, what the model must never do, and what the code does with the answer; how prompt versions drive the cache; the steps to repeat after changing a prompt, the taxonomy or the model. A heading for the Coach is left for NF-FC-026 |
 | `README.md`, `docs/README.md` | A "Future Scope features" table with a Scam Analyzer row, and the index lines |
 
@@ -14,9 +15,9 @@ The Scam Analyzer (NF-SA-001 to NF-SA-020) now has its own documentation: one pa
 
 | # | Point | What was done |
 |---|---|---|
-| 1 | The tracker names `docs/features/` and `docs/gemini-prompts.md`, and the repo has an empty `docs/prompts/prompt-library-guide.md` | Followed the tracker. `docs/features/` is also where NF-FC-026 (the Coach) puts its page, and `backend/app/prompts/README.md` is the real prompt-file table, which the new page links to instead of copying |
+| 1 | The tracker names a feature-docs folder and `docs/gemini-prompts.md` | Followed the tracker. `backend/app/prompts/README.md` is the real prompt-file table, which the new page links to instead of copying |
 | 2 | The tracker says "linked from README feature table", and the README had no table | Added a small table under "What It Does" |
-| 3 | The flow differs from `docs/future-scope/design.md` 5.2 in three places | The page says so: the explainer starts after the verdict (it needs it); the indicators are found in the raw text before masking; a screenshot always spends a check |
+| 3 | The flow differs from the original Future Scope design in three places | The page says so: the explainer starts after the verdict (it needs it); the indicators are found in the raw text before masking; a screenshot always spends a check |
 | 4 | "Eval results" needed numbers, and the golden-set baseline had never been run (D-150) | Ran it on 2026-10-07 with the key from Secret Manager (`--rpm 10`, 120 calls) and added the report: `docs/evals/scam-eval-2026-10-07.md` |
 
 ## How the pages were checked
@@ -38,7 +39,6 @@ Each figure was read from the code or the settings, not from another document: t
 | Reading the number | A baseline, not a proof: 6 to 12 messages per type, written by the team, native-speaker reads still open (D-127, D-130, D-132), and the runner scores only the classifier (D-152). The feature page says so |
 | The other results the page quotes | The live injection run (15 of 15, NF-SA-020) and the browser tests (30 runs) were not repeated; the page links to their reports |
 | Links and paths in both pages | Resolved by a script; the run is the only place the figures come from |
-| D-150 | Marked done in `docs/deferred-items.md` |
 
 **Not verified:** how the two pages render on GitHub (the Mermaid diagram and the tables); that the figures still hold after the next prompt change.
 

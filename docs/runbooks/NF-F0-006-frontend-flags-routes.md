@@ -40,7 +40,6 @@ How it works:
 | `frontend/src/i18n/{en,hi,tl,id,ne,bn}.json` | `nav.coach`, `nav.scamCheck` |
 | 4 new test files | See below |
 | `docs/data-model/firestore-schema.md` | Fixes the invalid `gcloud` command (below) |
-| `docs/deferred-items.md` | D-111 to D-114 |
 
 No shared file was touched (`package.json`, lock file, `firebase.json`, workflows are unchanged).
 
