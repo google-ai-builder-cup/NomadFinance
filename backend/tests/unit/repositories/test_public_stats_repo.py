@@ -42,9 +42,9 @@ def repo(numbers: dict[str, int | None]) -> PublicStatsRepository:
 
 
 def test_a_count_reads_the_one_number_an_aggregation_returns() -> None:
-    stats = repo({"users": 12, "current": 4, "coach_plans": 3})
+    stats = repo({"users": 12, "current": 4})
 
-    assert (stats.workers(), stats.alerts_generated(), stats.coach_plans()) == (12, 4, 3)
+    assert (stats.workers(), stats.alerts_generated()) == (12, 4)
 
 
 def test_an_aggregation_over_nothing_is_zero_not_none() -> None:

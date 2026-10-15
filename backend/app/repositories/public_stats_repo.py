@@ -59,9 +59,6 @@ class PublicStatsRepository:
         weeks = self._client.collection_group("weeks")
         return self._sum(weeks, "checks"), self._sum(weeks, "scams")
 
-    def coach_plans(self) -> int:
-        return self._count(self._client.collection_group("coach_plans"))
-
 
 @lru_cache
 def get_public_stats_repository() -> PublicStatsRepository:

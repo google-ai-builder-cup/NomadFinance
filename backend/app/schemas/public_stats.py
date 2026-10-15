@@ -20,5 +20,4 @@ class PublicStatsResponse(BaseModel):
     alerts_generated: int | None = Field(None, ge=0, description="Corridor alerts raised so far.")
     scam_messages_checked: int | None = Field(None, ge=0, description="Messages checked.")
     scams_flagged: int | None = Field(None, ge=0, description="Of those, judged to be scams.")
-    coach_plans: int | None = Field(None, ge=0, description="90-day plans made.")
     generated_at: datetime

@@ -16,7 +16,6 @@ const NONE: PublicStats = {
   alerts_generated: null,
   scam_messages_checked: null,
   scams_flagged: null,
-  coach_plans: null,
   generated_at: "2026-10-15T00:00:00Z",
 };
 

@@ -26,7 +26,6 @@ class StatsReader(Protocol):
     def radar_reports(self) -> int: ...
     def alerts_generated(self) -> int: ...
     def scam_checks(self) -> tuple[int, int]: ...
-    def coach_plans(self) -> int: ...
 
 
 _cache: tuple[float, PublicStatsResponse] | None = None
@@ -56,7 +55,6 @@ def _collect(reader: StatsReader, now: datetime) -> PublicStatsResponse:
         alerts_generated=_read("alerts_generated", reader.alerts_generated),
         scam_messages_checked=scam[0] if scam else None,
         scams_flagged=scam[1] if scam else None,
-        coach_plans=_read("coach_plans", reader.coach_plans),
         generated_at=now,
     )
 

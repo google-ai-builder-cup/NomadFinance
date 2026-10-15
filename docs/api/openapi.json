@@ -6739,19 +6739,6 @@
             "title": "Scams Flagged",
             "description": "Of those, judged to be scams."
           },
-          "coach_plans": {
-            "anyOf": [
-              {
-                "type": "integer",
-                "minimum": 0.0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Coach Plans",
-            "description": "90-day plans made."
-          },
           "generated_at": {
             "type": "string",
             "format": "date-time",

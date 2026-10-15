@@ -135,13 +135,13 @@
       "kicker": "Langsung di NomadFinance",
       "heading": "Angka nyata dari platform",
       "lead": "Total yang dihitung langsung dari NomadFinance dan diperbarui setiap beberapa menit. Ini hanya jumlah: tidak ada yang mengidentifikasi pekerja.",
+      "source": "Dihitung langsung dari NomadFinance",
       "items": {
         "contracts": "kontrak diperiksa terhadap hukum ketenagakerjaan",
         "scamChecked": "pesan mencurigakan diperiksa",
         "scamsFlagged": "pesan ditandai sebagai penipuan",
         "reports": "laporan dibagikan ke Radar",
         "alerts": "peringatan koridor diterbitkan",
-        "plans": "rencana 90 hari dibuat",
         "workers": "pekerja memakai NomadFinance"
       }
     },

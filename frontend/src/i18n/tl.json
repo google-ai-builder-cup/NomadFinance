@@ -135,13 +135,13 @@
       "kicker": "Live sa NomadFinance",
       "heading": "Totoong numero mula sa platform",
       "lead": "Mga kabuuang binilang mismo mula sa NomadFinance at ina-update tuwing ilang minuto. Bilang lang ang mga ito: walang makikilalang manggagawa rito.",
+      "source": "Direktang binilang mula sa NomadFinance",
       "items": {
         "contracts": "kontratang sinuri laban sa batas sa paggawa",
         "scamChecked": "kahina-hinalang mensaheng sinuri",
         "scamsFlagged": "mensaheng na-flag bilang scam",
         "reports": "ulat na ibinahagi sa Radar",
         "alerts": "alerto sa corridor na inilabas",
-        "plans": "90-araw na planong nagawa",
         "workers": "manggagawang gumagamit ng NomadFinance"
       }
     },

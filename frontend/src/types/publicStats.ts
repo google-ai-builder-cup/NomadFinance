@@ -6,6 +6,5 @@ export interface PublicStats {
   alerts_generated: number | null;
   scam_messages_checked: number | null;
   scams_flagged: number | null;
-  coach_plans: number | null;
   generated_at: string;
 }

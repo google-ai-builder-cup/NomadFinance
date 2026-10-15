@@ -1,14 +1,3 @@
-import {
-  Bell,
-  Flag,
-  GraduationCap,
-  type LucideIcon,
-  ScanSearch,
-  ShieldAlert,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
-
 import SectionHeading from "@/components/landing/SectionHeading";
 import CountUp from "@/components/visual/CountUp";
 import Reveal from "@/components/visual/Reveal";
@@ -16,25 +5,21 @@ import { useI18n } from "@/hooks/useI18n";
 import { usePublicStats } from "@/hooks/usePublicStats";
 import { cn } from "@/lib/utils";
 import type { PublicStats } from "@/types/publicStats";
-import { PILLAR_STYLES, type PillarKey } from "@/utils/pillars";
 
 interface LiveStat {
   key: string;
   field: keyof Omit<PublicStats, "generated_at">;
-  icon: LucideIcon;
-  pillar: PillarKey;
 }
 
 // The order is what a visitor most wants to know first: what it protects against, then how many
 // people use it. Only the first MAX_CARDS that have a figure are shown.
 const STATS: readonly LiveStat[] = [
-  { key: "contracts", field: "contracts_checked", icon: ShieldCheck, pillar: "contract" },
-  { key: "scamChecked", field: "scam_messages_checked", icon: ScanSearch, pillar: "scam" },
-  { key: "scamsFlagged", field: "scams_flagged", icon: ShieldAlert, pillar: "scam" },
-  { key: "reports", field: "radar_reports", icon: Flag, pillar: "radar" },
-  { key: "alerts", field: "alerts_generated", icon: Bell, pillar: "radar" },
-  { key: "plans", field: "coach_plans", icon: GraduationCap, pillar: "coach" },
-  { key: "workers", field: "workers", icon: Users, pillar: "remit" },
+  { key: "contracts", field: "contracts_checked" },
+  { key: "scamChecked", field: "scam_messages_checked" },
+  { key: "scamsFlagged", field: "scams_flagged" },
+  { key: "reports", field: "radar_reports" },
+  { key: "alerts", field: "alerts_generated" },
+  { key: "workers", field: "workers" },
 ];
 
 const MAX_CARDS = 6;
@@ -64,28 +49,26 @@ export default function LiveStats() {
           title={t("landing.live.heading")}
           lead={t("landing.live.lead")}
         />
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map(({ key, icon: Icon, pillar, value }, i) => (
+        <ul
+          className={cn(
+            "grid gap-4 sm:grid-cols-2",
+            // Four cards in a row of four, not three and one on its own.
+            shown.length === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"
+          )}
+        >
+          {shown.map(({ key, value }, i) => (
             <li key={key}>
-              <Reveal delay={i * 70} className="h-full">
-                <article className="card-surface card-edge flex h-full items-center gap-4 p-5 sm:p-6">
-                  <span
-                    className={cn(
-                      "grid h-12 w-12 shrink-0 place-items-center rounded-2xl",
-                      PILLAR_STYLES[pillar].tile
-                    )}
-                    aria-hidden="true"
-                  >
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[clamp(2rem,4vw,2.75rem)] font-extrabold leading-none tracking-tight tabular-nums">
-                      <CountUp value={value} />
-                    </p>
-                    <h3 className="mt-1.5 text-sm font-semibold leading-snug text-muted-foreground">
-                      {t(`landing.live.items.${key}`)}
-                    </h3>
-                  </div>
+              <Reveal delay={i * 80} className="h-full">
+                <article className="card-surface card-edge flex h-full min-h-[14rem] flex-col gap-3.5 p-6">
+                  <p className="text-[clamp(2.75rem,5vw,4rem)] font-extrabold leading-none tracking-tight tabular-nums">
+                    <CountUp value={value} />
+                  </p>
+                  <h3 className="text-base font-semibold leading-snug">
+                    {t(`landing.live.items.${key}`)}
+                  </h3>
+                  <p className="mt-auto border-t border-dashed pt-2.5 text-xs text-subtle">
+                    {t("landing.live.source")}
+                  </p>
                 </article>
               </Reveal>
             </li>

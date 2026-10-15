@@ -135,13 +135,13 @@
       "kicker": "Live on NomadFinance",
       "heading": "Real numbers from the platform",
       "lead": "Totals counted from NomadFinance itself and refreshed every few minutes. These are counts only: nothing here identifies a worker.",
+      "source": "Counted live from NomadFinance",
       "items": {
         "contracts": "contracts checked against labor law",
         "scamChecked": "suspicious messages checked",
         "scamsFlagged": "messages flagged as scams",
         "reports": "reports shared with the Radar",
         "alerts": "corridor alerts raised",
-        "plans": "90-day plans made",
         "workers": "workers using NomadFinance"
       }
     },

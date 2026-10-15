@@ -26,9 +26,6 @@ class FakeRepository:
     def scam_checks(self) -> tuple[int, int]:
         return 8, 6
 
-    def coach_plans(self) -> int:
-        return 0
-
 
 @pytest.fixture
 def stats_client() -> Iterator[TestClient]:
@@ -47,7 +44,6 @@ def test_anyone_can_read_the_totals_without_signing_in(stats_client: TestClient)
     assert body["radar_reports"] == 9
     assert body["scam_messages_checked"] == 8
     assert body["scams_flagged"] == 6
-    assert body["coach_plans"] == 0
     assert response.headers["cache-control"] == "public, max-age=300"
 
 
@@ -61,6 +57,5 @@ def test_the_answer_holds_counts_and_a_timestamp_only(stats_client: TestClient) 
         "alerts_generated",
         "scam_messages_checked",
         "scams_flagged",
-        "coach_plans",
         "generated_at",
     }

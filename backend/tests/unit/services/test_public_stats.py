@@ -38,9 +38,6 @@ class FakeReader:
         self._read("scam_checks", 0)
         return 20, 15
 
-    def coach_plans(self) -> int:
-        return self._read("coach_plans", 3)
-
 
 @pytest.fixture(autouse=True)
 def _fresh_cache() -> Iterator[None]:
@@ -53,7 +50,7 @@ async def test_collects_every_total() -> None:
     stats = await get_public_stats(FakeReader())
 
     assert (stats.workers, stats.contracts_checked, stats.radar_reports) == (12, 7, 31)
-    assert (stats.alerts_generated, stats.coach_plans) == (4, 3)
+    assert stats.alerts_generated == 4
     assert (stats.scam_messages_checked, stats.scams_flagged) == (20, 15)
 
 
