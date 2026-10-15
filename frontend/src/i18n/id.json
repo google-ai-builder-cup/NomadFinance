@@ -795,7 +795,6 @@
       "errors": {
         "empty": "Masukkan jumlah yang ingin Anda kirim.",
         "invalid": "Masukkan jumlah dalam angka, misalnya 500.",
-        "decimalComma": "Gunakan titik untuk desimal, misalnya 645.50. Koma hanya memisahkan ribuan, misalnya 6,450.",
         "decimals": "Gunakan paling banyak {{places}} angka desimal.",
         "wholeNumber": "Masukkan jumlah {{currency}} yang bulat, tanpa desimal.",
         "tooSmall": "Masukkan paling sedikit {{min}}.",
@@ -1133,7 +1132,6 @@
         "amount": {
           "empty": "Masukkan jumlah.",
           "invalid": "Masukkan jumlah yang valid.",
-          "decimalComma": "Gunakan titik untuk desimal, misalnya 645.50. Koma hanya memisahkan ribuan, misalnya 6,450.",
           "decimals": "Terlalu banyak angka desimal untuk mata uang ini.",
           "tooLarge": "Jumlah ini terlalu besar. Periksa lalu coba lagi."
         }

@@ -8,6 +8,7 @@ import { useI18n } from "@/hooks/useI18n";
 import {
   COACH_CURRENCIES,
   isAmount,
+  isWholeUnitCurrency,
   parseAmount,
   plainNumber,
   type CoachCurrency,
@@ -52,7 +53,7 @@ export default function MoneyField({
     if (busy) {
       return;
     }
-    const value = parseAmount(amount);
+    const value = parseAmount(amount, isWholeUnitCurrency(currency));
     // Pay is above zero; a debt or savings may be none.
     if (!isAmount(value, { allowZero: canBeNone }) || value === null) {
       setInvalid(true);

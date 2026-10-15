@@ -70,15 +70,15 @@ export function defaultCorridor(host?: HostCountry, home?: HomeCountry): Corrido
   );
 }
 
-export type AmountProblem =
-  "empty" | "invalid" | "decimalComma" | "decimals" | "tooSmall" | "tooLarge";
+export type AmountProblem = "empty" | "invalid" | "decimals" | "tooSmall" | "tooLarge";
 
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
 /**
- * Read what the worker typed. Accepts "645", "645.50" and thousands grouped with commas ("6,450",
- * "1,530.50") or, before exactly three digits, a dot ("6.450"); for the yen, every separator is a
- * thousands separator. A comma before one or two digits ("5,10") is refused, never guessed.
+ * Read what the worker typed. Accepts "645", "645.50" and "645,50", and thousands grouped with
+ * commas ("6,450", "1,530.50") or dots ("1.530,50"); a dot before exactly three digits ("6.450")
+ * is a decimal point. For the yen, every separator is a thousands separator. How the marks are
+ * read is in `readTypedAmount`.
  */
 export function parseAmount(text: string, info: CorridorInfo): AmountCheck {
   const typed = readTypedAmount(text, info.decimals === 0);

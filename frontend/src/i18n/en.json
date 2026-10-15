@@ -795,7 +795,6 @@
       "errors": {
         "empty": "Enter the amount you want to send.",
         "invalid": "Enter the amount as a number, for example 500.",
-        "decimalComma": "Use a dot for decimals, like 645.50. A comma only separates thousands, like 6,450.",
         "decimals": "Use at most {{places}} decimal places.",
         "wholeNumber": "Enter a whole number of {{currency}}, without decimals.",
         "tooSmall": "Enter at least {{min}}.",
@@ -1133,7 +1132,6 @@
         "amount": {
           "empty": "Enter an amount.",
           "invalid": "Enter a valid amount.",
-          "decimalComma": "Use a dot for decimals, like 645.50. A comma only separates thousands, like 6,450.",
           "decimals": "Too many decimal places for this currency.",
           "tooLarge": "That amount is too large. Check it and try again."
         }

@@ -6,8 +6,12 @@ describe("parseAmount", () => {
   it.each([
     ["650", 650],
     ["650.50", 650.5],
+    ["650,50", 650.5],
+    ["6,5", 6.5],
     ["1,000.50", 1000.5],
-    ["6.500", 6500],
+    ["1.000,50", 1000.5],
+    // A dot is a decimal point even before three digits; a comma there groups thousands.
+    ["6.500", 6.5],
     ["6,500", 6500],
   ])("reads %s as %d", (text, amount) => {
     expect(parseAmount(text, "SGD")).toEqual({ ok: true, amount });
@@ -19,15 +23,21 @@ describe("parseAmount", () => {
     ["-5", "invalid"],
     ["0", "invalid"],
     ["1e3", "invalid"],
-    ["6,5", "decimalComma"],
-    ["1.000,50", "decimalComma"],
+    ["1,2,3", "invalid"],
+    ["10.555", "decimals"],
   ])("refuses '%s' as %s", (text, problem) => {
     expect(parseAmount(text, "SGD")).toEqual({ ok: false, problem });
   });
 
   it("refuses more decimals than the currency has", () => {
     expect(parseAmount("10.5", "JPY")).toEqual({ ok: false, problem: "decimals" });
+    expect(parseAmount("10,5", "KRW")).toEqual({ ok: false, problem: "decimals" });
     expect(parseAmount("10.5555", "AUD")).toEqual({ ok: false, problem: "decimals" });
+  });
+
+  it("reads a mark before three digits as thousands where there is no minor unit", () => {
+    expect(parseAmount("42.000", "JPY")).toEqual({ ok: true, amount: 42000 });
+    expect(parseAmount("42,000", "KRW")).toEqual({ ok: true, amount: 42000 });
   });
 
   it("refuses an amount beyond the most one entry can be, as the server does", () => {

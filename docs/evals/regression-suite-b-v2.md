@@ -37,7 +37,7 @@ Task NF-HR-005, run 2026-10-13 on `fix/regression-suite-b`. This is the test she
 | R-02 | 500 on the default corridor: a ranked comparison, best first | P | P | P | P | P | P | Auto |
 | R-03 | Every corridor compares at its survey amount (shortcut button) | P | P | P | P | P | P | All six |
 | R-04a | `1,000` | P | P | P | P | P | P | Read as 1000 |
-| R-04b | `645,50` (European decimal) | P | P | P | P | P | P | Superseded: a comma is no longer read as a decimal; `645,50` is refused with a "use a dot" message. |
+| R-04b | `645,50` (European decimal) | P | P | P | P | P | P | Read as 645.50 again (2026-10-15): a comma before one or two digits is a decimal, before three it groups thousands (`5,400`). A dot is always the decimal point (`5.400` is 5.4). |
 | R-04c | `1 000` (space-grouped) | P | P | P | P | P | P | |
 | R-04d | `५००` (Devanagari digits) | P | P | P | P | P | P | **QA-B-01**. The old parser refused it |
 | R-04e | `৫০০` (Bengali digits) | P | P | P | P | P | P | QA-B-01 |
@@ -45,7 +45,7 @@ Task NF-HR-005, run 2026-10-13 on `fix/regression-suite-b`. This is the test she
 | R-04g | `５００` (full-width digits) | P | P | P | P | P | P | QA-B-01 |
 | R-04h | `500 SGD` | P | P | P | P | P | P | Refused: "Enter the amount as a number, for example 500." Nothing sent |
 | R-04i | `-5`, R-04j `0`, R-04k letters, R-04n `1e3` | P | P | P | P | P | P | Same message, nothing sent |
-| R-04l | `500.123` (three decimals) | P | P | P | P | P | P | Read as 500,123 (dot-grouped thousands by design, as in D-281), so refused as over the limit |
+| R-04l | `500.123` (three decimals) | P | P | P | P | P | P | Refused as too many decimals (2026-10-15). It was read as 500,123 (dot-grouped thousands, D-281) and refused as over the limit |
 | R-04m | A number above the limit | P | P | P | P | P | P | "Enter at most SGD 6,450." |
 | R-04o | Paste with a newline and a tab | P | P | P | P | P | P | |
 | R-05 | Double-click on Compare: one comparison, no error | P | P | P | P | P | P | |

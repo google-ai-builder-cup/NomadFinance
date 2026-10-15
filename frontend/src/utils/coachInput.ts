@@ -1,5 +1,5 @@
 import { HOST_COUNTRIES, JOB_TYPES, type HostCountry } from "@/types/enums";
-import { toAsciiDigits } from "@/utils/digits";
+import { readTypedAmount } from "@/utils/amountReading";
 import type { CoachSlot, CoachStage } from "@/types/coach";
 
 // The interview's helpers write their answer as text, which the server reads again (v2-coach.md,
@@ -83,29 +83,20 @@ export function answerInputFor(stage: CoachStage, slot: CoachSlot | null): Answe
   }
 }
 
+// Money with no minor unit in use: "500.000" of these is half a million, never a half.
+const WHOLE_UNIT_CURRENCIES: ReadonlySet<string> = new Set(["JPY", "KRW", "IDR"]);
+
+export const isWholeUnitCurrency = (currency: string): boolean =>
+  WHOLE_UNIT_CURRENCIES.has(currency);
+
 /**
- * A number as a worker types it: "4200", "4,200", "4 200.50", "1.700,50". One separator that is
- * followed by exactly three digits is a thousands mark ("4,200"); otherwise the last separator is
- * the decimal point. Returns null for anything that is not one plain number.
+ * A number as a worker types it: "4200", "4,200", "4 200.50", "1.700,50", "4,5". The marks are read
+ * as in `readTypedAmount`; `wholeUnits` is for a currency with no minor unit. Returns null for
+ * anything that is not one plain number.
  */
-export function parseAmount(raw: string): number | null {
-  const text = toAsciiDigits(raw.trim()).replace(/[\s']/g, "");
-  if (!/^\d+(?:[.,]\d+)*$/.test(text)) {
-    return null;
-  }
-  const marks = text.match(/[.,]/g) ?? [];
-  let normal: string;
-  if (marks.length === 0) {
-    normal = text;
-  } else {
-    const last = Math.max(text.lastIndexOf("."), text.lastIndexOf(","));
-    const head = text.slice(0, last);
-    const tail = text.slice(last + 1);
-    // "4,200" and "1.700.000" group thousands; "4,20", "4.5", "0.500" and "1.700,500" do not.
-    const grouping = new Set(marks).size === 1 && tail.length === 3 && head !== "0";
-    normal = grouping ? text.replace(/[.,]/g, "") : `${head.replace(/[.,]/g, "")}.${tail}`;
-  }
-  const value = Number(normal);
+export function parseAmount(raw: string, wholeUnits = false): number | null {
+  const typed = readTypedAmount(raw.trim(), wholeUnits);
+  const value = typed.ok ? Number(typed.normalized) : Number.NaN;
   return Number.isFinite(value) ? value : null;
 }
 
