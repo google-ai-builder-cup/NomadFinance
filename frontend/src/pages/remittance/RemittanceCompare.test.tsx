@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // The link from the Coach's plan into Remittance X-Ray (NF-FC-021): the form opens with the
 // corridor and the amount filled in, and the comparison runs once.
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -72,6 +72,37 @@ describe("opened from a plan", () => {
     );
 
     expect(compare.mutate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("an amount typed in the form (SGD, 65 to 6,450)", () => {
+  function typeAndSubmit(text: string) {
+    renderAt("/remittance");
+    fireEvent.change(amountField(), { target: { value: text } });
+    fireEvent.submit(amountField().closest("form") as HTMLFormElement);
+  }
+
+  it.each([
+    ["645,10", 645.1],
+    ["645.100", 645.1],
+    ["645.5", 645.5],
+    ["1,530", 1530],
+    ["1.530,50", 1530.5],
+    ["1,530.50", 1530.5],
+  ])("compares %j as %d", (text, amount) => {
+    typeAndSubmit(text);
+
+    expect(compare.mutate).toHaveBeenCalledWith({ corridor_id: "SG-PH", amount });
+    expect(document.getElementById("remittance-amount-error")).toBeNull();
+  });
+
+  it.each(["5,10", "5.400", "6.450"])("reads %j as a small amount, not as thousands", (text) => {
+    typeAndSubmit(text);
+
+    expect(compare.mutate).not.toHaveBeenCalled();
+    expect(document.getElementById("remittance-amount-error")?.textContent).toContain(
+      "Enter at least"
+    );
   });
 });
 

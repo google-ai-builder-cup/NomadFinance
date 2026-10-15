@@ -69,7 +69,7 @@ Scripted cases C-01…C-13 ran at 360, desktop, 412 and 768 in English and at 36
 |---|---|---|---|
 | F-01 | A new worker's dashboard: calm empty states, no error | P | |
 | F-02 | Logging income shows "Logged." and the entry reaches the activity feed | P | |
-| F-03 | Income `''`, `abc`, `-5`, `0`, `1e3` refused with the right message, nothing stored; `1,000.50` stored as 1000.50; no category refused; JPY `10.5` refused | P | `10.555` is read as 10,555 (dot-grouped thousands, by design: D-281) |
+| F-03 | Income `''`, `abc`, `-5`, `0`, `1e3` refused with the right message, nothing stored; `1,000.50` stored as 1000.50; no category refused; JPY `10.5` refused | P | `10.555` was read as 10,555 (dot-grouped thousands, D-281); since 2026-10-15 it is refused as too many decimals |
 | F-03h | Income `99999999999999` | **F** | **QA-A-05** (stored). Fixed: refused as "too large" in the form and by the API |
 | F-04 | A bill typed in with no category waits; "Sort my bills" sorts it | P | |
 | F-05 | Savings in and out | P | |

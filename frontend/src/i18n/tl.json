@@ -795,7 +795,6 @@
       "errors": {
         "empty": "Ilagay ang halagang gusto mong ipadala.",
         "invalid": "Ilagay ang halaga bilang numero, halimbawa 500.",
-        "decimalComma": "Gumamit ng tuldok para sa decimal, tulad ng 645.50. Ang kuwit ay panghiwalay lang ng libo, tulad ng 6,450.",
         "decimals": "Hanggang {{places}} decimal place lang ang puwede.",
         "wholeNumber": "Maglagay ng buong halaga ng {{currency}}, walang decimal.",
         "tooSmall": "Maglagay ng hindi bababa sa {{min}}.",
@@ -1133,7 +1132,6 @@
         "amount": {
           "empty": "Ilagay ang halaga.",
           "invalid": "Ilagay ang tamang halaga.",
-          "decimalComma": "Gumamit ng tuldok para sa decimal, tulad ng 645.50. Ang kuwit ay panghiwalay lang ng libo, tulad ng 6,450.",
           "decimals": "Masyadong marami ang decimal para sa pera na ito.",
           "tooLarge": "Masyadong malaki ang halagang ito. Suriin ito at subukang muli."
         }

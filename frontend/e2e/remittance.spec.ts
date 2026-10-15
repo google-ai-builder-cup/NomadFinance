@@ -137,12 +137,16 @@ test("the results do not scroll the page sideways", async ({ page }) => {
 test("an amount that could be read two ways says how it was read before it is sent", async ({
   page,
 }) => {
-  await amount(page).fill("1.500");
+  await amount(page).fill("5.400");
 
   await expect(page.getByRole("status").filter({ hasText: "We read this as" })).toContainText(
-    "1,500"
+    "5.40"
   );
-  await amount(page).fill("1.5");
+  await amount(page).fill("5,400");
+  await expect(page.getByRole("status").filter({ hasText: "We read this as" })).toContainText(
+    "5,400"
+  );
+  await amount(page).fill("5.4");
   await expect(page.getByRole("status").filter({ hasText: "We read this as" })).toHaveCount(0);
 });
 

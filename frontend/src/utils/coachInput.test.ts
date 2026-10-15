@@ -6,6 +6,7 @@ import {
   isAmount,
   isDependents,
   isRate,
+  isWholeUnitCurrency,
   parseAmount,
 } from "@/utils/coachInput";
 
@@ -20,6 +21,8 @@ describe("parseAmount", () => {
     ["1,700.50", 1700.5],
     ["4200.5", 4200.5],
     ["4,20", 4.2],
+    // A dot is a decimal point even before three digits; a comma there groups thousands.
+    ["4.200", 4.2],
     ["0.500", 0.5],
     ["  3000  ", 3000],
     ["0", 0],
@@ -27,12 +30,28 @@ describe("parseAmount", () => {
     expect(parseAmount(raw)).toBe(expected);
   });
 
-  it.each(["", "abc", "12abc", "-5", "1e3", "4200 AUD", "1..2", ",5"])(
+  it.each(["", "abc", "12abc", "-5", "1e3", "4200 AUD", "1..2", ",5", "12.3.4", "5,1000"])(
     "does not read %j as a number",
     (raw) => {
       expect(parseAmount(raw)).toBeNull();
     }
   );
+
+  it.each([
+    ["500.000", 500_000],
+    ["500,000", 500_000],
+    ["1.700.000", 1_700_000],
+    ["50000", 50_000],
+  ])("reads %s as %d where the currency has no minor unit", (raw, expected) => {
+    expect(parseAmount(raw, true)).toBe(expected);
+  });
+
+  it("knows which coach currencies have no minor unit", () => {
+    expect(["JPY", "KRW", "IDR"].map(isWholeUnitCurrency)).toEqual([true, true, true]);
+    expect(["SGD", "AUD", "PHP", "INR", "NPR", "BDT"].map(isWholeUnitCurrency)).toEqual(
+      Array(6).fill(false)
+    );
+  });
 });
 
 describe("the limits", () => {

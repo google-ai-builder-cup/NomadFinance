@@ -1,21 +1,26 @@
 import { useI18n } from "@/hooks/useI18n";
 import i18n from "@/lib/i18n";
-import { dottedThousands } from "@/utils/amountReading";
+import { ambiguousReading } from "@/utils/amountReading";
+import { currencyDecimals } from "@/utils/fibForm";
 import { formatMoney } from "@/utils/format";
 
 export interface AmountReadingProps {
   /** What the worker typed. */
   text: string;
   currency: string;
-  /** Decimals the currency takes, for how the reading is shown. */
+  /** Decimals the currency takes; the currency's own when left out. */
   decimals?: number;
 }
 
-/** Says how an amount like `1.500` was read (1,500) before it is sent, because the same text on
- * another keyboard means one and a half. Renders nothing when the text has one reading. */
-export default function AmountReading({ text, currency, decimals = 2 }: AmountReadingProps) {
+/** Says how an amount like `5.400` was read (5.40) before it is sent, because the same text on
+ * another keyboard means five thousand four hundred. Renders nothing when the text has one reading. */
+export default function AmountReading({
+  text,
+  currency,
+  decimals = currencyDecimals(currency),
+}: AmountReadingProps) {
   const { t } = useI18n();
-  const value = dottedThousands(text);
+  const value = ambiguousReading(text, decimals);
   if (value === null) {
     return null;
   }

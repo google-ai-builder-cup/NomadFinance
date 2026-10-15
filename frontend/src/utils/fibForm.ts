@@ -32,15 +32,15 @@ export function currencyDecimals(currency: string): number {
 export const MAX_AMOUNT = 1_000_000;
 export const MAX_AMOUNT_WHOLE_UNIT = 100_000_000;
 
-export type AmountProblem = "empty" | "invalid" | "decimalComma" | "decimals" | "tooLarge";
+export type AmountProblem = "empty" | "invalid" | "decimals" | "tooLarge";
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
 /**
- * Read a worker-typed amount. Accepts "650", "650.50" and thousands grouped with commas ("6,500")
- * or, before exactly three digits, a dot ("6.500"); a comma before one or two digits ("6,5") is
- * refused, never guessed. Unlike `utils/corridors.ts`'s `parseAmount`, there is no survey-based
- * range to check against, only that it is a positive number with no more decimals than the
- * currency allows.
+ * Read a worker-typed amount. Accepts "650", "650.50", "650,50" and thousands grouped with commas
+ * ("6,500") or dots ("1.000,50"); a dot before exactly three digits ("6.500") is a decimal point.
+ * How the marks are read is in `readTypedAmount`. Unlike `utils/corridors.ts`'s `parseAmount`,
+ * there is no survey-based range to check against, only that it is a positive number with no more
+ * decimals than the currency allows.
  */
 export function parseAmount(text: string, currency: string): AmountCheck {
   const decimals = currencyDecimals(currency);
