@@ -84,13 +84,11 @@ describe("parseAmount", () => {
     ["645", 645],
     [" 645 ", 645],
     ["645.5", 645.5],
-    ["645,50", 645.5],
     ["6,450", 6450],
     ["6.450", 6450],
     // A dot before exactly three digits groups thousands (the Indonesian "1.530").
     ["1.530", 1530],
     ["1,530.50", 1530.5],
-    ["1.530,50", 1530.5],
     ["65", 65],
   ])("reads %j as %d SGD", (text, amount) => {
     expect(parseAmount(text, sgd)).toEqual({ ok: true, amount });
@@ -114,6 +112,11 @@ describe("parseAmount", () => {
     ["1e3", "invalid"],
     ["0", "invalid"],
     ["12.3.4", "invalid"],
+    // A comma is never a decimal point: "5,10" is refused, not read as 5.10 or 510.
+    ["5,10", "decimalComma"],
+    ["645,50", "decimalComma"],
+    ["1.530,50", "decimalComma"],
+    ["5,1000", "invalid"],
     ["645.5555", "decimals"],
     ["64.99", "tooSmall"],
     ["6450.01", "tooLarge"],

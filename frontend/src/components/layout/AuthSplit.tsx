@@ -13,7 +13,7 @@ export default function AuthSplit({ children }: { children: ReactNode }) {
   const { t } = useI18n();
 
   return (
-    <div className="grid min-h-screen min-h-dvh lg:grid-cols-[1.05fr_1fr]">
+    <div className="grid min-h-screen min-h-dvh grid-cols-[minmax(0,1fr)] lg:grid-cols-[1.05fr_1fr]">
       <aside className="relative hidden flex-col justify-between gap-8 overflow-hidden bg-hero-wash p-10 lg:flex xl:p-14">
         <AnimatedBackground variant="mesh" />
         <Link

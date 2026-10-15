@@ -1,5 +1,5 @@
 import { ApiError } from "@/services/apiClient";
-import { toAsciiDigits } from "@/utils/digits";
+import { readTypedAmount } from "@/utils/amountReading";
 import { CORRIDOR_IDS, type CorridorId, type HomeCountry, type HostCountry } from "@/types/enums";
 import { errorMessageKey } from "@/utils/errors";
 import { requestFailureKey } from "@/utils/pipelineProgress";
@@ -70,34 +70,22 @@ export function defaultCorridor(host?: HostCountry, home?: HomeCountry): Corrido
   );
 }
 
-export type AmountProblem = "empty" | "invalid" | "decimals" | "tooSmall" | "tooLarge";
+export type AmountProblem =
+  "empty" | "invalid" | "decimalComma" | "decimals" | "tooSmall" | "tooLarge";
 
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
 /**
- * Read what the worker typed. Accepts "645", "645.50", "645,50" and grouped thousands in
- * either style ("6,450", "6.450", "1,530.50", "1.530,50"); for the yen, every separator is a
- * thousands separator.
+ * Read what the worker typed. Accepts "645", "645.50" and thousands grouped with commas ("6,450",
+ * "1,530.50") or, before exactly three digits, a dot ("6.450"); for the yen, every separator is a
+ * thousands separator. A comma before one or two digits ("5,10") is refused, never guessed.
  */
 export function parseAmount(text: string, info: CorridorInfo): AmountCheck {
-  // \s also covers the no-break space some keyboards put in grouped numbers; the digits of a
-  // Hindi, Nepali or Bengali keyboard are read as 0 to 9.
-  const raw = toAsciiDigits(text).replace(/[\s']/g, "");
-  if (raw === "") {
-    return { ok: false, problem: "empty" };
+  const typed = readTypedAmount(text, info.decimals === 0);
+  if (!typed.ok) {
+    return text.trim() === "" ? { ok: false, problem: "empty" } : typed;
   }
-  let normalized: string;
-  if (info.decimals === 0 && /^\d+([.,]\d{3})*$/.test(raw)) {
-    normalized = raw.replace(/[.,]/g, "");
-  } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(raw)) {
-    normalized = raw.replace(/,/g, "");
-  } else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(raw)) {
-    normalized = raw.replace(/\./g, "").replace(",", ".");
-  } else if (/^\d+([.,]\d+)?$/.test(raw)) {
-    normalized = raw.replace(",", ".");
-  } else {
-    return { ok: false, problem: "invalid" };
-  }
+  const normalized = typed.normalized;
   const fraction = normalized.split(".")[1] ?? "";
   if (fraction.length > info.decimals) {
     return { ok: false, problem: "decimals" };

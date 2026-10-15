@@ -7,7 +7,7 @@ describe("parseAmount", () => {
     ["650", 650],
     ["650.50", 650.5],
     ["1,000.50", 1000.5],
-    ["1.000,50", 1000.5],
+    ["6.500", 6500],
     ["6,500", 6500],
   ])("reads %s as %d", (text, amount) => {
     expect(parseAmount(text, "SGD")).toEqual({ ok: true, amount });
@@ -19,6 +19,8 @@ describe("parseAmount", () => {
     ["-5", "invalid"],
     ["0", "invalid"],
     ["1e3", "invalid"],
+    ["6,5", "decimalComma"],
+    ["1.000,50", "decimalComma"],
   ])("refuses '%s' as %s", (text, problem) => {
     expect(parseAmount(text, "SGD")).toEqual({ ok: false, problem });
   });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { dottedThousands } from "@/utils/amountReading";
+import { dottedThousands, readTypedAmount } from "@/utils/amountReading";
 
 describe("dottedThousands", () => {
   it.each([
@@ -19,4 +19,32 @@ describe("dottedThousands", () => {
       expect(dottedThousands(text)).toBeNull();
     }
   );
+});
+
+describe("readTypedAmount", () => {
+  it.each([
+    ["500", "500"],
+    ["645.50", "645.50"],
+    ["5,400", "5400"],
+    ["5.400", "5400"],
+    ["1,530.50", "1530.50"],
+    ["0.500", "0.500"],
+    ["५,४००", "5400"],
+  ])("reads %j as %s", (text, normalized) => {
+    expect(readTypedAmount(text, false)).toEqual({ ok: true, normalized });
+  });
+
+  it.each(["5,10", "645,50", "1.530,50", "0,5"])("refuses %j: a comma is not a decimal", (text) => {
+    expect(readTypedAmount(text, false)).toEqual({ ok: false, problem: "decimalComma" });
+  });
+
+  it.each(["", "abc", "5,1000", "12.3.4", "-5", "1e3"])("refuses %j as not a number", (text) => {
+    expect(readTypedAmount(text, false)).toEqual({ ok: false, problem: "invalid" });
+  });
+
+  it("reads every separator as thousands for a currency with no minor unit", () => {
+    expect(readTypedAmount("42,000", true)).toEqual({ ok: true, normalized: "42000" });
+    expect(readTypedAmount("42.000", true)).toEqual({ ok: true, normalized: "42000" });
+    expect(readTypedAmount("5,10", true)).toEqual({ ok: false, problem: "invalid" });
+  });
 });

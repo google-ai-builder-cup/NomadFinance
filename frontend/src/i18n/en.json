@@ -24,23 +24,25 @@
       }
     },
     "story": {
-      "heading": "Meet Priya",
-      "body": "Priya left India to work as a domestic worker in Singapore. Her agency handed her a contract in English — a language she was still learning — and picked the money transfer service she used to send money home. She had no way to check if either was fair. NomadFinance reads her contract in Hindi, checks it against Singapore's labor law, and shows her exactly what each provider really charges to send money to her family — so the choice is hers, not her agency's.",
+      "heading": "Priya's first year in Singapore",
+      "body": "Priya was twenty-six when she took a job as a domestic worker in Singapore. The contract was in English, and she signed it the way you sign something you are afraid to lose. Every month she sent money to her mother in Kanpur through the counter her agency recommended, and never understood why less arrived than she expected. One night a message came from a number she did not know, asking for a small fee to release her bonus. Nobody around her could tell her whether any of it was right. NomadFinance is built for that year. It reads her contract in Hindi, shows what each transfer really costs, checks the strange message, and keeps a record of her earnings that a bank will accept.",
       "kicker": "A worker's story",
       "avatar": "Illustration of Priya, a domestic worker in Singapore",
       "before": {
         "badge": "Before",
-        "title": "Confusion",
-        "b1": "A contract in a language she is still learning",
-        "b2": "A transfer service chosen by her agency, with hidden fees",
-        "b3": "No way to tell if either was fair"
+        "title": "Guessing",
+        "b1": "A contract in English that she signed without being sure what it said",
+        "b2": "A transfer counter her agency picked, and a rate she could not question",
+        "b3": "A message asking for a fee to release her bonus, and no one to ask",
+        "b4": "Years of sending money home, and nothing to show a bank"
       },
       "after": {
         "badge": "With NomadFinance",
-        "title": "Clarity",
-        "a1": "Her contract, read in Hindi and checked against Singapore's labor law",
-        "a2": "The best provider, with what each one really charges",
-        "a3": "The choice is hers, not her agency's"
+        "title": "Knowing",
+        "a1": "Her contract read in Hindi, every clause checked against Singapore's labor law",
+        "a2": "Every provider side by side, with the real cost of sending money to Kanpur",
+        "a3": "The suspicious message explained in plain words, and a warning shared with other workers through the Radar",
+        "a4": "Her income, bills and savings turned into a score and a report a bank can read, and a 90-day plan from the Coach"
       }
     },
     "pillars": {
@@ -129,6 +131,20 @@
         "today": "Today"
       }
     },
+    "live": {
+      "kicker": "Live on NomadFinance",
+      "heading": "Real numbers from the platform",
+      "lead": "Totals counted from NomadFinance itself and refreshed every few minutes. These are counts only: nothing here identifies a worker.",
+      "items": {
+        "contracts": "contracts checked against labor law",
+        "scamChecked": "suspicious messages checked",
+        "scamsFlagged": "messages flagged as scams",
+        "reports": "reports shared with the Radar",
+        "alerts": "corridor alerts raised",
+        "plans": "90-day plans made",
+        "workers": "workers using NomadFinance"
+      }
+    },
     "performance": {
       "kicker": "How NomadFinance performs",
       "heading": "One platform. Six corridors. Four Gemini tiers working together.",
@@ -189,12 +205,6 @@
           "name": "ILO labor-law grounding",
           "body": "Contracts checked against local rules"
         }
-      },
-      "time": {
-        "pending": "Pending measurement",
-        "unit": "s",
-        "title": "Average contract analysis time",
-        "note": "We show this only once we have measured it."
       },
       "privacy": {
         "title": "Private by design",
@@ -260,8 +270,12 @@
     },
     "impact": {
       "kicker": "Impact and SDGs",
-      "heading": "Built to support three UN goals",
+      "heading": "Built to support four UN goals",
       "goal": "SDG {{number}}:",
+      "g1": {
+        "title": "No poverty, target 1.4",
+        "body": "A record of income, bills and savings that workers can show a bank, so using financial services does not start from zero."
+      },
       "g8": {
         "title": "Decent work and economic growth",
         "body": "Contracts checked against labor law, so safe work is easier to recognise."
@@ -272,7 +286,7 @@
       },
       "g16": {
         "title": "Peace, justice and strong institutions",
-        "body": "Crowdsourced reports and complaint letters give workers a route to be heard."
+        "body": "Scam checks, community reports and complaint letters help workers avoid fraud and give them a route to be heard."
       }
     },
     "footer": {
@@ -781,6 +795,7 @@
       "errors": {
         "empty": "Enter the amount you want to send.",
         "invalid": "Enter the amount as a number, for example 500.",
+        "decimalComma": "Use a dot for decimals, like 645.50. A comma only separates thousands, like 6,450.",
         "decimals": "Use at most {{places}} decimal places.",
         "wholeNumber": "Enter a whole number of {{currency}}, without decimals.",
         "tooSmall": "Enter at least {{min}}.",
@@ -1118,6 +1133,7 @@
         "amount": {
           "empty": "Enter an amount.",
           "invalid": "Enter a valid amount.",
+          "decimalComma": "Use a dot for decimals, like 645.50. A comma only separates thousands, like 6,450.",
           "decimals": "Too many decimal places for this currency.",
           "tooLarge": "That amount is too large. Check it and try again."
         }

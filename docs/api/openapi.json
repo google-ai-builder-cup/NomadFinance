@@ -1077,6 +1077,28 @@
         ]
       }
     },
+    "/api/v1/public/stats": {
+      "get": {
+        "tags": [
+          "public"
+        ],
+        "summary": "Public Stats Endpoint",
+        "description": "Platform-wide totals for the landing page. Public: no sign-in, counts only, no worker data.\n\nOnly the API-wide rate limit applies (by IP, there being no user); the answer is cached for\nfive minutes here and by the browser.",
+        "operationId": "public_stats_endpoint_api_v1_public_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicStatsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/radar/report": {
       "post": {
         "tags": [
@@ -6636,6 +6658,112 @@
         ],
         "title": "ProviderResult",
         "description": "One service, worked out for the requested amount."
+      },
+      "PublicStatsResponse": {
+        "properties": {
+          "workers": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workers",
+            "description": "Signed-up workers."
+          },
+          "contracts_checked": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contracts Checked",
+            "description": "Contracts analysed."
+          },
+          "radar_reports": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radar Reports",
+            "description": "Radar reports, hidden ones left out."
+          },
+          "alerts_generated": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alerts Generated",
+            "description": "Corridor alerts raised so far."
+          },
+          "scam_messages_checked": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scam Messages Checked",
+            "description": "Messages checked."
+          },
+          "scams_flagged": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scams Flagged",
+            "description": "Of those, judged to be scams."
+          },
+          "coach_plans": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coach Plans",
+            "description": "90-day plans made."
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at"
+        ],
+        "title": "PublicStatsResponse",
+        "description": "`GET /api/v1/public/stats`: totals across the whole platform, counts only.\n\nA field is `null` when that total could not be read, so the landing page leaves the figure\nout instead of showing a zero that means \"unknown\"."
       },
       "RadarEvidenceResponse": {
         "properties": {

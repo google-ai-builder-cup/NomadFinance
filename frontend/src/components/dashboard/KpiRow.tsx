@@ -12,6 +12,7 @@ import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useRemittanceTrends } from "@/hooks/useRemittance";
 import { useUserProfile } from "@/hooks/useUser";
 import i18n from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 import { ApiError } from "@/services/apiClient";
 import { defaultCorridor } from "@/utils/corridors";
 import { STATUS_COLOR, STATUS_INK, statusFor } from "@/utils/fibScore";
@@ -167,9 +168,10 @@ function RateKpi() {
     >
       {latest && trends.data && (
         <>
-          <p className={bigFigure}>
+          {/* The unit never splits ("INR /" over "SGD"): it drops below the figure whole. */}
+          <p className={cn(bigFigure, "flex flex-wrap items-baseline gap-x-1.5 gap-y-1")}>
             {latest.rate.toLocaleString(language, { maximumFractionDigits: 4 })}
-            <span className="ml-1.5 text-sm font-bold text-subtle">
+            <span className="whitespace-nowrap text-sm font-bold text-subtle">
               {trends.data.quote_currency} / {trends.data.base_currency}
             </span>
           </p>

@@ -24,23 +24,25 @@
       }
     },
     "story": {
-      "heading": "Kenalan dengan Priya",
-      "body": "Priya meninggalkan India untuk bekerja sebagai pekerja rumah tangga di Singapura. Agennya memberinya kontrak dalam bahasa Inggris — bahasa yang masih ia pelajari — dan memilihkan layanan transfer uang untuknya. Ia tidak punya cara untuk memeriksa apakah keduanya adil. NomadFinance membaca kontraknya dalam bahasa Hindi, memeriksanya sesuai hukum ketenagakerjaan Singapura, dan menunjukkan biaya sebenarnya dari setiap penyedia untuk mengirim uang ke keluarganya — agar pilihannya ada di tangannya, bukan agennya.",
+      "heading": "Tahun pertama Priya di Singapura",
+      "body": "Priya berusia dua puluh enam tahun ketika ia mulai bekerja sebagai pekerja rumah tangga di Singapura. Kontraknya dalam bahasa Inggris, dan ia menandatanganinya seperti orang yang takut kehilangan pekerjaan. Setiap bulan ia mengirim uang kepada ibunya di Kanpur lewat loket yang disarankan agennya, dan tidak pernah mengerti mengapa yang sampai lebih sedikit dari perkiraannya. Suatu malam, pesan dari nomor yang tidak ia kenal meminta biaya kecil untuk mencairkan bonusnya. Tidak ada orang di sekitarnya yang bisa memastikan apakah semua itu benar. NomadFinance dibuat untuk tahun seperti itu. Ia membaca kontrak Priya dalam bahasa Hindi, menunjukkan biaya sebenarnya setiap transfer, memeriksa pesan yang janggal itu, dan menyimpan catatan penghasilannya yang bisa diterima bank.",
       "kicker": "Kisah seorang pekerja",
       "avatar": "Ilustrasi Priya, pekerja rumah tangga di Singapura",
       "before": {
         "badge": "Sebelum",
-        "title": "Kebingungan",
-        "b1": "Kontrak dalam bahasa yang masih ia pelajari",
-        "b2": "Layanan transfer pilihan agennya, dengan biaya tersembunyi",
-        "b3": "Tidak ada cara memastikan keduanya adil"
+        "title": "Menebak-nebak",
+        "b1": "Kontrak berbahasa Inggris yang ia tandatangani tanpa yakin isinya",
+        "b2": "Loket transfer pilihan agennya, dengan kurs yang tidak bisa ia pertanyakan",
+        "b3": "Pesan yang meminta biaya untuk mencairkan bonus, dan tidak ada yang bisa ditanya",
+        "b4": "Bertahun-tahun mengirim uang pulang, tanpa apa pun untuk ditunjukkan ke bank"
       },
       "after": {
         "badge": "Dengan NomadFinance",
-        "title": "Kejelasan",
-        "a1": "Kontraknya dibaca dalam bahasa Hindi dan diperiksa terhadap hukum ketenagakerjaan Singapura",
-        "a2": "Penyedia terbaik, dan berapa sebenarnya biaya tiap penyedia",
-        "a3": "Pilihan ada di tangannya, bukan di tangan agennya"
+        "title": "Tahu pasti",
+        "a1": "Kontraknya dibaca dalam bahasa Hindi, setiap pasal diperiksa terhadap hukum ketenagakerjaan Singapura",
+        "a2": "Semua penyedia berdampingan, lengkap dengan biaya sebenarnya mengirim uang ke Kanpur",
+        "a3": "Pesan mencurigakan dijelaskan dengan kata-kata sederhana, dan peringatan dibagikan ke pekerja lain lewat Radar",
+        "a4": "Penghasilan, tagihan, dan tabungannya menjadi skor dan laporan yang bisa dibaca bank, plus rencana 90 hari dari Coach"
       }
     },
     "pillars": {
@@ -129,6 +131,20 @@
         "today": "Kini"
       }
     },
+    "live": {
+      "kicker": "Langsung di NomadFinance",
+      "heading": "Angka nyata dari platform",
+      "lead": "Total yang dihitung langsung dari NomadFinance dan diperbarui setiap beberapa menit. Ini hanya jumlah: tidak ada yang mengidentifikasi pekerja.",
+      "items": {
+        "contracts": "kontrak diperiksa terhadap hukum ketenagakerjaan",
+        "scamChecked": "pesan mencurigakan diperiksa",
+        "scamsFlagged": "pesan ditandai sebagai penipuan",
+        "reports": "laporan dibagikan ke Radar",
+        "alerts": "peringatan koridor diterbitkan",
+        "plans": "rencana 90 hari dibuat",
+        "workers": "pekerja memakai NomadFinance"
+      }
+    },
     "performance": {
       "kicker": "Kinerja NomadFinance",
       "heading": "Satu platform. Enam koridor. Empat tingkat Gemini yang bekerja bersama.",
@@ -189,12 +205,6 @@
           "name": "Dasar hukum ketenagakerjaan ILO",
           "body": "Kontrak diperiksa terhadap aturan setempat"
         }
-      },
-      "time": {
-        "pending": "Menunggu pengukuran",
-        "unit": "detik",
-        "title": "Rata-rata waktu analisis kontrak",
-        "note": "Kami hanya menampilkannya setelah diukur."
       },
       "privacy": {
         "title": "Privat sejak dirancang",
@@ -260,8 +270,12 @@
     },
     "impact": {
       "kicker": "Dampak dan SDG",
-      "heading": "Dibangun untuk mendukung tiga tujuan PBB",
+      "heading": "Dibangun untuk mendukung empat tujuan PBB",
       "goal": "SDG {{number}}:",
+      "g1": {
+        "title": "Tanpa kemiskinan, target 1.4",
+        "body": "Catatan penghasilan, tagihan, dan tabungan yang bisa ditunjukkan pekerja ke bank, sehingga memakai layanan keuangan tidak dimulai dari nol."
+      },
       "g8": {
         "title": "Pekerjaan layak dan pertumbuhan ekonomi",
         "body": "Kontrak diperiksa terhadap hukum ketenagakerjaan, sehingga pekerjaan yang aman lebih mudah dikenali."
@@ -272,7 +286,7 @@
       },
       "g16": {
         "title": "Perdamaian, keadilan, dan kelembagaan yang kuat",
-        "body": "Laporan warga dan surat pengaduan memberi pekerja jalan untuk didengar."
+        "body": "Pemeriksaan penipuan, laporan warga, dan surat pengaduan membantu pekerja menghindari penipuan dan memberi mereka jalan untuk didengar."
       }
     },
     "footer": {
@@ -781,6 +795,7 @@
       "errors": {
         "empty": "Masukkan jumlah yang ingin Anda kirim.",
         "invalid": "Masukkan jumlah dalam angka, misalnya 500.",
+        "decimalComma": "Gunakan titik untuk desimal, misalnya 645.50. Koma hanya memisahkan ribuan, misalnya 6,450.",
         "decimals": "Gunakan paling banyak {{places}} angka desimal.",
         "wholeNumber": "Masukkan jumlah {{currency}} yang bulat, tanpa desimal.",
         "tooSmall": "Masukkan paling sedikit {{min}}.",
@@ -1118,6 +1133,7 @@
         "amount": {
           "empty": "Masukkan jumlah.",
           "invalid": "Masukkan jumlah yang valid.",
+          "decimalComma": "Gunakan titik untuk desimal, misalnya 645.50. Koma hanya memisahkan ribuan, misalnya 6,450.",
           "decimals": "Terlalu banyak angka desimal untuk mata uang ini.",
           "tooLarge": "Jumlah ini terlalu besar. Periksa lalu coba lagi."
         }

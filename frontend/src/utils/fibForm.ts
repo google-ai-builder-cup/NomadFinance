@@ -1,5 +1,5 @@
 import { ApiError } from "@/services/apiClient";
-import { toAsciiDigits } from "@/utils/digits";
+import { readTypedAmount } from "@/utils/amountReading";
 import type { HostCountry } from "@/types/enums";
 import { errorMessageKey } from "@/utils/errors";
 
@@ -32,33 +32,23 @@ export function currencyDecimals(currency: string): number {
 export const MAX_AMOUNT = 1_000_000;
 export const MAX_AMOUNT_WHOLE_UNIT = 100_000_000;
 
-export type AmountProblem = "empty" | "invalid" | "decimals" | "tooLarge";
+export type AmountProblem = "empty" | "invalid" | "decimalComma" | "decimals" | "tooLarge";
 export type AmountCheck = { ok: true; amount: number } | { ok: false; problem: AmountProblem };
 
 /**
- * Read a worker-typed amount. Accepts "650", "650.50" and grouped thousands in either style
- * ("6,500", "6.500"); unlike `utils/corridors.ts`'s `parseAmount`, there is no survey-based
+ * Read a worker-typed amount. Accepts "650", "650.50" and thousands grouped with commas ("6,500")
+ * or, before exactly three digits, a dot ("6.500"); a comma before one or two digits ("6,5") is
+ * refused, never guessed. Unlike `utils/corridors.ts`'s `parseAmount`, there is no survey-based
  * range to check against, only that it is a positive number with no more decimals than the
  * currency allows.
  */
 export function parseAmount(text: string, currency: string): AmountCheck {
   const decimals = currencyDecimals(currency);
-  const raw = toAsciiDigits(text).replace(/[\s']/g, "");
-  if (raw === "") {
-    return { ok: false, problem: "empty" };
+  const typed = readTypedAmount(text, decimals === 0);
+  if (!typed.ok) {
+    return text.trim() === "" ? { ok: false, problem: "empty" } : typed;
   }
-  let normalized: string;
-  if (decimals === 0 && /^\d+([.,]\d{3})*$/.test(raw)) {
-    normalized = raw.replace(/[.,]/g, "");
-  } else if (/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(raw)) {
-    normalized = raw.replace(/,/g, "");
-  } else if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(raw)) {
-    normalized = raw.replace(/\./g, "").replace(",", ".");
-  } else if (/^\d+([.,]\d+)?$/.test(raw)) {
-    normalized = raw.replace(",", ".");
-  } else {
-    return { ok: false, problem: "invalid" };
-  }
+  const normalized = typed.normalized;
   const fraction = normalized.split(".")[1] ?? "";
   if (fraction.length > decimals) {
     return { ok: false, problem: "decimals" };

@@ -10,7 +10,7 @@
 - **Currency indicator.**
   - Under the dropdown: "You send Australian Dollar (AUD). Your family receives Philippine Peso (PHP)."
   - The amount field shows the sending currency inside it.
-- **Amount checks in the browser, translated.** The limits the backend enforces (e.g. A$50 to A$5,000), whole yen only, at most 2 decimals. It reads "1,000", "1.000", "645,50" and "4 250".
+- **Amount checks in the browser, translated.** The limits the backend enforces (e.g. A$50 to A$5,000), whole yen only, at most 2 decimals. It reads "1,000", "1.000" (a dot before exactly three digits is thousands), "645.50" and "4 250". A comma is never a decimal point: "645,50" and "5,10" are refused with a message that says to use a dot.
 - **Shortcuts** for the two amounts the World Bank surveyed (e.g. A$200 and A$500), where every price is exact rather than estimated.
 - **Result.** `POST /api/v1/remittance/compare` (NF-P2-014), then a summary card:
   - the best service and what the family receives

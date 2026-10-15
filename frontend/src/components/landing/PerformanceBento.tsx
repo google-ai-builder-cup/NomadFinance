@@ -8,7 +8,7 @@ import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 import { CORRIDOR_IDS } from "@/types/enums";
-import { FX_REFRESH_HOURS, MEASURED_METRICS, PROTECTED_WORDS } from "@/utils/landingMetrics";
+import { FX_REFRESH_HOURS, PROTECTED_WORDS } from "@/utils/landingMetrics";
 
 const PIPELINE_STEPS = [
   "extract",
@@ -29,22 +29,15 @@ const TIERS = [
 function Cell({
   className,
   delay,
-  dashed = false,
   children,
 }: {
   className: string;
   delay: number;
-  dashed?: boolean;
   children: ReactNode;
 }) {
   return (
     <Reveal delay={delay} className={className}>
-      <article
-        className={cn(
-          "card-surface flex h-full flex-col gap-3.5 p-6",
-          dashed ? "border-dashed shadow-none" : "card-edge"
-        )}
-      >
+      <article className="card-surface card-edge flex h-full flex-col gap-3.5 p-6">
         {children}
       </article>
     </Reveal>
@@ -72,7 +65,6 @@ function CorridorChip({ id }: { id: string }) {
 
 export default function PerformanceBento() {
   const { t } = useI18n();
-  const seconds = MEASURED_METRICS.contractAnalysisSeconds;
 
   return (
     <section
@@ -219,7 +211,7 @@ export default function PerformanceBento() {
             </ul>
           </Cell>
 
-          <Cell className="md:col-span-3 lg:col-span-4" delay={0}>
+          <Cell className="md:col-span-3 lg:col-span-6" delay={0}>
             <h3 className="text-lg font-bold">{t("landing.performance.data.title")}</h3>
             <ul className="grid gap-2.5 text-sm">
               {(["worldBank", "ilo"] as const).map((key) => (
@@ -233,31 +225,7 @@ export default function PerformanceBento() {
             </ul>
           </Cell>
 
-          <Cell className="md:col-span-3 lg:col-span-4" delay={80} dashed={seconds === null}>
-            {seconds === null ? (
-              <>
-                <p className="text-[10.5px] font-extrabold uppercase tracking-widest text-subtle">
-                  {t("landing.performance.time.pending")}
-                </p>
-                <p className="text-5xl font-extrabold leading-none tracking-tight text-subtle">—</p>
-              </>
-            ) : (
-              <p className="text-5xl font-extrabold leading-none tracking-tight">
-                {seconds}
-                <span className="ml-1 text-xl text-muted-foreground">
-                  {t("landing.performance.time.unit")}
-                </span>
-              </p>
-            )}
-            <h3 className="text-base font-bold">{t("landing.performance.time.title")}</h3>
-            {seconds === null && (
-              <p className="mt-auto text-[13px] text-muted-foreground">
-                {t("landing.performance.time.note")}
-              </p>
-            )}
-          </Cell>
-
-          <Cell className="md:col-span-6 lg:col-span-4" delay={160}>
+          <Cell className="md:col-span-3 lg:col-span-6" delay={80}>
             <Lock className="h-5 w-5 text-primary" aria-hidden="true" />
             <h3 className="text-lg font-bold">{t("landing.performance.privacy.title")}</h3>
             <p className="text-sm text-muted-foreground">{t("landing.performance.privacy.body")}</p>

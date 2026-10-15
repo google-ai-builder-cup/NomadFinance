@@ -1,7 +1,7 @@
-// Every number on the landing page comes from here, never from JSX. A figure is either a sourced
-// industry fact (with its source shown beside it) or a measured property of this system. Nothing
-// here is invented: a figure we have not measured yet is `null`, and the page shows a "pending"
-// card until it is filled in.
+// Every static number on the landing page comes from here, never from JSX. A figure is either a
+// sourced industry fact (with its source shown beside it) or a property of this system. Nothing
+// here is invented. The platform totals are not here: they are read live from
+// `GET /api/v1/public/stats`, and one that cannot be read is left out.
 
 export interface IndustryFact {
   /** Number the card counts up to. */
@@ -26,8 +26,10 @@ export const INDUSTRY_FACTS = {
     suffix: "B+",
     source: "World Bank, Migration and Development Brief",
   },
-  // Derived, not published: the World Bank's average cost of sending money, applied to the flow
-  // above. The card is captioned "derived". Confirm the figure before the demo.
+  // Derived, not published: the World Bank's average cost of sending money (6.49% in Q1 2025,
+  // rounded down to the 6% floor used below) applied to the USD 685B recorded for 2024, which is
+  // about 41B. The card is captioned "derived". Checked against the World Bank 2024 brief and
+  // RPW Q1 2025 on 2026-10-15; recheck when either is reissued.
   lostToFees: {
     value: 41,
     prefix: "$",
@@ -60,9 +62,3 @@ export const PROTECTED_WORDS = [
   "संरक्षित",
   "সুরক্ষিত",
 ] as const;
-
-/** Properties of the running system that we have not benchmarked yet. */
-export const MEASURED_METRICS: { contractAnalysisSeconds: number | null } = {
-  // TODO(team): replace with the measured average once contract analysis has been benchmarked.
-  contractAnalysisSeconds: null,
-};

@@ -8,8 +8,8 @@ import Reveal from "@/components/visual/Reveal";
 import { useI18n } from "@/hooks/useI18n";
 import { cn } from "@/lib/utils";
 
-const BEFORE = ["b1", "b2", "b3"] as const;
-const AFTER = ["a1", "a2", "a3"] as const;
+const BEFORE = ["b1", "b2", "b3", "b4"] as const;
+const AFTER = ["a1", "a2", "a3", "a4"] as const;
 
 export default function PriyaStory() {
   const { t } = useI18n();
@@ -23,7 +23,7 @@ export default function PriyaStory() {
             title={t("landing.story.heading")}
             lead={t("landing.story.body")}
             className="mb-0 max-w-none"
-            leadClassName="max-w-none text-justify [hyphens:auto]"
+            leadClassName="max-w-none"
           />
           <Reveal delay={120}>
             <PriyaScene />
