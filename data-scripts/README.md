@@ -124,7 +124,7 @@ Dates are `months_ago` and `day` in the file, turned into real dates when the lo
 Full steps, the story in the data and limits: [`docs/runbooks/NF-P3-015-fib-demo-user.md`](../docs/runbooks/NF-P3-015-fib-demo-user.md).
 
 ## Radar demo data (NF-P3-005)
-18 synthetic worker reports in `data/seed/radar-reports/seed_reports.json` covering all six corridors and all six host countries, about 8 invented businesses. The loader writes `radar_reports/seed_NN` (marked `source: "seed"`) and works out each business's `radar_entities/{slug}` profile with the backend's rating rules, so the heatmap, badges and alert cron have data. Alerts are made by the cron, not here.
+20 synthetic worker reports in `data/seed/radar-reports/seed_reports.json` covering all six corridors and all six host countries, about 8 invented businesses. The loader writes `radar_reports/seed_NN` (marked `source: "seed"`) and works out each business's `radar_entities/{slug}` profile with the backend's rating rules, so the heatmap, badges and alert cron have data. Alerts are made by the cron, not here.
 
 ```bash
 python -m src.validators.radar_seed        # check the file

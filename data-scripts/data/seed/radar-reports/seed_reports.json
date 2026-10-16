@@ -231,6 +231,32 @@
       "language": "en",
       "hours_ago": 170,
       "description": "My employer keeps my passport in a locked drawer and says I can have it back when the contract ends."
+    },
+    {
+      "id": "seed_19",
+      "cluster_id": "seed_19",
+      "entity_name": "Ganga Transfer Hub",
+      "entity_slug": "ganga-transfer-hub",
+      "entity_type": "money_transfer_operator",
+      "corridor_id": "SG-IN",
+      "host_country": "SG",
+      "violation_type": "hidden_fees",
+      "language": "hi",
+      "hours_ago": 18,
+      "description": "काउंटर पर कहा गया कि कोई शुल्क नहीं है, लेकिन घर पर वादे से कम रुपये पहुँचे। रसीद पर कटौती का कोई ज़िक्र नहीं था।"
+    },
+    {
+      "id": "seed_20",
+      "cluster_id": "seed_20",
+      "entity_name": "Ganga Transfer Hub",
+      "entity_slug": "ganga-transfer-hub",
+      "entity_type": "money_transfer_operator",
+      "corridor_id": "SG-IN",
+      "host_country": "SG",
+      "violation_type": "exchange_rate_markup",
+      "language": "en",
+      "hours_ago": 96,
+      "description": "The board showed one rate, but the receipt used a much lower one. My family received about 900 rupees less than I was quoted."
     }
   ]
 }
